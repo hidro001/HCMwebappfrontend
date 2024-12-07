@@ -1,0 +1,119 @@
+/* customStyles.css */
+
+/* Soft Gradient Background for Cards */
+.gradient-bg {
+    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+    color: #333;
+    border-radius: 15px;
+    box-shadow: 0 10px 20px rgba(161, 196, 253, 0.2);
+    padding: 20px; /* Added padding for better spacing */
+  }
+  
+  /* Smooth Hover Effect for Cards */
+  .card-hover:hover {
+    transform: translateY(-5px);
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  /* Subtle Futuristic Buttons */
+  .btn-futuristic {
+    background: linear-gradient(45deg, #a8edea, #fed6e3);
+    border: none;
+    color: #333;
+    padding: 12px 24px; /* Increased padding for larger buttons */
+    border-radius: 50px;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+    font-weight: 500;
+    font-size: 16px; /* Increased font size for better readability */
+  }
+  
+  /* Hover Effect for Futuristic Buttons */
+  .btn-futuristic:hover {
+    background: linear-gradient(45deg, #fed6e3, #a8edea);
+    color: #000;
+  }
+  
+  /* Customized Table Header with Soft Colors */
+  .table-custom thead {
+    background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%);
+    color: #333;
+    text-align: center;
+  }
+  
+  /* Avatar Styling with Soft Borders */
+  .avatar-img {
+    width: 50px; /* Increased size for better visibility */
+    height: 50px; /* Increased size for better visibility */
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #a1c4fd;
+    box-shadow: 0 0 5px rgba(161, 196, 253, 0.3);
+  }
+  
+  /* Customized Modal with Light Background */
+  .modal-custom .modal-content {
+    background: #ffffff;
+    border-radius: 15px;
+    padding: 25px; /* Increased padding for better spacing */
+  }
+  
+  /* Icon Buttons with Soft Colors */
+  .icon-button {
+    color: #a1c4fd;
+    transition: color 0.3s;
+    font-size: 20px; /* Increased icon size for better visibility */
+  }
+  
+  .icon-button:hover {
+    color: #6b7dff;
+  }
+  
+  /* Enhanced Input Boxes */
+  .form-control {
+    height: 50px; /* Increased height for larger input boxes */
+    font-size: 16px; /* Increased font size for better readability */
+    border-radius: 10px; /* Rounded corners for a modern look */
+    border: 1px solid #a1c4fd; /* Soft border color */
+    background-color: #f9f9f9; /* Light background for better contrast */
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  
+  /* Focus State for Input Boxes */
+  .form-control:focus {
+    border-color: #6b7dff;
+    box-shadow: 0 0 5px rgba(107, 125, 255, 0.5);
+  }
+  
+  /* Enhanced Select Boxes */
+  .form-select {
+    height: 50px; /* Increased height for larger select boxes */
+    font-size: 16px; /* Increased font size for better readability */
+    border-radius: 10px; /* Rounded corners for a modern look */
+    border: 1px solid #a1c4fd; /* Soft border color */
+    background-color: #f9f9f9; /* Light background for better contrast */
+    transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  
+  /* Focus State for Select Boxes */
+  .form-select:focus {
+    border-color: #6b7dff;
+    box-shadow: 0 0 5px rgba(107, 125, 255, 0.5);
+  }
+  
+  /* Customized Reset Button */
+  .btn-reset {
+    background: linear-gradient(45deg, #d3d3d3, #f2f2f2);
+    border: none;
+    color: #333;
+    padding: 12px 24px; /* Increased padding for larger buttons */
+    border-radius: 50px;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+    font-weight: 500;
+    font-size: 16px; /* Increased font size for better readability */
+  }
+  
+  .btn-reset:hover {
+    background: linear-gradient(45deg, #f2f2f2, #d3d3d3);
+    color: #000;
+  }
+  
