@@ -282,7 +282,7 @@ const Login = () => {
           <div className="rzrems-signin-card">
             {step === 1 ? (
               <form className="bg-white rounded" onSubmit={handleLogin}>
-                <label htmlFor="employeeId">Enter Employee ID</label>
+                <label htmlFor="employeeId">Type Your Employee ID</label>
                 <input
                   type="text"
                   required
