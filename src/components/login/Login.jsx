@@ -73,11 +73,7 @@ const Login = () => {
               </div>
             </form>
 
-            {/* Join Free Section */}
-            <p className="mt-8">
-              Don’t have an account?{" "}
-              <span className="cursor-pointer text-sm text-blue-600">Join free today</span>
-            </p>
+      
           </div>
         </div>
       </div>
