@@ -1,6 +1,0 @@
-Leave Management
-Employee Registration
-Employee Deletion
-Announcement
-Performer Management
-Leave Action
