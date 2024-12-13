@@ -1,8 +1,11 @@
-import Button from "@mui/material/Button";
+import Login from "./components/login/Login";
+
 export default function App() {
   return (
     <>
-      <Button variant="contained">Hello world</Button>
+      <h1>
+        <Login />
+      </h1>
     </>
   );
 }
