@@ -53,7 +53,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
   return (
     <nav
       className={
-        "bg-green-800 dark:text-white dark:bg-gray-800 z-40 text-white px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 shadow-md"
+        "bg-gray-200 text-black dark:text-white dark:bg-gray-800 z-50 border-b border-gray-500 px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 shadow-md "
       }
     >
       {/* Left Section: Company Branding */}
@@ -65,7 +65,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
             alt=""
           />
         </div>
-        <div className="hidden sm:block text-xs font-light text-gray-300">
+        <div className="hidden sm:block text-xs font-light ">
           Empowering Teams, Building Success
         </div>
       </div>
@@ -74,7 +74,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
       <div className="hidden md:flex items-center space-x-8">
         <a
           href="#dashboard"
-          className="flex items-center text-white hover:text-gray-300 space-x-2"
+          className="flex items-center hover:text-gray-500 space-x-2"
         >
           <FaHome className="text-blue-400" />
           <span className="text-xs">Dashboard</span>
@@ -129,7 +129,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
-              className="absolute right-0 mt-2 w-48 bg-gray-700 text-white rounded-lg shadow-lg z-10"
+              className="absolute right-0 mt-2 w-48 bg-gray-700 dark:shadow-slate-600 text-white rounded-md shadow-lg z-10"
             >
               <div className="p-4 border-b border-gray-600">
                 <p className="text-sm font-semibold">John Cena</p>
