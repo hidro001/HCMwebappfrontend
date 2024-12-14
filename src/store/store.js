@@ -1,10 +1,114 @@
-// src/store.js
-import {create} from 'zustand';
+// // src/store.js
+// import {create} from 'zustand';
+// import { persist } from 'zustand/middleware';
+
+// const useAuthStore = create(
+//   persist(
+//     (set) => ({
+//       isAuthenticated: !!localStorage.getItem('accessToken'),
+//       userRole: localStorage.getItem('userRole') || '',
+//       permissionRole: localStorage.getItem('permissionRole') || '',
+//       userName: localStorage.getItem('userName') || '',
+//       employeeId: localStorage.getItem('employeeId') || '',
+//       department: localStorage.getItem('department') || '',
+//       workingEmail: localStorage.getItem('workingEmail') || '',
+//       phoneNumber: localStorage.getItem('phoneNumber') || '',
+//       designation: localStorage.getItem('designation') || '',
+//       departmentAlocated: JSON.parse(localStorage.getItem('departmentAlocated')) || [],
+//       teams: JSON.parse(localStorage.getItem('teams')) || [],
+      
+//       // Actions
+//       login: (userData) => {
+//         const {
+//           accessToken,
+//           userRole,
+//           permissionRole,
+//           userName,
+//           employeeId,
+//           department,
+//           workingEmail,
+//           phoneNumber,
+//           designation,
+//           departmentAlocated,
+//           teams,
+//         } = userData;
+        
+//         // Update state
+//         set({
+//           isAuthenticated: true,
+//           userRole,
+//           permissionRole,
+//           userName,
+//           employeeId,
+//           department,
+//           workingEmail,
+//           phoneNumber,
+//           designation,
+//           departmentAlocated,
+//           teams,
+//         });
+        
+//         // Persist to localStorage
+//         localStorage.setItem('accessToken', accessToken);
+//         localStorage.setItem('userRole', userRole);
+//         localStorage.setItem('permissionRole', permissionRole);
+//         localStorage.setItem('userName', userName);
+//         localStorage.setItem('employeeId', employeeId);
+//         localStorage.setItem('department', department);
+//         localStorage.setItem('workingEmail', workingEmail);
+//         localStorage.setItem('phoneNumber', phoneNumber);
+//         localStorage.setItem('designation', designation);
+//         localStorage.setItem('departmentAlocated', JSON.stringify(departmentAlocated));
+//         localStorage.setItem('teams', JSON.stringify(teams));
+//       },
+      
+//       logout: () => {
+//         // Clear state
+//         set({
+//           isAuthenticated: false,
+//           userRole: '',
+//           permissionRole:"",
+//           userName: '',
+//           employeeId: '',
+//           department: '',
+//           workingEmail: '',
+//           phoneNumber: '',
+//           designation: '',
+//           departmentAlocated: [],
+//           teams: [],
+//         });
+        
+//         // Remove from localStorage
+//         localStorage.removeItem('accessToken');
+//         localStorage.removeItem('userRole');
+//         localStorage.removeItem('permissionRole');
+//         localStorage.removeItem('userName');
+//         localStorage.removeItem('employeeId');
+//         localStorage.removeItem('department');
+//         localStorage.removeItem('workingEmail');
+//         localStorage.removeItem('phoneNumber');
+//         localStorage.removeItem('designation');
+//         localStorage.removeItem('departmentAlocated');
+//         localStorage.removeItem('teams');
+//       },
+//     }),
+//     {
+//       name: 'auth-storage', // unique name
+//     }
+//   )
+// );
+
+// export default useAuthStore;
+
+
+// src/store/store.js
+import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 const useAuthStore = create(
   persist(
     (set) => ({
+      // Authentication States
       isAuthenticated: !!localStorage.getItem('accessToken'),
       userRole: localStorage.getItem('userRole') || '',
       permissionRole: localStorage.getItem('permissionRole') || '',
@@ -16,7 +120,11 @@ const useAuthStore = create(
       designation: localStorage.getItem('designation') || '',
       departmentAlocated: JSON.parse(localStorage.getItem('departmentAlocated')) || [],
       teams: JSON.parse(localStorage.getItem('teams')) || [],
-      
+      userAvatar: localStorage.getItem('userAvatar') || '',
+
+      // Company Information States
+      companyInfo: JSON.parse(localStorage.getItem('companyInfo')) || null,
+
       // Actions
       login: (userData) => {
         const {
@@ -31,9 +139,10 @@ const useAuthStore = create(
           designation,
           departmentAlocated,
           teams,
+          userAvatar,
         } = userData;
-        
-        // Update state
+
+        // Update Authentication State
         set({
           isAuthenticated: true,
           userRole,
@@ -46,8 +155,9 @@ const useAuthStore = create(
           designation,
           departmentAlocated,
           teams,
+          userAvatar,
         });
-        
+
         // Persist to localStorage
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('userRole', userRole);
@@ -60,14 +170,20 @@ const useAuthStore = create(
         localStorage.setItem('designation', designation);
         localStorage.setItem('departmentAlocated', JSON.stringify(departmentAlocated));
         localStorage.setItem('teams', JSON.stringify(teams));
+        localStorage.setItem('userAvatar', userAvatar || '');
       },
-      
+
+      setCompanyInfo: (companyData) => {
+        set({ companyInfo: companyData });
+        localStorage.setItem('companyInfo', JSON.stringify(companyData));
+      },
+
       logout: () => {
-        // Clear state
+        // Clear Authentication and Company State
         set({
           isAuthenticated: false,
           userRole: '',
-          permissionRole:"",
+          permissionRole: '',
           userName: '',
           employeeId: '',
           department: '',
@@ -76,8 +192,10 @@ const useAuthStore = create(
           designation: '',
           departmentAlocated: [],
           teams: [],
+          userAvatar: '',
+          companyInfo: null,
         });
-        
+
         // Remove from localStorage
         localStorage.removeItem('accessToken');
         localStorage.removeItem('userRole');
@@ -90,6 +208,8 @@ const useAuthStore = create(
         localStorage.removeItem('designation');
         localStorage.removeItem('departmentAlocated');
         localStorage.removeItem('teams');
+        localStorage.removeItem('userAvatar');
+        localStorage.removeItem('companyInfo');
       },
     }),
     {
