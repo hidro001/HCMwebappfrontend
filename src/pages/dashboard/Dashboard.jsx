@@ -1,9 +1,12 @@
-import React from 'react'
+import React from "react";
 
 const Dashboard = () => {
   return (
-    <div>Dashboard</div>
-  )
-}
+    <div className=" bg-white  " >
+      Dashboard
 
-export default Dashboard
+    </div>
+  );
+};
+
+export default Dashboard;

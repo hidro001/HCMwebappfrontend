@@ -12,6 +12,7 @@ import {
 } from "react-icons/fa";
 import { MdOutlineDarkMode, MdLightMode } from "react-icons/md";
 import { motion } from "framer-motion";
+import ThemeToggleButton from "../theme toggle button/ThemeToggleButton";
 
 const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -21,15 +22,12 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
     time: "",
   });
 
-  const API_KEY = "f823bb024d0b5a62d193e42e569bc523"; // OpenWeatherMap API Key
-  const CITY = "Delhi";
-
   // Toggle Profile Dropdown
   const toggleDropdown = () => setShowDropdown((prev) => !prev);
 
-  // Toggle Theme
-  const toggleTheme = () =>
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  // // Toggle Theme
+  // const toggleTheme = () =>
+  //   setTheme((prev) => (prev === "light" ? "dark" : "light"));
 
   // Update Date and Time
   useEffect(() => {
@@ -54,9 +52,9 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
 
   return (
     <nav
-      className={`${
-        theme === "light" ? "bg-green-800 text-white" : "bg-gray-800 text-white"
-      } px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 shadow-md`}
+      className={
+        "light:bg-green-800 dark:text-white dark:bg-gray-800  text-white px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 shadow-md"
+      }
     >
       {/* Left Section: Company Branding */}
       <div className="flex items-center space-x-4">
@@ -94,7 +92,6 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
           </div>
         </div>
 
-
         <div className="relative">
           <FaBell className="text-yellow-400 w-6 h-6 cursor-pointer" />
           <span className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center">
@@ -102,7 +99,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
           </span>
         </div>
 
-        <button
+        {/* <button
           onClick={toggleTheme}
           className="text-gray-300 hover:text-white focus:outline-none"
         >
@@ -111,7 +108,9 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
           ) : (
             <MdLightMode className="text-yellow-400 w-6 h-6" />
           )}
-        </button>
+        </button> */}
+
+        <ThemeToggleButton/>
 
         <div className="relative">
           <button

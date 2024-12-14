@@ -210,7 +210,7 @@ const Sidebar = () => {
   return (
     <div className="flex h-full">
       {/* Main Sidebar */}
-      <div className="bg-gray-800 text-white w-16 flex flex-col items-center py-4 space-y-6">
+      <div className="dark:bg-gray-800 dark:text-white w-16 flex flex-col items-center py-4 space-y-6">
         {menuItems.map((item, index) => (
           <button
             key={index}

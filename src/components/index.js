@@ -5,6 +5,7 @@ import Footer from './footer/Footer'
 import Navbar from "./navbar/Navbar";
 import Sidebar from "./sidebar/Sidebar";
 import Breadcrumb from "./breadcrumb/Breadcrumb"
+import ThemeToggleButton from "./theme toggle button/ThemeToggleButton"
 
 
 export {
@@ -15,4 +16,5 @@ export {
     Navbar,
     Sidebar, 
     Breadcrumb,
+    ThemeToggleButton
 }   
