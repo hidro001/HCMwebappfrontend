@@ -30,30 +30,30 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
   //   setTheme((prev) => (prev === "light" ? "dark" : "light"));
 
   // Update Date and Time
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const now = new Date();
-      setCurrentDateTime({
-        date: now.toLocaleDateString("en-US", {
-          weekday: "long",
-          month: "long",
-          day: "numeric",
-        }),
-        time: now.toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-        }),
-      });
-    }, 1000);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     const now = new Date();
+  //     setCurrentDateTime({
+  //       date: now.toLocaleDateString("en-US", {
+  //         weekday: "long",
+  //         month: "long",
+  //         day: "numeric",
+  //       }),
+  //       time: now.toLocaleTimeString("en-US", {
+  //         hour: "2-digit",
+  //         minute: "2-digit",
+  //         second: "2-digit",
+  //       }),
+  //     });
+  //   }, 1000);
 
-    return () => clearInterval(interval);
-  }, []);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   return (
     <nav
       className={
-        "light:bg-green-800 dark:text-white dark:bg-gray-800  text-white px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 shadow-md"
+        "bg-green-800 dark:text-white dark:bg-gray-800 z-40 text-white px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 shadow-md"
       }
     >
       {/* Left Section: Company Branding */}
