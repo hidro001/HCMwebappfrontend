@@ -41,6 +41,9 @@ importers:
       react-router-dom:
         specifier: ^7.0.2
         version: 7.0.2(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      react-toastify:
+        specifier: ^10.0.6
+        version: 10.0.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       styled-components:
         specifier: ^6.1.13
         version: 6.1.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -1712,6 +1715,12 @@ packages:
     peerDependenciesMeta:
       react-dom:
         optional: true
+
+  react-toastify@10.0.6:
+    resolution: {integrity: sha512-yYjp+omCDf9lhZcrZHKbSq7YMuK0zcYkDFTzfRFgTXkTFHZ1ToxwAonzA4JI5CxA91JpjFLmwEsZEgfYfOqI1A==}
+    peerDependencies:
+      react: '>=18'
+      react-dom: '>=18'
 
   react-transition-group@4.4.5:
     resolution: {integrity: sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==}
@@ -3749,6 +3758,12 @@ snapshots:
       set-cookie-parser: 2.7.1
       turbo-stream: 2.4.0
     optionalDependencies:
+      react-dom: 19.0.0(react@19.0.0)
+
+  react-toastify@10.0.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      clsx: 2.1.1
+      react: 19.0.0
       react-dom: 19.0.0(react@19.0.0)
 
   react-transition-group@4.4.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
