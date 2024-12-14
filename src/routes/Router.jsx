@@ -1,7 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import { Login, } from "../pages";
-import { Navbar, MainLayout } from "../components";
+import { Navbar } from "../components";
+import MainLayout from "./MainLayout";
 
 const AppLayout = () => (
   <div className="flex flex-col min-h-screen">
@@ -20,9 +21,8 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
+
       <AppLayout/>
-        // {/* <Dashboard /> */}
-      // {/* </AppLayout> */}
     ),
   },
 ]);
