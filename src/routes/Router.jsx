@@ -1,17 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import { Login, } from "../pages";
-import { Navbar } from "../components";
+import { Login, Dashboard } from "../pages";
 import MainLayout from "./MainLayout";
-
-const AppLayout = () => (
-  <div className="flex flex-col min-h-screen">
-    <div className="flex flex-1 flex-col">
-      <Navbar />
-      <MainLayout />
-    </div>
-  </div>
-);
 
 const router = createBrowserRouter([
   {
@@ -21,9 +11,18 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: (
-
-      <AppLayout/>
+        <MainLayout />
     ),
+    children: [
+      {
+        index: true,
+        element: <Dashboard />,
+      },
+    ],
+  },
+  {
+    path: "*",
+    element: <div>404 Not Found</div>, // Fallback for undefined routes
   },
 ]);
 
