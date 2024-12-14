@@ -27,7 +27,7 @@ const Breadcrumb = () => {
   };
 
   return (
-    <div className="flex justify-between items-center p-4 bg-gray-100 border-b">
+    <div className="flex justify-between dark:bg-gray-800 dark:text-white items-center p-4 bg-gray-100 border-b">
       <div className="text-sm">
         Welcome,{" "}
         <span className="font-semibold">Sameer Hameed (super-admin)</span>
