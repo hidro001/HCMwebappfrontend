@@ -7,8 +7,8 @@ const Breadcrumb = () => {
   const generateBreadcrumbs = () => {
     const pathnames = location.pathname.split("/").filter((x) => x);
     return (
-      <nav className="text-sm text-gray-600">
-        <Link to="/" className="text-gray-800 hover:underline">
+      <nav className="text-sm dark:text-white">
+        <Link to="/" className=" hover:underline">
           Dashboard
         </Link>
         {pathnames.map((value, index) => {

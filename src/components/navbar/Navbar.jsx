@@ -53,7 +53,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
   return (
     <nav
       className={
-        "bg-gray-200 text-black dark:text-white dark:bg-gray-800 z-50 border-b border-gray-500 px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 shadow-md "
+        "bg-gradient-to-l from-cyan-500 via-cyan-500 to-lime-300 text-black dark:text-white dark:bg-gray-800 z-50 border-b border-gray-500 px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 shadow-md "
       }
     >
       {/* Left Section: Company Branding */}
@@ -76,7 +76,7 @@ const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
           href="#dashboard"
           className="flex items-center hover:text-gray-500 space-x-2"
         >
-          <FaHome className="text-blue-400" />
+          <FaHome className="text-yellow-400" />
           <span className="text-xs">Dashboard</span>
         </a>
       </div>
