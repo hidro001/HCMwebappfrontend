@@ -210,13 +210,13 @@ const Sidebar = () => {
   return (
     <div className="flex h-full">
       {/* Main Sidebar */}
-      <div className="dark:bg-gray-800 dark:text-white w-16 flex flex-col items-center py-4 space-y-6">
+      <div className="bg-gray-200 text-black dark:text-white dark:bg-gray-800 z-50 border-r border-gray-500 w-16 flex flex-col items-center py-4 space-y-6">
         {menuItems.map((item, index) => (
           <button
             key={index}
             onClick={() => toggleSidebarTab(item.name)}
-            className={`p-3 rounded-lg hover:bg-gray-700 ${
-              currentSidebarTab === item.name ? "bg-gray-700" : ""
+            className={`p-2 rounded-lg hover:bg-gray-500 ${
+              currentSidebarTab === item.name ? "bg-gray-500" : ""
             }`}
           >
             <motion.div
@@ -232,7 +232,7 @@ const Sidebar = () => {
 
       {/* Sub-Sidebar with Animation */}
       <motion.div
-        className="w-64 bg-gray-700 text-white overflow-hidden"
+        className="w-64 bg-gray-500 text-white overflow-hidden"
         initial={{ width: 0 }}
         animate={{ width: currentSidebarTab ? "10rem" : 0 }}
         transition={{ duration: 0.2, ease: "easeInOut" }}
