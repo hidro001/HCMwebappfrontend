@@ -253,7 +253,7 @@ const Navbar = () => {
           />
         </div>
         <div className="hidden sm:block text-xs font-light text-gray-300">
-          Empowering Teams, Building Success
+          Empowering Teams, Building Successs
         </div>
       </div>
 
