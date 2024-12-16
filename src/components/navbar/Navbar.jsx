@@ -271,12 +271,12 @@ const Navbar = () => {
       {/* Right Section */}
       <div className="flex items-center space-x-6">
         <div className="hidden md:block text-sm text-center">
-          <div className="text-yellow-300 font-semibold text-xs">
+          {/* <div className="text-yellow-300 font-semibold text-xs">
             {currentDateTime.date}
           </div>
           <div className="text-blue-300 font-bold text-xs">
             {currentDateTime.time}
-          </div>
+          </div> */}
         </div>
 
         <div className="relative">
