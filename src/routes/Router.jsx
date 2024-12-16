@@ -10,20 +10,22 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: (
-        <MainLayout />
-    ),
+    element: <PrivateRoute />,
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: (
+          <MainLayout>
+            <Dashboard />
+          </MainLayout>
+        ),
+        // add
       },
-      // add more
     ],
   },
   {
     path: "*",
-    element: <Page404/>, // Fallback for undefined routes
+    element: <Page404 />, // Fallback for undefined routes
   },
 ]);
 

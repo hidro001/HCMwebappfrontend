@@ -1,36 +1,105 @@
 // src/contexts/ThemeContext.js
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useMemo, useCallback } from "react";
+import { ThemeProvider as MuiThemeProvider, createTheme } from "@mui/material/styles";
+import CssBaseline from "@mui/material/CssBaseline";
 
-export const ThemeContext = createContext();
+// Create the ThemeContext with default values
+export const ThemeContext = createContext({
+  theme: "dark", // Default theme
+  toggleTheme: () => {},
+});
+
+// Define MUI light and dark themes
+const getDesignTokens = (mode) => ({
+  palette: {
+    mode,
+    ...(mode === "light"
+      ? {
+          // palette values for light mode
+          primary: {
+            main: "#1976d2",
+          },
+          secondary: {
+            main: "#dc004e",
+          },
+          background: {
+            default: "#f5f5f5",
+            paper: "#ffffff",
+          },
+        }
+      : {
+          // palette values for dark mode
+          primary: {
+            main: "#90caf9",
+          },
+          secondary: {
+            main: "#f48fb1",
+          },
+          background: {
+            default: "#121212",
+            paper: "#1d1d1d",
+          },
+        }),
+  },
+});
 
 export const ThemeProvider = ({ children }) => {
-  // Retrieve the stored theme from localStorage or default to 'light'
-  const storedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const defaultTheme = storedTheme ? storedTheme : (prefersDark ? 'dark' : 'light');
-
-  const [theme, setTheme] = useState(defaultTheme);
-
-  // Update the `dark` class on the <html> element based on the theme
-  useEffect(() => {
-    const root = window.document.documentElement;
-    if (theme === 'dark') {
-      root.classList.add('dark');
-    } else {
-      root.classList.remove('dark');
+  // Function to get the initial theme
+  const getInitialTheme = () => {
+    try {
+      const storedTheme = localStorage.getItem("theme");
+      if (storedTheme) {
+        return storedTheme;
+      } else {
+        // Prefer dark theme initially
+        return "dark";
+      }
+    } catch (error) {
+      console.error("Error accessing localStorage:", error);
+      return "dark";
     }
-    // Store the theme in localStorage
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+  };
+
+  const [theme, setTheme] = useState(getInitialTheme());
 
   // Function to toggle between themes
-  const toggleTheme = () => {
-    setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
-  };
+  const toggleTheme = useCallback(() => {
+    setTheme((prevTheme) => {
+      const newTheme = prevTheme === "light" ? "dark" : "light";
+      console.log("Toggling theme to:", newTheme);
+      return newTheme;
+    });
+  }, []);
+
+  // Update the `dark` class on the <html> element and store the theme in localStorage
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === "dark") {
+      root.classList.add("dark");
+      console.log("Added 'dark' class to <html>");
+    } else {
+      root.classList.remove("dark");
+      console.log("Removed 'dark' class from <html>");
+    }
+
+    // Store the theme in localStorage
+    try {
+      localStorage.setItem("theme", theme);
+      console.log("Theme stored in localStorage:", theme);
+    } catch (error) {
+      console.error("Error setting theme in localStorage:", error);
+    }
+  }, [theme]);
+
+  // Memoize MUI theme to prevent unnecessary recalculations
+  const muiTheme = useMemo(() => createTheme(getDesignTokens(theme)), [theme]);
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
-      {children}
+      <MuiThemeProvider theme={muiTheme}>
+        <CssBaseline /> {/* Ensures MUI components adhere to the theme */}
+        {children}
+      </MuiThemeProvider>
     </ThemeContext.Provider>
   );
 };

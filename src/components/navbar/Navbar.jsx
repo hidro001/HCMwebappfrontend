@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/store";
 import { toast } from "react-toastify";
+import ThemeToggleButton from "../theme toggle button/ThemeToggleButton";
 
 const Navbar = () => {
   const [showDropdown, setShowDropdown] = useState(false);
@@ -22,8 +23,8 @@ const Navbar = () => {
   const toggleDropdown = () => setShowDropdown((prev) => !prev);
 
   // Toggle Theme
-  const toggleThemeHandler = () =>
-    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  // const toggleThemeHandler = () =>
+  //   setTheme((prev) => (prev === "light" ? "dark" : "light"));
 
   // Update Date and Time
   // useEffect(() => {
@@ -71,7 +72,7 @@ const Navbar = () => {
         <div className="text-2xl font-bold text-white">
           <img className="w-24" src={companyLogo} alt="Company Logo" />
         </div>
-        <div className="hidden sm:block text-xs font-light text-gray-300">
+        <div className="hidden sm:block text-xs font-light">
           Empowering Teams, Building Successs
         </div>
       </div>
@@ -105,16 +106,7 @@ const Navbar = () => {
           </span>
         </div>
 
-        <button
-          onClick={toggleThemeHandler}
-          className="text-gray-300 hover:text-white focus:outline-none"
-        >
-          {theme === "light" ? (
-            <MdOutlineDarkMode className="text-white w-6 h-6" />
-          ) : (
-            <MdLightMode className="text-yellow-400 w-6 h-6" />
-          )}
-        </button>
+        <ThemeToggleButton/>
 
         <div className="relative">
           <button
