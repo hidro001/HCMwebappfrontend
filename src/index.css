@@ -2,11 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-.__dark{
-    background-image: linear-gradient(to right, #0f172a #334155);
-}
-
-.__light{
-    background-image: linear-gradient(to left, #bef264 #06b6d4);
-}
+html {
+    transition: background-color 0.8s, color 0.8s;
+  }

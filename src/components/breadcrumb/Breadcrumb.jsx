@@ -1,4 +1,3 @@
-// src/components/Breadcrumb.js
 import React from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import useAuthStore from "../../store/store";
@@ -17,10 +16,12 @@ import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
 import PeopleIcon from "@mui/icons-material/People";
 import FolderIcon from "@mui/icons-material/Folder"; // Default icon
+// MUI Hook
+import { useTheme } from "@mui/material/styles";
 
 const Breadcrumb = () => {
   const location = useLocation();
-
+  const theme = useTheme();
   // Access userName and permissionRole from Zustand store
   const userName = useAuthStore((state) => state.userName);
   const permissionRole = useAuthStore((state) => state.permissionRole);
@@ -68,7 +69,6 @@ const Breadcrumb = () => {
           to="/dashboard"
           color="inherit"
           sx={{ display: "flex", alignItems: "center" }}
-          aria-label="Go to Dashboard"
         >
           <HomeIcon fontSize="small" style={{ marginRight: 4 }} />
           Dashboard
@@ -84,30 +84,28 @@ const Breadcrumb = () => {
 
             const isLast = index === pathnames.length - 1;
 
-            return isLast ? (
-              <Typography
-                key={to}
-                color="text.primary"
-                sx={{ display: "flex", alignItems: "center" }}
-                aria-current="page"
-              >
-                {icon}
-                {displayName}
-              </Typography>
-            ) : (
-              <Link
-                component={RouterLink}
-                to={to}
-                key={to}
-                color="inherit"
-                sx={{ display: "flex", alignItems: "center" }}
-                aria-label={`Go to ${displayName}`}
-              >
-                {icon}
-                {displayName}
-              </Link>
-            );
-          })}
+          return isLast ? (
+            <Typography
+              key={to}
+              color="text.primary"
+              sx={{ display: "flex", alignItems: "center" }}
+            >
+              {icon}
+              {displayName}
+            </Typography>
+          ) : (
+            <Link
+              component={RouterLink}
+              to={to}
+              key={to}
+              color="inherit"
+              sx={{ display: "flex", alignItems: "center" }}
+            >
+              {icon}
+              {displayName}
+            </Link>
+          );
+        })}
       </Breadcrumbs>
     );
   };
@@ -118,7 +116,9 @@ const Breadcrumb = () => {
         Welcome Back,{" "}
         <span className="font-semibold">
           {userName
-            ? `${capitalizeWords(userName)} (${capitalizeWords(permissionRole)})`
+            ? `${capitalizeWords(userName)} (${capitalizeWords(
+                permissionRole
+              )})`
             : "Guest"}
         </span>
       </div>
