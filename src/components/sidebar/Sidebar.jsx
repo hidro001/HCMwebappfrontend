@@ -208,7 +208,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="flex h-full">
+    <div className="flex h- sticky left-0">
       {/* Main Sidebar */}
       <div className="bg-gray-200 text-black dark:text-white dark:bg-gray-800 z-50 border-r border-gray-500 w-16 flex flex-col items-center py-4 space-y-6">
         {menuItems.map((item, index) => (
