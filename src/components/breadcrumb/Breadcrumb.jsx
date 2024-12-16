@@ -39,7 +39,6 @@
 
 // export default Breadcrumb;
 
-
 // // src/components/Breadcrumb.js
 // import React from "react";
 // import { Link, useLocation } from "react-router-dom";
@@ -67,7 +66,7 @@
 //   //       <Link to="/" className="text-gray-800 hover:underline flex items-center">
 //   //         Dashboard
 //   //       </Link>
-        
+
 //   //       {pathnames.map((value, index) => {
 //   //         const to = `/${pathnames.slice(0, index + 1).join("/")}`;
 //   //         const displayName = formatBreadcrumb(value);
@@ -85,10 +84,10 @@
 //   // };
 //   const generateBreadcrumbs = () => {
 //     const pathnames = location.pathname.split("/").filter((x) => x);
-  
+
 //     // Skip the first path if it's already "Dashboard"
 //     const pathSegments = pathnames.slice(1);
-  
+
 //     return (
 //       <nav className="text-sm text-gray-600">
 //         <Link to="/" className="text-gray-800 hover:underline flex items-center">
@@ -109,7 +108,7 @@
 //       </nav>
 //     );
 //   };
-  
+
 //   return (
 //     <div className="flex justify-between dark:bg-gray-800 dark:text-white items-center p-4 bg-gray-100 border-b">
 //       <div className="text-sm">
@@ -128,22 +127,23 @@
 // src/components/Breadcrumb.js
 import React from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
-import useAuthStore from '../../store/store';
-import { capitalizeWords } from '../../utils/capitalize'; // Import the utility function
+import useAuthStore from "../../store/store";
+import { capitalizeWords } from "../../utils/capitalize"; // Import the utility function
 
 // Material-UI Components
-import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
+import Breadcrumbs from "@mui/material/Breadcrumbs";
+import Link from "@mui/material/Link";
+import Typography from "@mui/material/Typography";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import Tooltip from "@mui/material/Tooltip";
 
 // Material-UI Icons
-import HomeIcon from '@mui/icons-material/Home';
-import SettingsIcon from '@mui/icons-material/Settings';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
-import PeopleIcon from '@mui/icons-material/People';
-import FolderIcon from '@mui/icons-material/Folder'; // Default icon
+import HomeIcon from "@mui/icons-material/Home";
+import SettingsIcon from "@mui/icons-material/Settings";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import SupervisorAccountIcon from "@mui/icons-material/SupervisorAccount";
+import PeopleIcon from "@mui/icons-material/People";
+import FolderIcon from "@mui/icons-material/Folder"; // Default icon
 
 const Breadcrumb = () => {
   const location = useLocation();
@@ -160,19 +160,25 @@ const Breadcrumb = () => {
   // Function to get icon based on path segment
   const getIcon = (segment) => {
     switch (segment.toLowerCase()) {
-      case 'dashboard':
+      case "dashboard":
         return <HomeIcon fontSize="small" style={{ marginRight: 4 }} />;
-      case 'settings':
+      case "settings":
         return <SettingsIcon fontSize="small" style={{ marginRight: 4 }} />;
-      case 'admin-dashboard':
-        return <AdminPanelSettingsIcon fontSize="small" style={{ marginRight: 4 }} />;
-      case 'manager-dashboard':
-        return <SupervisorAccountIcon fontSize="small" style={{ marginRight: 4 }} />;
-      case 'super-admin-dashboard':
-        return <AdminPanelSettingsIcon fontSize="small" style={{ marginRight: 4 }} />;
-      case 'users':
+      case "admin-dashboard":
+        return (
+          <AdminPanelSettingsIcon fontSize="small" style={{ marginRight: 4 }} />
+        );
+      case "manager-dashboard":
+        return (
+          <SupervisorAccountIcon fontSize="small" style={{ marginRight: 4 }} />
+        );
+      case "super-admin-dashboard":
+        return (
+          <AdminPanelSettingsIcon fontSize="small" style={{ marginRight: 4 }} />
+        );
+      case "users":
         return <PeopleIcon fontSize="small" style={{ marginRight: 4 }} />;
-      case 'projects':
+      case "projects":
         return <FolderIcon fontSize="small" style={{ marginRight: 4 }} />;
       // Add more cases as needed for other routes
       default:
@@ -198,7 +204,8 @@ const Breadcrumb = () => {
           to="/"
           underline="hover"
           color="inherit"
-          sx={{ display: 'flex', alignItems: 'center' }}
+          sx={{ display: "flex", alignItems: "center" }}
+          aria-label="Go to Dashboard"
         >
           <HomeIcon sx={{ mr: 0.5 }} fontSize="small" />
           Dashboard
@@ -215,7 +222,8 @@ const Breadcrumb = () => {
             <Typography
               key={to}
               color="text.primary"
-              sx={{ display: 'flex', alignItems: 'center' }}
+              sx={{ display: "flex", alignItems: "center" }}
+              aria-current="page"
             >
               {icon}
               {displayName}
@@ -227,7 +235,8 @@ const Breadcrumb = () => {
               key={to}
               underline="hover"
               color="inherit"
-              sx={{ display: 'flex', alignItems: 'center' }}
+              sx={{ display: "flex", alignItems: "center" }}
+              aria-label={`Go to ${displayName}`}
             >
               {icon}
               {displayName}
@@ -241,9 +250,13 @@ const Breadcrumb = () => {
   return (
     <div className="flex justify-between dark:bg-gray-800 dark:text-white items-center p-4 bg-gray-100 border-b">
       <div className="text-sm">
-        Welcome,{" "}
+        Welcome Back,{" "}
         <span className="font-semibold">
-          {userName ? `${capitalizeWords(userName)} (${capitalizeWords(permissionRole)})` : "Guest"}
+          {userName
+            ? `${capitalizeWords(userName)} (${capitalizeWords(
+                permissionRole
+              )})`
+            : "Guest"}
         </span>
       </div>
       <div>{generateBreadcrumbs()}</div>
