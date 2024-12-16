@@ -124,6 +124,7 @@
 // src/store/store.js
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import useNotificationStore from './notificationStore'; // Import notification store
 
 const useAuthStore = create(
   persist(
@@ -191,6 +192,8 @@ const useAuthStore = create(
         localStorage.setItem('departmentAlocated', JSON.stringify(departmentAlocated));
         localStorage.setItem('teams', JSON.stringify(teams));
         localStorage.setItem('userAvatar', userAvatar || '');
+           // Fetch notifications after login
+           useNotificationStore.getState().fetchNotifications();
       },
 
       setCompanyInfo: (companyData) => {
@@ -235,6 +238,7 @@ const useAuthStore = create(
         localStorage.removeItem('teams');
         localStorage.removeItem('userAvatar');
         localStorage.removeItem('companyInfo');
+        useNotificationStore.getState().set({ notifications: [], unreadCount: 0 });
       },
     }),
     {

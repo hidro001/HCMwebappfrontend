@@ -143,7 +143,7 @@
 import React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Stack from "@mui/material/Stack";
-import { LoginCard, LoginContent } from "../../../components";
+import { Footer, LoginCard, LoginContent } from "../../../components";
 
 export default function Login(props) {
   return (
@@ -172,7 +172,9 @@ export default function Login(props) {
         {/* Login Content */}
         <LoginContent />
         <LoginCard />
+    
       </Stack>
+          <Footer/>
     </>
   );
 }
