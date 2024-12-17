@@ -326,12 +326,12 @@ const LoginCard = () => {
           fontWeight: "bold",
           fontSize: "2rem",
           letterSpacing: "0.05em",
-          color: "#ffff",
+          color: "#333",
         }}
       >
         Sign In
       </Typography>
-      <Typography align="center" sx={{ mb: 2, color: "#ffff" }}>
+      <Typography align="center" sx={{ mb: 2, color: "#555" }}>
         Please enter your credentials
       </Typography>
 
@@ -345,27 +345,8 @@ const LoginCard = () => {
           <>
             {/* Employee ID */}
             <FormControl>
-              <FormLabel sx={{ color: "#ffff" }}>Employee ID</FormLabel>
+              <FormLabel>Employee ID</FormLabel>
               <TextField
-                sx={{
-                  mb: 2,
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "#ffffff", // White border
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "#ffffff", // White border on hover
-                    },
-                  },
-                  "& .MuiInputBase-input::placeholder": {
-                    color: "#ffffff", // White placeholder text
-                    opacity: 1, // Ensure placeholder text is fully opaque
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "#000000", // Black input text
-                  },
-                  backgroundColor: "transparent", // Default background
-                }}
                 placeholder="Enter your ID"
                 variant="outlined"
                 fullWidth
@@ -378,27 +359,8 @@ const LoginCard = () => {
 
             {/* Password */}
             <FormControl>
-              <FormLabel sx={{ color: "#ffff" }}>Password</FormLabel>
+              <FormLabel>Password</FormLabel>
               <TextField
-                sx={{
-                  mb: 2,
-                  "& .MuiOutlinedInput-root": {
-                    "& fieldset": {
-                      borderColor: "#ffffff", // White border
-                    },
-                    "&:hover fieldset": {
-                      borderColor: "#ffffff", // White border on hover
-                    },
-                  },
-                  "& .MuiInputBase-input::placeholder": {
-                    color: "#ffffff", // White placeholder text
-                    opacity: 1, // Ensure placeholder text is fully opaque
-                  },
-                  "& .MuiInputBase-input": {
-                    color: "#000000", // Black input text
-                  },
-                  backgroundColor: "transparent", // Default background
-                }}
                 type={passwordVisible ? "text" : "password"}
                 placeholder="••••••••"
                 InputProps={{
@@ -488,7 +450,9 @@ const LoginCard = () => {
             disabled={resendCooldown > 0 || loading}
             sx={{ textTransform: "none", color: "primary.main" }}
           >
-            {loading ? "Resending OTP..." : `Resend OTP (${resendCooldown}s)`}
+            {loading
+              ? "Resending OTP..."
+              : `Resend OTP (${resendCooldown}s)`}
           </Button>
         )}
 
@@ -516,3 +480,6 @@ const LoginCard = () => {
 };
 
 export default LoginCard;
+
+
+
