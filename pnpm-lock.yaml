@@ -23,6 +23,9 @@ importers:
       '@mui/styled-engine-sc':
         specifier: ^6.2.0
         version: 6.2.0(styled-components@6.1.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0))
+      '@mui/system':
+        specifier: ^6.2.0
+        version: 6.2.0(@emotion/react@11.14.0(@types/react@18.3.16)(react@19.0.0))(@emotion/styled@11.14.0(@emotion/react@11.14.0(@types/react@18.3.16)(react@19.0.0))(@types/react@18.3.16)(react@19.0.0))(@types/react@18.3.16)(react@19.0.0)
       axios:
         specifier: ^1.7.9
         version: 1.7.9
@@ -50,6 +53,12 @@ importers:
       styled-components:
         specifier: ^6.1.13
         version: 6.1.13(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      sweetalert2:
+        specifier: ^11.15.1
+        version: 11.15.1
+      sweetalert2-react-content:
+        specifier: ^5.1.0
+        version: 5.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sweetalert2@11.15.1)
       zustand:
         specifier: ^5.0.2
         version: 5.0.2(@types/react@18.3.16)(react@19.0.0)
@@ -1917,6 +1926,16 @@ packages:
   supports-preserve-symlinks-flag@1.0.0:
     resolution: {integrity: sha512-ot0WnXS9fgdkgIcePe6RHNk1WA8+muPa6cSjeR3V8K27q9BB1rTE3R1p7Hv0z1ZyAc8s6Vvv8DIyWf681MAt0w==}
     engines: {node: '>= 0.4'}
+
+  sweetalert2-react-content@5.1.0:
+    resolution: {integrity: sha512-SBh41SdyHDY9NzwrIG6LACbClCMxIlEFP86tGVr/B4zGD4H2gGXB8o7UAJRc/RtBd/iQL9hIvuCAkrk0AgKEMA==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0
+      react-dom: ^18.0.0 || ^19.0.0
+      sweetalert2: ^11.0.0
+
+  sweetalert2@11.15.1:
+    resolution: {integrity: sha512-DAE5LEKTarAdperqcLWCoFiwuoh0tdmOYhBK727a0Spj+lDJIQesdeS/Ya2Ek/xD37nFpjQujbp3v4HFmFw+tw==}
 
   tailwindcss@3.4.16:
     resolution: {integrity: sha512-TI4Cyx7gDiZ6r44ewaJmt0o6BrMCT5aK5e0rmJ/G9Xq3w7CX/5VXl/zIPEJZFUK5VEqwByyhqNPycPlvcK4ZNw==}
@@ -4048,6 +4067,14 @@ snapshots:
       has-flag: 4.0.0
 
   supports-preserve-symlinks-flag@1.0.0: {}
+
+  sweetalert2-react-content@5.1.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)(sweetalert2@11.15.1):
+    dependencies:
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+      sweetalert2: 11.15.1
+
+  sweetalert2@11.15.1: {}
 
   tailwindcss@3.4.16:
     dependencies:

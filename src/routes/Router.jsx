@@ -3,7 +3,7 @@ import PrivateRoute from "./PrivateRoute";
 import { Login, Dashboard, Page404 } from "../pages";
 import MainLayout from "./MainLayout";
 import { ToastContainer } from "react-toastify";
-import { Footer, ResetPassword } from "../components";
+import { Footer, ResetPassword ,MakeAnnouncement} from "../components";
 
 const router = createBrowserRouter([
   <ToastContainer />,
@@ -26,6 +26,12 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Dashboard />,
+        // add
+     
+      },
+      {
+        path: "add-announcement",
+        element: <MakeAnnouncement/>,
         // add
      
       },

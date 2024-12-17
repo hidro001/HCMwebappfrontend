@@ -12,7 +12,7 @@ export default function Login(props) {
   const lightBackgroundImage =
     "https://humanmaximizer.com/assets/img/ail_home/hero-bg.png";
   const darkBackgroundImage =
-    "https://files.oaiusercontent.com/file-XiSUZfWFbZpMLDSMpyD439?se=2024-12-17T07%3A07%3A52Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3Dc18c7350-ffad-40d5-aaf7-56b865f94dcb.webp&sig=Ijrs24gWPo2irrZxy8n//xAo5FFHVxd75gUQ0/1mm8c%3D";
+    "https://files.oaiusercontent.com/file-XiSUZfWFbZpMLDSMpyD439?se=2024-12-17T08%3A07%3A39Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3Dc18c7350-ffad-40d5-aaf7-56b865f94dcb.webp&sig=Y6RxEFROq9W7Ivvo8cqATqvCatWAyIX9newkSpGwS/0%3D"
 
   // Select the appropriate background image based on the theme
   const backgroundImage =
@@ -28,9 +28,10 @@ export default function Login(props) {
           justifyContent: "space-around",
           alignItems: "center",
           minHeight: "100vh", // Use minHeight for better responsiveness
-          background: `url("${backgroundImage}") no-repeat center/cover`,
-          backgroundSize: "cover", // Adjusted for better coverage
+          background: `url("${backgroundImage}") no-repeat center`,
+          // backgroundSize: "cover", // Adjusted for better coverage
           backgroundBlendMode: "overlay",
+          backgroundSize: "200% 200%",
           animation: "gradientShift 40s ease-in-out infinite",
           "@keyframes gradientShift": {
             "0%": { backgroundPosition: "0% 50%" },

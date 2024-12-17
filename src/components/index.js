@@ -7,6 +7,7 @@ import Navbar from "./navbar/Navbar";
 import Sidebar from "./sidebar/Sidebar";
 import Breadcrumb from "./breadcrumb/Breadcrumb"
 import ThemeToggleButton from "./theme toggle button/ThemeToggleButton"
+import MakeAnnouncement from "./announcement/MakeAnnouncement"
 
 
 
@@ -19,6 +20,7 @@ export {
     Navbar,
     Sidebar, 
     Breadcrumb,
+    MakeAnnouncement,
     
     ThemeToggleButton
 }   
