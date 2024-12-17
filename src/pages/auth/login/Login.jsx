@@ -139,13 +139,61 @@
 //   );
 // }
 
-// src/pages/auth/login/Login.js
+// // src/pages/auth/login/Login.js
+// import React from "react";
+// import CssBaseline from "@mui/material/CssBaseline";
+// import Stack from "@mui/material/Stack";
+// import { Footer, LoginCard, LoginContent } from "../../../components";
+
+// export default function Login(props) {
+//   return (
+//     <>
+//       <CssBaseline enableColorScheme />
+
+//       <Stack
+//         direction={{ xs: "column", md: "row" }} // Responsive direction
+//         component="main"
+//         sx={{
+//           justifyContent: "space-around",
+//           alignItems: "center",
+//           minHeight: "100vh", // Use minHeight for better responsiveness
+//           background: `url("https://humanmaximizer.com/assets/img/ail_home/hero-bg.png") no-repeat center/cover`,
+//           backgroundSize: "200% 200%", // Scaled background for animation effect
+//           backgroundBlendMode: "overlay",
+//           animation: "gradientShift 40s ease-in-out infinite",
+//           "@keyframes gradientShift": {
+//             "0%": { backgroundPosition: "0% 50%" },
+//             "50%": { backgroundPosition: "100% 50%" },
+//             "100%": { backgroundPosition: "0% 50%" },
+//           },
+//           padding: 2, // Add padding for smaller screens
+//         }}
+//       >
+//         {/* Login Content */}
+//         <LoginContent />
+//         <LoginCard />
+    
+//       </Stack>
+//           <Footer/>
+//     </>
+//   );
+// }
+
 import React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Stack from "@mui/material/Stack";
+import { useTheme } from "@mui/material/styles"; // For theme detection
 import { Footer, LoginCard, LoginContent } from "../../../components";
 
 export default function Login(props) {
+  const theme = useTheme(); // Access the current theme mode
+
+  // Background URLs
+  const lightModeBackground =
+    "https://humanmaximizer.com/assets/img/ail_home/hero-bg.png";
+  const darkModeBackground =
+    "https://img.freepik.com/free-vector/abstract-blue-light-pipe-speed-zoom-black-background-technology_1142-9530.jpg";
+
   return (
     <>
       <CssBaseline enableColorScheme />
@@ -157,8 +205,14 @@ export default function Login(props) {
           justifyContent: "space-around",
           alignItems: "center",
           minHeight: "100vh", // Use minHeight for better responsiveness
-          background: `url("https://humanmaximizer.com/assets/img/ail_home/hero-bg.png") no-repeat center/cover`,
-          backgroundSize: "200% 200%", // Scaled background for animation effect
+
+          // Dynamic Background Logic
+          background: `url("${
+            theme.palette.mode === "light"
+              ? lightModeBackground
+              : darkModeBackground
+          }") no-repeat center/cover`,
+          backgroundSize: "200% 200%",
           backgroundBlendMode: "overlay",
           animation: "gradientShift 40s ease-in-out infinite",
           "@keyframes gradientShift": {
@@ -172,9 +226,8 @@ export default function Login(props) {
         {/* Login Content */}
         <LoginContent />
         <LoginCard />
-    
       </Stack>
-          <Footer/>
+      <Footer />
     </>
   );
 }

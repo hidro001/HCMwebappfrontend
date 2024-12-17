@@ -1,93 +1,109 @@
 // src/components/NotificationDropdown.js
-import React, { useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import useNotificationStore from "../../store/notificationStore";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import CircularProgress from "@mui/material/CircularProgress";
+import React from "react";
+import { motion } from "framer-motion";
+import { FaExclamationCircle, FaInfoCircle, FaBirthdayCake } from "react-icons/fa";
+import { Button, Typography, Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import useNotificationStore from "../../store/notificationStore"; // Import notification store
 
-const NotificationDropdown = ({ onClose }) => {
-  const { notifications, fetchNotifications, loading, error, markAsRead } = useNotificationStore(
-    (state) => ({
-      notifications: state.notifications.slice(0, 5), // Show latest 5
-      fetchNotifications: state.fetchNotifications,
-      loading: state.loading,
-      error: state.error,
-      markAsRead: state.markAsRead,
-    })
-  );
+const NotificationDropdown = ({ notifications, loading, error, onClose }) => {
+  const navigate = useNavigate();
+  const notificationStore = useNotificationStore();
 
-  useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
+  const handleShowMore = () => {
+    onClose();
+    navigate("/notifications");
+  };
 
-  const handleNotificationClick = (id) => {
-    markAsRead(id);
-    // Additional actions can be added here, such as navigating to a specific page
+  const handleMarkAsRead = (id) => {
+    notificationStore.markAsRead(id);
   };
 
   return (
-    <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-md shadow-lg z-20"
-      >
-        <div className="p-4 border-b border-gray-200 dark:border-gray-700">
-          <Typography variant="h6" className="text-gray-800 dark:text-gray-200">
-            Notifications
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-700 rounded-md shadow-lg z-20"
+    >
+      <Box className="p-4 border-b border-gray-200 dark:border-gray-600">
+        <Typography variant="h6" className="text-gray-800 dark:text-gray-200">
+          Notifications
+        </Typography>
+      </Box>
+
+      <Box className="max-h-60 overflow-y-auto">
+        {loading ? (
+          <Box className="flex justify-center items-center p-4">
+            <CircularProgress size={24} />
+          </Box>
+        ) : error ? (
+          <Typography color="error" className="p-4 text-sm">
+            {error}
           </Typography>
-        </div>
+        ) : notifications.length === 0 ? (
+          <Typography className="p-4 text-sm text-gray-600 dark:text-gray-300">
+            No notifications available.
+          </Typography>
+        ) : (
+          notifications.slice(0, 5).map((notification) => (
+            <Box
+              key={notification.id}
+              className={`flex items-start p-4 border-b border-gray-200 dark:border-gray-600 ${
+                !notification.isRead ? "bg-gray-100 dark:bg-gray-600" : ""
+              } cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-500`}
+              onClick={() => handleMarkAsRead(notification.id)}
+            >
+              {/* Icon based on notification type */}
+              <Box className="mr-3 mt-1">
+                {notification.type === "announcement" && (
+                  <FaInfoCircle className="text-blue-500" />
+                )}
+                {notification.type === "birthday" && (
+                  <FaBirthdayCake className="text-pink-500" />
+                )}
+                {notification.type === "resignation" && (
+                  <FaExclamationCircle className="text-red-500" />
+                )}
+                {/* Add more types as needed */}
+              </Box>
 
-        <div className="max-h-60 overflow-y-auto">
-          {loading ? (
-            <div className="flex justify-center items-center p-4">
-              <CircularProgress size={24} />
-            </div>
-          ) : error ? (
-            <Typography color="error" className="p-4 text-sm">
-              {error}
-            </Typography>
-          ) : notifications.length === 0 ? (
-            <Typography className="p-4 text-sm text-gray-600 dark:text-gray-400">
-              No new notifications.
-            </Typography>
-          ) : (
-            notifications.map((notif) => (
-              <div
-                key={notif.id}
-                className={`p-4 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer ${
-                  !notif.isRead ? "bg-gray-50 dark:bg-gray-700" : ""
-                }`}
-                onClick={() => handleNotificationClick(notif.id)}
-              >
-                <Typography variant="subtitle2" className="text-gray-800 dark:text-gray-200">
-                  {notif.title}
+              {/* Notification Details */}
+              <Box>
+                <Typography
+                  variant="subtitle2"
+                  className={`${
+                    !notification.isRead ? "font-bold" : "font-medium"
+                  } text-gray-800 dark:text-gray-200`}
+                >
+                  {notification.title}
                 </Typography>
-                <Typography variant="body2" className="text-gray-600 dark:text-gray-400">
-                  {notif.message}
+                <Typography variant="body2" className="text-gray-600 dark:text-gray-300">
+                  {notification.message}
                 </Typography>
-                <Typography variant="caption" className="text-gray-500 dark:text-gray-500">
-                  {new Date(notif.createdAt).toLocaleString()}
+                <Typography variant="caption" className="text-gray-500 dark:text-gray-400">
+                  {new Date(notification.createdAt).toLocaleString()}
                 </Typography>
-              </div>
-            ))
-          )}
-        </div>
+              </Box>
+            </Box>
+          ))
+        )}
+      </Box>
 
-        <div className="p-4">
+      {/* Show More Button */}
+      {notifications.length > 5 && (
+        <Box className="p-4">
           <Button
-            variant="text"
+            variant="contained"
+            color="primary"
             fullWidth
-            onClick={onClose}
-            className="text-blue-500 hover:text-blue-700"
+            onClick={handleShowMore}
           >
             Show More
           </Button>
-        </div>
-      </motion.div>
-    </AnimatePresence>
+        </Box>
+      )}
+    </motion.div>
   );
 };
 

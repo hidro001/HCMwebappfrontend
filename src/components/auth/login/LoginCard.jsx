@@ -1440,7 +1440,6 @@
 //           style={{ width: "150px", height: "150px", objectFit: "contain", borderRadius: "" }}
 //         />
 //       </Box>
-      
 
 //       {/* Sign in Heading */}
 //       <Typography
@@ -2189,7 +2188,6 @@
 
 // export default LoginCard;
 
-
 // src/components/LoginCard.js
 
 // import React, { useState, useEffect } from "react";
@@ -2518,7 +2516,6 @@
 //               />
 //             </Box>
 
-
 //       {/* Sign In Heading */}
 //       <Typography
 //         component="h1"
@@ -2700,6 +2697,8 @@ import CircularProgress from "@mui/material/CircularProgress"; // Import Circula
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useTheme } from "@mui/material/styles"; // For theme detection
+
 import ForgotPassword from "./ForgotPassword"; // Ensure correct import path
 import useAuthStore from "../../../store/store"; // Zustand store
 import {
@@ -2751,6 +2750,7 @@ const ForgotPasswordLink = styled(Link)(({ theme }) => ({
 const LoginCard = () => {
   const navigate = useNavigate();
   const authStore = useAuthStore();
+  const theme = useTheme(); // Access the current theme
 
   // State Management
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -2766,6 +2766,7 @@ const LoginCard = () => {
   // Fetch company info on mount
   useEffect(() => {
     let isMounted = true; // Track if component is mounted
+   
 
     const getCompanyInfo = async () => {
       console.log("Fetching company info...");
@@ -3005,7 +3006,7 @@ const LoginCard = () => {
       </Box>
 
       {/* Sign In Heading */}
-      <Typography
+      {/* <Typography
         component="h1"
         variant="h4"
         align="center"
@@ -3014,6 +3015,19 @@ const LoginCard = () => {
           fontSize: "2rem",
           letterSpacing: "0.05em",
           color: "#333",
+        }}
+      >
+        Sign In
+      </Typography> */}
+      <Typography
+        component="h1"
+        variant="h4"
+        align="center"
+        sx={{
+          fontWeight: "bold",
+          fontSize: "2rem",
+          letterSpacing: "0.05em",
+          color: theme.palette.mode === "dark" ? "#fff" : "#333", // Dynamic color
         }}
       >
         Sign In
@@ -3125,15 +3139,25 @@ const LoginCard = () => {
             justifyContent: "center",
             gap: 1, // Space between spinner and text
           }}
-          aria-label={loading ? (step === 1 ? "Logging in" : "Verifying OTP") : (step === 1 ? "Sign In" : "Verify OTP")}
+          aria-label={
+            loading
+              ? step === 1
+                ? "Logging in"
+                : "Verifying OTP"
+              : step === 1
+              ? "Sign In"
+              : "Verify OTP"
+          }
         >
           {loading ? (
             <>
               <CircularProgress size={20} color="inherit" />
               {step === 1 ? "Logging in..." : "Verifying..."}
             </>
+          ) : step === 1 ? (
+            "Sign In"
           ) : (
-            step === 1 ? "Sign In" : "Verify OTP"
+            "Verify OTP"
           )}
         </Button>
 
@@ -3152,7 +3176,9 @@ const LoginCard = () => {
               justifyContent: "center",
               gap: 1, // Space between spinner and text
             }}
-            aria-label={loading ? "Resending OTP" : `Resend OTP (${resendCooldown}s)`}
+            aria-label={
+              loading ? "Resending OTP" : `Resend OTP (${resendCooldown}s)`
+            }
           >
             {loading ? (
               <>
@@ -3189,5 +3215,3 @@ const LoginCard = () => {
 };
 
 export default LoginCard;
-
-

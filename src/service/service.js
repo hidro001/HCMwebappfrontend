@@ -121,3 +121,55 @@ export const resetPassword = async (
     );
   }
 };
+
+
+// Existing function: Mark a notification as read
+export const markNotificationAsRead = async (notificationId) => {
+  try {
+    const response = await axiosInstance.put(
+      `/notification/mark-as-read`,
+      { notificationId },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // Adjust token retrieval as needed
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+};
+
+// New function: Fetch all notifications
+export const fetchNotifications = async () => {
+  try {
+    const response = await axiosInstance.get("/notification");
+    if (response.data.success) {
+      return response.data.data;
+    } else {
+      throw new Error(response.data.message || "Failed to fetch notifications");
+    }
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+};
+
+// Optional: Create a function to mark all notifications as read
+export const markAllNotificationsAsRead = async () => {
+  try {
+    const response = await axiosInstance.put(
+      `/notification/mark-all-as-read`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+};
+
