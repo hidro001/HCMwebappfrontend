@@ -17,15 +17,15 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <PrivateRoute />,
+    element: (
+      <MainLayout>
+        <PrivateRoute />
+      </MainLayout>
+    ),
     children: [
       {
         index: true,
-        element: (
-          <MainLayout>
-            <Dashboard />
-          </MainLayout>
-        ),
+        element: <Dashboard />,
         // add
      
       },

@@ -399,9 +399,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={
-        "bg-gray-200 text-black dark:text-white dark:bg-gray-800 z-50 border-b border-gray-500 px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 shadow-md "
-      }
+      className={"bg-gray-200 text-black dark:text-white dark:bg-gray-800 z-50 border-b border-gray-500 px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 shadow-md sticky top-0 left-0"}
     >
       {/* Left Section: Company Branding */}
       <div className="flex items-center space-x-4">
@@ -443,7 +441,6 @@ const Navbar = () => {
           </AnimatePresence>
         </div>
 
-        {/* Theme Toggle Button */}
         <ThemeToggleButton />
 
         {/* Profile Dropdown */}

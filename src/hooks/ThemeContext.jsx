@@ -5,7 +5,6 @@ import CssBaseline from "@mui/material/CssBaseline";
 
 // Create the ThemeContext with default values
 export const ThemeContext = createContext({
-  theme: "dark", // Default theme
   toggleTheme: () => {},
 });
 

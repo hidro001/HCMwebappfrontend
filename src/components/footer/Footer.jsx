@@ -2,7 +2,7 @@ import React from "react";
 
 const Footer = () => {
   return (
-    <footer className="bg-black text-white py-4">
+    <footer className="dark:bg-gray-800 dark:text-white py-3">
       <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
         <p className="text-sm">
           &copy; {new Date().getFullYear()} Your Company Name. All rights reserved.
@@ -11,7 +11,7 @@ const Footer = () => {
           <li>
             <a
               href="#"
-              className="text-white hover:text-green-500 transition duration-300"
+              className="hover:text-green-500 transition duration-300"
             >
               Privacy Policy
             </a>
@@ -19,7 +19,7 @@ const Footer = () => {
           <li>
             <a
               href="#"
-              className="text-white hover:text-green-500 transition duration-300"
+              className="hover:text-green-500 transition duration-300"
             >
               Terms of Service
             </a>
@@ -27,7 +27,7 @@ const Footer = () => {
           <li>
             <a
               href="#"
-              className="text-white hover:text-green-500 transition duration-300"
+              className="hover:text-green-500 transition duration-300"
             >
               Contact Us
             </a>
