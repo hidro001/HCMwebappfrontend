@@ -3,7 +3,7 @@ import PrivateRoute from "./PrivateRoute";
 import { Login, Dashboard, Page404 } from "../pages";
 import MainLayout from "./MainLayout";
 import { ToastContainer } from "react-toastify";
-import { Footer, ResetPassword } from "../components";
+import { Footer, ResetPassword , NotificationsPage} from "../components";
 
 const router = createBrowserRouter([
   <ToastContainer />,
@@ -13,7 +13,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <Login />,
+    element: (<Login />),
   },
   {
     path: "/dashboard",
@@ -27,7 +27,11 @@ const router = createBrowserRouter([
         index: true,
         element: <Dashboard />,
         // add
-     
+      },
+      {
+        path:"notifications",
+        // element: <NotificationsPage />,
+        // add
       },
     ],
   },
