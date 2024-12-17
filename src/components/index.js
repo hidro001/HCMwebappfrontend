@@ -8,6 +8,7 @@ import Sidebar from "./sidebar/Sidebar";
 import Breadcrumb from "./breadcrumb/Breadcrumb"
 import ThemeToggleButton from "./theme toggle button/ThemeToggleButton"
 import MakeAnnouncement from "./announcement/MakeAnnouncement"
+import NotificationsPage from "./Notification/NotificationsPage"
 
 
 
@@ -22,5 +23,6 @@ export {
     Breadcrumb,
     MakeAnnouncement,
     
+    NotificationsPage,
     ThemeToggleButton
 }   
