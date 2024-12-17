@@ -1,4 +1,3 @@
-// src/pages/Login.js
 import React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Stack from "@mui/material/Stack";
@@ -28,9 +27,9 @@ export default function Login(props) {
           justifyContent: "space-around",
           alignItems: "center",
           minHeight: "100vh", // Use minHeight for better responsiveness
-          background: `url("${backgroundImage}") no-repeat center/cover`,
-          backgroundSize: "cover", // Adjusted for better coverage
+          background: `url("${backgroundImage}") no-repeat center`,
           backgroundBlendMode: "overlay",
+          backgroundSize: "200% 200%",
           animation: "gradientShift 40s ease-in-out infinite",
           "@keyframes gradientShift": {
             "0%": { backgroundPosition: "0% 50%" },
