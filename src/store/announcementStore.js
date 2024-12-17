@@ -15,7 +15,7 @@ const useAnnouncementStore = create(
       loading: false,
       error: null,
       currentPage: 1,
-      announcementsPerPage: 5,
+      announcementsPerPage: 12,
 
       fetchAnnouncements: async () => {
         set({ loading: true, error: null });

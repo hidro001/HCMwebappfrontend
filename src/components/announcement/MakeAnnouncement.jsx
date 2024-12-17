@@ -1683,6 +1683,7 @@ const MakeAnnouncement = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const [pageSize, setPageSize] = useState(8); // Default page size
 
   const {
     announcements,
@@ -1972,13 +1973,17 @@ const MakeAnnouncement = () => {
   };
 
   // Pagination Logic
-  const indexOfLastAnnouncement = currentPage * announcementsPerPage;
-  const indexOfFirstAnnouncement =
-    indexOfLastAnnouncement - announcementsPerPage;
-  const currentAnnouncements = announcements.slice(
-    indexOfFirstAnnouncement,
-    indexOfLastAnnouncement
-  );
+//   const indexOfLastAnnouncement = currentPage * announcementsPerPage;
+//   const indexOfFirstAnnouncement =
+//     indexOfLastAnnouncement - announcementsPerPage;
+//   const currentAnnouncements = announcements.slice(
+//     indexOfFirstAnnouncement,
+//     indexOfLastAnnouncement
+//   );
+const indexOfLastAnnouncement = currentPage * pageSize;
+const indexOfFirstAnnouncement = indexOfLastAnnouncement - pageSize;
+const currentAnnouncements = announcements.slice(indexOfFirstAnnouncement, indexOfLastAnnouncement);
+
   const totalPages = Math.ceil(announcements.length / announcementsPerPage);
 
   const handlePageChange = (pageNumber) => {
@@ -2058,6 +2063,25 @@ const MakeAnnouncement = () => {
           Add Announcement
         </AnimatedButton>
       </Box>
+      <Box className="flex justify-end mb-4">
+  <TextField
+    select
+    label="Page Size"
+    value={pageSize}
+    onChange={(e) => setPageSize(Number(e.target.value))}
+    SelectProps={{
+      native: true,
+    }}
+    variant="outlined"
+    size="small"
+  >
+    {[8, 12, 16, 20].map((size) => (
+      <option key={size} value={size}>
+        {size}
+      </option>
+    ))}
+  </TextField>
+</Box>
 
       {/* Previous Announcements */}
       <Box>
