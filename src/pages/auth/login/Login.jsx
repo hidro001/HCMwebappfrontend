@@ -2,7 +2,7 @@
 import React from "react";
 import CssBaseline from "@mui/material/CssBaseline";
 import Stack from "@mui/material/Stack";
-import { LoginCard, LoginContent } from "../../../components";
+import { LoginCard, Footer, LoginContent } from "../../../components";
 import { useTheme } from "@mui/material";
 
 export default function Login(props) {
