@@ -248,3 +248,19 @@ export const fetchDepartments = async () => {
     throw error.response?.data || error;
   }
 };
+export const fetchPermissions = async (empId) => {
+  try {
+    const response = await axiosInstance.get(
+      `/superadmin/permission/${empId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error;
+  }
+};
