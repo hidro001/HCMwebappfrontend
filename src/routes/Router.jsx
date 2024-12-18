@@ -3,17 +3,22 @@ import PrivateRoute from "./PrivateRoute";
 import { Login, Dashboard, Page404 } from "../pages";
 import MainLayout from "./MainLayout";
 import { ToastContainer } from "react-toastify";
-import { Footer, ResetPassword ,MakeAnnouncement,NotificationsPage} from "../components";
+import {
+  Footer,
+  ResetPassword,
+  MakeAnnouncement,
+  NotificationsPage,
+} from "../components";
 
 const router = createBrowserRouter([
   <ToastContainer />,
   {
     path: "/reset-password/:resetToken",
-    element: <ResetPassword/>
+    element: <ResetPassword />,
   },
   {
     path: "/",
-    element: (<Login />),
+    element: <Login />,
   },
   {
     path: "/dashboard",
@@ -26,15 +31,14 @@ const router = createBrowserRouter([
       {
         index: true,
         element: <Dashboard />,
-        // add
       },
       {
-        path:"notifications",
+        path: "notifications",
         element: <NotificationsPage />,
       },
       {
         path: "add-announcement",
-        element: <MakeAnnouncement/>,
+        element: <MakeAnnouncement />,
       },
     ],
   },
@@ -42,7 +46,7 @@ const router = createBrowserRouter([
     path: "*",
     element: <Page404 />, // Fallback for undefined routes
   },
-  <Footer/>
+  <Footer />,
 ]);
 
 export default router;

@@ -9,7 +9,7 @@ import Breadcrumb from "./breadcrumb/Breadcrumb"
 import ThemeToggleButton from "./theme toggle button/ThemeToggleButton"
 import MakeAnnouncement from "./announcement/MakeAnnouncement"
 import NotificationsPage from "./Notification/NotificationsPage"
-
+import Card from  "./dashboar Cards/Card"
 
 
 export {
@@ -22,7 +22,7 @@ export {
     Sidebar, 
     Breadcrumb,
     MakeAnnouncement,
-    
+    Card,
     NotificationsPage,
     ThemeToggleButton
 }   

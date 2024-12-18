@@ -6,8 +6,6 @@ import { MdOutlineDarkMode, MdLightMode } from "react-icons/md";
 const ThemeToggleButton = () => {
   const { theme, toggleTheme } = useContext(ThemeContext);
 
-  console.log("Current Theme:", theme); // For debugging
-
   return (
     <button
       onClick={toggleTheme}

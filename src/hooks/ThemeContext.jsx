@@ -65,7 +65,6 @@ export const ThemeProvider = ({ children }) => {
   const toggleTheme = useCallback(() => {
     setTheme((prevTheme) => {
       const newTheme = prevTheme === "light" ? "dark" : "light";
-      console.log("Toggling theme to:", newTheme);
       return newTheme;
     });
   }, []);
@@ -75,16 +74,13 @@ export const ThemeProvider = ({ children }) => {
     const root = window.document.documentElement;
     if (theme === "dark") {
       root.classList.add("dark");
-      console.log("Added 'dark' class to <html>");
     } else {
       root.classList.remove("dark");
-      console.log("Removed 'dark' class from <html>");
     }
 
     // Store the theme in localStorage
     try {
       localStorage.setItem("theme", theme);
-      console.log("Theme stored in localStorage:", theme);
     } catch (error) {
       console.error("Error setting theme in localStorage:", error);
     }

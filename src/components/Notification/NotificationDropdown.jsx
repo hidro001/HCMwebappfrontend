@@ -12,7 +12,7 @@ const NotificationDropdown = ({ notifications, loading, error, onClose }) => {
 
   const handleShowMore = () => {
     onClose();
-    navigate("/notifications");
+    navigate("notifications");
   };
 
   const handleMarkAsRead = (id) => {
