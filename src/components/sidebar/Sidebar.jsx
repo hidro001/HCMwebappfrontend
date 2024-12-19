@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   FaHome,
   FaTasks,
@@ -23,11 +23,13 @@ import { RiOrganizationChart } from "react-icons/ri";
 import { LuFileCheck2 } from "react-icons/lu";
 import { fetchPermissions } from "../../service/service";
 import useAuthStore from "../../store/store";
+import { Announcement } from "@mui/icons-material";
 
 const Sidebar = () => {
   const [currentSidebarTab, setCurrentSidebarTab] = useState(null);
   const [permissions, setPermissions] = useState([]);
   const [filteredMenuItems, setFilteredMenuItems] = useState([]);
+  const navigate = useNavigate()
   const empId = useAuthStore((state) => state.employeeId);
   useEffect(() => {
     fetchPermission();
@@ -72,19 +74,19 @@ const Sidebar = () => {
       options: [
         {
           name: "Home",
-          link: "dashboard/super-admin-dashboard",
+          link: "super-admin-dashboard",
           permission: "SuperDashboard",
           textAnimation: { x: 10 },
         },
         {
           name: "Home",
-          link: "dashboard/manager-dashboard",
+          link: "manager-dashboard",
           permission: "managerDashboard",
           textAnimation: { x: 10 },
         },
         {
           name: "Home",
-          link: "dashboard/employee-dashboard",
+          link: "employee-dashboard",
           permission: "employeeDashboard",
           textAnimation: { x: 10 },
         },
@@ -99,7 +101,7 @@ const Sidebar = () => {
       options: [
         {
           name: "Create Announcement",
-          link: "dashboard/add-announcement",
+          link: "add-announcement",
           permission: "AddAnnouncement",
           textAnimation: { x: 10 },
         },
@@ -565,9 +567,9 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="flex min-h-screen sticky left-0">
+    <div className="flex h-screen sticky left-0 ">
       {/* Main Sidebar */}
-      <div className="bg-gray-200 text-black dark:text-white dark:bg-gray-800 z-50 border-r border-gray-500 w-16 flex flex-col items-center py-4 space-y-6">
+      <div className="bg-gray-200 overflow-y- text-black dark:text-white dark:bg-gray-800 z-50 border-r border-gray-500 w-16 flex flex-col items-center py-4 space-y-6">
         {filteredMenuItems.map((item, index) => (
           <button
             key={index}
@@ -589,13 +591,13 @@ const Sidebar = () => {
 
       {/* Sub-Sidebar with Animation */}
       <motion.div
-        className="w-64 h-full bg-gray-500 text-white overflow-hidden overflow-y-auto [&::-webkit-scrollbar]:w-2
+        className="w-50 h-full stickey bg-gray-500 text-white overflow-hidden overflow-y-auto [&::-webkit-scrollbar]:w-2
       [&::-webkit-scrollbar-track]:bg-gray-100
       [&::-webkit-scrollbar-thumb]:bg-gray-300
       dark:[&::-webkit-scrollbar-track]:bg-neutral-700
       dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
         initial={{ width: 0 }}
-        animate={{ width: currentSidebarTab ? "16rem" : 0 }} // Changed to "16rem" for consistency with "w-64"
+        animate={{ width: currentSidebarTab ? "11rem" : 0 }} // Changed to "16rem" for consistency with "w-64"
         transition={{ duration: 0.2, ease: "easeInOut" }}
       >
         {currentSidebarTab && (
@@ -615,7 +617,8 @@ const Sidebar = () => {
                     transition={{ delay: index * 0.1 }}
                   >
                     <Link
-                      to={option.link}
+                    to={option.link}
+                    // onClick={()=>{navigate(option.link)}}
                       className="flex items-center space-x-4"
                     >
                       {/* If you have icons for options, include them here */}
