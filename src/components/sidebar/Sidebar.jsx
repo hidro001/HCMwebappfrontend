@@ -67,7 +67,7 @@ const Sidebar = () => {
   const menuItems = [
     {
       name: "Dashboard",
-      icon: <FaHome />,
+      icon: <FaHome title="DashBoard"/>,
       color: "text-blue-400",
       iconAnimation: { scale: 1.2 },
       textAnimation: { x: 10 },
