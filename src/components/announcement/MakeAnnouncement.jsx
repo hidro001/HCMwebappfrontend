@@ -4373,7 +4373,7 @@ const MakeAnnouncement = () => {
         announcement.publish_for_all ||
         (announcement.department &&
           announcement.department.some(
-            (dept) => dept.department.toLowerCase() === filterDepartment.toLowerCase()
+            (dept) => dept._id === filterDepartment
           ))
       );
     })
@@ -4388,8 +4388,9 @@ const MakeAnnouncement = () => {
 
   // Debugging: Log filtered announcements
   useEffect(() => {
+    console.log("Filter Department:", filterDepartment);
     console.log("Filtered Announcements:", filteredAnnouncements);
-  }, [filteredAnnouncements]);
+  }, [filteredAnnouncements, filterDepartment]);
 
   return (
     <Box
@@ -4438,7 +4439,7 @@ const MakeAnnouncement = () => {
           >
             <MenuItem value="All">All Departments</MenuItem>
             {departments.map((dept) => (
-              <MenuItem key={dept._id} value={dept.department}>
+              <MenuItem key={dept._id} value={dept._id}>
                 {dept.department}
               </MenuItem>
             ))}
