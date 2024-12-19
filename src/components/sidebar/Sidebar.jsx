@@ -105,6 +105,14 @@ const Sidebar = () => {
           permission: "AddAnnouncement",
           textAnimation: { x: 10 },
         },
+        {
+          name: "View Announcement",
+          link: "view-announcement",
+          // permission: "ViewAnnouncement",
+          permission: "AddAnnouncement",
+
+          textAnimation: { x: 10 },
+        },
       ],
     },
     {
