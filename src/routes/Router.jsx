@@ -7,6 +7,7 @@ import {
   Footer,
   ResetPassword,
   MakeAnnouncement,
+  ViewAnnouncements,
   NotificationsPage,
 } from "../components";
 
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
       {
         path: "add-announcement",
         element: <MakeAnnouncement />,
+      },
+      {
+        path: "view-announcement",
+        element: <ViewAnnouncements />,
       },
     ],
   },
