@@ -9,6 +9,11 @@ import {
   MakeAnnouncement,
   ViewAnnouncements,
   NotificationsPage,
+  RoleManagement,
+  PermissionManagement,
+  UserModeration,
+  EngageFeed,
+  CreatePost
 } from "../components";
 
 const router = createBrowserRouter([
@@ -44,6 +49,26 @@ const router = createBrowserRouter([
       {
         path: "view-announcement",
         element: <ViewAnnouncements />,
+      },
+      {
+        path: "roles",
+        element: <RoleManagement />,
+      },
+      {
+        path: "permissions",
+        element: <PermissionManagement />,
+      },
+      {
+        path: "user-moderation",
+        element: <UserModeration />,
+      },
+      {
+        path: "engage-feed",
+        element: <EngageFeed />,
+      },
+      {
+        path: "create-post",
+        element: <CreatePost/>,
       },
     ],
   },
