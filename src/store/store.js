@@ -2,7 +2,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import useNotificationStore from "./notificationStore"; // Import the notification store
-import useEngagementStore from "./engagementStore"; // Import the engagement store
+import useEngagementStore from "./engagementStore";
 
 const useAuthStore = create(
   persist(
@@ -86,7 +86,8 @@ const useAuthStore = create(
             .setUnreadCount(notifications.filter((n) => !n.isRead).length);
         }
         // Set engagement permissions in the engagement store
-        if (
+     
+         if (
           engagement_permission &&
           Array.isArray(engagement_permission.permissions)
         ) {

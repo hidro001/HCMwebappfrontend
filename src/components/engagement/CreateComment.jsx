@@ -1,4 +1,4 @@
-// src/components/CreateComment.js
+// src/components/engagement/CreateComment.js
 import React, { useState } from 'react';
 import {
   Box,
@@ -7,14 +7,11 @@ import {
 } from '@mui/material';
 import { toast } from 'react-toastify';
 import { createComment, fetchComments } from '../../service/service';
-import useEngagementStore from '../../store/engagementStore';
+import { motion } from 'framer-motion';
 
 const CreateComment = ({ postId, setComments }) => {
   const [comment, setComment] = useState('');
   const [loading, setLoading] = useState(false);
-
-  const userPermissions = useEngagementStore((state) => state.permissions);
-  const canAddComment = userPermissions.includes('addComment');
 
   const handleCreateComment = async () => {
     if (!comment.trim()) {
@@ -31,35 +28,39 @@ const CreateComment = ({ postId, setComments }) => {
       setComments(updatedComments.docs);
     } catch (error) {
       console.error('Error adding comment:', error);
-      toast.error(error.message || 'Failed to add comment.');
+      toast.error(error.response?.data?.message || 'Failed to add comment.');
     } finally {
       setLoading(false);
     }
   };
 
-  if (!canAddComment) return null; // Do not render if user lacks permission
-
   return (
-    <Box mt={2}>
-      <TextField
-        label="Add a comment"
-        multiline
-        rows={2}
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
-        variant="outlined"
-        fullWidth
-      />
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleCreateComment}
-        disabled={loading}
-        sx={{ mt: 1 }}
-      >
-        {loading ? 'Posting...' : 'Post Comment'}
-      </Button>
-    </Box>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Box mt={2}>
+        <TextField
+          label="Add a comment"
+          multiline
+          rows={2}
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          variant="outlined"
+          fullWidth
+        />
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleCreateComment}
+          disabled={loading}
+          sx={{ mt: 1 }}
+        >
+          {loading ? 'Posting...' : 'Post Comment'}
+        </Button>
+      </Box>
+    </motion.div>
   );
 };
 

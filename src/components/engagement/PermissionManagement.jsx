@@ -1,4 +1,4 @@
-// src/components/PermissionManagement.js
+// src/components/management/PermissionManagement.js
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -16,7 +16,6 @@ import {
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import useAuthStore from '../../store/store';
 import {
   getPermissions,
   createPermission,
@@ -32,9 +31,6 @@ const PermissionManagement = () => {
   const [currentPermission, setCurrentPermission] = useState(null);
   const [editedDescription, setEditedDescription] = useState('');
 
-  const authStore = useAuthStore();
-  const userPermissions = authStore.permission;
-
   useEffect(() => {
     fetchPermissions();
   }, []);
@@ -45,13 +41,13 @@ const PermissionManagement = () => {
       setPermissions(data);
     } catch (error) {
       console.error('Error fetching permissions:', error);
-      toast.error(error.message || 'Failed to fetch permissions.');
+      toast.error(error.response?.data?.message || 'Failed to fetch permissions.');
     }
   };
 
   const handleCreatePermission = async () => {
     if (!newPermissionName || !newPermissionDescription) {
-      toast.error('Permission name and description are required.');
+      toast.error('Please fill all fields.');
       return;
     }
     try {
@@ -66,7 +62,7 @@ const PermissionManagement = () => {
       fetchPermissions();
     } catch (error) {
       console.error('Error creating permission:', error);
-      toast.error(error.message || 'Failed to create permission.');
+      toast.error(error.response?.data?.message || 'Failed to create permission.');
     }
   };
 
@@ -78,7 +74,7 @@ const PermissionManagement = () => {
       fetchPermissions();
     } catch (error) {
       console.error('Error deleting permission:', error);
-      toast.error(error.message || 'Failed to delete permission.');
+      toast.error(error.response?.data?.message || 'Failed to delete permission.');
     }
   };
 
@@ -105,7 +101,7 @@ const PermissionManagement = () => {
       fetchPermissions();
     } catch (error) {
       console.error('Error updating permission:', error);
-      toast.error(error.message || 'Failed to update permission.');
+      toast.error(error.response?.data?.message || 'Failed to update permission.');
     }
   };
 
@@ -122,6 +118,7 @@ const PermissionManagement = () => {
           label="Permission Name"
           value={newPermissionName}
           onChange={(e) => setNewPermissionName(e.target.value)}
+          variant="outlined"
           fullWidth
           margin="normal"
         />
@@ -129,10 +126,11 @@ const PermissionManagement = () => {
           label="Description"
           value={newPermissionDescription}
           onChange={(e) => setNewPermissionDescription(e.target.value)}
+          variant="outlined"
           fullWidth
           margin="normal"
         />
-        <Button variant="contained" color="primary" onClick={handleCreatePermission}>
+        <Button variant="contained" color="primary" onClick={handleCreatePermission} sx={{ mt: 2 }}>
           Create Permission
         </Button>
       </Box>
@@ -172,6 +170,7 @@ const PermissionManagement = () => {
                 label="Description"
                 value={editedDescription}
                 onChange={(e) => setEditedDescription(e.target.value)}
+                variant="outlined"
                 fullWidth
                 margin="normal"
               />

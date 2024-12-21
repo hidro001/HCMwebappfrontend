@@ -1,4 +1,4 @@
-// src/components/RoleManagement.js
+// src/components/management/RoleManagement.js
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -9,17 +9,21 @@ import {
   ListItem,
   ListItemText,
   IconButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
   Checkbox,
-  FormControlLabel,
+  ListItemIcon,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
+  FormControlLabel 
 } from '@mui/material';
 import { Delete, Edit } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import useAuthStore from '../../store/store';
-import useEngagementStore from '../../store/engagementStore';
+// import useAuthStore from '../../store/authStore';
 import {
   getRoles,
   createRole,
@@ -35,9 +39,8 @@ const RoleManagement = () => {
   const [selectedPermissions, setSelectedPermissions] = useState([]);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [currentRole, setCurrentRole] = useState(null);
-
-  const authStore = useAuthStore();
-  const userPermissions = useEngagementStore((state) => state.permissions);
+  const [editedRoleName, setEditedRoleName] = useState('');
+  const [editedPermissions, setEditedPermissions] = useState([]);
 
   useEffect(() => {
     fetchRoles();
@@ -50,7 +53,7 @@ const RoleManagement = () => {
       setRoles(data);
     } catch (error) {
       console.error('Error fetching roles:', error);
-      toast.error(error.message || 'Failed to fetch roles.');
+      toast.error(error.response?.data?.message || 'Failed to fetch roles.');
     }
   };
 
@@ -60,7 +63,7 @@ const RoleManagement = () => {
       setPermissions(data);
     } catch (error) {
       console.error('Error fetching permissions:', error);
-      toast.error(error.message || 'Failed to fetch permissions.');
+      toast.error(error.response?.data?.message || 'Failed to fetch permissions.');
     }
   };
 
@@ -81,7 +84,7 @@ const RoleManagement = () => {
       fetchRoles();
     } catch (error) {
       console.error('Error creating role:', error);
-      toast.error(error.message || 'Failed to create role.');
+      toast.error(error.response?.data?.message || 'Failed to create role.');
     }
   };
 
@@ -93,44 +96,54 @@ const RoleManagement = () => {
       fetchRoles();
     } catch (error) {
       console.error('Error deleting role:', error);
-      toast.error(error.message || 'Failed to delete role.');
+      toast.error(error.response?.data?.message || 'Failed to delete role.');
     }
   };
 
   const handleEditRole = (role) => {
     setCurrentRole(role);
-    setSelectedPermissions(role.permissions);
+    setEditedRoleName(role.name);
+    setEditedPermissions(role.permissions);
     setEditDialogOpen(true);
   };
 
   const handleUpdateRole = async () => {
-    if (!currentRole.name) {
+    if (!editedRoleName) {
       toast.error('Role name is required.');
       return;
     }
     try {
       const updatedData = {
-        name: currentRole.name,
-        permissions: selectedPermissions,
+        name: editedRoleName,
+        permissions: editedPermissions,
       };
       await updateRole(currentRole._id, updatedData);
       toast.success('Role updated successfully.');
       setEditDialogOpen(false);
       setCurrentRole(null);
-      setSelectedPermissions([]);
+      setEditedRoleName('');
+      setEditedPermissions([]);
       fetchRoles();
     } catch (error) {
       console.error('Error updating role:', error);
-      toast.error(error.message || 'Failed to update role.');
+      toast.error(error.response?.data?.message || 'Failed to update role.');
     }
   };
 
-  const handlePermissionChange = (permissionName) => {
-    setSelectedPermissions((prev) =>
-      prev.includes(permissionName)
-        ? prev.filter((perm) => perm !== permissionName)
-        : [...prev, permissionName]
-    );
+  const handlePermissionChange = (permissionName, isChecked) => {
+    if (isChecked) {
+      setSelectedPermissions((prev) => [...prev, permissionName]);
+    } else {
+      setSelectedPermissions((prev) => prev.filter((perm) => perm !== permissionName));
+    }
+  };
+
+  const handleEditPermissionChange = (permissionName, isChecked) => {
+    if (isChecked) {
+      setEditedPermissions((prev) => [...prev, permissionName]);
+    } else {
+      setEditedPermissions((prev) => prev.filter((perm) => perm !== permissionName));
+    }
   };
 
   return (
@@ -146,28 +159,27 @@ const RoleManagement = () => {
           label="Role Name"
           value={newRoleName}
           onChange={(e) => setNewRoleName(e.target.value)}
+          variant="outlined"
           fullWidth
           margin="normal"
         />
-        <Box>
-          <Typography variant="subtitle1">Select Permissions:</Typography>
-          <Box display="flex" flexWrap="wrap">
-            {permissions.map((perm) => (
-              <FormControlLabel
-                key={perm._id}
-                control={
-                  <Checkbox
-                    checked={selectedPermissions.includes(perm.name)}
-                    onChange={() => handlePermissionChange(perm.name)}
-                    name={perm.name}
-                  />
-                }
-                label={perm.name}
-              />
-            ))}
-          </Box>
+        <Typography variant="subtitle1">Select Permissions:</Typography>
+        <Box display="flex" flexWrap="wrap">
+          {permissions.map((perm) => (
+            <FormControlLabel
+              key={perm._id}
+              control={
+                <Checkbox
+                  checked={selectedPermissions.includes(perm.name)}
+                  onChange={(e) => handlePermissionChange(perm.name, e.target.checked)}
+                  name={perm.name}
+                />
+              }
+              label={perm.name}
+            />
+          ))}
         </Box>
-        <Button variant="contained" color="primary" onClick={handleCreateRole}>
+        <Button variant="contained" color="primary" onClick={handleCreateRole} sx={{ mt: 2 }}>
           Create Role
         </Button>
       </Box>
@@ -204,28 +216,27 @@ const RoleManagement = () => {
             <>
               <TextField
                 label="Role Name"
-                value={currentRole.name}
-                onChange={(e) => setCurrentRole({ ...currentRole, name: e.target.value })}
+                value={editedRoleName}
+                onChange={(e) => setEditedRoleName(e.target.value)}
+                variant="outlined"
                 fullWidth
                 margin="normal"
               />
-              <Box>
-                <Typography variant="subtitle1">Select Permissions:</Typography>
-                <Box display="flex" flexWrap="wrap">
-                  {permissions.map((perm) => (
-                    <FormControlLabel
-                      key={perm._id}
-                      control={
-                        <Checkbox
-                          checked={selectedPermissions.includes(perm.name)}
-                          onChange={() => handlePermissionChange(perm.name)}
-                          name={perm.name}
-                        />
-                      }
-                      label={perm.name}
-                    />
-                  ))}
-                </Box>
+              <Typography variant="subtitle1">Select Permissions:</Typography>
+              <Box display="flex" flexWrap="wrap">
+                {permissions.map((perm) => (
+                  <FormControlLabel
+                    key={perm._id}
+                    control={
+                      <Checkbox
+                        checked={editedPermissions.includes(perm.name)}
+                        onChange={(e) => handleEditPermissionChange(perm.name, e.target.checked)}
+                        name={perm.name}
+                      />
+                    }
+                    label={perm.name}
+                  />
+                ))}
               </Box>
             </>
           )}

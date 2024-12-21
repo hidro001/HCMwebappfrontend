@@ -1,4 +1,4 @@
-// src/components/EngageFeed.js
+// src/components/engagement/EngageFeed.js
 import React, { useEffect, useState } from 'react';
 import {
   Box,
@@ -10,16 +10,13 @@ import {
 import { toast } from 'react-toastify';
 import { fetchPosts } from '../../service/service';
 import PostItem from './PostItem';
-import useEngagementStore from '../../store/engagementStore';
+import { motion } from 'framer-motion';
 
 const EngageFeed = () => {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-
-  const userPermissions = useEngagementStore((state) => state.permissions);
-  const canAddComment = userPermissions.includes('addComment');
 
   useEffect(() => {
     loadPosts();
@@ -68,7 +65,14 @@ const EngageFeed = () => {
       <List>
         {posts.map((post) => (
           <ListItem key={post._id} disableGutters>
-            <PostItem post={post} />
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              style={{ width: '100%' }}
+            >
+              <PostItem post={post} />
+            </motion.div>
           </ListItem>
         ))}
       </List>

@@ -12,24 +12,28 @@
 // export default PrivateRoute;
 
 
-// src/routes/EnhancedPrivateRoute.js
+// src/components/common/PrivateRoute.js
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import useAuthStore from '../store/store';
-import useEngagementStore from '../store/engagementStore';
+import useEngagementStore from '../store/store';
 
 const PrivateRoute = ({ requiredPermissions = [] }) => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const userPermissions = useEngagementStore((state) => state.permissions);
 
   if (!isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
+
   // If no permissions are required, allow access
   if (requiredPermissions.length === 0) {
     return <Outlet />;
   }
-  const hasPermissions = requiredPermissions.every((perm) => userPermissions.includes(perm));
+
+  const hasPermissions = requiredPermissions.every((perm) =>
+    userPermissions.includes(perm)
+  );
 
   if (!hasPermissions) {
     return <Navigate to="/unauthorized" replace />;
@@ -39,3 +43,4 @@ const PrivateRoute = ({ requiredPermissions = [] }) => {
 };
 
 export default PrivateRoute;
+

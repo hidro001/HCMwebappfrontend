@@ -13,8 +13,15 @@ import {
   PermissionManagement,
   UserModeration,
   EngageFeed,
-  CreatePost
+  CreatePost,
+  Pools,
+  Kudos,
 } from "../components";
+import DashboardPage from "../components/eng/DashboardPage";
+import Feed from "../components/newfeed/Feed";
+import Feednew from "../components/finalui/Feed";
+
+
 
 const router = createBrowserRouter([
   <ToastContainer />,
@@ -68,7 +75,27 @@ const router = createBrowserRouter([
       },
       {
         path: "create-post",
-        element: <CreatePost/>,
+        element: <CreatePost />,
+      },
+      {
+        path: "pools",
+        element: <Pools />,
+      },
+      {
+        path: "kudos",
+        element: <Kudos />,
+      },
+      {
+        path: "dash",
+        element: <DashboardPage />,
+      },
+      {
+        path: "feednew",
+        element: <Feed />,
+      },
+      {
+        path: "feednew2",
+        element: <Feednew/>,
       },
     ],
   },
