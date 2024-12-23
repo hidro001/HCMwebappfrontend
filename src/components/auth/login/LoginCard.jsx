@@ -291,7 +291,7 @@ const LoginCard = () => {
     toast.success("Login Successful!");
 
     // Navigate based on user role
-    switch (permission_role.toLowerCase()) {
+    switch (user_Role.toLowerCase()) {
       case "employee":
         navigate("/dashboard");
         break;
@@ -299,7 +299,7 @@ const LoginCard = () => {
         navigate("/dashboard/manager-dashboard");
         break;
       case "super-admin":
-        navigate("/dashboard/super-admin-dashboard");
+        navigate("/dashboard");
         break;
       default:
         toast.error("Unknown user role");
