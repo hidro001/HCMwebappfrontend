@@ -83,7 +83,6 @@ const LoginCard = () => {
   // Fetch company info on mount
   useEffect(() => {
     let isMounted = true; // Track if component is mounted
-   
 
     const getCompanyInfo = async () => {
       console.log("Fetching company info...");
@@ -292,7 +291,7 @@ const LoginCard = () => {
     toast.success("Login Successful!");
 
     // Navigate based on user role
-    switch (permission_role) {
+    switch (permission_role.toLowerCase()) {
       case "employee":
         navigate("/dashboard");
         break;
