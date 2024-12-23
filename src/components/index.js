@@ -14,10 +14,7 @@ import NotificationsPage from "./Notification/NotificationsPage";
 import RoleManagement from "../components/engagement/RoleManagement";
 import PermissionManagement from "../components/engagement/PermissionManagement";
 import UserModeration from "../components/engagement/UserModeration";
-import EngageFeed from "../components/engagement/EngageFeed";
-import CreatePost from "../components/engagement/CreatePost";
-import Kudos from "../components/engagement/Kudos";
-import Pools from "../components/engagement/Polls";
+import Feednew from "../components/newfeed/Feed";
 // import Unauthorized from './components/Unauthorized';
 
 import Card from "./dashboar Cards/Card";
@@ -39,8 +36,5 @@ export {
   RoleManagement,
   PermissionManagement,
   UserModeration,
-  EngageFeed,
-  Kudos,
-  Pools,
-  CreatePost,
+  Feednew,
 };

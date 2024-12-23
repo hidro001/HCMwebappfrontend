@@ -12,14 +12,10 @@ import {
   RoleManagement,
   PermissionManagement,
   UserModeration,
-  EngageFeed,
-  CreatePost,
-  Pools,
-  Kudos,
+  Feednew
+ 
 } from "../components";
-import DashboardPage from "../components/eng/DashboardPage";
-import Feed from "../components/newfeed/Feed";
-import Feednew from "../components/finalui/Feed";
+
 
 
 
@@ -69,32 +65,9 @@ const router = createBrowserRouter([
         path: "user-moderation",
         element: <UserModeration />,
       },
+
       {
-        path: "engage-feed",
-        element: <EngageFeed />,
-      },
-      {
-        path: "create-post",
-        element: <CreatePost />,
-      },
-      {
-        path: "pools",
-        element: <Pools />,
-      },
-      {
-        path: "kudos",
-        element: <Kudos />,
-      },
-      {
-        path: "dash",
-        element: <DashboardPage />,
-      },
-      {
-        path: "feednew",
-        element: <Feed />,
-      },
-      {
-        path: "feednew2",
+        path: "engagement-feed",
         element: <Feednew/>,
       },
     ],

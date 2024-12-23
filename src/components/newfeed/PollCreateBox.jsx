@@ -1,0 +1,307 @@
+// // src/components/PollCreateBox.js
+// import React, { useState } from "react";
+// import axiosInstance from "../../service/axiosInstance";
+// import { toast } from "react-toastify";
+
+// const PollCreateBox = ({ socket }) => {
+//   const [question, setQuestion] = useState("");
+//   const [options, setOptions] = useState(["", ""]); // Start with 2 empty options
+//   const [duration, setDuration] = useState(24); // Default duration in hours
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+
+//   const handleOptionChange = (index, value) => {
+//     const newOptions = [...options];
+//     newOptions[index] = value;
+//     setOptions(newOptions);
+//   };
+
+//   const addOption = () => {
+//     if (options.length < 5) {
+//       setOptions([...options, ""]);
+//     }
+//   };
+
+//   const removeOption = (index) => {
+//     if (options.length > 2) {
+//       const newOptions = options.filter((_, idx) => idx !== index);
+//       setOptions(newOptions);
+//     }
+//   };
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     if (!question.trim() || options.some((opt) => !opt.trim()) || !duration) {
+//       toast.error("Please fill in all fields.");
+//       return;
+//     }
+
+//     const payload = {
+//       question,
+//       options: options.filter((opt) => opt.trim() !== ""), // Remove empty options
+//       duration: parseInt(duration),
+//     };
+
+//     try {
+//       setIsSubmitting(true);
+//       const response = await axiosInstance.post("/polls", payload, {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//       });
+//       toast.success("Poll created successfully!");
+//       setQuestion("");
+//       setOptions(["", ""]);
+//       setDuration(24);
+//       // Emit real-time event
+      
+//     } catch (error) {
+//       console.error("Error creating poll:", error);
+//       toast.error(
+//         error.response?.data?.message || "Failed to create poll. Please try again."
+//       );
+//     } finally {
+//       setIsSubmitting(false);
+//     }
+//   };
+
+//   return (
+//     <div className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl mb-6 p-6 transition-colors duration-300">
+//       <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+//         Create a New Poll
+//       </h2>
+//       <form onSubmit={handleSubmit}>
+//         {/* Question */}
+//         <div className="mb-4">
+//           <label className="block text-gray-700 dark:text-gray-300 mb-2">
+//             Question
+//           </label>
+//           <input
+//             type="text"
+//             className="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-800 dark:text-gray-100"
+//             value={question}
+//             onChange={(e) => setQuestion(e.target.value)}
+//             required
+//           />
+//         </div>
+
+//         {/* Options */}
+//         <div className="mb-4">
+//           <label className="block text-gray-700 dark:text-gray-300 mb-2">
+//             Options
+//           </label>
+//           {options.map((option, index) => (
+//             <div key={index} className="flex items-center mb-2">
+//               <input
+//                 type="text"
+//                 className="flex-1 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-800 dark:text-gray-100"
+//                 value={option}
+//                 onChange={(e) => handleOptionChange(index, e.target.value)}
+//                 required
+//               />
+//               {options.length > 2 && (
+//                 <button
+//                   type="button"
+//                   onClick={() => removeOption(index)}
+//                   className="ml-2 text-red-500 hover:text-red-700"
+//                   title="Remove Option"
+//                 >
+//                   &times;
+//                 </button>
+//               )}
+//             </div>
+//           ))}
+//           {options.length < 5 && (
+//             <button
+//               type="button"
+//               onClick={addOption}
+//               className="text-blue-500 hover:text-blue-700 mt-2"
+//             >
+//               + Add Option
+//             </button>
+//           )}
+//         </div>
+
+//         {/* Duration */}
+//         <div className="mb-4">
+//           <label className="block text-gray-700 dark:text-gray-300 mb-2">
+//             Duration (in hours)
+//           </label>
+//           <input
+//             type="number"
+//             min="1"
+//             className="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-800 dark:text-gray-100"
+//             value={duration}
+//             onChange={(e) => setDuration(e.target.value)}
+//             required
+//           />
+//         </div>
+
+//         {/* Submit Button */}
+//         <button
+//           type="submit"
+//           disabled={isSubmitting}
+//           className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+//         >
+//           {isSubmitting ? "Creating..." : "Create Poll"}
+//         </button>
+//       </form>
+//     </div>
+//   );
+// };
+
+// export default PollCreateBox;
+
+// src/components/PollCreateBox.js
+import React, { useState } from "react";
+import axiosInstance from "../../service/axiosInstance";
+import { toast } from "react-toastify";
+import { Button, CircularProgress } from "@mui/material";
+
+const PollCreateBox = ({ onSuccess }) => {
+  const [question, setQuestion] = useState("");
+  const [options, setOptions] = useState(["", ""]); // Start with 2 empty options
+  const [duration, setDuration] = useState(24); // Default duration in hours
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleOptionChange = (index, value) => {
+    const newOptions = [...options];
+    newOptions[index] = value;
+    setOptions(newOptions);
+  };
+
+  const addOption = () => {
+    if (options.length < 5) {
+      setOptions([...options, ""]);
+    }
+  };
+
+  const removeOption = (index) => {
+    if (options.length > 2) {
+      const newOptions = options.filter((_, idx) => idx !== index);
+      setOptions(newOptions);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!question.trim() || options.some((opt) => !opt.trim()) || !duration) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+
+    const payload = {
+      question,
+      options: options.filter((opt) => opt.trim() !== ""), // Remove empty options
+      duration: parseInt(duration),
+    };
+
+    try {
+      setIsSubmitting(true);
+      const response = await axiosInstance.post("/polls", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      toast.success("Poll created successfully!");
+      setQuestion("");
+      setOptions(["", ""]);
+      setDuration(24);
+      if (onSuccess) onSuccess();
+      // Emit real-time event if needed
+      // socket.emit("newPoll", response.data.poll);
+    } catch (error) {
+      console.error("Error creating poll:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to create poll. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Question */}
+      <div>
+        <label className="block text-gray-700 dark:text-gray-300 mb-2">
+          Question
+        </label>
+        <input
+          type="text"
+          className="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-800 dark:text-gray-100"
+          value={question}
+          onChange={(e) => setQuestion(e.target.value)}
+          required
+        />
+      </div>
+
+      {/* Options */}
+      <div>
+        <label className="block text-gray-700 dark:text-gray-300 mb-2">
+          Options
+        </label>
+        {options.map((option, index) => (
+          <div key={index} className="flex items-center mb-2">
+            <input
+              type="text"
+              className="flex-1 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-800 dark:text-gray-100"
+              value={option}
+              onChange={(e) => handleOptionChange(index, e.target.value)}
+              required
+            />
+            {options.length > 2 && (
+              <button
+                type="button"
+                onClick={() => removeOption(index)}
+                className="ml-2 text-red-500 hover:text-red-700"
+                title="Remove Option"
+              >
+                &times;
+              </button>
+            )}
+          </div>
+        ))}
+        {options.length < 5 && (
+          <Button
+            type="button"
+            onClick={addOption}
+            variant="text"
+            color="primary"
+          >
+            + Add Option
+          </Button>
+        )}
+      </div>
+
+      {/* Duration */}
+      <div>
+        <label className="block text-gray-700 dark:text-gray-300 mb-2">
+          Duration (in hours)
+        </label>
+        <input
+          type="number"
+          min="1"
+          className="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-800 dark:text-gray-100"
+          value={duration}
+          onChange={(e) => setDuration(e.target.value)}
+          required
+        />
+      </div>
+
+      {/* Submit Button */}
+      <Button
+        type="submit"
+        variant="contained"
+        color="secondary"
+        disabled={isSubmitting}
+        fullWidth
+        startIcon={isSubmitting && <CircularProgress size={20} />}
+      >
+        {isSubmitting ? "Creating..." : "Create Poll"}
+      </Button>
+    </form>
+  );
+};
+
+export default PollCreateBox;
+

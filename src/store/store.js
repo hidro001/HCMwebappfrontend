@@ -9,6 +9,7 @@ const useAuthStore = create(
     (set, get) => ({
       // Authentication States
       isAuthenticated: !!localStorage.getItem("accessToken"),
+      _id: localStorage.getItem("_id") || "", // Add this line
       userRole: localStorage.getItem("userRole") || "",
       permissionRole: localStorage.getItem("permissionRole") || "",
       userName: localStorage.getItem("userName") || "",
@@ -29,6 +30,7 @@ const useAuthStore = create(
       login: (userData) => {
         const {
           accessToken,
+          _id, // Extract _id
           userRole,
           permissionRole,
           userName,
@@ -46,6 +48,7 @@ const useAuthStore = create(
 
         // Update Authentication State
         set({
+          _id, // Store _id
           isAuthenticated: true,
           userRole,
           permissionRole,
@@ -76,6 +79,7 @@ const useAuthStore = create(
         );
         localStorage.setItem("teams", JSON.stringify(teams));
         localStorage.setItem("userAvatar", userAvatar || "");
+        localStorage.setItem("_id", _id || ""); // Store _id
         // Fetch notifications after login
         //  useNotificationStore.getState().fetchNotifications();
         // Initialize notifications in the notification store
@@ -113,6 +117,7 @@ const useAuthStore = create(
         // Clear Authentication and Company State
         set({
           isAuthenticated: false,
+          _id: "", // Clear _id
           userRole: "",
           permissionRole: "",
           userName: "",
@@ -140,6 +145,7 @@ const useAuthStore = create(
         localStorage.removeItem("departmentAlocated");
         localStorage.removeItem("teams");
         localStorage.removeItem("userAvatar");
+        localStorage.removeItem("_id"); // Remove _id
         localStorage.removeItem("companyInfo");
         // Clear notifications from the notification store
         useNotificationStore.getState().clearNotifications();

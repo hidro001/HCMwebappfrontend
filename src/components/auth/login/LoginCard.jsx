@@ -213,6 +213,7 @@ const LoginCard = () => {
     const { user, accessToken } = response;
     const {
       user_Role,
+      _id, // Extract _id
       permission_role,
       first_Name,
       last_Name,
@@ -276,6 +277,7 @@ const LoginCard = () => {
     // Update Zustand store
     authStore.login({
       accessToken,
+      _id, // Store _id
       userRole: user_Role,
       permissionRole: permission_role,
       userName: `${first_Name} ${last_Name || ""}`,
@@ -293,7 +295,7 @@ const LoginCard = () => {
 
     // Navigate based on user role
     switch (permission_role) {
-      case "employee":
+      case "Employee":
         navigate("/dashboard");
         break;
       case "manager":
