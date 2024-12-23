@@ -409,3 +409,8 @@ export const removeReaction = async (reactionData) => {
   const response = await axiosInstance.delete('/reactions', { data: reactionData });
   return response.data;
 };
+
+export const getUsers = async () => {
+  const response = await axiosInstance.get(`/user/all-user`);
+  return response.data;
+};

@@ -261,12 +261,12 @@ const PollCard = ({ poll, refreshFeed }) => {
   const userVote = poll.votes.find((vote) => vote.user === userId);
   const userSelectedOptionId = userVote ? userVote.option : null;
 
-  useEffect(() => {
-    console.log("Poll Data:", poll);
-    console.log("User ID:", userId);
-    console.log("Has Voted:", hasVoted);
-    console.log("User Selected Option:", userSelectedOptionId);
-  }, [poll, userId, hasVoted, userSelectedOptionId]);
+  // useEffect(() => {
+  //   console.log("Poll Data:", poll);
+  //   console.log("User ID:", userId);
+  //   console.log("Has Voted:", hasVoted);
+  //   console.log("User Selected Option:", userSelectedOptionId);
+  // }, [poll, userId, hasVoted, userSelectedOptionId]);
 
   const handleVote = async () => {
     if (selectedOption === null) {

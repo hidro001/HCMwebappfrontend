@@ -16,6 +16,7 @@ import {
   FaListAlt,
   FaCog,
 } from "react-icons/fa";
+import { TiSocialTwitter } from "react-icons/ti";
 import { motion } from "framer-motion";
 import { GrDocumentPerformance } from "react-icons/gr";
 import { MdModelTraining } from "react-icons/md";
@@ -108,6 +109,29 @@ const Sidebar = () => {
         {
           name: "View Announcement",
           link: "view-announcement",
+          // permission: "ViewAnnouncement",
+          permission: "AddAnnouncement",
+
+          textAnimation: { x: 10 },
+        },
+      ],
+    },
+    {
+      name: "Engagement",
+      icon:<TiSocialTwitter />,
+      color: "text-yellow-400",
+      iconAnimation: { rotate: 360 },
+      textAnimation: { x: 10 },
+      options: [
+        {
+          name: "permission dashboard",
+          link: "engagement-permission-dashboard",
+          permission: "AddAnnouncement",
+          textAnimation: { x: 10 },
+        },
+        {
+          name: "Engagement Feed",
+          link: "engagement-feed",
           // permission: "ViewAnnouncement",
           permission: "AddAnnouncement",
 

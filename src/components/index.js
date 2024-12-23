@@ -11,10 +11,9 @@ import MakeAnnouncement from "./announcement/MakeAnnouncement";
 import ViewAnnouncements from "./announcement/ViewAnnouncements";
 import NotificationsPage from "./Notification/NotificationsPage";
 
-import RoleManagement from "../components/engagement/RoleManagement";
-import PermissionManagement from "../components/engagement/PermissionManagement";
-import UserModeration from "../components/engagement/UserModeration";
-import Feednew from "../components/newfeed/Feed";
+
+import Feednew from "./engagement/Feed";
+import EngPermissionDashboard from "./engagement/EngPermissionDashboard";
 // import Unauthorized from './components/Unauthorized';
 
 import Card from "./dashboar Cards/Card";
@@ -33,8 +32,7 @@ export {
   Card,
   NotificationsPage,
   ThemeToggleButton,
-  RoleManagement,
-  PermissionManagement,
-  UserModeration,
+
   Feednew,
+  EngPermissionDashboard,
 };

@@ -163,7 +163,7 @@ const Feed = () => {
       const response = await axiosInstance.get("/feed", {
         params: { page: currentPage, limit: 20 },
       });
-      console.log("Fetch Feed Response:", response.data); // Logging for debugging
+ 
 
       // Check if response.data.feed exists and is an array
       if (Array.isArray(response.data.feed)) {

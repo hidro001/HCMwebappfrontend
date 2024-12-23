@@ -410,7 +410,7 @@ const PostCard = ({ post }) => {
         comment: commentText,
       });
 
-      console.log("Add Comment Response:", response.data); // Log response
+     
 
       // Ensure that the response contains the 'commenter' field
       if (response.data.comment && response.data.comment.commenter) {
