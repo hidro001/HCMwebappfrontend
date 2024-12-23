@@ -83,7 +83,6 @@ const LoginCard = () => {
   // Fetch company info on mount
   useEffect(() => {
     let isMounted = true; // Track if component is mounted
-   
 
     const getCompanyInfo = async () => {
       console.log("Fetching company info...");
@@ -294,15 +293,15 @@ const LoginCard = () => {
     toast.success("Login Successful!");
 
     // Navigate based on user role
-    switch (permission_role) {
-      case "Employee":
+    switch (user_Role.toLowerCase()) {
+      case "employee":
         navigate("/dashboard");
         break;
       case "manager":
         navigate("/dashboard/manager-dashboard");
         break;
       case "super-admin":
-        navigate("/dashboard/super-admin-dashboard");
+        navigate("/dashboard");
         break;
       default:
         toast.error("Unknown user role");
