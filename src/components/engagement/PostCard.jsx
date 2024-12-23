@@ -537,7 +537,7 @@ const PostCard = ({ post }) => {
   // Utility function to determine media type
   const getMediaType = (url) => {
     const extension = url.split(".").pop().toLowerCase();
-    const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "svg"];
+    const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "svg","avif"];
     const videoExtensions = ["mp4", "webm", "ogg", "mov", "avi", "wmv"];
     if (imageExtensions.includes(extension)) {
       return "image";
