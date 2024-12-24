@@ -1,4 +1,6 @@
 
+
+// // src/components/PollCard.js
 // import React, { useState, useEffect } from "react";
 // import DeleteIcon from "@mui/icons-material/Delete";
 // import { motion } from "framer-motion";
@@ -6,6 +8,7 @@
 // import useAuthStore from "../../store/store";
 // import { toast } from "react-toastify";
 // import PropTypes from "prop-types";
+// import { Button, CircularProgress, IconButton } from "@mui/material";
 
 // const PollCard = ({ poll, refreshFeed }) => {
 //   const user = useAuthStore((state) => state);
@@ -23,12 +26,12 @@
 //   const userVote = poll.votes.find((vote) => vote.user === userId);
 //   const userSelectedOptionId = userVote ? userVote.option : null;
 
-//   useEffect(() => {
-//     console.log("Poll Data:", poll);
-//     console.log("User ID:", userId);
-//     console.log("Has Voted:", hasVoted);
-//     console.log("User Selected Option:", userSelectedOptionId);
-//   }, [poll, userId, hasVoted, userSelectedOptionId]);
+//   // useEffect(() => {
+//   //   console.log("Poll Data:", poll);
+//   //   console.log("User ID:", userId);
+//   //   console.log("Has Voted:", hasVoted);
+//   //   console.log("User Selected Option:", userSelectedOptionId);
+//   // }, [poll, userId, hasVoted, userSelectedOptionId]);
 
 //   const handleVote = async () => {
 //     if (selectedOption === null) {
@@ -105,14 +108,14 @@
 //         {(permissions.includes("deleteAnyPoll") ||
 //           userId === poll.creator._id ||
 //           userId === poll.creator.employeeId) && (
-//           <button
+//           <IconButton
 //             onClick={handleDeletePoll}
 //             disabled={isDeleting}
 //             className="ml-auto text-red-500 hover:text-red-700 transition-colors duration-300"
 //             title="Delete Poll"
 //           >
 //             <DeleteIcon />
-//           </button>
+//           </IconButton>
 //         )}
 //       </div>
 
@@ -177,17 +180,16 @@
 //       {/* Poll Actions */}
 //       {poll.isActive && !hasVoted && (
 //         <div className="mt-4">
-//           <button
+//           <Button
 //             onClick={handleVote}
 //             disabled={isVoting || selectedOption === null}
-//             className={`w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300 ${
-//               isVoting || selectedOption === null
-//                 ? "opacity-50 cursor-not-allowed"
-//                 : ""
-//             }`}
+//             variant="contained"
+//             color="primary"
+//             fullWidth
+//             startIcon={isVoting && <CircularProgress size={20} />}
 //           >
 //             {isVoting ? "Voting..." : "Vote"}
-//           </button>
+//           </Button>
 //         </div>
 //       )}
 
@@ -235,6 +237,7 @@
 
 // export default PollCard;
 
+
 // src/components/PollCard.js
 import React, { useState, useEffect } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -245,9 +248,13 @@ import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import { Button, CircularProgress, IconButton } from "@mui/material";
 
+// Import Socket Context (If Emitting)
+import { useSocket } from '../../contexts/SocketContext'; // Adjust the path
+
 const PollCard = ({ poll, refreshFeed }) => {
+  const socket = useSocket();
   const user = useAuthStore((state) => state);
-  const userId = user._id || user.employeeId; // Corrected line
+  const userId = user._id || user.employeeId;
   const permissions = user.permissions || [];
 
   const [selectedOption, setSelectedOption] = useState(null);
@@ -260,13 +267,6 @@ const PollCard = ({ poll, refreshFeed }) => {
   // Determine the option the user has voted for
   const userVote = poll.votes.find((vote) => vote.user === userId);
   const userSelectedOptionId = userVote ? userVote.option : null;
-
-  // useEffect(() => {
-  //   console.log("Poll Data:", poll);
-  //   console.log("User ID:", userId);
-  //   console.log("Has Voted:", hasVoted);
-  //   console.log("User Selected Option:", userSelectedOptionId);
-  // }, [poll, userId, hasVoted, userSelectedOptionId]);
 
   const handleVote = async () => {
     if (selectedOption === null) {
@@ -342,7 +342,7 @@ const PollCard = ({ poll, refreshFeed }) => {
         </div>
         {(permissions.includes("deleteAnyPoll") ||
           userId === poll.creator._id ||
-          userId === poll.creator.employeeId) && (
+          userId === poll.creator.employee_Id) && (
           <IconButton
             onClick={handleDeletePoll}
             disabled={isDeleting}
