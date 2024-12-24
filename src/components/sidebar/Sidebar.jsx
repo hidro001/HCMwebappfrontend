@@ -25,12 +25,13 @@ import { LuFileCheck2 } from "react-icons/lu";
 import { fetchPermissions } from "../../service/service";
 import useAuthStore from "../../store/store";
 import { Announcement } from "@mui/icons-material";
+import { ChatBubble } from "@mui/icons-material";
 
 const Sidebar = () => {
   const [currentSidebarTab, setCurrentSidebarTab] = useState(null);
   const [permissions, setPermissions] = useState([]);
   const [filteredMenuItems, setFilteredMenuItems] = useState([]);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const empId = useAuthStore((state) => state.employeeId);
   useEffect(() => {
     fetchPermission();
@@ -118,7 +119,7 @@ const Sidebar = () => {
     },
     {
       name: "Engagement",
-      icon:<TiSocialTwitter />,
+      icon: <TiSocialTwitter />,
       color: "text-yellow-400",
       iconAnimation: { rotate: 360 },
       textAnimation: { x: 10 },
@@ -592,6 +593,21 @@ const Sidebar = () => {
         },
       ],
     },
+    {
+      name: "Chats",
+      icon: <ChatBubble />,
+      color: "text-orange-400",
+      iconAnimation: { scale: 1.2 },
+      textAnimation: { x: 10 },
+      options: [
+        {
+          name: "chats",
+          link: "/dashboard/chats",
+          permission: "useChats",
+          textAnimation: { x: 10 },
+        },
+      ],
+    },
   ];
 
   const toggleSidebarTab = (tabName) => {
@@ -645,8 +661,8 @@ const Sidebar = () => {
                     transition={{ delay: index * 0.1 }}
                   >
                     <Link
-                    to={option.link}
-                    // onClick={()=>{navigate(option.link)}}
+                      to={option.link}
+                      // onClick={()=>{navigate(option.link)}}
                       className="flex items-center space-x-4"
                     >
                       {/* If you have icons for options, include them here */}

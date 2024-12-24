@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import { Login, Dashboard, Page404 } from "../pages";
+import { Login, Dashboard, Page404, Chats } from "../pages";
 import MainLayout from "./MainLayout";
 import { ToastContainer } from "react-toastify";
 import {
@@ -11,9 +11,7 @@ import {
   NotificationsPage,
   Feednew,
   EngPermissionDashboard,
- 
 } from "../components";
-
 
 const router = createBrowserRouter([
   <ToastContainer />,
@@ -49,15 +47,18 @@ const router = createBrowserRouter([
         path: "view-announcement",
         element: <ViewAnnouncements />,
       },
-   
 
       {
         path: "engagement-feed",
-        element: <Feednew/>,
+        element: <Feednew />,
       },
       {
         path: "engagement-permission-dashboard",
-        element: <EngPermissionDashboard/>,
+        element: <EngPermissionDashboard />,
+      },
+      {
+        path: "chats",
+        element: <Chats />,
       },
     ],
   },
