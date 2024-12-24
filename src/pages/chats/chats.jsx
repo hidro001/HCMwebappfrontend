@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
-import { TextField, Button, List, ListItem, ListItemText } from '@material-ui/core';
 import 'tailwindcss/tailwind.css';
 
 const socket = io('http://localhost:3000');
