@@ -9,7 +9,11 @@ import {
   MakeAnnouncement,
   ViewAnnouncements,
   NotificationsPage,
+  Feednew,
+  EngPermissionDashboard,
+ 
 } from "../components";
+
 
 const router = createBrowserRouter([
   <ToastContainer />,
@@ -44,6 +48,16 @@ const router = createBrowserRouter([
       {
         path: "view-announcement",
         element: <ViewAnnouncements />,
+      },
+   
+
+      {
+        path: "engagement-feed",
+        element: <Feednew/>,
+      },
+      {
+        path: "engagement-permission-dashboard",
+        element: <EngPermissionDashboard/>,
       },
     ],
   },
