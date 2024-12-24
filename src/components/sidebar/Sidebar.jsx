@@ -577,7 +577,7 @@ const Sidebar = () => {
   return (
     <div className="flex h-screen sticky left-0 ">
       {/* Main Sidebar */}
-      <div className="bg-gray-200 overflow-y- text-black dark:text-white dark:bg-gray-800 z-50 border-r border-gray-500 w-16 flex flex-col items-center py-4 space-y-6">
+      <div className="bg-gray-200 overflow-y-auto hide-scrollbar text-black dark:text-white dark:bg-gray-800 z-50 border-r border-gray-500 w-16 flex flex-col items-center py-4 space-y-6">
         {filteredMenuItems.map((item, index) => (
           <button
             key={index}
@@ -599,11 +599,7 @@ const Sidebar = () => {
 
       {/* Sub-Sidebar with Animation */}
       <motion.div
-        className="w-50 h-full stickey bg-gray-500 text-white overflow-hidden overflow-y-auto [&::-webkit-scrollbar]:w-2
-      [&::-webkit-scrollbar-track]:bg-gray-100
-      [&::-webkit-scrollbar-thumb]:bg-gray-300
-      dark:[&::-webkit-scrollbar-track]:bg-neutral-700
-      dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
+        className="w-50 h-full stickey bg-gray-500 text-white overflow-y-auto hide-scrollbar"
         initial={{ width: 0 }}
         animate={{ width: currentSidebarTab ? "11rem" : 0 }} // Changed to "16rem" for consistency with "w-64"
         transition={{ duration: 0.2, ease: "easeInOut" }}
