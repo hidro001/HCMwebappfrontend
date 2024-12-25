@@ -1,46 +1,49 @@
 
 // // src/components/PostCard.js
-// import React, { useState, useEffect } from "react";
+// import React from "react";
 // import FavoriteIcon from "@mui/icons-material/Favorite";
 // import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 // import DeleteIcon from "@mui/icons-material/Delete";
 // import { motion } from "framer-motion";
 // import axiosInstance from "../../service/axiosInstance";
-// import useAuthStore from "../../store/store";
-// import { Badge } from "@mui/material";
-// import PollCard from "./PollCard"; // Ensure you have this component
+// import useAuthStore from "../../store/store"; // Corrected import path
+// import useFeedStore from "../../store/feedStore";
+// import { toast } from "react-toastify";
+// import PropTypes from "prop-types";
+// import { Badge, CircularProgress, IconButton, Button, TextField } from "@mui/material";
 
-// const PostCard = ({ post, socket }) => {
+// const PostCard = ({ post }) => {
 //   const user = useAuthStore((state) => state);
 //   const userId = user._id || user.employeeId;
-//   const permissions = user.permissions || [];
+//   const permissions = user.permissionRole || [];
 
-//   const [liked, setLiked] = useState(post.likes.includes(userId));
-//   const [likeCount, setLikeCount] = useState(post.likes.length);
-//   const [showComments, setShowComments] = useState(false);
-//   const [comments, setComments] = useState(post.comments || []);
-//   const [commentText, setCommentText] = useState("");
-//   const [isDeleting, setIsDeleting] = useState(false);
-//   const [isLiking, setIsLiking] = useState(false);
+//   // Determine if the current user has liked the post
+//   const liked = (post.likes || []).includes(userId);
+//   const likeCount = (post.likes || []).length;
 
-
+//   const [showComments, setShowComments] = React.useState(false);
+//   const [commentText, setCommentText] = React.useState("");
+//   const [isDeleting, setIsDeleting] = React.useState(false);
+//   const [isLiking, setIsLiking] = React.useState(false);
+//   const [isAddingComment, setIsAddingComment] = React.useState(false);
 
 //   const handleLike = async () => {
 //     setIsLiking(true);
 //     try {
 //       await axiosInstance.post(`/posts/${post._id}/like`);
-//       // Optimistic UI update
-//       if (liked) {
-//         setLikeCount(likeCount - 1);
-//       } else {
-//         setLikeCount(likeCount + 1);
-//       }
-//       setLiked(!liked);
-//       // Emit real-time update
-//       socket.emit("likePost", { postId: post._id, userId });
+//       // Optimistic UI update by toggling like state
+//       useFeedStore.getState().updatePost({
+//         ...post,
+//         likes: liked
+//           ? post.likes.filter((id) => id !== userId)
+//           : [...post.likes, userId],
+//       });
+//       // Optionally, Socket.io will handle the actual update
 //     } catch (error) {
 //       console.error("Error liking post:", error);
-//       // Optionally, revert UI changes or notify the user
+//       toast.error(
+//         error.response?.data?.message || "Failed to like post. Please try again."
+//       );
 //     } finally {
 //       setIsLiking(false);
 //     }
@@ -51,12 +54,13 @@
 //     setIsDeleting(true);
 //     try {
 //       await axiosInstance.delete(`/posts/${post._id}`);
-//       // Emit real-time deletion
-//       socket.emit("deletePost", { postId: post._id });
-//       // Optionally, remove the post from the UI (handled by real-time event)
+//       toast.success("Post deleted successfully!");
+//       useFeedStore.getState().deletePost(post._id);
 //     } catch (error) {
 //       console.error("Error deleting post:", error);
-//       // Optionally, notify the user
+//       toast.error(
+//         error.response?.data?.message || "Failed to delete post. Please try again."
+//       );
 //     } finally {
 //       setIsDeleting(false);
 //     }
@@ -64,87 +68,95 @@
 
 //   const handleAddComment = async (e) => {
 //     e.preventDefault();
-//     if (!commentText.trim()) return;
+//     if (!commentText.trim()) {
+//       toast.error("Comment cannot be empty.");
+//       return;
+//     }
+//     setIsAddingComment(true);
 //     try {
 //       const response = await axiosInstance.post(`/comments/${post._id}`, {
 //         comment: commentText,
 //       });
+//       const newComment = response.data.comment;
+
+//       if (newComment && newComment.commenter) {
+//         // Update the feed store; Socket.io will handle real-time updates across clients
+//         useFeedStore.getState().addComment(post._id, newComment);
+//         toast.success("Comment added successfully!");
+//       }
+//       //  else {
+//       //   console.warn("Commenter information is missing in the response.");
+//       //   useFeedStore.getState().addComment(post._id, {
+//       //     ...newComment,
+//       //     reactions: newComment.reactions || [],
+//       //     commenter: {
+//       //       user_Avatar: "https://via.placeholder.com/150",
+//       //       first_Name: "Unknown",
+//       //       last_Name: "User",
+//       //       employee_Id: "N/A",
+//       //       _id: "unknown",
+//       //     },
+//       //   });
+//       //   toast.warn("Comment added, but commenter information is missing.");
+//       // }
+
 //       setCommentText("");
-//       // The new comment will be added via real-time event
-//       // Emit real-time event for new comment
-//       socket.emit("newComment", response.data.comment);
 //     } catch (error) {
 //       console.error("Error adding comment:", error);
-//       // Optionally, notify the user
+//       toast.error(
+//         error.response?.data?.message || "Failed to add comment. Please try again."
+//       );
+//     } finally {
+//       setIsAddingComment(false);
 //     }
 //   };
 
 //   const handleToggleComments = () => {
 //     setShowComments(!showComments);
-//     if (!showComments && comments.length === 0) {
-//       // Fetch comments if not already fetched
-//       fetchComments();
-//     }
-//   };
-
-//   const fetchComments = async () => {
-//     try {
-//       const response = await axiosInstance.get(`/comments/${post._id}`);
-//       setComments(response.data.docs || []);
-//     } catch (error) {
-//       console.error("Error fetching comments:", error);
-//       // Optionally, notify the user
-//     }
 //   };
 
 //   const handleLikeComment = async (commentId) => {
 //     try {
 //       await axiosInstance.post(`/comments/${commentId}/like`);
-//       // Optimistic UI update
-//       setComments((prevComments) =>
-//         prevComments.map((comment) => {
-//           if (comment._id === commentId) {
-//             const isLiked = comment.reactions.includes(userId);
-//             if (isLiked) {
-//               return {
-//                 ...comment,
-//                 reactions: comment.reactions.filter((id) => id !== userId),
-//               };
-//             } else {
-//               return {
-//                 ...comment,
-//                 reactions: [...comment.reactions, userId],
-//               };
-//             }
-//           }
-//           return comment;
-//         })
-//       );
-//       // Emit real-time update
-//       socket.emit("likeComment", { commentId, userId });
+//       // Optimistic UI update by toggling like state in the store
+//       const comment = post.comments.find((c) => c._id === commentId);
+//       if (comment) {
+//         const isLiked = comment.reactions.includes(userId);
+//         const updatedReactions = isLiked
+//           ? comment.reactions.filter((id) => id !== userId)
+//           : [...comment.reactions, userId];
+//         useFeedStore.getState().updateComment(post._id, {
+//           ...comment,
+//           reactions: updatedReactions,
+//         });
+//       }
 //     } catch (error) {
 //       console.error("Error liking comment:", error);
-//       // Optionally, revert UI changes or notify the user
+//       toast.error(
+//         error.response?.data?.message || "Failed to like comment. Please try again."
+//       );
 //     }
 //   };
 
 //   const handleDeleteComment = async (commentId) => {
-//     if (!window.confirm("Are you sure you want to delete this comment?")) return;
+//     if (!window.confirm("Are you sure you want to delete this comment?"))
+//       return;
 //     try {
 //       await axiosInstance.delete(`/comments/${commentId}`);
-//       setComments((prevComments) => prevComments.filter((c) => c._id !== commentId));
-//       // Emit real-time deletion
-//       socket.emit("deleteComment", { commentId });
+//       useFeedStore.getState().deleteComment(post._id, commentId);
+//       toast.success("Comment deleted successfully!");
 //     } catch (error) {
 //       console.error("Error deleting comment:", error);
-//       // Optionally, notify the user
+//       toast.error(
+//         error.response?.data?.message || "Failed to delete comment. Please try again."
+//       );
 //     }
 //   };
 
 //   // Utility function to determine media type
 //   const getMediaType = (url) => {
 //     const extension = url.split(".").pop().toLowerCase();
-//     const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "svg"];
+//     const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "svg", "avif"];
 //     const videoExtensions = ["mp4", "webm", "ogg", "mov", "avi", "wmv"];
 //     if (imageExtensions.includes(extension)) {
 //       return "image";
@@ -165,36 +177,41 @@
 //       {/* Post Header */}
 //       <div className="flex items-center space-x-4">
 //         <img
-//           src={post.author.user_Avatar || "https://via.placeholder.com/150"}
+//           src={post.author?.user_Avatar || "https://via.placeholder.com/150"}
 //           alt="Avatar"
 //           className="w-12 h-12 rounded-full"
 //         />
 //         <div>
 //           <p className="font-semibold text-lg text-gray-800 dark:text-gray-100">
-//             {post.author.first_Name} {post.author.last_Name} ({post.author.employee_Id})
+//             {post.author?.first_Name || "Unknown"} {post.author?.last_Name || "User"} (
+//             {post.author?.employee_Id || "N/A"})
 //           </p>
 //           <p className="text-sm text-gray-500 dark:text-gray-400">
-//             {new Date(post.createdAt).toLocaleString()}
+//             {isNaN(new Date(post.createdAt)) ? "Date not available" : new Date(post.createdAt).toLocaleString()}
 //           </p>
 //         </div>
 //         {(permissions.includes("deleteAnyPost") ||
-//           userId === post.author._id ||
-//           userId === post.author.employee_Id) && (
-//           <button
+//           userId === post.author?._id ||
+//           userId === post.author?.employee_Id) && (
+//           <IconButton
 //             onClick={handleDeletePost}
 //             disabled={isDeleting}
 //             className="ml-auto text-red-500 hover:text-red-700 transition-colors duration-300"
 //             title="Delete Post"
 //           >
-//             <DeleteIcon />
-//           </button>
+//             {isDeleting ? <CircularProgress size={24} /> : <DeleteIcon />}
+//           </IconButton>
 //         )}
 //       </div>
 
 //       {/* Post Content */}
 //       <div className="mt-4">
-//         <p className="text-gray-700 dark:text-gray-300 text-lg font-bold">{post.title}</p>
-//         <p className="mt-2 text-gray-600 dark:text-gray-400">{post.description}</p>
+//         <p className="text-gray-700 dark:text-gray-300 text-lg font-bold">
+//           {post.title}
+//         </p>
+//         <p className="mt-2 text-gray-600 dark:text-gray-400">
+//           {post.description}
+//         </p>
 //         {post.media && post.media.length > 0 && (
 //           <div className="mt-4 space-y-4">
 //             {post.media.map((url, index) => {
@@ -242,13 +259,14 @@
 //           >
 //             <FavoriteIcon className={`${liked ? "text-red-500" : ""}`} />
 //             <span>{likeCount}</span>
+//             {isLiking && <CircularProgress size={16} className="ml-2" />}
 //           </button>
 //           <button
 //             onClick={handleToggleComments}
 //             className="flex items-center space-x-1 text-gray-600 dark:text-gray-300 hover:text-blue-500 transition-colors duration-300"
 //           >
 //             <ChatBubbleOutlineIcon />
-//             <span>{comments.length}</span>
+//             <span>{post.comments.length}</span>
 //           </button>
 //         </div>
 //       </div>
@@ -256,69 +274,107 @@
 //       {/* Comments Section */}
 //       {showComments && (
 //         <div className="mt-4">
-//           <h3 className="font-semibold text-gray-800 dark:text-gray-100">Comments</h3>
+//           <h3 className="font-semibold text-gray-800 dark:text-gray-100">
+//             Comments
+//           </h3>
 //           <form onSubmit={handleAddComment} className="mt-2 flex flex-col">
-//             <textarea
+//             <TextField
 //               placeholder="Add a comment..."
-//               className="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-800 dark:text-gray-100"
+//               variant="outlined"
+//               multiline
+//               rows={3}
 //               value={commentText}
 //               onChange={(e) => setCommentText(e.target.value)}
 //               required
-//               rows={3}
 //             />
-//             <button
+//             <Button
 //               type="submit"
-//               className="mt-2 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300"
+//               variant="contained"
+//               color="primary"
+//               className="mt-2"
+//               disabled={isAddingComment}
 //             >
-//               Comment
-//             </button>
+//               {isAddingComment ? "Adding..." : "Comment"}
+//             </Button>
 //           </form>
 
 //           {/* Comments List */}
 //           <div className="mt-4 space-y-3">
-//             {comments.length === 0 ? (
-//               <p className="text-gray-500 dark:text-gray-400">No comments yet.</p>
+//             {post.comments.length === 0 ? (
+//               <p className="text-gray-500 dark:text-gray-400">
+//                 No comments yet.
+//               </p>
 //             ) : (
-//               comments.map((comment) => (
-//                 <div key={comment._id} className="flex items-start space-x-2">
+//               post.comments.map((comment) => (
+//                 <div
+//                   key={comment._id}
+//                   className="flex items-start space-x-2"
+//                 >
 //                   <img
-//                     src={comment.commenter.user_Avatar || "https://via.placeholder.com/150"}
+//                     src={
+//                       comment.commenter?.user_Avatar ||
+//                       "https://via.placeholder.com/150"
+//                     }
 //                     alt="Avatar"
 //                     className="w-8 h-8 rounded-full"
 //                   />
 //                   <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-2 flex-1">
 //                     <div className="flex justify-between">
 //                       <span className="font-semibold text-gray-800 dark:text-gray-100">
-//                         {comment.commenter.first_Name} {comment.commenter.last_Name} ({comment.commenter.employee_Id})
+//                         {comment.commenter?.first_Name || "Unknown"}{" "}
+//                         {comment.commenter?.last_Name || "User"} (
+//                         {comment.commenter?.employee_Id || "N/A"})
 //                       </span>
 //                       {(permissions.includes("deleteAnyComment") ||
-//                         userId === comment.commenter._id ||
-//                         userId === comment.commenter.employee_Id) && (
-//                         <button
+//                         userId === comment.commenter?._id ||
+//                         userId === comment.commenter?.employee_Id) && (
+//                         <IconButton
 //                           onClick={() => handleDeleteComment(comment._id)}
 //                           className="text-red-500 hover:text-red-700 transition-colors duration-300"
 //                           title="Delete Comment"
+//                           size="small"
 //                         >
 //                           <DeleteIcon fontSize="small" />
-//                         </button>
+//                         </IconButton>
 //                       )}
 //                     </div>
-//                     <p className="text-gray-700 dark:text-gray-300">{comment.comment}</p>
+//                     <p className="text-gray-700 dark:text-gray-300">
+//                       {typeof comment.comment === 'string' ? comment.comment : JSON.stringify(comment.comment)}
+//                     </p>
+//                     {/* Optional: Render attachments if present */}
+//                     {comment.attachments && comment.attachments.length > 0 && (
+//                       <div className="mt-2">
+//                         <p className="text-sm text-gray-600 dark:text-gray-400">Attachments:</p>
+//                         <ul className="list-disc list-inside">
+//                           {comment.attachments.map((attachment, idx) => (
+//                             <li key={idx}>
+//                               <a href={attachment.url} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+//                                 {attachment.name}
+//                               </a>
+//                             </li>
+//                           ))}
+//                         </ul>
+//                       </div>
+//                     )}
 //                     <p className="text-xs text-gray-500 dark:text-gray-400">
-//                       {new Date(comment.createdAt).toLocaleString()}
+//                       {isNaN(new Date(comment.createdAt)) ? "Date not available" : new Date(comment.createdAt).toLocaleString()}
 //                     </p>
 //                     <div className="flex items-center mt-1">
-//                       <button
+//                       <Button
 //                         onClick={() => handleLikeComment(comment._id)}
-//                         className="flex items-center space-x-1 text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors duration-300"
+//                         startIcon={
+//                           <FavoriteIcon
+//                             className={`text-sm ${
+//                               (comment.reactions || []).includes(userId)
+//                                 ? "text-red-500"
+//                                 : ""
+//                             }`}
+//                           />
+//                         }
+//                         size="small"
 //                       >
-//                         <FavoriteIcon
-//                           className={`text-sm ${
-//                             comment.reactions.includes(userId) ? "text-red-500" : ""
-//                           }`}
-//                         />
-//                         <span className="text-sm">{comment.reactions.length}</span>
-//                       </button>
+//                         {comment.reactions.length}
+//                       </Button>
 //                     </div>
 //                   </div>
 //                 </div>
@@ -331,52 +387,98 @@
 //   );
 // };
 
-// export default PostCard;
+// PostCard.propTypes = {
+//   post: PropTypes.shape({
+//     _id: PropTypes.string.isRequired,
+//     title: PropTypes.string.isRequired,
+//     description: PropTypes.string.isRequired,
+//     media: PropTypes.arrayOf(PropTypes.string),
+//     likes: PropTypes.arrayOf(PropTypes.string).isRequired,
+//     comments: PropTypes.arrayOf(
+//       PropTypes.shape({
+//         _id: PropTypes.string.isRequired,
+//         comment: PropTypes.oneOfType([
+//           PropTypes.string,
+//           PropTypes.shape({
+//             text: PropTypes.string,
+//             // Add other fields if necessary
+//           }),
+//         ]).isRequired,
+//         commenter: PropTypes.shape({
+//           _id: PropTypes.string.isRequired,
+//           first_Name: PropTypes.string.isRequired,
+//           last_Name: PropTypes.string.isRequired,
+//           employee_Id: PropTypes.string.isRequired,
+//           user_Avatar: PropTypes.string,
+//         }),
+//         reactions: PropTypes.arrayOf(PropTypes.string).isRequired,
+//         createdAt: PropTypes.string.isRequired,
+//         attachments: PropTypes.arrayOf(
+//           PropTypes.shape({
+//             url: PropTypes.string.isRequired,
+//             name: PropTypes.string.isRequired,
+//           })
+//         ),
+//       })
+//     ),
+//     author: PropTypes.shape({
+//       _id: PropTypes.string.isRequired,
+//       first_Name: PropTypes.string.isRequired,
+//       last_Name: PropTypes.string.isRequired,
+//       employee_Id: PropTypes.string.isRequired,
+//       user_Avatar: PropTypes.string,
+//     }).isRequired,
+//     createdAt: PropTypes.string.isRequired,
+//     type: PropTypes.string.isRequired, // Ensure 'type' is included
+//   }).isRequired,
+// };
 
+// export default PostCard;
 // src/components/PostCard.js
-import React, { useState, useEffect } from "react";
+
+import React from "react";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { motion } from "framer-motion";
 import axiosInstance from "../../service/axiosInstance";
-import useAuthStore from "../../store/store";
-import { Badge, CircularProgress, IconButton, Button } from "@mui/material";
-import PollCard from "./PollCard"; // Ensure you have this component
-import PropTypes from "prop-types";
+import useAuthStore from "../../store/store"; // Corrected import path
+import useFeedStore from "../../store/feedStore";
 import { toast } from "react-toastify";
+import PropTypes from "prop-types";
+import { Badge, CircularProgress, IconButton, Button, TextField, Grid } from "@mui/material";
 
 const PostCard = ({ post }) => {
   const user = useAuthStore((state) => state);
   const userId = user._id || user.employeeId;
-  const permissions = user.permissions || [];
+  const permissions = user.permissionRole || [];
 
-  const [liked, setLiked] = useState((post.likes || []).includes(userId));
-  const [likeCount, setLikeCount] = useState((post.likes || []).length);
-  const [showComments, setShowComments] = useState(false);
-  const [comments, setComments] = useState(post.comments || []);
-  const [commentText, setCommentText] = useState("");
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [isLiking, setIsLiking] = useState(false);
+  // Determine if the current user has liked the post
+  const liked = (post.likes || []).includes(userId);
+  const likeCount = (post.likes || []).length;
+
+  const [showComments, setShowComments] = React.useState(false);
+  const [commentText, setCommentText] = React.useState("");
+  const [isDeleting, setIsDeleting] = React.useState(false);
+  const [isLiking, setIsLiking] = React.useState(false);
+  const [isAddingComment, setIsAddingComment] = React.useState(false);
 
   const handleLike = async () => {
     setIsLiking(true);
     try {
       await axiosInstance.post(`/posts/${post._id}/like`);
-      // Optimistic UI update
-      if (liked) {
-        setLikeCount(likeCount - 1);
-      } else {
-        setLikeCount(likeCount + 1);
-      }
-      setLiked(!liked);
-      // Emit real-time update if needed
-      // socket.emit("likePost", { postId: post._id, userId });
+      // Optimistic UI update by toggling like state
+      useFeedStore.getState().updatePost({
+        ...post,
+        likes: liked
+          ? post.likes.filter((id) => id !== userId)
+          : [...post.likes, userId],
+      });
+      // Optionally, Socket.io will handle the actual update
     } catch (error) {
       console.error("Error liking post:", error);
       toast.error(
-        error.response?.data?.message ||
-          "Failed to like post. Please try again."
+        error.response?.data?.message || "Failed to like post. Please try again."
       );
     } finally {
       setIsLiking(false);
@@ -389,13 +491,11 @@ const PostCard = ({ post }) => {
     try {
       await axiosInstance.delete(`/posts/${post._id}`);
       toast.success("Post deleted successfully!");
-      // Optionally, remove the post from the UI (handled by real-time event or parent)
-      // e.g., by calling a prop function to refresh the feed
+      useFeedStore.getState().deletePost(post._id);
     } catch (error) {
       console.error("Error deleting post:", error);
       toast.error(
-        error.response?.data?.message ||
-          "Failed to delete post. Please try again."
+        error.response?.data?.message || "Failed to delete post. Please try again."
       );
     } finally {
       setIsDeleting(false);
@@ -404,112 +504,57 @@ const PostCard = ({ post }) => {
 
   const handleAddComment = async (e) => {
     e.preventDefault();
-    if (!commentText.trim()) return;
+    if (!commentText.trim()) {
+      toast.error("Comment cannot be empty.");
+      return;
+    }
+    setIsAddingComment(true);
     try {
       const response = await axiosInstance.post(`/comments/${post._id}`, {
         comment: commentText,
       });
+      const newComment = response.data.comment;
 
-     
-
-      // Ensure that the response contains the 'commenter' field
-      if (response.data.comment && response.data.comment.commenter) {
-        setComments([...comments, response.data.comment]);
+      if (newComment && newComment.commenter) {
+        // Update the feed store; Socket.io will handle real-time updates across clients
+        useFeedStore.getState().addComment(post._id, newComment);
         toast.success("Comment added successfully!");
-      } else {
-        console.warn("Commenter information is missing in the response.");
-        toast.warn("Comment added, but commenter information is missing.");
-        // Optionally, set a default commenter or handle accordingly
-        setComments([
-          ...comments,
-          {
-            ...response.data.comment,
-            reactions: response.data.comment.reactions || [],
-            commenter: {
-              user_Avatar: "https://via.placeholder.com/150",
-              first_Name: "Unknown",
-              last_Name: "User",
-              employee_Id: "N/A",
-              _id: "unknown",
-            },
-          },
-        ]);
       }
 
-      // Refresh comments to ensure data consistency
-      await fetchComments();
-
-      // Emit real-time event for new comment if needed
-      // socket.emit("newComment", response.data.comment);
+      setCommentText("");
     } catch (error) {
       console.error("Error adding comment:", error);
       toast.error(
-        error.response?.data?.message ||
-          "Failed to add comment. Please try again."
+        error.response?.data?.message || "Failed to add comment. Please try again."
       );
+    } finally {
+      setIsAddingComment(false);
     }
   };
 
   const handleToggleComments = () => {
     setShowComments(!showComments);
-    if (!showComments && comments.length === 0) {
-      // Fetch comments if not already fetched
-      fetchComments();
-    }
-  };
-
-  const fetchComments = async () => {
-    try {
-      const response = await axiosInstance.get(`/comments/${post._id}`);
-      // Ensure that each comment has a 'reactions' array and 'commenter' object
-      const fetchedComments = response.data.docs.map((comment) => ({
-        ...comment,
-        reactions: comment.reactions || [],
-        commenter: comment.commenter || {
-          user_Avatar: "https://via.placeholder.com/150",
-          first_Name: "Unknown",
-          last_Name: "User",
-          employee_Id: "N/A",
-          _id: "unknown",
-        },
-      }));
-      setComments(fetchedComments);
-    } catch (error) {
-      console.error("Error fetching comments:", error);
-      toast.error("Failed to load comments. Please try again.");
-    }
   };
 
   const handleLikeComment = async (commentId) => {
     try {
       await axiosInstance.post(`/comments/${commentId}/like`);
-      // Optimistic UI update
-      setComments((prevComments) =>
-        prevComments.map((comment) => {
-          if (comment._id === commentId) {
-            const isLiked = (comment.reactions || []).includes(userId);
-            if (isLiked) {
-              return {
-                ...comment,
-                reactions: comment.reactions.filter((id) => id !== userId),
-              };
-            } else {
-              return {
-                ...comment,
-                reactions: [...(comment.reactions || []), userId],
-              };
-            }
-          }
-          return comment;
-        })
-      );
-      // Emit real-time update if needed
-      // socket.emit("likeComment", { commentId, userId });
+      // Optimistic UI update by toggling like state in the store
+      const comment = post.comments.find((c) => c._id === commentId);
+      if (comment) {
+        const isLiked = comment.reactions.includes(userId);
+        const updatedReactions = isLiked
+          ? comment.reactions.filter((id) => id !== userId)
+          : [...comment.reactions, userId];
+        useFeedStore.getState().updateComment(post._id, {
+          ...comment,
+          reactions: updatedReactions,
+        });
+      }
     } catch (error) {
       console.error("Error liking comment:", error);
       toast.error(
-        error.response?.data?.message ||
-          "Failed to like comment. Please try again."
+        error.response?.data?.message || "Failed to like comment. Please try again."
       );
     }
   };
@@ -519,17 +564,12 @@ const PostCard = ({ post }) => {
       return;
     try {
       await axiosInstance.delete(`/comments/${commentId}`);
-      setComments((prevComments) =>
-        prevComments.filter((c) => c._id !== commentId)
-      );
+      useFeedStore.getState().deleteComment(post._id, commentId);
       toast.success("Comment deleted successfully!");
-      // Emit real-time deletion if needed
-      // socket.emit("deleteComment", { commentId });
     } catch (error) {
       console.error("Error deleting comment:", error);
       toast.error(
-        error.response?.data?.message ||
-          "Failed to delete comment. Please try again."
+        error.response?.data?.message || "Failed to delete comment. Please try again."
       );
     }
   };
@@ -537,7 +577,7 @@ const PostCard = ({ post }) => {
   // Utility function to determine media type
   const getMediaType = (url) => {
     const extension = url.split(".").pop().toLowerCase();
-    const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "svg"];
+    const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "svg", "avif"];
     const videoExtensions = ["mp4", "webm", "ogg", "mov", "avi", "wmv"];
     if (imageExtensions.includes(extension)) {
       return "image";
@@ -553,22 +593,22 @@ const PostCard = ({ post }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl mb-6 p-6 transition-colors duration-300"
+      className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl mb-6 p-6 transition-colors duration-300 "
     >
       {/* Post Header */}
-      <div className="flex items-center space-x-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-4">
         <img
           src={post.author?.user_Avatar || "https://via.placeholder.com/150"}
           alt="Avatar"
-          className="w-12 h-12 rounded-full"
+          className="w-12 h-12 rounded-full object-cover"
         />
-        <div>
+        <div className="mt-2 sm:mt-0">
           <p className="font-semibold text-lg text-gray-800 dark:text-gray-100">
-            {post.author?.first_Name} {post.author?.last_Name} (
-            {post.author?.employee_Id})
+            {post.author?.first_Name || "Unknown"} {post.author?.last_Name || "User"} (
+            {post.author?.employee_Id || "N/A"})
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {new Date(post.createdAt).toLocaleString()}
+            {isNaN(new Date(post.createdAt)) ? "Date not available" : new Date(post.createdAt).toLocaleString()}
           </p>
         </div>
         {(permissions.includes("deleteAnyPost") ||
@@ -577,58 +617,112 @@ const PostCard = ({ post }) => {
           <IconButton
             onClick={handleDeletePost}
             disabled={isDeleting}
-            className="ml-auto text-red-500 hover:text-red-700 transition-colors duration-300"
+            className="ml-auto text-red-500 hover:text-red-700 transition-colors duration-300 mt-2 sm:mt-0"
             title="Delete Post"
           >
-            <DeleteIcon />
+            {isDeleting ? <CircularProgress size={24} /> : <DeleteIcon />}
           </IconButton>
         )}
       </div>
 
       {/* Post Content */}
-      <div className="mt-4">
-        <p className="text-gray-700 dark:text-gray-300 text-lg font-bold">
+      {/* <div className="mt-4">
+        <p className="text-gray-700 dark:text-gray-300 text-lg font-bold border border-red-700">
           {post.title}
         </p>
-        <p className="mt-2 text-gray-600 dark:text-gray-400">
+        <p className="mt-2 text-gray-600 dark:text-gray-400 border border-red-700">
           {post.description}
         </p>
         {post.media && post.media.length > 0 && (
-          <div className="mt-4 space-y-4">
-            {post.media.map((url, index) => {
-              const mediaType = getMediaType(url);
-              if (mediaType === "image") {
+          <div className="mt-4 space-y-4 border border-blue-700 items-center">
+            <Grid container  className="border border-green-700 w-auto items-center m-auto">
+              {post.media.map((url, index) => {
+                const mediaType = getMediaType(url);
                 return (
-                  <img
-                    key={index}
-                    src={url}
-                    alt={`media-${index}`}
-                    className="max-w-full h-auto rounded-md mb-2"
-                    loading="lazy"
-                  />
+                  <Grid item xs={12} sm={6} key={index} className=" w-auto m-auto items-center">
+                    {mediaType === "image" ? (
+                      <img
+                        src={url}
+                        alt={`media-${index}`}
+                        className=" h-64 object-cover rounded-md   m-auto items-center"
+                      />
+                    ) : mediaType === "video" ? (
+                      <video
+                        src={url}
+                        controls
+                        className="w-full h-64 object-cover rounded-md"
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                    ) : (
+                      <p className="text-red-500">Unsupported media format.</p>
+                    )}
+                  </Grid>
                 );
-              } else if (mediaType === "video") {
-                return (
-                  <video
-                    key={index}
-                    src={url}
-                    controls
-                    className="max-w-full h-auto rounded-md mb-2"
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                );
-              } else {
-                return (
-                  <p key={index} className="text-red-500">
-                    Unsupported media format.
-                  </p>
-                );
-              }
-            })}
+              })}
+            </Grid>
           </div>
         )}
-      </div>
+      </div> */}
+
+<div className="mt-4">
+  {/* Post Title */}
+  <p className="text-gray-700 dark:text-gray-300 text-lg font-bold">
+    {post.title}
+  </p>
+  
+  {/* Post Description */}
+  <p className="mt-2 text-gray-600 dark:text-gray-400">
+    {post.description}
+  </p>
+  
+  {/* Media Section */}
+  {post.media && post.media.length > 0 && (
+    <div className="mt-4 space-y-4">
+      {/* Material-UI Grid Container */}
+      <Grid 
+        container 
+        spacing={2} 
+        justifyContent="center" // Centers items horizontally
+        alignItems="center"     // Centers items vertically
+      >
+        {post.media.map((url, index) => {
+          const mediaType = getMediaType(url);
+          return (
+            <Grid 
+              item 
+              xs={12} 
+              sm={6} 
+              key={index} 
+              display="flex" 
+              justifyContent="center" // Centers content within the Grid item
+            >
+              {/* Conditional Rendering for Image or Video */}
+              {mediaType === "image" ? (
+                <img
+                  src={url}
+                  alt={`media-${index}`}
+                  className="max-w-full h-64 object-cover rounded-md" // Ensures responsiveness and uniform height
+                />
+              ) : mediaType === "video" ? (
+                <video
+                  src={url}
+                  controls
+                  className="max-w-full h-40 object-contain rounded-md " // Ensures responsiveness and uniform height
+                >
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <p className="text-red-500">Unsupported media format.</p>
+              )}
+            </Grid>
+          );
+        })}
+      </Grid>
+    </div>
+  )}
+</div>
+
 
       {/* Post Actions */}
       <div className="flex justify-between items-center mt-4">
@@ -647,7 +741,7 @@ const PostCard = ({ post }) => {
             className="flex items-center space-x-1 text-gray-600 dark:text-gray-300 hover:text-blue-500 transition-colors duration-300"
           >
             <ChatBubbleOutlineIcon />
-            <span>{comments.length}</span>
+            <span>{post.comments.length}</span>
           </button>
         </div>
       </div>
@@ -659,35 +753,37 @@ const PostCard = ({ post }) => {
             Comments
           </h3>
           <form onSubmit={handleAddComment} className="mt-2 flex flex-col">
-            <textarea
+            <TextField
               placeholder="Add a comment..."
-              className="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-800 dark:text-gray-100"
+              variant="outlined"
+              multiline
+              rows={3}
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
               required
-              rows={3}
             />
             <Button
               type="submit"
               variant="contained"
               color="primary"
               className="mt-2"
+              disabled={isAddingComment}
             >
-              Comment
+              {isAddingComment ? "Adding..." : "Comment"}
             </Button>
           </form>
 
           {/* Comments List */}
           <div className="mt-4 space-y-3">
-            {comments.length === 0 ? (
+            {post.comments.length === 0 ? (
               <p className="text-gray-500 dark:text-gray-400">
                 No comments yet.
               </p>
             ) : (
-              comments.map((comment) => (
+              post.comments.map((comment) => (
                 <div
                   key={comment._id}
-                  className="flex items-start space-x-2"
+                  className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2"
                 >
                   <img
                     src={
@@ -695,14 +791,14 @@ const PostCard = ({ post }) => {
                       "https://via.placeholder.com/150"
                     }
                     alt="Avatar"
-                    className="w-8 h-8 rounded-full"
+                    className="w-8 h-8 rounded-full object-cover"
                   />
                   <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-2 flex-1">
-                    <div className="flex justify-between">
+                    <div className="flex justify-between items-center">
                       <span className="font-semibold text-gray-800 dark:text-gray-100">
-                        {comment.commenter?.first_Name}{" "}
-                        {comment.commenter?.last_Name} (
-                        {comment.commenter?.employee_Id})
+                        {comment.commenter?.first_Name || "Unknown"}{" "}
+                        {comment.commenter?.last_Name || "User"} (
+                        {comment.commenter?.employee_Id || "N/A"})
                       </span>
                       {(permissions.includes("deleteAnyComment") ||
                         userId === comment.commenter?._id ||
@@ -717,28 +813,43 @@ const PostCard = ({ post }) => {
                         </IconButton>
                       )}
                     </div>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      {comment.comment}
+                    <p className="text-gray-700 dark:text-gray-300 mt-1">
+                      {typeof comment.comment === 'string' ? comment.comment : JSON.stringify(comment.comment)}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {new Date(comment.createdAt).toLocaleString()}
+                    {/* Optional: Render attachments if present */}
+                    {comment.attachments && comment.attachments.length > 0 && (
+                      <div className="mt-2">
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Attachments:</p>
+                        <ul className="list-disc list-inside">
+                          {comment.attachments.map((attachment, idx) => (
+                            <li key={idx}>
+                              <a href={attachment.url} target="_blank" rel="noopener noreferrer" className="text-blue-500">
+                                {attachment.name}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      {isNaN(new Date(comment.createdAt)) ? "Date not available" : new Date(comment.createdAt).toLocaleString()}
                     </p>
                     <div className="flex items-center mt-1">
-                      <button
+                      <Button
                         onClick={() => handleLikeComment(comment._id)}
-                        className="flex items-center space-x-1 text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors duration-300"
+                        startIcon={
+                          <FavoriteIcon
+                            className={`text-sm ${
+                              (comment.reactions || []).includes(userId)
+                                ? "text-red-500"
+                                : ""
+                            }`}
+                          />
+                        }
+                        size="small"
                       >
-                        <FavoriteIcon
-                          className={`text-sm ${
-                            (comment.reactions || []).includes(userId)
-                              ? "text-red-500"
-                              : ""
-                          }`}
-                        />
-                        <span className="text-sm">
-                          {(comment.reactions || []).length}
-                        </span>
-                      </button>
+                        {comment.reactions.length}
+                      </Button>
                     </div>
                   </div>
                 </div>
@@ -761,7 +872,13 @@ PostCard.propTypes = {
     comments: PropTypes.arrayOf(
       PropTypes.shape({
         _id: PropTypes.string.isRequired,
-        comment: PropTypes.string.isRequired,
+        comment: PropTypes.oneOfType([
+          PropTypes.string,
+          PropTypes.shape({
+            text: PropTypes.string,
+            // Add other fields if necessary
+          }),
+        ]).isRequired,
         commenter: PropTypes.shape({
           _id: PropTypes.string.isRequired,
           first_Name: PropTypes.string.isRequired,
@@ -771,6 +888,12 @@ PostCard.propTypes = {
         }),
         reactions: PropTypes.arrayOf(PropTypes.string).isRequired,
         createdAt: PropTypes.string.isRequired,
+        attachments: PropTypes.arrayOf(
+          PropTypes.shape({
+            url: PropTypes.string.isRequired,
+            name: PropTypes.string.isRequired,
+          })
+        ),
       })
     ),
     author: PropTypes.shape({
@@ -781,22 +904,9 @@ PostCard.propTypes = {
       user_Avatar: PropTypes.string,
     }).isRequired,
     createdAt: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired, // Ensure 'type' is included
   }).isRequired,
 };
 
-PostCard.defaultProps = {
-  post: {
-    comments: [],
-    likes: [],
-    author: {
-      user_Avatar: "https://via.placeholder.com/150",
-      first_Name: "Unknown",
-      last_Name: "User",
-      employee_Id: "N/A",
-    },
-  },
-};
-
 export default PostCard;
-
 

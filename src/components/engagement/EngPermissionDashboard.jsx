@@ -1,7 +1,7 @@
-// src/components/management/AdminDashboard.js
+
 
 import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types'; // Ensure PropTypes is imported
+import PropTypes from 'prop-types';
 import {
   Box,
   Button,
@@ -38,7 +38,7 @@ import {
   Check,
 } from '@mui/icons-material';
 import { toast } from 'react-toastify';
-import { useTheme } from '@mui/material/styles'; // Import useTheme
+import { useTheme } from '@mui/material/styles';
 
 // Import services
 import {
@@ -64,8 +64,12 @@ import useEngagementStore from '../../store/engagementStore';
 // Import ConfirmationDialog
 import ConfirmationDialog from '../common/ConfirmationDialog'; // Adjust the path as necessary
 
+// Import Socket Context
+import { useSocket } from '../../contexts/SocketContext'; // Adjust the path
+
 const AdminDashboard = () => {
-  const theme = useTheme(); // Access the theme
+  const theme = useTheme();
+  const socket = useSocket();
 
   // Tabs state
   const [tabIndex, setTabIndex] = useState(0);
@@ -410,6 +414,59 @@ const AdminDashboard = () => {
   const handleTabChange = (event, newValue) => {
     setTabIndex(newValue);
   };
+
+  // --- Socket.io Event Listeners ---
+  useEffect(() => {
+    if (!socket) return;
+
+    // Role Events
+    socket.on('newRole', (role) => {
+      setRoles((prevRoles) => [...prevRoles, role]);
+      toast.info(`New role "${role.name}" has been created.`);
+    });
+
+    socket.on('updateRole', (updatedRole) => {
+      setRoles((prevRoles) =>
+        prevRoles.map((role) => (role._id === updatedRole._id ? updatedRole : role))
+      );
+      toast.info(`Role "${updatedRole.name}" has been updated.`);
+    });
+
+    socket.on('deleteRole', ({ roleId }) => {
+      setRoles((prevRoles) => prevRoles.filter((role) => role._id !== roleId));
+      toast.info(`A role has been deleted.`);
+    });
+
+    // Permission Events
+    socket.on('newPermission', (permission) => {
+      setPermissions((prevPermissions) => [...prevPermissions, permission]);
+      toast.info(`New permission "${permission.name}" has been created.`);
+    });
+
+    socket.on('updatePermission', (updatedPermission) => {
+      setPermissions((prevPermissions) =>
+        prevPermissions.map((perm) => (perm._id === updatedPermission._id ? updatedPermission : perm))
+      );
+      toast.info(`Permission "${updatedPermission.name}" has been updated.`);
+    });
+
+    socket.on('deletePermission', ({ permissionId }) => {
+      setPermissions((prevPermissions) =>
+        prevPermissions.filter((perm) => perm._id !== permissionId)
+      );
+      toast.info(`A permission has been deleted.`);
+    });
+
+    // Cleanup on unmount
+    return () => {
+      socket.off('newRole');
+      socket.off('updateRole');
+      socket.off('deleteRole');
+      socket.off('newPermission');
+      socket.off('updatePermission');
+      socket.off('deletePermission');
+    };
+  }, [socket]);
 
   return (
     <Box p={4}>

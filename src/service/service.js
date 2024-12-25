@@ -248,6 +248,8 @@ export const fetchDepartments = async () => {
     throw error.response?.data || error;
   }
 };
+
+
 export const fetchPermissions = async (empId) => {
   try {
     const response = await axiosInstance.get(
@@ -265,51 +267,6 @@ export const fetchPermissions = async (empId) => {
   }
 };
 
-
-
-// Post Services
-export const createPost = async (postData) => {
-  const response = await axiosInstance.post('/posts', postData);
-  return response.data;
-};
-
-export const fetchPosts = async (page = 1, limit = 10) => {
-  const response = await axiosInstance.get(`/posts?page=${page}&limit=${limit}`);
-  return response.data;
-};
-
-export const editPost = async (postId, updatedData) => {
-  const response = await axiosInstance.put(`/posts/${postId}`, updatedData);
-  return response.data;
-};
-
-export const deletePost = async (postId) => {
-  const response = await axiosInstance.delete(`/posts/${postId}`);
-  return response.data;
-};
-
-// Comment Services
-export const createComment = async (postId, commentData) => {
-  const response = await axiosInstance.post(`/posts/${postId}/comments`, commentData);
-  return response.data;
-};
-
-export const fetchComments = async (postId, page = 1, limit = 10) => {
-  const response = await axiosInstance.get(`/posts/${postId}/comments?page=${page}&limit=${limit}`);
-  return response.data;
-};
-
-export const editComment = async (commentId, updatedData) => {
-  const response = await axiosInstance.put(`/comments/${commentId}`, updatedData);
-  return response.data;
-};
-
-export const deleteComment = async (commentId) => {
-  const response = await axiosInstance.delete(`/comments/${commentId}`);
-  return response.data;
-};
-
-// Permission Services
 export const getPermissions = async () => {
   const response = await axiosInstance.get('/roles-permissions/permissions');
   return response.data;
@@ -330,7 +287,6 @@ export const deletePermission = async (permissionId) => {
   return response.data;
 };
 
-// Role Services
 export const getRoles = async () => {
   const response = await axiosInstance.get('/roles-permissions/roles');
   return response.data;
@@ -351,7 +307,6 @@ export const deleteRole = async (roleId) => {
   return response.data;
 };
 
-// User Moderation Services
 export const assignRoleToUser = async (userId, roleName) => {
   const response = await axiosInstance.put(`/roles-permissions/users/${userId}/assign-role`, { roleName });
   return response.data;
@@ -369,44 +324,6 @@ export const banUser = async (userId) => {
 
 export const unbanUser = async (userId) => {
   const response = await axiosInstance.put(`/roles-permissions/users/${userId}/unban`);
-  return response.data;
-};
-
-// Kudos Services
-export const giveKudos = async (kudosData) => {
-  const response = await axiosInstance.post('/kudos', kudosData);
-  return response.data;
-};
-
-export const fetchKudos = async (page = 1, limit = 10) => {
-  const response = await axiosInstance.get(`/kudos?page=${page}&limit=${limit}`);
-  return response.data;
-};
-
-// Poll Services
-export const createPoll = async (pollData) => {
-  const response = await axiosInstance.post('/polls', pollData);
-  return response.data;
-};
-
-export const fetchPolls = async (page = 1, limit = 10) => {
-  const response = await axiosInstance.get(`/polls?page=${page}&limit=${limit}`);
-  return response.data;
-};
-
-export const submitPollResponse = async (pollId, selectedOption) => {
-  const response = await axiosInstance.post('/polls/responses', { pollId, selectedOption });
-  return response.data;
-};
-
-// Reaction Services
-export const addReaction = async (reactionData) => {
-  const response = await axiosInstance.post('/reactions', reactionData);
-  return response.data;
-};
-
-export const removeReaction = async (reactionData) => {
-  const response = await axiosInstance.delete('/reactions', { data: reactionData });
   return response.data;
 };
 

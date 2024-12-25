@@ -1,9 +1,12 @@
-// // src/components/PollCreateBox.js
+
 // import React, { useState } from "react";
 // import axiosInstance from "../../service/axiosInstance";
 // import { toast } from "react-toastify";
+// import { Button, CircularProgress, TextField, IconButton } from "@mui/material";
+// import AddIcon from "@mui/icons-material/Add";
+// import RemoveIcon from "@mui/icons-material/Remove";
 
-// const PollCreateBox = ({ socket }) => {
+// const PollCreateBox = ({ onSuccess }) => {
 //   const [question, setQuestion] = useState("");
 //   const [options, setOptions] = useState(["", ""]); // Start with 2 empty options
 //   const [duration, setDuration] = useState(24); // Default duration in hours
@@ -52,8 +55,7 @@
 //       setQuestion("");
 //       setOptions(["", ""]);
 //       setDuration(24);
-//       // Emit real-time event
-      
+//       if (onSuccess) onSuccess();
 //     } catch (error) {
 //       console.error("Error creating poll:", error);
 //       toast.error(
@@ -65,97 +67,94 @@
 //   };
 
 //   return (
-//     <div className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl mb-6 p-6 transition-colors duration-300">
-//       <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
-//         Create a New Poll
-//       </h2>
-//       <form onSubmit={handleSubmit}>
-//         {/* Question */}
-//         <div className="mb-4">
-//           <label className="block text-gray-700 dark:text-gray-300 mb-2">
-//             Question
-//           </label>
-//           <input
-//             type="text"
-//             className="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-800 dark:text-gray-100"
-//             value={question}
-//             onChange={(e) => setQuestion(e.target.value)}
-//             required
-//           />
-//         </div>
+//     <form onSubmit={handleSubmit} className="space-y-4">
+//       {/* Question */}
+//       <TextField
+//         label="Question"
+//         variant="outlined"
+//         fullWidth
+//         value={question}
+//         onChange={(e) => setQuestion(e.target.value)}
+//         required
+//       />
 
-//         {/* Options */}
-//         <div className="mb-4">
-//           <label className="block text-gray-700 dark:text-gray-300 mb-2">
-//             Options
-//           </label>
-//           {options.map((option, index) => (
-//             <div key={index} className="flex items-center mb-2">
-//               <input
-//                 type="text"
-//                 className="flex-1 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-800 dark:text-gray-100"
-//                 value={option}
-//                 onChange={(e) => handleOptionChange(index, e.target.value)}
-//                 required
-//               />
-//               {options.length > 2 && (
-//                 <button
-//                   type="button"
-//                   onClick={() => removeOption(index)}
-//                   className="ml-2 text-red-500 hover:text-red-700"
-//                   title="Remove Option"
-//                 >
-//                   &times;
-//                 </button>
-//               )}
-//             </div>
-//           ))}
-//           {options.length < 5 && (
-//             <button
-//               type="button"
-//               onClick={addOption}
-//               className="text-blue-500 hover:text-blue-700 mt-2"
-//             >
-//               + Add Option
-//             </button>
-//           )}
-//         </div>
+//       {/* Options */}
+//       <div>
+//         <label className="block text-gray-700 dark:text-gray-300 mb-2">
+//           Options
+//         </label>
+//         {options.map((option, index) => (
+//           <div key={index} className="flex items-center mb-2">
+//             <TextField
+//               label={`Option ${index + 1}`}
+//               variant="outlined"
+//               fullWidth
+//               value={option}
+//               onChange={(e) => handleOptionChange(index, e.target.value)}
+//               required
+//             />
+//             {options.length > 2 && (
+//               <IconButton
+//                 onClick={() => removeOption(index)}
+//                 className="ml-2"
+//                 color="error"
+//                 aria-label="remove option"
+//               >
+//                 <RemoveIcon />
+//               </IconButton>
+//             )}
+//           </div>
+//         ))}
+//         {options.length < 5 && (
+//           <Button
+//             type="button"
+//             onClick={addOption}
+//             variant="text"
+//             color="primary"
+//             startIcon={<AddIcon />}
+//           >
+//             Add Option
+//           </Button>
+//         )}
+//       </div>
 
-//         {/* Duration */}
-//         <div className="mb-4">
-//           <label className="block text-gray-700 dark:text-gray-300 mb-2">
-//             Duration (in hours)
-//           </label>
-//           <input
-//             type="number"
-//             min="1"
-//             className="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-800 dark:text-gray-100"
-//             value={duration}
-//             onChange={(e) => setDuration(e.target.value)}
-//             required
-//           />
-//         </div>
+//       {/* Duration */}
+//       <TextField
+//         label="Duration (in hours)"
+//         type="number"
+//         inputProps={{ min: 1 }}
+//         variant="outlined"
+//         fullWidth
+//         value={duration}
+//         onChange={(e) => setDuration(e.target.value)}
+//         required
+//       />
 
-//         {/* Submit Button */}
-//         <button
-//           type="submit"
-//           disabled={isSubmitting}
-//           className="w-full bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors duration-300"
-//         >
-//           {isSubmitting ? "Creating..." : "Create Poll"}
-//         </button>
-//       </form>
-//     </div>
+//       {/* Submit Button */}
+//       <Button
+//         type="submit"
+//         variant="contained"
+//         color="primary"
+//         disabled={isSubmitting}
+//         fullWidth
+//         startIcon={isSubmitting && <CircularProgress size={20} />}
+//       >
+//         {isSubmitting ? "Creating..." : "Create Poll"}
+//       </Button>
+//     </form>
 //   );
 // };
 
 // export default PollCreateBox;
 
 // src/components/PollCreateBox.js
+
 import React, { useState } from "react";
 import axiosInstance from "../../service/axiosInstance";
 import { toast } from "react-toastify";
-import { Button, CircularProgress } from "@mui/material";
+import { Button, CircularProgress, TextField, IconButton, Grid, InputAdornment } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 
 const PollCreateBox = ({ onSuccess }) => {
   const [question, setQuestion] = useState("");
@@ -207,8 +206,6 @@ const PollCreateBox = ({ onSuccess }) => {
       setOptions(["", ""]);
       setDuration(24);
       if (onSuccess) onSuccess();
-      // Emit real-time event if needed
-      // socket.emit("newPoll", response.data.poll);
     } catch (error) {
       console.error("Error creating poll:", error);
       toast.error(
@@ -222,18 +219,14 @@ const PollCreateBox = ({ onSuccess }) => {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {/* Question */}
-      <div>
-        <label className="block text-gray-700 dark:text-gray-300 mb-2">
-          Question
-        </label>
-        <input
-          type="text"
-          className="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-800 dark:text-gray-100"
-          value={question}
-          onChange={(e) => setQuestion(e.target.value)}
-          required
-        />
-      </div>
+      <TextField
+        label="Question"
+        variant="outlined"
+        fullWidth
+        value={question}
+        onChange={(e) => setQuestion(e.target.value)}
+        required
+      />
 
       {/* Options */}
       <div>
@@ -242,22 +235,23 @@ const PollCreateBox = ({ onSuccess }) => {
         </label>
         {options.map((option, index) => (
           <div key={index} className="flex items-center mb-2">
-            <input
-              type="text"
-              className="flex-1 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-800 dark:text-gray-100"
+            <TextField
+              label={`Option ${index + 1}`}
+              variant="outlined"
+              fullWidth
               value={option}
               onChange={(e) => handleOptionChange(index, e.target.value)}
               required
             />
             {options.length > 2 && (
-              <button
-                type="button"
+              <IconButton
                 onClick={() => removeOption(index)}
-                className="ml-2 text-red-500 hover:text-red-700"
-                title="Remove Option"
+                className="ml-2"
+                color="error"
+                aria-label="remove option"
               >
-                &times;
-              </button>
+                <RemoveIcon />
+              </IconButton>
             )}
           </div>
         ))}
@@ -267,32 +261,33 @@ const PollCreateBox = ({ onSuccess }) => {
             onClick={addOption}
             variant="text"
             color="primary"
+            startIcon={<AddIcon />}
           >
-            + Add Option
+            Add Option
           </Button>
         )}
       </div>
 
       {/* Duration */}
-      <div>
-        <label className="block text-gray-700 dark:text-gray-300 mb-2">
-          Duration (in hours)
-        </label>
-        <input
-          type="number"
-          min="1"
-          className="w-full bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 text-gray-800 dark:text-gray-100"
-          value={duration}
-          onChange={(e) => setDuration(e.target.value)}
-          required
-        />
-      </div>
+      <TextField
+        label="Duration"
+        type="number"
+        InputProps={{
+          endAdornment: <InputAdornment position="end">hours</InputAdornment>,
+          inputProps: { min: 1, step: 1 },
+        }}
+        variant="outlined"
+        fullWidth
+        value={duration}
+        onChange={(e) => setDuration(e.target.value)}
+        required
+      />
 
       {/* Submit Button */}
       <Button
         type="submit"
         variant="contained"
-        color="secondary"
+        color="primary"
         disabled={isSubmitting}
         fullWidth
         startIcon={isSubmitting && <CircularProgress size={20} />}
@@ -304,4 +299,5 @@ const PollCreateBox = ({ onSuccess }) => {
 };
 
 export default PollCreateBox;
+
 
