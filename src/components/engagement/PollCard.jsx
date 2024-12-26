@@ -1,4 +1,3 @@
-
 // import React from "react";
 // import DeleteIcon from "@mui/icons-material/Delete";
 // import { motion } from "framer-motion";
@@ -266,6 +265,7 @@
 // src/components/PollCard.js
 
 import React from "react";
+
 import DeleteIcon from "@mui/icons-material/Delete";
 import { motion } from "framer-motion";
 import axiosInstance from "../../service/axiosInstance";
@@ -274,6 +274,7 @@ import useFeedStore from "../../store/feedStore";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import { Button, CircularProgress, IconButton, Grid } from "@mui/material";
+import { useEffect, useState } from "react";
 
 const PollCard = ({ poll }) => {
   const user = useAuthStore((state) => state);
@@ -284,6 +285,7 @@ const PollCard = ({ poll }) => {
   const [selectedOption, setSelectedOption] = React.useState(null);
   const [isVoting, setIsVoting] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
+  const [timeRemaining, setTimeRemaining] = useState("");
 
   // Debugging: Log user and poll data
   React.useEffect(() => {
@@ -291,6 +293,31 @@ const PollCard = ({ poll }) => {
     console.log("Current userEmployeeId:", userEmployeeId);
     console.log("Poll votes:", poll.votes);
   }, [userId, userEmployeeId, poll.votes]);
+
+  // Countdown Timer Logic
+  useEffect(() => {
+    const updateTimeRemaining = () => {
+      const now = new Date();
+      const endTime = new Date(poll.endTime);
+      const timeDiff = endTime - now;
+
+      if (timeDiff <= 0) {
+        setTimeRemaining("Voting has ended");
+        return;
+      }
+
+      const hours = Math.floor((timeDiff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((timeDiff / (1000 * 60)) % 60);
+      const seconds = Math.floor((timeDiff / 1000) % 60);
+
+      setTimeRemaining(`${hours}h ${minutes}m ${seconds}s`);
+    };
+
+    updateTimeRemaining();
+    const interval = setInterval(updateTimeRemaining, 1000);
+
+    return () => clearInterval(interval);
+  }, [poll.endTime]);
 
   /**
    * Determine if the current user has already voted.
@@ -353,7 +380,8 @@ const PollCard = ({ poll }) => {
     } catch (error) {
       console.error("Error deleting poll:", error);
       toast.error(
-        error.response?.data?.message || "Failed to delete poll. Please try again."
+        error.response?.data?.message ||
+          "Failed to delete poll. Please try again."
       );
     } finally {
       setIsDeleting(false);
@@ -382,11 +410,14 @@ const PollCard = ({ poll }) => {
         />
         <div className="mt-2 sm:mt-0">
           <p className="font-semibold text-lg text-gray-800 dark:text-gray-100">
-            {poll.creator?.first_Name || "Unknown"} {poll.creator?.last_Name || "User"} (
+            {poll.creator?.first_Name || "Unknown"}{" "}
+            {poll.creator?.last_Name || "User"} (
             {poll.creator?.employee_Id || "N/A"})
           </p>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            {isNaN(new Date(poll.createdAt)) ? "Date not available" : new Date(poll.createdAt).toLocaleString()}
+            {isNaN(new Date(poll.createdAt))
+              ? "Date not available"
+              : new Date(poll.createdAt).toLocaleString()}
           </p>
         </div>
         {(permissions.includes("deleteAnyPoll") ||
@@ -415,13 +446,15 @@ const PollCard = ({ poll }) => {
         <Grid container spacing={2}>
           {poll.options.map((option) => {
             const percentage =
-              totalVotes > 0 ? ((option.votes / totalVotes) * 100).toFixed(1) : 0;
+              totalVotes > 0
+                ? ((option.votes / totalVotes) * 100).toFixed(1)
+                : 0;
             const isUserChoice = userSelectedOptionId === option._id;
 
             return (
               <Grid item xs={12} key={option._id}>
                 <div className="flex flex-col">
-                  <label className="inline-flex items-center w-full">
+                  <label className="inline-flex items-center w-full ">
                     <input
                       type="radio"
                       name={`poll-${poll._id}`}
@@ -430,7 +463,9 @@ const PollCard = ({ poll }) => {
                       checked={selectedOption === option._id || isUserChoice}
                       onChange={() => setSelectedOption(option._id)}
                       disabled={hasVoted || !poll.isActive}
-                      aria-checked={selectedOption === option._id || isUserChoice}
+                      aria-checked={
+                        selectedOption === option._id || isUserChoice
+                      }
                       aria-disabled={hasVoted || !poll.isActive}
                     />
                     <span className="ml-2 flex-1 text-gray-700 dark:text-gray-300">
@@ -466,6 +501,10 @@ const PollCard = ({ poll }) => {
           })}
         </Grid>
       </div>
+      {/* Countdown Timer */}
+      <div className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        <strong >Time Remaining : </strong> <span className="text-red-400 font-semibold">{timeRemaining}</span> 
+      </div>
 
       {/* Poll Actions */}
       {poll.isActive && !hasVoted && (
@@ -483,9 +522,9 @@ const PollCard = ({ poll }) => {
         </div>
       )}
 
-      {!poll.isActive && (
+      {/* {!poll.isActive && (
         <p className="mt-4 text-red-500">This poll has ended.</p>
-      )}
+      )} */}
     </motion.div>
   );
 };
@@ -532,4 +571,3 @@ PollCard.propTypes = {
 };
 
 export default PollCard;
-
