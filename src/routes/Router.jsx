@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import { Login, Dashboard, Page404, Chats } from "../pages";
+import { Login, Dashboard, Page404, } from "../pages";
 import MainLayout from "./MainLayout";
 import { ToastContainer } from "react-toastify";
 import useSocketStore from "../store/socketStore";
@@ -57,10 +57,7 @@ const router = createBrowserRouter([
         path: "engagement-permission-dashboard",
         element: <EngPermissionDashboard />,
       },
-      {
-        path: "chats",
-        element: <Chats />,
-      },
+  
     ],
   },
   {
