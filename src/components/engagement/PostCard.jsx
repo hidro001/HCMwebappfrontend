@@ -1,5 +1,5 @@
 
-// // src/components/PostCard.js
+
 // import React from "react";
 // import FavoriteIcon from "@mui/icons-material/Favorite";
 // import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
@@ -10,7 +10,7 @@
 // import useFeedStore from "../../store/feedStore";
 // import { toast } from "react-toastify";
 // import PropTypes from "prop-types";
-// import { Badge, CircularProgress, IconButton, Button, TextField } from "@mui/material";
+// import { Badge, CircularProgress, IconButton, Button, TextField, Grid } from "@mui/material";
 
 // const PostCard = ({ post }) => {
 //   const user = useAuthStore((state) => state);
@@ -84,21 +84,6 @@
 //         useFeedStore.getState().addComment(post._id, newComment);
 //         toast.success("Comment added successfully!");
 //       }
-//       //  else {
-//       //   console.warn("Commenter information is missing in the response.");
-//       //   useFeedStore.getState().addComment(post._id, {
-//       //     ...newComment,
-//       //     reactions: newComment.reactions || [],
-//       //     commenter: {
-//       //       user_Avatar: "https://via.placeholder.com/150",
-//       //       first_Name: "Unknown",
-//       //       last_Name: "User",
-//       //       employee_Id: "N/A",
-//       //       _id: "unknown",
-//       //     },
-//       //   });
-//       //   toast.warn("Comment added, but commenter information is missing.");
-//       // }
 
 //       setCommentText("");
 //     } catch (error) {
@@ -156,7 +141,7 @@
 //   // Utility function to determine media type
 //   const getMediaType = (url) => {
 //     const extension = url.split(".").pop().toLowerCase();
-//     const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "svg", "avif"];
+//     const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "svg", "avif","JPEG","JPG","PNG","GIF","BMP","SVG","AVIF"];
 //     const videoExtensions = ["mp4", "webm", "ogg", "mov", "avi", "wmv"];
 //     if (imageExtensions.includes(extension)) {
 //       return "image";
@@ -172,16 +157,16 @@
 //       initial={{ opacity: 0, y: 20 }}
 //       animate={{ opacity: 1, y: 0 }}
 //       transition={{ duration: 0.5 }}
-//       className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl mb-6 p-6 transition-colors duration-300"
+//       className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl mb-2 p-4 transition-colors duration-300 "
 //     >
 //       {/* Post Header */}
-//       <div className="flex items-center space-x-4">
+//       <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-4">
 //         <img
 //           src={post.author?.user_Avatar || "https://via.placeholder.com/150"}
 //           alt="Avatar"
-//           className="w-12 h-12 rounded-full"
+//           className="w-12 h-12 rounded-full object-cover"
 //         />
-//         <div>
+//         <div className="mt-2 sm:mt-0">
 //           <p className="font-semibold text-lg text-gray-800 dark:text-gray-100">
 //             {post.author?.first_Name || "Unknown"} {post.author?.last_Name || "User"} (
 //             {post.author?.employee_Id || "N/A"})
@@ -196,7 +181,7 @@
 //           <IconButton
 //             onClick={handleDeletePost}
 //             disabled={isDeleting}
-//             className="ml-auto text-red-500 hover:text-red-700 transition-colors duration-300"
+//             className="ml-auto text-red-500 hover:text-red-700 transition-colors duration-300 mt-2 sm:mt-0"
 //             title="Delete Post"
 //           >
 //             {isDeleting ? <CircularProgress size={24} /> : <DeleteIcon />}
@@ -204,50 +189,65 @@
 //         )}
 //       </div>
 
-//       {/* Post Content */}
-//       <div className="mt-4">
-//         <p className="text-gray-700 dark:text-gray-300 text-lg font-bold">
-//           {post.title}
-//         </p>
-//         <p className="mt-2 text-gray-600 dark:text-gray-400">
-//           {post.description}
-//         </p>
-//         {post.media && post.media.length > 0 && (
-//           <div className="mt-4 space-y-4">
-//             {post.media.map((url, index) => {
-//               const mediaType = getMediaType(url);
-//               if (mediaType === "image") {
-//                 return (
-//                   <img
-//                     key={index}
-//                     src={url}
-//                     alt={`media-${index}`}
-//                     className="max-w-full h-auto rounded-md mb-2"
-//                     loading="lazy"
-//                   />
-//                 );
-//               } else if (mediaType === "video") {
-//                 return (
-//                   <video
-//                     key={index}
-//                     src={url}
-//                     controls
-//                     className="max-w-full h-auto rounded-md mb-2"
-//                   >
-//                     Your browser does not support the video tag.
-//                   </video>
-//                 );
-//               } else {
-//                 return (
-//                   <p key={index} className="text-red-500">
-//                     Unsupported media format.
-//                   </p>
-//                 );
-//               }
-//             })}
-//           </div>
-//         )}
-//       </div>
+
+// <div className="mt-4">
+//   {/* Post Title */}
+//   <p className="text-gray-700 dark:text-gray-300 text-lg font-bold">
+//     {post.title}
+//   </p>
+  
+//   {/* Post Description */}
+//   <p className="mt-2 text-gray-600 dark:text-gray-400">
+//     {post.description}
+//   </p>
+  
+//   {/* Media Section */}
+//   {post.media && post.media.length > 0 && (
+//     <div className="mt-4 space-y-4">
+//       {/* Material-UI Grid Container */}
+//       <Grid 
+//         container 
+//         spacing={2} 
+//         justifyContent="center" // Centers items horizontally
+//         alignItems="center"     // Centers items vertically
+//       >
+//         {post.media.map((url, index) => {
+//           const mediaType = getMediaType(url);
+//           return (
+//             <Grid 
+//               item 
+//               xs={12} 
+//               sm={6} 
+//               key={index} 
+//               display="flex" 
+//               justifyContent="center" // Centers content within the Grid item
+//             >
+//               {/* Conditional Rendering for Image or Video */}
+//               {mediaType === "image" ? (
+//                 <img
+//                   src={url}
+//                   alt={`media-${index}`}
+//                   className="max-w-full h-64 object-cover rounded-md" // Ensures responsiveness and uniform height
+//                 />
+//               ) : mediaType === "video" ? (
+//                 <video
+//                   src={url}
+//                   controls
+//                   className="max-w-full h-40 object-contain rounded-md " // Ensures responsiveness and uniform height
+//                 >
+//                   Your browser does not support the video tag.
+//                 </video>
+//               ) : (
+//                 <p className="text-red-500">Unsupported media format.</p>
+//               )}
+//             </Grid>
+//           );
+//         })}
+//       </Grid>
+//     </div>
+//   )}
+// </div>
+
 
 //       {/* Post Actions */}
 //       <div className="flex justify-between items-center mt-4">
@@ -308,7 +308,7 @@
 //               post.comments.map((comment) => (
 //                 <div
 //                   key={comment._id}
-//                   className="flex items-start space-x-2"
+//                   className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2"
 //                 >
 //                   <img
 //                     src={
@@ -316,10 +316,10 @@
 //                       "https://via.placeholder.com/150"
 //                     }
 //                     alt="Avatar"
-//                     className="w-8 h-8 rounded-full"
+//                     className="w-8 h-8 rounded-full object-cover"
 //                   />
 //                   <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-2 flex-1">
-//                     <div className="flex justify-between">
+//                     <div className="flex justify-between items-center">
 //                       <span className="font-semibold text-gray-800 dark:text-gray-100">
 //                         {comment.commenter?.first_Name || "Unknown"}{" "}
 //                         {comment.commenter?.last_Name || "User"} (
@@ -338,7 +338,7 @@
 //                         </IconButton>
 //                       )}
 //                     </div>
-//                     <p className="text-gray-700 dark:text-gray-300">
+//                     <p className="text-gray-700 dark:text-gray-300 mt-1">
 //                       {typeof comment.comment === 'string' ? comment.comment : JSON.stringify(comment.comment)}
 //                     </p>
 //                     {/* Optional: Render attachments if present */}
@@ -356,7 +356,7 @@
 //                         </ul>
 //                       </div>
 //                     )}
-//                     <p className="text-xs text-gray-500 dark:text-gray-400">
+//                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
 //                       {isNaN(new Date(comment.createdAt)) ? "Date not available" : new Date(comment.createdAt).toLocaleString()}
 //                     </p>
 //                     <div className="flex items-center mt-1">
@@ -434,7 +434,6 @@
 // };
 
 // export default PostCard;
-// src/components/PostCard.js
 
 import React from "react";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -474,7 +473,6 @@ const PostCard = ({ post }) => {
           ? post.likes.filter((id) => id !== userId)
           : [...post.likes, userId],
       });
-      // Optionally, Socket.io will handle the actual update
     } catch (error) {
       console.error("Error liking post:", error);
       toast.error(
@@ -516,7 +514,6 @@ const PostCard = ({ post }) => {
       const newComment = response.data.comment;
 
       if (newComment && newComment.commenter) {
-        // Update the feed store; Socket.io will handle real-time updates across clients
         useFeedStore.getState().addComment(post._id, newComment);
         toast.success("Comment added successfully!");
       }
@@ -574,11 +571,15 @@ const PostCard = ({ post }) => {
     }
   };
 
-  // Utility function to determine media type
+  // Utility function to determine media type with added validations
   const getMediaType = (url) => {
-    const extension = url.split(".").pop().toLowerCase();
+    if (typeof url !== 'string') return 'unknown'; // Check if url is a string
+    const urlWithoutParams = url.split('?')[0]; // Remove query parameters
+    const extension = urlWithoutParams.split('.').pop().toLowerCase(); // Extract extension
+
     const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "svg", "avif"];
     const videoExtensions = ["mp4", "webm", "ogg", "mov", "avi", "wmv"];
+
     if (imageExtensions.includes(extension)) {
       return "image";
     } else if (videoExtensions.includes(extension)) {
@@ -601,6 +602,7 @@ const PostCard = ({ post }) => {
           src={post.author?.user_Avatar || "https://via.placeholder.com/150"}
           alt="Avatar"
           className="w-12 h-12 rounded-full object-cover"
+          loading="lazy"
         />
         <div className="mt-2 sm:mt-0">
           <p className="font-semibold text-lg text-gray-800 dark:text-gray-100">
@@ -625,32 +627,60 @@ const PostCard = ({ post }) => {
         )}
       </div>
 
-      {/* Post Content */}
-      {/* <div className="mt-4">
-        <p className="text-gray-700 dark:text-gray-300 text-lg font-bold border border-red-700">
+      <div className="mt-4">
+        {/* Post Title */}
+        <p className="text-gray-700 dark:text-gray-300 text-lg font-bold">
           {post.title}
         </p>
-        <p className="mt-2 text-gray-600 dark:text-gray-400 border border-red-700">
+        
+        {/* Post Description */}
+        <p className="mt-2 text-gray-600 dark:text-gray-400">
           {post.description}
         </p>
-        {post.media && post.media.length > 0 && (
-          <div className="mt-4 space-y-4 border border-blue-700 items-center">
-            <Grid container  className="border border-green-700 w-auto items-center m-auto">
+        
+        {/* Media Section */}
+        {Array.isArray(post.media) && post.media.length > 0 && (
+          <div className="mt-4 space-y-4">
+            <Grid 
+              container 
+              spacing={2} 
+              justifyContent="center" 
+              alignItems="center"
+            >
               {post.media.map((url, index) => {
+                // Skip undefined or null URLs
+                if (!url) {
+                  console.warn(`Post ${post._id} has an undefined or null media URL at index ${index}.`);
+                  return null;
+                }
+
                 const mediaType = getMediaType(url);
                 return (
-                  <Grid item xs={12} sm={6} key={index} className=" w-auto m-auto items-center">
+                  <Grid 
+                    item 
+                    xs={12} 
+                    sm={6} 
+                    key={index} 
+                    display="flex" 
+                    justifyContent="center"
+                  >
                     {mediaType === "image" ? (
                       <img
                         src={url}
                         alt={`media-${index}`}
-                        className=" h-64 object-cover rounded-md   m-auto items-center"
+                        className="max-w-full h-64 object-cover rounded-md"
+                        loading="lazy"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "https://via.placeholder.com/150"; // Fallback image
+                        }}
                       />
                     ) : mediaType === "video" ? (
                       <video
                         src={url}
                         controls
-                        className="w-full h-64 object-cover rounded-md"
+                        className="max-w-full h-40 object-contain rounded-md"
+                        preload="metadata"
                       >
                         Your browser does not support the video tag.
                       </video>
@@ -663,66 +693,7 @@ const PostCard = ({ post }) => {
             </Grid>
           </div>
         )}
-      </div> */}
-
-<div className="mt-4">
-  {/* Post Title */}
-  <p className="text-gray-700 dark:text-gray-300 text-lg font-bold">
-    {post.title}
-  </p>
-  
-  {/* Post Description */}
-  <p className="mt-2 text-gray-600 dark:text-gray-400">
-    {post.description}
-  </p>
-  
-  {/* Media Section */}
-  {post.media && post.media.length > 0 && (
-    <div className="mt-4 space-y-4">
-      {/* Material-UI Grid Container */}
-      <Grid 
-        container 
-        spacing={2} 
-        justifyContent="center" // Centers items horizontally
-        alignItems="center"     // Centers items vertically
-      >
-        {post.media.map((url, index) => {
-          const mediaType = getMediaType(url);
-          return (
-            <Grid 
-              item 
-              xs={12} 
-              sm={6} 
-              key={index} 
-              display="flex" 
-              justifyContent="center" // Centers content within the Grid item
-            >
-              {/* Conditional Rendering for Image or Video */}
-              {mediaType === "image" ? (
-                <img
-                  src={url}
-                  alt={`media-${index}`}
-                  className="max-w-full h-64 object-cover rounded-md" // Ensures responsiveness and uniform height
-                />
-              ) : mediaType === "video" ? (
-                <video
-                  src={url}
-                  controls
-                  className="max-w-full h-40 object-contain rounded-md " // Ensures responsiveness and uniform height
-                >
-                  Your browser does not support the video tag.
-                </video>
-              ) : (
-                <p className="text-red-500">Unsupported media format.</p>
-              )}
-            </Grid>
-          );
-        })}
-      </Grid>
-    </div>
-  )}
-</div>
-
+      </div>
 
       {/* Post Actions */}
       <div className="flex justify-between items-center mt-4">
@@ -792,6 +763,7 @@ const PostCard = ({ post }) => {
                     }
                     alt="Avatar"
                     className="w-8 h-8 rounded-full object-cover"
+                    loading="lazy"
                   />
                   <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-2 flex-1">
                     <div className="flex justify-between items-center">
@@ -867,18 +839,16 @@ PostCard.propTypes = {
     _id: PropTypes.string.isRequired,
     title: PropTypes.string.isRequired,
     description: PropTypes.string.isRequired,
-    media: PropTypes.arrayOf(PropTypes.string),
-    likes: PropTypes.arrayOf(PropTypes.string).isRequired,
+    media: PropTypes.arrayOf(PropTypes.string), // Ensure media is an array of strings
+    likes: PropTypes.arrayOf(
+      PropTypes.shape({
+        $oid: PropTypes.string,
+      })
+    ).isRequired,
     comments: PropTypes.arrayOf(
       PropTypes.shape({
         _id: PropTypes.string.isRequired,
-        comment: PropTypes.oneOfType([
-          PropTypes.string,
-          PropTypes.shape({
-            text: PropTypes.string,
-            // Add other fields if necessary
-          }),
-        ]).isRequired,
+        post: PropTypes.string.isRequired,
         commenter: PropTypes.shape({
           _id: PropTypes.string.isRequired,
           first_Name: PropTypes.string.isRequired,
@@ -886,16 +856,18 @@ PostCard.propTypes = {
           employee_Id: PropTypes.string.isRequired,
           user_Avatar: PropTypes.string,
         }),
-        reactions: PropTypes.arrayOf(PropTypes.string).isRequired,
-        createdAt: PropTypes.string.isRequired,
+        comment: PropTypes.string.isRequired,
         attachments: PropTypes.arrayOf(
           PropTypes.shape({
             url: PropTypes.string.isRequired,
             name: PropTypes.string.isRequired,
           })
         ),
+        reactions: PropTypes.arrayOf(PropTypes.string).isRequired,
+        createdAt: PropTypes.string.isRequired,
+        updatedAt: PropTypes.string.isRequired,
       })
-    ),
+    ).isRequired,
     author: PropTypes.shape({
       _id: PropTypes.string.isRequired,
       first_Name: PropTypes.string.isRequired,
@@ -904,7 +876,8 @@ PostCard.propTypes = {
       user_Avatar: PropTypes.string,
     }).isRequired,
     createdAt: PropTypes.string.isRequired,
-    type: PropTypes.string.isRequired, // Ensure 'type' is included
+    updatedAt: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
   }).isRequired,
 };
 

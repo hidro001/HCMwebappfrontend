@@ -47,7 +47,7 @@ const Feed = () => {
   };
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 overflow-hidden">
+    <div className="max-w-lg mx-auto px-4 py-6 overflow-hidden ">
       {/* Header with Create Buttons */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
