@@ -120,7 +120,7 @@ const Sidebar = () => {
     {
       name: "Engagement",
       icon: <TiSocialTwitter />,
-      color: "text-yellow-400",
+      color: "text-blue-400",
       iconAnimation: { rotate: 360 },
       textAnimation: { x: 10 },
       options: [
