@@ -11,12 +11,11 @@ import MakeAnnouncement from "./announcement/MakeAnnouncement";
 import ViewAnnouncements from "./announcement/ViewAnnouncements";
 import NotificationsPage from "./Notification/NotificationsPage";
 
-
 import Feednew from "./engagement/Feed";
 import EngPermissionDashboard from "./engagement/EngPermissionDashboard";
 // import Unauthorized from './components/Unauthorized';
-
-import Card from "./dashboar Cards/Card";
+import DashboardLayout from "./dashboar Cards/superAdmin/DashboardLayout";
+import DashboardLayoutEmployee from "./dashboar Cards/employee/DashboardLayoutEmployee";
 
 export {
   LoginCard,
@@ -29,10 +28,10 @@ export {
   Breadcrumb,
   MakeAnnouncement,
   ViewAnnouncements,
-  Card,
   NotificationsPage,
   ThemeToggleButton,
-
+  DashboardLayout,
+  DashboardLayoutEmployee,
   Feednew,
   EngPermissionDashboard,
 };
