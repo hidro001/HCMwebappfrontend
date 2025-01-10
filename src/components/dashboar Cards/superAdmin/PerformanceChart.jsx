@@ -43,52 +43,133 @@
 
 // export default PerformanceChart;
 
+// import * as React from "react";
+
+// function PerformanceChart() {
+//   const teams = [
+//     { name: "Developer Team", percentage: "65%" },
+//     { name: "Design Team", percentage: "84%" },
+//     { name: "Marketing Team", percentage: "28%" },
+//     { name: "Management Team", percentage: "16%" },
+//   ];
+
+//   return (
+//     <div className="
+//       flex flex-col pt-2.5 pb-11 px-5 w-full
+//       bg-lime-600 dark:bg-lime-700 bg-opacity-10
+//       text-gray-800 dark:text-gray-100
+//       rounded-2xl shadow-[-1px_7px_32px_2px_rgba(0,0,0,0.25)]
+//     ">
+//       {/* Header */}
+//       <div className="flex gap-10 items-center text-xl font-bold tracking-wide text-lime-600 dark:text-lime-400 min-h-[37px] w-full">
+//         <div>Performance Statistics</div>
+//         <img
+//           loading="lazy"
+//           src="https://cdn.builder.io/api/v1/image/assets/TEMP/e998b2223b107a48c672826263f2964d3e415027d8af83e5dd90514d5470d6a6"
+//           alt=""
+//           className="object-contain w-10 h-10 rounded-xl"
+//         />
+//       </div>
+
+//       {/* Teams Performance */}
+//       <div className="flex flex-col mt-5">
+//         {teams.map((team, index) => (
+//           <div
+//             key={index}
+//             className="flex flex-col mt-3.5 w-full max-w-md"
+//           >
+//             <div className="flex gap-10 justify-between text-xl font-medium tracking-wide">
+//               <div>{team.name}</div>
+//               <div>{team.percentage}</div>
+//             </div>
+//             <div className="flex flex-col mt-3">
+//               <img
+//                 loading="lazy"
+//                 src="https://cdn.builder.io/api/v1/image/assets/TEMP/0918c4fce15f9f431e86107f8fc8f7db260e70c98fcfb02548e8a9bd79f6f792"
+//                 alt={`${team.name} performance chart`}
+//                 className="object-contain w-full h-auto"
+//               />
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default PerformanceChart;
+
 import * as React from "react";
 
 function PerformanceChart() {
   const teams = [
-    { name: "Developer Team", percentage: "65%" },
-    { name: "Design Team", percentage: "84%" },
-    { name: "Marketing Team", percentage: "28%" },
-    { name: "Management Team", percentage: "16%" },
+    { name: "Developer Team", percentage: "65%", color: "orange-500" },
+    { name: "Design Team", percentage: "84%", color: "blue-500" },
+    { name: "Marketing Team", percentage: "28%", color: "green-500" },
+    { name: "Management Team", percentage: "16%", color: "amber-500" },
   ];
 
   return (
-    <div className="
-      flex flex-col pt-2.5 pb-11 px-5 w-full
-      bg-lime-600 dark:bg-lime-700 bg-opacity-10
-      text-gray-800 dark:text-gray-100
-      rounded-2xl shadow-[-1px_7px_32px_2px_rgba(0,0,0,0.25)]
-    ">
+    <div
+      className="
+        w-full md:w-1/2
+        rounded-xl
+        shadow-2xl
+        bg-lime-50 dark:bg-lime-900
+        bg-opacity-60
+        p-4
+        text-gray-800 dark:text-gray-100
+      "
+    >
       {/* Header */}
-      <div className="flex gap-10 items-center text-xl font-bold tracking-wide text-lime-600 dark:text-lime-400 min-h-[37px] w-full">
-        <div>Performance Statistics</div>
-        <img
-          loading="lazy"
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/e998b2223b107a48c672826263f2964d3e415027d8af83e5dd90514d5470d6a6"
-          alt=""
-          className="object-contain w-10 h-10 rounded-xl"
-        />
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-base sm:text-lg font-semibold text-lime-600 dark:text-lime-400">
+          Performance Statistics
+        </h2>
+        {/* Icon / Options Button */}
+        <button
+          className="
+            text-gray-400 hover:text-gray-600
+            dark:text-gray-300 dark:hover:text-gray-100
+          "
+          aria-label="Performance options"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5 sm:h-6 sm:w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <circle cx="5" cy="12" r="1"></circle>
+            <circle cx="12" cy="12" r="1"></circle>
+            <circle cx="19" cy="12" r="1"></circle>
+          </svg>
+        </button>
       </div>
 
-      {/* Teams Performance */}
-      <div className="flex flex-col mt-5">
+      {/* Divider */}
+      <div className="h-px bg-gray-200 dark:bg-gray-600 mb-4" />
+
+      {/* Teams & Bars */}
+      <div className="flex flex-col space-y-4">
         {teams.map((team, index) => (
-          <div
-            key={index}
-            className="flex flex-col mt-3.5 w-full max-w-md"
-          >
-            <div className="flex gap-10 justify-between text-xl font-medium tracking-wide">
-              <div>{team.name}</div>
-              <div>{team.percentage}</div>
+          <div key={index}>
+            <div className="flex justify-between text-sm font-medium mb-1">
+              <span>{team.name}</span>
+              <span>{team.percentage}</span>
             </div>
-            <div className="flex flex-col mt-3">
-              <img
-                loading="lazy"
-                src="https://cdn.builder.io/api/v1/image/assets/TEMP/0918c4fce15f9f431e86107f8fc8f7db260e70c98fcfb02548e8a9bd79f6f792"
-                alt={`${team.name} performance chart`}
-                className="object-contain w-full h-auto"
-              />
+            {/* Progress bar (using the color from the team object) */}
+            <div className="relative w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full">
+              <div
+                className={`
+                  absolute left-0 top-0 h-3 rounded-full bg-${team.color}
+                `}
+                style={{
+                  width: team.percentage,
+                }}
+              ></div>
             </div>
           </div>
         ))}
@@ -98,3 +179,4 @@ function PerformanceChart() {
 }
 
 export default PerformanceChart;
+

@@ -40,7 +40,7 @@ const MainLayout = () => {
       <Navbar />
       <div className="h-full w-full flex ">
         <Sidebar />
-        <div className="flex-1 h-screen flex flex-col bg-white dark:bg-[#121212]  ">
+        <div className="flex-1 h-screen flex flex-col bg-gray-50 dark:bg-[#121212]  ">
           {/* Assign an ID to the scrollable div */}
           <div
             id="scrollableDiv"
@@ -48,7 +48,7 @@ const MainLayout = () => {
           >
             <Breadcrumb />
             {/* <div className="container mx-auto w-full"> */}
-            <div className="container mx-auto ">
+            <div className=" mx-auto ">
               <Outlet />
             </div>
           </div>

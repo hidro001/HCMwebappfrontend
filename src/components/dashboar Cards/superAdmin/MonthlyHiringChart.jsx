@@ -41,54 +41,262 @@
 
 // export default MonthlyHiringChart;
 
-import * as React from "react";
+// import * as React from "react";
+
+// function MonthlyHiringChart() {
+//   return (
+//     <div className="
+//       flex flex-col items-center px-4 pt-5 pb-12 mt-9 w-full
+//       text-xs text-slate-500 dark:text-slate-300
+//       bg-white dark:bg-gray-800
+//       rounded-2xl shadow-[-1px_7px_32px_2px_rgba(0,0,0,0.25)]
+//     ">
+//       <div className="flex flex-wrap gap-5 justify-between w-full max-w-2xl text-lg font-semibold text-lime-600 dark:text-lime-400">
+//         <div>Monthly Hiring Trend</div>
+//         <img
+//           loading="lazy"
+//           src="https://cdn.builder.io/api/v1/image/assets/TEMP/a35dab65208a085853613ac96837acbb43a2dd7edc7eb0b0c97c93207b4fb8bd"
+//           alt=""
+//           className="object-contain h-auto w-20"
+//         />
+//       </div>
+
+//       <div className="w-full max-w-2xl mt-2.5 h-px rounded-md bg-zinc-200 dark:bg-zinc-600" />
+
+//       <div className="flex flex-wrap gap-3 mt-16 w-full max-w-2xl text-right whitespace-nowrap justify-center">
+//         {/* Y-Axis Labels (hidden on small screens) */}
+//         <div className="flex flex-col hidden md:block">
+//           <div>200</div>
+//           <div className="mt-16">150</div>
+//           <div className="mt-16">100</div>
+//           <div className="mt-16">50</div>
+//           <div className="mt-16">0</div>
+//         </div>
+//         {/* Chart */}
+//         <img
+//           loading="lazy"
+//           src="https://cdn.builder.io/api/v1/image/assets/TEMP/4b633bc8-70c7-48e1-9508-32de0dc9a187"
+//           alt="Monthly hiring trend chart"
+//           className="object-contain grow h-auto mt-1.5"
+//         />
+//       </div>
+
+//       {/* X-Axis Labels */}
+//       <div className="flex gap-5 justify-between mt-1.5 w-full max-w-xl text-center">
+//         {[...Array(15)].map((_, i) => (
+//           <div key={i}>{String(i + 1).padStart(2, '0')}</div>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default MonthlyHiringChart;
+
+// import * as React from "react";
+
+// function MonthlyHiringChart() {
+//   return (
+//     <div
+//       className="
+//         mt-7 w-full
+//         rounded-xl bg-white dark:bg-gray-800
+//         shadow-2xl
+//         p-4 
+//       "
+//     >
+//       {/* Header */}
+//       <div className="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-600">
+//         <h2 className="text-lime-600 dark:text-lime-400 text-base font-semibold">
+//           Monthly Hiring Trend
+//         </h2>
+//         {/* Ellipsis / Menu Icon */}
+//         <button 
+//           type="button"
+//           className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+//           aria-label="Menu"
+//         >
+//           <svg
+//             xmlns="http://www.w3.org/2000/svg"
+//             className="h-5 w-5"
+//             fill="none"
+//             viewBox="0 0 24 24"
+//             stroke="currentColor"
+//           >
+//             <circle cx="5" cy="12" r="1"></circle>
+//             <circle cx="12" cy="12" r="1"></circle>
+//             <circle cx="19" cy="12" r="1"></circle>
+//           </svg>
+//         </button>
+//       </div>
+
+//       {/* Chart Container */}
+//       <div className="relative flex flex-col md:flex-row items-center justify-start py-6">
+//         {/* Y-Axis Labels */}
+//         <div className="hidden md:flex flex-col items-center mr-2 text-sm text-gray-500 dark:text-gray-300">
+//           <div className="mb-4">200</div>
+//           <div className="mb-4">150</div>
+//           <div className="mb-4">100</div>
+//           <div className="mb-4">50</div>
+//           <div>0</div>
+//         </div>
+
+//         {/* Chart Image */}
+//         <div className="flex-1 w-full">
+//           <img
+//             src="https://cdn.builder.io/api/v1/image/assets/TEMP/4b633bc8-70c7-48e1-9508-32de0dc9a187"
+//             alt="Monthly Hiring Trend Chart"
+//             className="h-auto w-full object-contain"
+//           />
+//         </div>
+//       </div>
+
+//       {/* X-Axis Labels */}
+//       <div className="mt-2 px-2 flex justify-between text-gray-500 text-sm dark:text-gray-300">
+//         {/* Example: days of the month 01...30 */}
+//         {["01","05","09","13","17","21","25","29"].map((day) => (
+//           <span key={day}>{day}</span>
+//         ))}
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default MonthlyHiringChart;
+
+// src/components/MonthlyHiringChart.jsx
+
+import React, { useEffect, useState } from 'react';
+import { useDashboardStore } from '../../../store/useDashboardStore'; 
+import { Line, Bar } from 'react-chartjs-2';
 
 function MonthlyHiringChart() {
+  // 1) Pull data from your Zustand store
+  const { monthlyHiringTrend, fetchDashboardStats } = useDashboardStore();
+
+  // 2) Local state for toggling chart type
+  const [chartType, setChartType] = useState('line'); 
+  // 'line' or 'bar'
+
+  // 3) Fetch data on mount
+  useEffect(() => {
+    fetchDashboardStats();
+  }, [fetchDashboardStats]);
+
+  // 4) Build labels & data from monthlyHiringTrend
+  //    Each item in monthlyHiringTrend might look like { count: 3, month: 11, year: 2024 }
+  //    We'll convert month/year to a label, e.g. "11/2024"
+  const labels = (monthlyHiringTrend || []).map((item) => {
+    return `${item.month}/${item.year}`;
+  });
+
+  const dataValues = (monthlyHiringTrend || []).map((item) => item.count);
+
+  // 5) Prepare the chart data & options
+  const data = {
+    labels,
+    datasets: [
+      {
+        label: 'Monthly Hires',
+        data: dataValues,
+        backgroundColor: 'rgba(99, 102, 241, 0.5)', // e.g. Indigo-500 half opacity
+        borderColor: 'rgba(99, 102, 241, 1)',        // Indigo-500
+        borderWidth: 2,
+        fill: false,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'top', // or 'bottom'
+      },
+      title: {
+        display: false,
+      },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        // If you want an integer axis only:
+        // ticks: { stepSize: 1 },
+      },
+    },
+  };
+
+  // 6) Render either a Line or a Bar chart based on chartType
+  const renderChart = () => {
+    if (chartType === 'line') {
+      return <Line data={data} options={options} />;
+    } else {
+      return <Bar data={data} options={options} />;
+    }
+  };
+
+  // 7) Provide a button to toggle chartType
+  const handleToggleChartType = () => {
+    setChartType((prevType) => (prevType === 'line' ? 'bar' : 'line'));
+  };
+
   return (
-    <div className="
-      flex flex-col items-center px-4 pt-5 pb-12 mt-9 w-full
-      text-xs text-slate-500 dark:text-slate-300
-      bg-white dark:bg-gray-800
-      rounded-2xl shadow-[-1px_7px_32px_2px_rgba(0,0,0,0.25)]
-    ">
-      <div className="flex flex-wrap gap-5 justify-between w-full max-w-2xl text-lg font-semibold text-lime-600 dark:text-lime-400">
-        <div>Monthly Hiring Trend</div>
-        <img
-          loading="lazy"
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/a35dab65208a085853613ac96837acbb43a2dd7edc7eb0b0c97c93207b4fb8bd"
-          alt=""
-          className="object-contain h-auto w-20"
-        />
-      </div>
+    <div
+      className="
+        mt-7 w-full
+        rounded-xl bg-white dark:bg-gray-800
+        shadow-2xl
+        p-4
+      "
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-600">
+        <h2 className="text-lime-600 dark:text-lime-400 text-base font-semibold">
+          Monthly Hiring Trend
+        </h2>
+        {/* Icon + Toggle Button */}
+        <div className="flex items-center space-x-2">
+          {/* Ellipsis / Menu Icon */}
+          <button
+            type="button"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+            aria-label="Menu"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <circle cx="5" cy="12" r="1"></circle>
+              <circle cx="12" cy="12" r="1"></circle>
+              <circle cx="19" cy="12" r="1"></circle>
+            </svg>
+          </button>
 
-      <div className="w-full max-w-2xl mt-2.5 h-px rounded-md bg-zinc-200 dark:bg-zinc-600" />
-
-      <div className="flex flex-wrap gap-3 mt-16 w-full max-w-2xl text-right whitespace-nowrap justify-center">
-        {/* Y-Axis Labels (hidden on small screens) */}
-        <div className="flex flex-col hidden md:block">
-          <div>200</div>
-          <div className="mt-16">150</div>
-          <div className="mt-16">100</div>
-          <div className="mt-16">50</div>
-          <div className="mt-16">0</div>
+          {/* Toggle Button */}
+          <button
+            onClick={handleToggleChartType}
+            className="text-sm px-3 py-1.5 bg-gray-100 dark:bg-gray-700 rounded-md
+                       text-gray-700 dark:text-gray-100 font-medium"
+          >
+            {chartType === 'line' ? 'Bar View' : 'Line View'}
+          </button>
         </div>
-        {/* Chart */}
-        <img
-          loading="lazy"
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/4b633bc8-70c7-48e1-9508-32de0dc9a187"
-          alt="Monthly hiring trend chart"
-          className="object-contain grow h-auto mt-1.5"
-        />
       </div>
 
-      {/* X-Axis Labels */}
-      <div className="flex gap-5 justify-between mt-1.5 w-full max-w-xl text-center">
-        {[...Array(15)].map((_, i) => (
-          <div key={i}>{String(i + 1).padStart(2, '0')}</div>
-        ))}
+      {/* Chart Area */}
+      <div className="relative flex flex-col items-center justify-start py-6">
+        <div className="w-full h-64">
+          {/* Use chart's responsive container - no static image */}
+          {renderChart()}
+        </div>
       </div>
     </div>
   );
 }
 
 export default MonthlyHiringChart;
+
+

@@ -306,7 +306,7 @@ const LoginCard = () => {
     //   default:
     //     toast.error("Unknown user role");
     // }
-    switch (permission_role.toLowerCase()) {
+    switch (user_Role.toLowerCase()) {
       case "employee":
         navigate("/dashboard");
         break;
