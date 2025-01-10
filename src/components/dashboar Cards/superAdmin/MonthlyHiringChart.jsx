@@ -165,68 +165,76 @@
 // export default MonthlyHiringChart;
 
 // src/components/MonthlyHiringChart.jsx
-
 import React, { useEffect, useState } from 'react';
 import { useDashboardStore } from '../../../store/useDashboardStore'; 
 import { Line, Bar } from 'react-chartjs-2';
 
 function MonthlyHiringChart() {
-  // 1) Pull data from your Zustand store
   const { monthlyHiringTrend, fetchDashboardStats } = useDashboardStore();
+  const [chartType, setChartType] = useState('line');
 
-  // 2) Local state for toggling chart type
-  const [chartType, setChartType] = useState('line'); 
-  // 'line' or 'bar'
-
-  // 3) Fetch data on mount
   useEffect(() => {
     fetchDashboardStats();
   }, [fetchDashboardStats]);
 
-  // 4) Build labels & data from monthlyHiringTrend
-  //    Each item in monthlyHiringTrend might look like { count: 3, month: 11, year: 2024 }
-  //    We'll convert month/year to a label, e.g. "11/2024"
-  const labels = (monthlyHiringTrend || []).map((item) => {
-    return `${item.month}/${item.year}`;
-  });
-
+  // Prepare labels & data
+  const labels = (monthlyHiringTrend || []).map(
+    (item) => `${item.month}/${item.year}`
+  );
   const dataValues = (monthlyHiringTrend || []).map((item) => item.count);
 
-  // 5) Prepare the chart data & options
+  // If we want different bar colors for each data point, define them here:
+  const barColors = [
+    '#EF4444', // red-500
+    '#F59E0B', // amber-500
+    '#10B981', // emerald-500
+    '#3B82F6', // blue-500
+    '#8B5CF6', // violet-500
+    // Add more as needed or cycle through the list if there's more data
+  ];
+
+  // Build the dataset depending on chartType
+  const dataset =
+    chartType === 'line'
+      ? {
+          label: 'Monthly Hires',
+          data: dataValues,
+          // Make the line fully colored
+          fill: true,
+          borderColor: 'rgba(99, 102, 241, 1)',
+          backgroundColor: 'rgba(99, 102, 241, 0.2)', // area fill under line
+          borderWidth: 2,
+        }
+      : {
+          label: 'Monthly Hires',
+          data: dataValues,
+          // For bars, each bar can have its own color
+          backgroundColor: dataValues.map((_, i) => barColors[i % barColors.length]),
+        };
+
+  // Final chart data object
   const data = {
     labels,
-    datasets: [
-      {
-        label: 'Monthly Hires',
-        data: dataValues,
-        backgroundColor: 'rgba(99, 102, 241, 0.5)', // e.g. Indigo-500 half opacity
-        borderColor: 'rgba(99, 102, 241, 1)',        // Indigo-500
-        borderWidth: 2,
-        fill: false,
-      },
-    ],
+    datasets: [dataset],
   };
 
+  // Chart options
   const options = {
+    maintainAspectRatio: false, // let it fill the container
     responsive: true,
-    plugins: {
-      legend: {
-        position: 'top', // or 'bottom'
-      },
-      title: {
-        display: false,
-      },
-    },
     scales: {
       y: {
         beginAtZero: true,
-        // If you want an integer axis only:
-        // ticks: { stepSize: 1 },
+      },
+    },
+    plugins: {
+      legend: {
+        position: 'top',
       },
     },
   };
 
-  // 6) Render either a Line or a Bar chart based on chartType
+  // Render either <Line/> or <Bar/> based on chartType
   const renderChart = () => {
     if (chartType === 'line') {
       return <Line data={data} options={options} />;
@@ -235,68 +243,37 @@ function MonthlyHiringChart() {
     }
   };
 
-  // 7) Provide a button to toggle chartType
   const handleToggleChartType = () => {
-    setChartType((prevType) => (prevType === 'line' ? 'bar' : 'line'));
+    setChartType((prev) => (prev === 'line' ? 'bar' : 'line'));
   };
 
   return (
-    <div
-      className="
-        mt-7 w-full
-        rounded-xl bg-white dark:bg-gray-800
-        shadow-2xl
-        p-4
-      "
-    >
+    <div className="mt-7 w-full rounded-xl bg-white dark:bg-gray-800 shadow-2xl p-4">
       {/* Header */}
       <div className="flex items-center justify-between pb-3 border-b border-gray-200 dark:border-gray-600">
         <h2 className="text-lime-600 dark:text-lime-400 text-base font-semibold">
           Monthly Hiring Trend
         </h2>
-        {/* Icon + Toggle Button */}
         <div className="flex items-center space-x-2">
-          {/* Ellipsis / Menu Icon */}
-          <button
-            type="button"
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-            aria-label="Menu"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <circle cx="5" cy="12" r="1"></circle>
-              <circle cx="12" cy="12" r="1"></circle>
-              <circle cx="19" cy="12" r="1"></circle>
-            </svg>
-          </button>
-
           {/* Toggle Button */}
           <button
             onClick={handleToggleChartType}
-            className="text-sm px-3 py-1.5 bg-gray-100 dark:bg-gray-700 rounded-md
-                       text-gray-700 dark:text-gray-100 font-medium"
+            className="text-sm px-3 py-1.5 bg-gray-100 dark:bg-gray-700 rounded-md text-gray-700 dark:text-gray-100 font-medium"
           >
             {chartType === 'line' ? 'Bar View' : 'Line View'}
           </button>
         </div>
       </div>
 
-      {/* Chart Area */}
-      <div className="relative flex flex-col items-center justify-start py-6">
-        <div className="w-full h-64">
-          {/* Use chart's responsive container - no static image */}
-          {renderChart()}
-        </div>
+      {/* Chart Container */}
+      <div className="relative w-full h-80 mt-4">
+        {renderChart()}
       </div>
     </div>
   );
 }
 
 export default MonthlyHiringChart;
+
 
 
