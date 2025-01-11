@@ -440,17 +440,76 @@
 
 // src/components/DashboardStatCards.jsx
 
+// import React, { useEffect } from "react";
+// import StatCard from "./StatCard";
+// import {
+//   useDashboardStore,
+// } from "../../../store/useDashboardStore"; // your zustand store
+
+// // If using a React Icon library (e.g. react-icons), import them here
+// import { FaUsers, FaUserCheck, FaUserTimes } from "react-icons/fa";
+
+// function DashboardStatCards() {
+//   // 1. Pull everything we need from the store
+//   const {
+//     totalUsers,
+//     usersLoggedInToday,
+//     employeesOnLeaveToday,
+//     fetchDashboardStats,
+//     fetchAttendanceDetails,
+//     fetchLeaveDetails,
+//   } = useDashboardStore();
+
+//   // 2. On mount, fetch stats
+//   useEffect(() => {
+//     fetchDashboardStats();
+//   }, [fetchDashboardStats]);
+
+//   // 3. Build the data for each StatCard. We no longer use dummy data.
+//   const statCardsData = [
+//     {
+//       icon: <FaUsers className="text-blue-600" />, // or any icon
+//       count: totalUsers,
+//       label: "Total Employees",
+//       chart: "https://cdn.builder.io/api/v1/image/assets/TEMP/a91cd45b-c76f-4c19-8f57-d0142fc9304c", // example chart image
+//       onClickDetail: null, // No details function for total employees
+//     },
+//     {
+//       icon: <FaUserCheck className="text-green-600" />,
+//       count: usersLoggedInToday,
+//       label: "Users Logged In Today",
+//       chart: "https://cdn.builder.io/api/v1/image/assets/TEMP/14c3fe2b-6284-40fc-a837-4d939737641c",
+//       onClickDetail: fetchAttendanceDetails, // calls store method
+//     },
+//     {
+//       icon: <FaUserTimes className="text-red-600" />,
+//       count: employeesOnLeaveToday,
+//       label: "Employees On Leave Today",
+//       chart: "https://cdn.builder.io/api/v1/image/assets/TEMP/bcc2ae50-6637-4179-8a2a-a3fceaca0d9f",
+//       onClickDetail: fetchLeaveDetails, // calls store method
+//     },
+//   ];
+
+//   // 4. Render the cards
+//   return (
+//     <div className="flex flex-col gap-5 md:flex-row">
+//       {statCardsData.map((item, index) => (
+//         <StatCard key={index} {...item} />
+//       ))}
+//     </div>
+//   );
+// }
+
+// export default DashboardStatCards;
+
 import React, { useEffect } from "react";
 import StatCard from "./StatCard";
-import {
-  useDashboardStore,
-} from "../../../store/useDashboardStore"; // your zustand store
+import { useDashboardStore } from "../../../store/useDashboardStore";
 
-// If using a React Icon library (e.g. react-icons), import them here
+// React Icons
 import { FaUsers, FaUserCheck, FaUserTimes } from "react-icons/fa";
 
 function DashboardStatCards() {
-  // 1. Pull everything we need from the store
   const {
     totalUsers,
     usersLoggedInToday,
@@ -460,37 +519,49 @@ function DashboardStatCards() {
     fetchLeaveDetails,
   } = useDashboardStore();
 
-  // 2. On mount, fetch stats
   useEffect(() => {
     fetchDashboardStats();
   }, [fetchDashboardStats]);
 
-  // 3. Build the data for each StatCard. We no longer use dummy data.
+  // For demonstration, pretend these are valid URLs to 
+  // your “light” and “dark” wave images with transparent background.
+  // e.g. .png or .svg 
+  const waveLightGreen = "https://cdn.builder.io/api/v1/image/assets/TEMP/a91cd45b-c76f-4c19-8f57-d0142fc9304c"
+  const waveDarkGreen = "https://cdn.builder.io/api/v1/image/assets/TEMP/a91cd45b-c76f-4c19-8f57-d0142fc9304c"
+
+  const waveLightYellow = "https://cdn.builder.io/api/v1/image/assets/TEMP/14c3fe2b-6284-40fc-a837-4d939737641c"
+  const waveDarkYellow = "https://cdn.builder.io/api/v1/image/assets/TEMP/14c3fe2b-6284-40fc-a837-4d939737641c"
+
+  const waveLightRed = "https://cdn.builder.io/api/v1/image/assets/TEMP/bcc2ae50-6637-4179-8a2a-a3fceaca0d9f"
+  const waveDarkRed = "https://cdn.builder.io/api/v1/image/assets/TEMP/bcc2ae50-6637-4179-8a2a-a3fceaca0d9f"
+
   const statCardsData = [
     {
-      icon: <FaUsers className="text-blue-600" />, // or any icon
+      icon: <FaUsers className="text-blue-600" />,
       count: totalUsers,
       label: "Total Employees",
-      chart: "https://cdn.builder.io/api/v1/image/assets/TEMP/a91cd45b-c76f-4c19-8f57-d0142fc9304c", // example chart image
-      onClickDetail: null, // No details function for total employees
+      chartLight: waveLightGreen,  // Light version
+      chartDark: waveDarkGreen,    // Dark version
+      onClickDetail: null,
     },
     {
       icon: <FaUserCheck className="text-green-600" />,
       count: usersLoggedInToday,
       label: "Users Logged In Today",
-      chart: "https://cdn.builder.io/api/v1/image/assets/TEMP/14c3fe2b-6284-40fc-a837-4d939737641c",
-      onClickDetail: fetchAttendanceDetails, // calls store method
+      chartLight: waveLightYellow,
+      chartDark: waveDarkYellow,
+      onClickDetail: fetchAttendanceDetails,
     },
     {
       icon: <FaUserTimes className="text-red-600" />,
       count: employeesOnLeaveToday,
       label: "Employees On Leave Today",
-      chart: "https://cdn.builder.io/api/v1/image/assets/TEMP/bcc2ae50-6637-4179-8a2a-a3fceaca0d9f",
-      onClickDetail: fetchLeaveDetails, // calls store method
+      chartLight: waveLightRed,
+      chartDark: waveDarkRed,
+      onClickDetail: fetchLeaveDetails,
     },
   ];
 
-  // 4. Render the cards
   return (
     <div className="flex flex-col gap-5 md:flex-row">
       {statCardsData.map((item, index) => (

@@ -48,7 +48,7 @@ const MainLayout = () => {
           >
             <Breadcrumb />
             {/* <div className="container mx-auto w-full"> */}
-            <div className=" mx-auto ">
+            <div className="container mx-auto ">
               <Outlet />
             </div>
           </div>
