@@ -260,7 +260,7 @@ const MainLayout = () => {
           {/* Sidebar with onSectionSelect */}
           <Sidebar onSectionSelect={handleSectionSelect} />
 
-          <div className="flex-1 h-screen flex flex-col">
+          <div className="flex-1 h-screen flex flex-col ">
             <div
               id="scrollableDiv"
               className={`
@@ -279,10 +279,13 @@ const MainLayout = () => {
               {activeSection && activeSection.options && (
                 <div
                   className={`
-                    flex items-center px-2 py-2
+                    flex items-center
                     bg-gray-200 dark:bg-[#1a1a1a]/60
                     border-b border-gray-300 dark:border-gray-700
                     backdrop-blur-sm
+                    gap-2
+                    
+                 
                   `}
                 >
                   {activeSection.options.map((option, idx) => {
@@ -292,12 +295,13 @@ const MainLayout = () => {
                         key={idx}
                         onClick={() => handleTabClick(option)}
                         className={`
-                          relative px-4 py-2 mx-1 text-sm font-semibold
+                          relative px-4 py-2 mx-1 text-base font-bold
                           transition-colors duration-300
                           rounded-lg
+                     
                           ${
                             isActive
-                              ? "text-black dark:text-green-400 border-b-2 border-blue-500"
+                              ? "text-green-600 dark:text-green-400 border-b-1 border-green-500"
                               : "text-gray-600 dark:text-gray-200 hover:text-cyan-500 dark:hover:text-cyan-300"
                           }
                         `}
@@ -306,9 +310,9 @@ const MainLayout = () => {
                         {isActive && (
                           <span
                             className={`
-                              absolute left-0 bottom-0 w-full h-[1px]
-                              bg-gradient-to-r from-green-400 to-blue-500
-                              animate-pulse
+                              absolute left-0 bottom-0 w-full h-[2px] bg-green-500
+                              dark:bg-green-300
+                           
                             `}
                           />
                         )}

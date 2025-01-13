@@ -2,8 +2,8 @@ import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 import { Login, Dashboard, Page404, } from "../pages";
 import MainLayout from "./MainLayout";
-import { ToastContainer } from "react-toastify";
 import useSocketStore from "../store/socketStore";
+
 import {
   Footer,
   ResetPassword,
@@ -12,10 +12,11 @@ import {
   NotificationsPage,
   Feednew,
   EngPermissionDashboard,
+  TicketsPage
 } from "../components";
 
 const router = createBrowserRouter([
-  <ToastContainer />,
+
   {
     path: "/reset-password/:resetToken",
     element: <ResetPassword />,
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
         path: "engagement-permission-dashboard",
         element: <EngPermissionDashboard />,
       },
+      {
+        path: "ticket-management",
+        element: <TicketsPage />,
+      },
   
     ],
   },
@@ -64,7 +69,7 @@ const router = createBrowserRouter([
     path: "*",
     element: <Page404 />, // Fallback for undefined routes
   },
-  <Footer />,
+  // <Footer />,
 ]);
 
 export default router;

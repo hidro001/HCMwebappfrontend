@@ -16,6 +16,7 @@ import EngPermissionDashboard from "./engagement/EngPermissionDashboard";
 // import Unauthorized from './components/Unauthorized';
 import DashboardLayout from "./dashboar Cards/superAdmin/DashboardLayout";
 import DashboardLayoutEmployee from "./dashboar Cards/employee/DashboardLayoutEmployee";
+import  TicketsPage  from "./tickets Management/TicketsPage";
 
 export {
   LoginCard,
@@ -34,4 +35,5 @@ export {
   DashboardLayoutEmployee,
   Feednew,
   EngPermissionDashboard,
+  TicketsPage,
 };
