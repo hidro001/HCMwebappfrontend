@@ -1,4 +1,4 @@
-// // src/components/common/ConfirmationDialog.js
+
 
 // import React from 'react';
 // import PropTypes from 'prop-types';
@@ -10,7 +10,6 @@
 //   DialogActions,
 //   Button,
 // } from '@mui/material';
-
 
 // const ConfirmationDialog = ({
 //   open,
@@ -35,10 +34,20 @@
 //         </DialogContentText>
 //       </DialogContent>
 //       <DialogActions>
-//         <Button onClick={onCancel} color="secondary">
+//         {/* Use variant="contained" to ensure visibility in both modes */}
+//         <Button
+//           onClick={onCancel}
+//           color="secondary"
+//           variant="contained"
+//         >
 //           {cancelText}
 //         </Button>
-//         <Button onClick={onConfirm} color="primary" autoFocus>
+//         <Button
+//           onClick={onConfirm}
+//           color="primary"
+//           variant="contained"
+//           autoFocus
+//         >
 //           {confirmText}
 //         </Button>
 //       </DialogActions>
@@ -58,6 +67,8 @@
 
 // export default ConfirmationDialog;
 
+
+// src/components/ConfirmationDialog.jsx
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -92,20 +103,10 @@ const ConfirmationDialog = ({
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        {/* Use variant="contained" to ensure visibility in both modes */}
-        <Button
-          onClick={onCancel}
-          color="secondary"
-          variant="contained"
-        >
+        <Button onClick={onCancel} color="secondary" variant="contained">
           {cancelText}
         </Button>
-        <Button
-          onClick={onConfirm}
-          color="primary"
-          variant="contained"
-          autoFocus
-        >
+        <Button onClick={onConfirm} color="primary" variant="contained" autoFocus>
           {confirmText}
         </Button>
       </DialogActions>
@@ -124,3 +125,4 @@ ConfirmationDialog.propTypes = {
 };
 
 export default ConfirmationDialog;
+

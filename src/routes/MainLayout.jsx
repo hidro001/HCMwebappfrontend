@@ -252,7 +252,7 @@ const MainLayout = () => {
 
   return (
     <div className={`${darkMode ? "dark" : ""} transition-colors duration-300`}>
-      <div className="h-auto w-full overflow-y-auto bg-gray-100 text-gray-800 dark:bg-[#121212] dark:text-gray-100">
+      <div className="h-auto w-full overflow-y-auto bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
         <Navbar />
       
 
@@ -280,7 +280,7 @@ const MainLayout = () => {
                 <div
                   className={`
                     flex items-center
-                    bg-gray-200 dark:bg-[#1a1a1a]/60
+                    bg-gray-200 dark:bg-gray-900
                     border-b border-gray-300 dark:border-gray-700
                     backdrop-blur-sm
                     gap-2

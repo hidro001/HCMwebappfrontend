@@ -12,7 +12,9 @@ import {
   NotificationsPage,
   Feednew,
   EngPermissionDashboard,
-  TicketsPage
+  TicketsPage,
+  AllTickets,
+  EmployessIssue
 } from "../components";
 
 const router = createBrowserRouter([
@@ -59,8 +61,16 @@ const router = createBrowserRouter([
         element: <EngPermissionDashboard />,
       },
       {
-        path: "ticket-management",
+        path: "manage-tickets",
         element: <TicketsPage />,
+      },
+      {
+        path: "all-tickets",
+        element: <AllTickets />,
+      },
+      {
+        path: "raise-ticket",
+        element: <EmployessIssue />,
       },
   
     ],
