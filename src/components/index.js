@@ -19,6 +19,8 @@ import DashboardLayoutEmployee from "./dashboar Cards/employee/DashboardLayoutEm
 import  TicketsPage  from "./tickets Management/TicketsPage";
 import  AllTickets  from "./tickets Management/AllTickets";
 import  EmployessIssue  from "./tickets Management/EmployessIssue";
+import  PoshManager  from "./tickets Management/posh/PoshManager";
+import  FilePosh  from "./tickets Management/posh/FilePosh";
 
 export {
   LoginCard,
@@ -39,5 +41,7 @@ export {
   EngPermissionDashboard,
   TicketsPage,
   AllTickets,
-  EmployessIssue
+  EmployessIssue,
+  PoshManager,
+  FilePosh
 };

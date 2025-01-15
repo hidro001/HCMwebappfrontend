@@ -1,135 +1,4 @@
 
-// import React, { useState } from "react";
-// import { motion, AnimatePresence } from "framer-motion";
-// import { FaTimes } from "react-icons/fa";
-
-// export default function TicketViewModal({ isOpen, onClose, ticket }) {
-//   // For show/hide attachments
-//   const [showAttachments, setShowAttachments] = useState(true);
-
-//   if (!isOpen || !ticket) return null;
-
-//   // Example attachments - replace with real data from ticket
-//   const attachments = [
-//     "https://static1.srcdn.com/wordpress/wp-content/uploads/2025/01/hulk-and-jean-grey-s-phoenix.jpg",
-//   ];
-
-//   return (
-//     <AnimatePresence>
-//       {isOpen && (
-//         <motion.div
-//           className="fixed inset-0 z-50 flex items-center justify-center 
-//                      bg-black/30 dark:bg-black/50 
-//                      backdrop-blur-sm overflow-y-auto"
-//           initial={{ opacity: 0 }}
-//           animate={{ opacity: 1 }}
-//           exit={{ opacity: 0 }}
-//         >
-//           {/* Clickable backdrop to close */}
-//           <div className="absolute inset-0" onClick={onClose} />
-
-//           <motion.div
-//             className="relative z-10 w-full max-w-2xl 
-//                        bg-white dark:bg-gray-800
-//                        border border-gray-200 dark:border-gray-700
-//                        rounded-xl shadow-2xl p-6 
-//                        overflow-y-auto max-h-[90vh] 
-//                        transition-colors mx-4 my-8"
-//             initial={{ y: 50, opacity: 0 }}
-//             animate={{ y: 0, opacity: 1 }}
-//             exit={{ y: 50, opacity: 0 }}
-//           >
-//             {/* Header with close button */}
-//             <div className="flex items-center justify-between mb-4">
-//               <h2 className="text-xl font-extrabold 
-//                              text-gray-800 dark:text-gray-100">
-//                 Issue Details
-//               </h2>
-//               <button
-//                 className="text-gray-600 dark:text-gray-200 
-//                            hover:text-gray-800 dark:hover:text-white 
-//                            transition-colors"
-//                 onClick={onClose}
-//               >
-//                 <FaTimes />
-//               </button>
-//             </div>
-
-//             {/* Details Table */}
-//             <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden text-sm">
-//               <div className="grid grid-cols-3 gap-4 p-3 bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
-//                 <div className="font-semibold text-gray-700 dark:text-gray-200">
-//                   Title:
-//                 </div>
-//                 <div className="col-span-2 text-gray-800 dark:text-gray-100">
-//                   {ticket.title}
-//                 </div>
-//               </div>
-//               <div className="grid grid-cols-3 gap-4 p-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-//                 <div className="font-semibold text-gray-700 dark:text-gray-200">
-//                   Description:
-//                 </div>
-//                 <div className="col-span-2 text-gray-800 dark:text-gray-100">
-//                   Here is a longer description for the issue...
-//                 </div>
-//               </div>
-//               <div className="grid grid-cols-3 gap-4 p-3 bg-gray-100 dark:bg-gray-700">
-//                 <div className="font-semibold text-gray-700 dark:text-gray-200">
-//                   User Details:
-//                 </div>
-//                 <div className="col-span-2 space-y-1 text-gray-800 dark:text-gray-100">
-//                   <div>
-//                     <strong>Name:</strong> {ticket.empName}
-//                   </div>
-//                   <div>
-//                     <strong>Department:</strong> {ticket.department}
-//                   </div>
-//                   <div>
-//                     <strong>Designation:</strong>{" "}
-//                     {ticket.EmployeeDesignation}
-//                   </div>
-//                   <div>
-//                     <strong>Employee ID:</strong> {ticket.employeeId}
-//                   </div>
-//                   <div>
-//                     <strong>Assigned To:</strong> {ticket.AssignedTo}
-//                   </div>
-//                 </div>
-//               </div>
-//             </div>
-
-//             {/* Toggle Attachments */}
-//             <div className="text-center mt-5">
-//               <button
-//                 className="bg-blue-600 text-white px-4 py-2 rounded-md shadow-md
-//                            hover:bg-blue-700 transition-colors text-sm"
-//                 onClick={() => setShowAttachments(!showAttachments)}
-//               >
-//                 {showAttachments ? "Hide Attachments" : "Show Attachments"}
-//               </button>
-//             </div>
-
-//             {/* Attachments Section */}
-//             {showAttachments && (
-//               <div className="mt-5 space-y-4">
-//                 {attachments.map((url, idx) => (
-//                   <div key={idx}>
-//                     <img
-//                       src={url}
-//                       alt={`attachment-${idx}`}
-//                       className="max-w-full h-auto rounded-md shadow 
-//                                  border border-gray-200 dark:border-gray-600"
-//                     />
-//                   </div>
-//                 ))}
-//               </div>
-//             )}
-//           </motion.div>
-//         </motion.div>
-//       )}
-//     </AnimatePresence>
-//   );
-// }
 
 // src/components/TicketViewModal.jsx
 import React, { useState } from "react";
@@ -146,7 +15,7 @@ export default function TicketViewModal({ isOpen, onClose, ticket }) {
       {isOpen && (
         <motion.div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 
-                     dark:bg-black/50 backdrop-blur-sm overflow-y-auto"
+                     dark:bg-black/50 backdrop-blur-sm overflow-y-auto "
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -155,10 +24,10 @@ export default function TicketViewModal({ isOpen, onClose, ticket }) {
           <div className="absolute inset-0" onClick={onClose} />
 
           <motion.div
-            className="relative z-10 w-full max-w-2xl bg-white dark:bg-gray-800 
+            className="relative z-50 w-full max-w-2xl bg-white dark:bg-gray-800 
                        border border-gray-200 dark:border-gray-700
-                       rounded-xl shadow-2xl p-6 mx-4 my-8 transition-colors
-                       max-h-[90vh] overflow-y-auto"
+                       rounded-xl shadow-2xl p-6 mx-4  transition-colors
+                       max-h-[90vh] overflow-y-auto "
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: 50, opacity: 0 }}

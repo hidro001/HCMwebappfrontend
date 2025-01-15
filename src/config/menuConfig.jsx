@@ -571,7 +571,8 @@ import { ChatBubble } from "@mui/icons-material";
 export const menuItems = [
     {
       name: "Dashboard",
-      icon: <FaHome />,
+      icon: <FaHome  title="Dashboard"/>,
+      title:"Dashboard",
       color: "text-blue-400",
       iconAnimation: { scale: 1.2 },
       options: [
@@ -829,6 +830,18 @@ export const menuItems = [
         {
           name: "All Tickets",
           link: "/dashboard/all-tickets",
+          permission: "IssueManagementSuperAdmin",
+          textAnimation: { x: 10 },
+        },
+        {
+          name: "Posh Manage",
+          link: "/dashboard/posh-manage",
+          permission: "IssueManagementSuperAdmin",
+          textAnimation: { x: 10 },
+        },
+        {
+          name: "File Posh",
+          link: "/dashboard/file-posh",
           permission: "IssueManagementSuperAdmin",
           textAnimation: { x: 10 },
         },

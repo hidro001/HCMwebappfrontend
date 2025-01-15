@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
 
 @layer utility {
   .hide-scrollbar {
@@ -17,6 +22,8 @@
     display: none;
   }
 }
+
+
 
 html {
   transition: background-color 0.8s, color 0.8s;

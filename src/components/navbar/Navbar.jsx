@@ -382,7 +382,7 @@ const Navbar = () => {
   return (
     <nav
       className={
-        "bg-white text-black dark:text-white dark:bg-gray-800 z-50 border-b border-gray-500 px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 shadow-md stickey w-full top-0 left-0"
+        "bg-white text-black dark:text-white dark:bg-gray-800 z-50 border-b border-gray-500 px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 shadow-md stickey w-full top-0 left-0 "
       }
     >
       {/* Left Section: Company Branding */}

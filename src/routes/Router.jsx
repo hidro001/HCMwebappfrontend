@@ -14,7 +14,9 @@ import {
   EngPermissionDashboard,
   TicketsPage,
   AllTickets,
-  EmployessIssue
+  EmployessIssue,
+  PoshManager,
+  FilePosh
 } from "../components";
 
 const router = createBrowserRouter([
@@ -71,6 +73,14 @@ const router = createBrowserRouter([
       {
         path: "raise-ticket",
         element: <EmployessIssue />,
+      },
+      {
+        path: "posh-manage",
+        element: <PoshManager />,
+      },
+      {
+        path: "File-Posh",
+        element: <FilePosh />,
       },
   
     ],
