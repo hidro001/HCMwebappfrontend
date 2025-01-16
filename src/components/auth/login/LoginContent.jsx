@@ -31,7 +31,7 @@ export default function LoginContent() {
   }
 
   return (
-    <Stack 
+    <Stack  className=""
       sx={{
         flexDirection: "column",
         alignSelf: "center",
@@ -44,7 +44,7 @@ export default function LoginContent() {
         <img
           src={companyInfo.logo || "https://ems11.s3.amazonaws.com/logo-HM+(1).png"}
           alt="Company Logo"
-          className="hm-logo-img "
+          className="hm-logo-img w-32 "
         />
         
       </div>

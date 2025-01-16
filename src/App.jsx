@@ -5,6 +5,9 @@ import { useEffect } from "react";
 import "./components/charts/register";
 import { Toaster } from "react-hot-toast";
 // import 'react-hot-toast/style.css';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 
 export default function App() {
   return (

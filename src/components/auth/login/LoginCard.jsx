@@ -326,9 +326,9 @@ const LoginCard = () => {
   const handleForgotPasswordClose = () => setForgotPasswordOpen(false);
 
   return (
-    <GlassCard>
+    <GlassCard className=" pr-2 pl-2 ">
       {/* Logo */}
-      <Box className="hidden lg:flex justify-center mb-2">
+      <Box className="flex justify-center mb-2">
         <img
           src="https://ems11.s3.amazonaws.com/logo-HM+(1).png"
           alt="Company Logo"

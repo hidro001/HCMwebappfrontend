@@ -111,7 +111,7 @@ const Breadcrumb = () => {
   };
 
   return (
-    <div className="flex justify-between dark:bg-gray-700 dark:text-white items-center p-4 bg-gray-100 border-b">
+    <div className="flex justify-between dark:bg-gray-700 dark:text-white items-center p-3 bg-gray-100 border-b ">
       <div className="text-sm">
         Welcome Back,{" "}
         <span className="font-semibold">
@@ -126,5 +126,7 @@ const Breadcrumb = () => {
     </div>
   );
 };
+
+
 
 export default Breadcrumb;
