@@ -27,6 +27,7 @@ const useIssuesStore = create((set, get) => ({
   fetchDeptIssues: async () => {
     set({ loading: true, error: null });
     try {
+      // await new Promise((resolve) => setTimeout(resolve, 2000)); 
       const response = await fetchDepartmentIssues();
       if (response.success) {
         set({ issues: response.data });
