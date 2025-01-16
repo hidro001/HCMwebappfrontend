@@ -1979,8 +1979,8 @@ export default function TicketsPage() {
   };
 
   return (
-    <div className="mx-auto px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
-      <h1 className="text-2xl font-bold py-4">Employees Tickets</h1>
+    <div className="mx-auto px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors ">
+      <h1 className="text-2xl font-bold mb-2 ">Employees Tickets</h1>
 
       {/* Filters, page size, search, etc. */}
       <div className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow transition-colors mb-3">

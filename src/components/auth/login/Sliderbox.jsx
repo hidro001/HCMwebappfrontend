@@ -71,8 +71,18 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 export default function Sliderbox() {
+
+  const generateRandomIds = (count) => {
+    return Array.from({ length: count }, () => Math.floor(Math.random() * 1000)); // Generate IDs between 0 and 999
+  };
+
+  const ids = generateRandomIds(3); // Generate 3 random IDs
+  const images = ids.map((id) => `https://via.assets.so/movie.png?id=${id}&q=95&w=360&h=560&fit=cover`);
+
+
+
   const settings = {
-    dots: true, // shows pagination dots
+    dots: false, // shows pagination dots
     infinite: true, // loops through slides
     speed: 500,
     slidesToShow: 1, // default slides on large screens
@@ -102,7 +112,7 @@ export default function Sliderbox() {
 
   return (
     // Full-screen wrapper with a background color
-    <div className="flex items-center justify-center w-full  p-4 ">
+    <div className="flex items-center justify-center w-full  p-4  ">
       <style jsx>{`
         /* Slick Dots Customization */
         .slick-dots {
@@ -121,27 +131,15 @@ export default function Sliderbox() {
 
       <div className="w-full max-w-full sm:max-w-sm md:max-w-md lg:max-w-md rounded-lg overflow-hidden ">
         <Slider {...settings}>
-          <div className="">
+        {images.map((url, index) => (
+          <div key={index}>
             <img
-              src="https://images.unsplash.com/photo-1735776327649-eeb6b6ed8829?q=80&w=1974&auto=format&fit=crop"
-              alt="slide-1"
-              className="w-full h-full object-fill"
+              src={url}
+              alt={`Game ${index}`}
+              className="w-full h-auto object-fill "
             />
           </div>
-          <div>
-            <img
-              src="https://images.unsplash.com/photo-1735661998642-71a998eaf912?q=80&w=1974&auto=format&fit=crop"
-              alt="slide-2"
-              className="w-full h-full object-fill"
-            />
-          </div>
-          <div>
-            <img
-              src="https://plus.unsplash.com/premium_photo-1689607809844-dda6391f83b4?q=80&w=1974&auto=format&fit=crop"
-              alt="slide-3"
-              className="w-full h-full object-fill"
-            />
-          </div>
+        ))}
         </Slider>
       </div>
     </div>

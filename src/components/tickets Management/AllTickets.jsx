@@ -1651,7 +1651,7 @@ export default function AllTickets() {
   };
 
   return (
-    <div className="mx-auto px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
+    <div className="mx-auto px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors  ">
       <h1 className="text-2xl font-bold mb-2">ALL Tickets</h1>
 
       {/* Toolbar */}

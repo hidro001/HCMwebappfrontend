@@ -1592,7 +1592,7 @@ const tableRowVariants = {
 export default function AllTickets() {
   const {
     issues,
-    fetchAllIssues,
+    fetchOwnIssues,
     createIssue,
     editIssue,
     removeIssue,
@@ -1620,9 +1620,9 @@ export default function AllTickets() {
 
   useEffect(() => {
     // Fetch issues and department data on mount
-    fetchAllIssues();
-    fetchDepartments();
-  }, [fetchAllIssues, fetchDepartments]);
+    fetchOwnIssues();
+    // fetchDepartments();
+  }, [fetchOwnIssues]);
 
   const handleRaiseTicket = () => {
     setModalMode("create");
@@ -1849,7 +1849,6 @@ export default function AllTickets() {
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th className="p-3 text-sm font-semibold">S.L</th>
-                <th className="p-3 text-sm font-semibold">Emp ID</th>
                 <th className="p-3 text-sm font-semibold">Name</th>
                 <th className="p-3 text-sm font-semibold">Title</th>
                 <th className="p-3 text-sm font-semibold">Priority</th>
@@ -1898,9 +1897,7 @@ export default function AllTickets() {
                     className="border-b last:border-b-0 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                   >
                     <td className="p-3 text-sm">{String(globalIndex).padStart(2, "0")}</td>
-                    <td className="p-3 text-sm text-blue-600 dark:text-blue-400 cursor-pointer">
-                      {issue.createdBy?.employee_Id || "--"}
-                    </td>
+                
                     <td className="p-3 text-sm">
                       {issue.createdBy
                         ? `${issue.createdBy.first_Name} ${issue.createdBy.last_Name}`

@@ -320,7 +320,7 @@ import Sliderbox from "../../../components/auth/login/Sliderbox";
 export default function Login() {
   const theme = useTheme();
 
-  const leftPanelBg = theme.palette.mode === "dark" ? "#333333" : "#1198E7";
+  const leftPanelBg = theme.palette.mode === "dark" ? "#333333" : "#1198E6";
   const rightPanelBg = theme.palette.mode === "dark" ? "#1E1E1E" : "#FFFFFF";
 
   // Your PNG image URL
