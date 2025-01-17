@@ -251,8 +251,8 @@ const MainLayout = () => {
   };
 
   return (
-    <div className={`${darkMode ? "dark" : ""} transition-colors duration-300`}>
-      <div className="h-auto w-full overflow-y-auto bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+    <div className={`${darkMode ? "dark" : ""} transition-colors duration-100`}>
+      <div className="h-auto w-full overflow-y-auto  text-text-primary bg-bg-primary">
         <Navbar />
       
 

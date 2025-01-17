@@ -7,17 +7,14 @@ import { Toaster } from "react-hot-toast";
 // import 'react-hot-toast/style.css';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
+import "./index.css"; // Import the Tailwind setup here
 
 export default function App() {
   return (
     <>
-      <ThemeProvider>
       {/* <Toaster position="top-right" reverseOrder={false} /> */}
-      <Toaster  reverseOrder={false} />
-        <RouterProvider router={router} />
-      </ThemeProvider>
-
+      <Toaster reverseOrder={false} />
+      <RouterProvider router={router} />
     </>
   );
 }

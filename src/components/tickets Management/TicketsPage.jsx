@@ -1979,7 +1979,7 @@ export default function TicketsPage() {
   };
 
   return (
-    <div className="mx-auto px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors ">
+    <div className="mx-auto px-4 bg-bg-primary transition-colors text-text-primary ">
       <h1 className="text-2xl font-bold mb-2 ">Employees Tickets</h1>
 
       {/* Filters, page size, search, etc. */}
@@ -2075,14 +2075,14 @@ export default function TicketsPage() {
       </div>
 
       {loading ? (
-        <div className="bg-white dark:bg-gray-800 rounded-md shadow p-4 transition-colors">
+        <div className="bg-bg-secondary  rounded-md shadow p-4 transition-colors">
           {Array.from({ length: 10 }).map((_, i) => (
             <Skeleton key={i} variant="rectangular" height={40} className="mb-2" />
           ))}
         </div>
       ) : filteredIssues.length > 0 ? (
         <motion.div
-          className="bg-white dark:bg-gray-800 rounded-md shadow overflow-x-auto transition-colors"
+          className="bg-bg-secondary  rounded-md shadow overflow-x-auto transition-colors"
           variants={tableContainerVariants}
           initial="hidden"
           animate="visible"
