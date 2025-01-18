@@ -17,7 +17,8 @@ import {
   EmployessIssue,
   PoshManager,
   FilePosh,
-  AddEmployee
+  AddEmployee,
+  UpdateEmployeePage
 } from "../components";
 
 const router = createBrowserRouter([
@@ -86,6 +87,10 @@ const router = createBrowserRouter([
       {
         path: "add-employee",
         element: <AddEmployee />,
+      },
+      {
+        path: "update-employee",
+        element: <UpdateEmployeePage />,
       },
   
     ],
