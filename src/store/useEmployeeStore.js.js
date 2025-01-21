@@ -8,6 +8,8 @@ import {
   fetchPermissionRoles,
   fetchCompanyInfo,
   fetchDesignations,
+  fetchEmployeeById,
+  updateEmployee,
 } from "../service/employeeService";
 
 const useEmployeeStore = create((set, get) => ({
@@ -115,7 +117,11 @@ const useEmployeeStore = create((set, get) => ({
     try {
       set({ loadingAddresses: true });
       const companyInfo = await fetchCompanyInfo();
-      if (companyInfo && companyInfo.addresses && Array.isArray(companyInfo.addresses)) {
+      if (
+        companyInfo &&
+        companyInfo.addresses &&
+        Array.isArray(companyInfo.addresses)
+      ) {
         const formattedAddresses = companyInfo.addresses.map((address) => ({
           label: address.address,
           value: address.address,
@@ -148,6 +154,36 @@ const useEmployeeStore = create((set, get) => ({
       set({ designations: [] });
     } finally {
       set({ loadingDesignations: false });
+    }
+  },
+  // To store a single employee in the store (if you like):
+  selectedEmployee: null,
+  loadingSelectedEmployee: false,
+
+  // Action: fetch employee by ID
+  loadEmployeeById: async (id) => {
+    set({ loadingSelectedEmployee: true });
+    try {
+      const response = await fetchEmployeeById(id);
+      if (response.success) {
+        set({ selectedEmployee: response.data });
+      } else {
+        console.error("Error loading employee: ", response.message);
+      }
+    } catch (error) {
+      console.error("Error loading employee: ", error);
+    } finally {
+      set({ loadingSelectedEmployee: false });
+    }
+  },
+
+  // Action: update employee
+  updateEmployeeData: async (id, formData) => {
+    try {
+      const response = await updateEmployee(id, formData);
+      return response; // Let the caller handle success/failure
+    } catch (error) {
+      throw error;
     }
   },
 }));

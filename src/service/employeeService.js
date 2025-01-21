@@ -71,3 +71,25 @@ export async function createEmployee(formData) {
   return response.data;
 }
 
+/**
+ * Fetch a single employee by ID
+ */
+export async function fetchEmployeeById(employeeId) {
+  // Example: GET /superadmin/employees/:id
+  const response = await axiosInstance.get(`/superadmin/employees/${employeeId}`);
+  return response.data; // { success: boolean, data: {...} }
+}
+
+/**
+ * Update an existing employee by ID (PUT)
+ * Accepts FormData object just like createEmployee
+ */
+export async function updateEmployee(employeeId, formData) {
+  // Example: PUT /superadmin/employees/:id
+  const response = await axiosInstance.put(`/superadmin/employees/${employeeId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data; // { success: boolean, message?: string, etc. }
+}

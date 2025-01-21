@@ -100,11 +100,12 @@ const ConfirmationDialog = ({
           // Instead of minWidth: 400, use responsive breakpoints:
           width: {
             xs: "90%", // on extra-small screens, occupy 90% of the viewport
-            sm: "auto", // once we hit "sm", allow default
+            sm: "600px", // once we hit "sm", allow default
           },
           // Provide horizontal margin so it doesn't edge-snug on small screens
           mx: "auto",
           // Optional dark-mode style
+
           backgroundColor: "rgba(30,30,30,0.9)",
           color: "#fff",
           // Some vertical padding if you like

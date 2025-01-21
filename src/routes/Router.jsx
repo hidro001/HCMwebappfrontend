@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import { Login, Dashboard, Page404, } from "../pages";
+import { Login, Dashboard, Page404,AddEmployeePage,UpdateEmployeePage } from "../pages";
 import MainLayout from "./MainLayout";
 import useSocketStore from "../store/socketStore";
 
@@ -18,7 +18,7 @@ import {
   PoshManager,
   FilePosh,
   AddEmployee,
-  UpdateEmployeePage
+  // UpdateEmployeePage
 } from "../components";
 
 const router = createBrowserRouter([
@@ -89,8 +89,12 @@ const router = createBrowserRouter([
         element: <AddEmployee />,
       },
       {
-        path: "update-employee",
+        path: "update-employee/:id",
         element: <UpdateEmployeePage />,
+      },
+      {
+        path: "add-employee2",
+        element: <AddEmployeePage/>,
       },
   
     ],
