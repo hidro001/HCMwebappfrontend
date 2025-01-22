@@ -1,20 +1,21 @@
+
 import React, { useState, useEffect } from "react";
 import { useAnimate } from "framer-motion";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 import FormField from "../common/FormField";
 import FormSelect from "../common/FormSelect";
 import FormTextArea from "../common/FormTextArea";
 import FormMultiSelect from "../common/FormMultiSelect";
 import useEmployeeStore from "../../../store/useEmployeeStore.js";
-import { availablePermission } from "../../../service/availablePermissions"; // or wherever you store your perms
+import PermissionModal from "../common/PermissionModal"; // <-- new import
+import { availablePermission } from "../../../service/availablePermissions";
 
-const FILE_SIZE_LIMIT = 5 * 1024 * 1024; // 5MB
+const FILE_SIZE_LIMIT = 5 * 1024 * 1024;
 const lettersOnlyRegex = /^[A-Za-z\s]+$/;
 
 export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
   const [scope, animate] = useAnimate();
   const [avatarPreview, setAvatarPreview] = useState(null);
-
   const {
     handleSubmit,
     register,
@@ -23,6 +24,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
     formState: { errors },
   } = useFormContext();
 
+  // Store data
   const addressOptions = useEmployeeStore((state) => state.addressOptions);
   const departments = useEmployeeStore((state) => state.departments);
   const shiftTimings = useEmployeeStore((state) => state.shiftTimings);
@@ -31,16 +33,23 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
   const designations = useEmployeeStore((state) => state.designations);
   const allEmployees = useEmployeeStore((state) => state.allEmployees);
 
+  // Loading states
   const loadingAddresses = useEmployeeStore((state) => state.loadingAddresses);
-  const loadingDepartments = useEmployeeStore((state) => state.loadingDepartments);
-  const loadingShiftTimings = useEmployeeStore((state) => state.loadingShiftTimings);
+  const loadingDepartments = useEmployeeStore(
+    (state) => state.loadingDepartments
+  );
+  const loadingShiftTimings = useEmployeeStore(
+    (state) => state.loadingShiftTimings
+  );
   const loadingEmploymentTypes = useEmployeeStore(
     (state) => state.loadingEmploymentTypes
   );
   const loadingPermissionRoles = useEmployeeStore(
     (state) => state.loadingPermissionRoles
   );
-  const loadingDesignations = useEmployeeStore((state) => state.loadingDesignations);
+  const loadingDesignations = useEmployeeStore(
+    (state) => state.loadingDesignations
+  );
   const loadingAllEmployees = useEmployeeStore(
     (state) => state.loadingAllEmployees
   );
@@ -72,7 +81,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
     }
   }, [watchOfficeLocation, addressOptions, setValue]);
 
-  // Watch changes for role to auto-fill the role’s permissions
+  // If role changes, auto-fill role’s permissions
   const watchRole = watch("permission_role");
   useEffect(() => {
     const foundRole = permissionRoles?.find((r) => r.role_name === watchRole);
@@ -84,7 +93,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
     }
   }, [watchRole, permissionRoles, setValue]);
 
-  // Handle Profile Image
+  // Handle profile image
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -103,6 +112,21 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
       setAvatarPreview(null);
     }
   };
+
+  // ====== MODAL for Permissions ======
+  // We'll remove FormMultiSelect for "permission" and replace it with a modal approach.
+  const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false);
+  const currentPermissions = useWatch({ name: "permission" }); // array from the form
+
+  const openPermissionModal = () => setIsPermissionModalOpen(true);
+  const closePermissionModal = () => setIsPermissionModalOpen(false);
+
+  const handlePermissionSave = (selected) => {
+    // 'selected' is an array of permission strings from the modal
+    setValue("permission", selected);
+    setIsPermissionModalOpen(false);
+  };
+  // ============================
 
   return (
     <form ref={scope} onSubmit={handleSubmit(onSubmitStep)}>
@@ -167,7 +191,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         </div>
       </div>
 
-      {/* Paid Leaves / Employee Type */}
+      {/* Paid leaves / Employee Type */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <FormField
           label="No. of Paid Leaves"
@@ -183,7 +207,10 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           label="Employee Type"
           name="employee_Type"
           loading={loadingEmploymentTypes}
-          options={[{ value: "", label: "Select Employee Type" }, ...employmentTypes]}
+          options={[
+            { value: "", label: "Select Employee Type" },
+            ...employmentTypes,
+          ]}
           registerOptions={{ required: "Employee Type is required" }}
         />
       </div>
@@ -309,6 +336,14 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           ]}
           registerOptions={{ required: "Role is required" }}
         />
+        {/* Manager assignment (unchanged) */}
+        {/* <FormSelect
+          label="Assign Manager"
+          name="assigned_to"
+          loading={loadingAllEmployees}
+          options={allEmployees}
+          registerOptions={{ required: "Manager is required" }}
+        /> */}
         <FormMultiSelect
           label="Assign Manager"
           name="assigned_to"
@@ -320,7 +355,10 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           label="Designation"
           name="designation"
           loading={loadingDesignations}
-          options={[{ value: "", label: "Select Designation" }, ...designations]}
+          options={[
+            { value: "", label: "Select Designation" },
+            ...designations,
+          ]}
           registerOptions={{ required: "Designation is required" }}
         />
       </div>
@@ -392,25 +430,44 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
-      {/* Shift Timing / Permissions */}
+      {/* Shift Timing */}
       <div className="mt-6">
         <FormSelect
           label="Shift Timing"
           name="shift_Timing"
           loading={loadingShiftTimings}
-          options={[{ value: "", label: "Select Shift Timings" }, ...shiftTimings]}
+          options={[
+            { value: "", label: "Select Shift Timings" },
+            ...shiftTimings,
+          ]}
           registerOptions={{ required: "Shift Timing is required" }}
         />
       </div>
+
+      {/* PERMISSIONS (MODAL version) */}
       <div className="mt-6">
-        <FormMultiSelect
-          label="Permissions"
-          name="permission"
-          options={availablePermission.map((p) => ({
-            value: p.permission,
-            label: p.name,
-          }))}
-          requiredMessage="At least one permission must be selected"
+        <label className="block font-medium mb-1">Permissions</label>
+
+        {/* Show current picks, if any */}
+        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+          Selected: {currentPermissions.join(", ") || "None"}
+        </p>
+
+        <button
+          type="button"
+          onClick={openPermissionModal}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
+          Select Permissions
+        </button>
+
+        {/* The actual modal */}
+        <PermissionModal
+          isOpen={isPermissionModalOpen}
+          onClose={closePermissionModal}
+          availablePermissions={availablePermission} // your full list
+          defaultSelected={currentPermissions} // from form
+          onSave={handlePermissionSave}
         />
       </div>
 

@@ -23,12 +23,11 @@
 //   );
 // }
 
-
 // src/pages/UpdateEmployeePage/index.jsx
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import useEmployeeStore from "../../store/useEmployeeStore.js.js"; 
-import EmployeeFormTabs from "../../components/Employeee Management/EmployeeFormTabs/index";
+import useEmployeeStore from "../../../store/useEmployeeStore.js.js";
+import EmployeeFormTabs from "../../../components/Employeee Management/EmployeeFormTabs/index";
 import { toast } from "react-hot-toast";
 
 export default function UpdateEmployeePage() {
@@ -66,9 +65,9 @@ export default function UpdateEmployeePage() {
     <div className="bg-bg-primary">
       <EmployeeFormTabs
         formTitle="Update Employee"
-        defaultValues={defaultValues}   // prefill the form
+        defaultValues={defaultValues} // prefill the form
         onComplete={handleComplete}
-        employeeId={employeeId}         // let the form know we are editing
+        employeeId={employeeId} // let the form know we are editing
       />
     </div>
   );

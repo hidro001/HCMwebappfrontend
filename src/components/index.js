@@ -21,8 +21,8 @@ import  AllTickets  from "./tickets Management/AllTickets";
 import  EmployessIssue  from "./tickets Management/EmployessIssue";
 import  PoshManager  from "./tickets Management/posh/PoshManager";
 import  FilePosh  from "./tickets Management/posh/FilePosh";
-import AddEmployee from "./Employeee Management/AddEmployee";
-import UpdateEmployeePage from "./Employeee Management/UpdateEmployee";
+import AllEmployess from "./Employeee Management/AllEmployess";
+
 
 export {
   LoginCard,
@@ -46,6 +46,6 @@ export {
   EmployessIssue,
   PoshManager,
   FilePosh,
-  AddEmployee,
-  UpdateEmployeePage
+  AllEmployess
+
 };

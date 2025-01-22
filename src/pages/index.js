@@ -1,16 +1,23 @@
 import Login from "./auth/login/Login";
 import Dashboard from "./dashboard/Dashboard";
 import Page404 from "./page404/Page404";
-import AddEmployeePage from "./AddEmployee/AddEmployeePage";
-import UpdateEmployeePage from "./UpdateEmployee/UpdateEmployeePage";
+import AddEmployeePage from "./Employeee Management/AddEmployee/AddEmployeePage";
+import UpdateEmployeePage from "./Employeee Management/UpdateEmployee/UpdateEmployeePage";
+import ViewEmployeePage from "./Employeee Management/ViewEmployeePage";
+import AllEmployessPage from "./Employeee Management/AllEmployessPage";
+import AssignAssetsPage from "./Employeee Management/Assign Assets/AssignAssetsPage";
+
 // import Chats from "./chats/chats";
 
 export {
-    Login,
-    Dashboard,
-    Page404,
-    AddEmployeePage,
-    UpdateEmployeePage
+  Login,
+  Dashboard,
+  Page404,
+  AddEmployeePage,
+  UpdateEmployeePage,
+  ViewEmployeePage,
+  AllEmployessPage,
+  AssignAssetsPage
 
-    // Chats
-}
+  // Chats
+};
