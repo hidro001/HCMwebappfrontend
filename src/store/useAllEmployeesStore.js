@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { toast } from "react-hot-toast";
-import { getEmployeesApi,getEmployeeByIdApi } from "../service/getAllEmployeesApi";
+import { getEmployeesApi,getEmployeeByIdApi,getAllEmployeesApi } from "../service/getAllEmployeesApi";
 
 const useEmployeesStore = create((set, get) => ({
   // State
@@ -17,6 +17,46 @@ const useEmployeesStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       const response = await getEmployeesApi();
+      if (response?.success) {
+        const employeesFromApi = response.data || [];
+
+        // Filter out any invalid employees if needed
+        const validEmployees = employeesFromApi.filter(
+          (employee) => employee._id
+        );
+
+        // Sort employees by first name || last name || employee_Id
+        const sortedEmployees = validEmployees.sort((a, b) =>
+          (a.first_Name || a.last_Name || a.employee_Id || "").localeCompare(
+            b.first_Name || b.last_Name || b.employee_Id || ""
+          )
+        );
+
+        set({
+          employees: sortedEmployees,
+          filteredEmployees: sortedEmployees,
+          totalEmployeeCount: response.count || sortedEmployees.length,
+        });
+      } else {
+        const errorMessage =
+          response?.message || "Failed to fetch employees.";
+        set({ error: errorMessage });
+        toast.error(errorMessage);
+      }
+    } catch (err) {
+      console.error("Error fetching employees:", err);
+      const errMsg = err?.message || "An error occurred while fetching employees.";
+      set({ error: errMsg });
+      toast.error(errMsg);
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  getAllEmployeesApi: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await getAllEmployeesApi();
       if (response?.success) {
         const employeesFromApi = response.data || [];
 

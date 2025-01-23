@@ -16,13 +16,13 @@ import EngPermissionDashboard from "./engagement/EngPermissionDashboard";
 // import Unauthorized from './components/Unauthorized';
 import DashboardLayout from "./dashboar Cards/superAdmin/DashboardLayout";
 import DashboardLayoutEmployee from "./dashboar Cards/employee/DashboardLayoutEmployee";
-import  TicketsPage  from "./tickets Management/TicketsPage";
-import  AllTickets  from "./tickets Management/AllTickets";
-import  EmployessIssue  from "./tickets Management/EmployessIssue";
-import  PoshManager  from "./tickets Management/posh/PoshManager";
-import  FilePosh  from "./tickets Management/posh/FilePosh";
-import AllEmployess from "./Employeee Management/AllEmployess";
-
+import TicketsPage from "./tickets Management/TicketsPage";
+import AllTickets from "./tickets Management/AllTickets";
+import EmployessIssue from "./tickets Management/EmployessIssue";
+import PoshManager from "./tickets Management/posh/PoshManager";
+import FilePosh from "./tickets Management/posh/FilePosh";
+import AllEmployess from "./Employeee Management/SupordinatesEmployess";
+import EmployeeList from "./Employeee Management/EmployeeList";
 
 export {
   LoginCard,
@@ -46,6 +46,6 @@ export {
   EmployessIssue,
   PoshManager,
   FilePosh,
-  AllEmployess
-
+  AllEmployess,
+  EmployeeList,
 };

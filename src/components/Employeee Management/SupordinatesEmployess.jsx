@@ -81,7 +81,7 @@ const SkeletonCard = () => (
   </div>
 );
 
-function AllEmployees() {
+function SupordinatesEmployess() {
   // ----- Zustand State & Actions -----
   const {
     employees,
@@ -356,5 +356,5 @@ function AllEmployees() {
   );
 }
 
-export default AllEmployees;
+export default SupordinatesEmployess;
 
