@@ -148,7 +148,7 @@ function AllEmployees() {
 
   // ----- Render: Actual Content -----
   return (
-    <div className="min-h-screen bg-bg-secondary transition-colors duration-300">
+    <div className=" bg-bg-secondary transition-colors duration-300 pb-4">
       {/* Hot Toast */}
       <Toaster />
 

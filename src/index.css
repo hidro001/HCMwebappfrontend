@@ -36,6 +36,19 @@ body {
   }
 }
 
+/* Add this layer to apply smooth scrolling globally */
+@layer base {
+  html {
+    @apply scroll-smooth;
+  }
+}
+
+.scroll-stabilize {
+  will-change: transform;
+  transform: translateZ(0);
+  /* backface-visibility: hidden; */
+}
+
 html {
   transition: background-color 0.8s, color 0.8s;
 }
