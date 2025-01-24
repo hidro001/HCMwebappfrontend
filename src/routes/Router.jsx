@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import { Login, Dashboard, Page404,AddEmployeePage,UpdateEmployeePage ,ViewEmployeePage,SubordinatesEmployessPage,AssignAssetsPage,AllEmployessPage} from "../pages";
+import { Login, Dashboard, Page404,AddEmployeePage,UpdateEmployeePage ,ViewEmployeePage,SubordinatesEmployessPage,AssignAssetsPage,AllEmployessPage,ManageTicketsPage,RaiseTicketsPage,AllTicketsPage,FilePoshPage,PoshManagePage,FeedPage,EngPermissionDashboardPage} from "../pages";
 import MainLayout from "./MainLayout";
 import useSocketStore from "../store/socketStore";
 
@@ -10,13 +10,7 @@ import {
   MakeAnnouncement,
   ViewAnnouncements,
   NotificationsPage,
-  Feednew,
-  EngPermissionDashboard,
-  TicketsPage,
-  AllTickets,
-  EmployessIssue,
-  PoshManager,
-  FilePosh,
+
 } from "../components";
 
 const router = createBrowserRouter([
@@ -56,31 +50,31 @@ const router = createBrowserRouter([
 
       {
         path: "engagement-feed",
-        element: <Feednew />,
+        element: <FeedPage />,
       },
       {
         path: "engagement-permission-dashboard",
-        element: <EngPermissionDashboard />,
+        element: <EngPermissionDashboardPage />,
       },
       {
         path: "manage-tickets",
-        element: <TicketsPage />,
+        element: <ManageTicketsPage />,
       },
       {
         path: "all-tickets",
-        element: <AllTickets />,
+        element: <AllTicketsPage />,
       },
       {
         path: "raise-ticket",
-        element: <EmployessIssue />,
+        element: <RaiseTicketsPage />,
       },
       {
         path: "posh-manage",
-        element: <PoshManager />,
+        element: <PoshManagePage />,
       },
       {
         path: "File-Posh",
-        element: <FilePosh />,
+        element: <FilePoshPage />,
       },
       {
         path: "add-employee",

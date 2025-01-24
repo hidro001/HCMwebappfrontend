@@ -8,15 +8,8 @@ import useEmployeeDetailsStore from "../../store/useAllEmployeesStore";
 function ViewEmployee() {
   const { id } = useParams();
   const navigate = useNavigate();
-
-  // Fetch from Zustand store
-  const { employee, loading, error, fetchEmployeeById } =
-    useEmployeeDetailsStore();
-
-  // Track the current tab ("personal", "employment", "documents")
+  const { employee, loading, error, fetchEmployeeById } = useEmployeeDetailsStore();
   const [activeTab, setActiveTab] = useState("personal");
-
-  // Toggle for the “All Permissions” modal
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
 
   useEffect(() => {
@@ -27,39 +20,24 @@ function ViewEmployee() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
         <Toaster />
-        {/* The outer container for the skeleton UI */}
         <div className="animate-pulse">
-          {/* Top Bar Skeleton (Back button + Title) */}
           <div className="flex justify-between mb-6">
             <div className="w-24 h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
             <div className="w-48 h-8 bg-gray-200 dark:bg-gray-700 rounded"></div>
           </div>
-
-          {/* Main Content Grid Skeleton */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Card Skeleton */}
             <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-              {/* Banner area */}
               <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
-              {/* Avatar Circle */}
               <div className="w-24 h-24 -mt-12 mx-auto rounded-full bg-gray-200 dark:bg-gray-700 border-4 border-white dark:border-gray-800"></div>
-              {/* Name line */}
               <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mx-auto mt-4"></div>
-              {/* Designation line */}
               <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2 mx-auto mt-2"></div>
-              
             </div>
-
-            {/* Right Tabs Area Skeleton */}
             <div className="col-span-1 lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
-              {/* Tab Button placeholders */}
               <div className="flex space-x-4 mb-4">
                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
                 <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-20"></div>
               </div>
-
-              {/* Content lines (5 lines as an example) */}
               <div className="space-y-2">
                 {Array.from({ length: 10 }).map((_, idx) => (
                   <div
@@ -74,6 +52,7 @@ function ViewEmployee() {
       </div>
     );
   }
+
   if (error) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -81,27 +60,18 @@ function ViewEmployee() {
       </div>
     );
   }
+
   if (!employee) {
     return null;
   }
 
-  // Helper to format date or fallback to "N/A"
-  const formatDate = (str) =>
-    str ? new Date(str).toLocaleDateString() : "N/A";
-
-  // Helper for "N/A"
+  const formatDate = (str) => (str ? new Date(str).toLocaleDateString() : "N/A");
   const orNA = (value) => (value ? value : "N/A");
-
-  // Full name
-  const fullName = `${orNA(employee.first_Name)} ${orNA(
-    employee.last_Name
-  )}`.trim();
+  const fullName = `${orNA(employee.first_Name)} ${orNA(employee.last_Name)}`.trim();
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4">
       <Toaster />
-
-      {/* Top bar (Back + Title) */}
       <div className="flex items-center justify-between mb-6">
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -113,18 +83,13 @@ function ViewEmployee() {
           <FaArrowLeft />
           <span>Back</span>
         </motion.button>
-
         <h1 className="text-xl font-bold text-gray-800 dark:text-white">
           Employees Details Of{" "}
           <span className="text-blue-600 dark:text-blue-400">{fullName}</span>
         </h1>
       </div>
-
-      {/* Layout: Left Profile + Right Tabs */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* LEFT: Profile Card */}
         <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-          {/* Gray top bar + avatar */}
           <div className="relative h-20 bg-gray-100 dark:bg-gray-700 rounded-t-lg">
             <div className="absolute -bottom-12 left-1/2 transform -translate-x-1/2">
               <div className="w-24 h-24 rounded-full bg-gray-200 dark:bg-gray-600 overflow-hidden border-4 border-white dark:border-gray-800">
@@ -142,8 +107,6 @@ function ViewEmployee() {
               </div>
             </div>
           </div>
-
-          {/* Name + Designation */}
           <div className="text-center pt-16 px-4 pb-4">
             <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
               {fullName || "N/A"}
@@ -152,10 +115,7 @@ function ViewEmployee() {
               {orNA(employee.designation)}
             </p>
           </div>
-
           <hr className="border-gray-200 dark:border-gray-700" />
-
-          {/* Personal Info on left card */}
           <div className="px-4 py-4">
             <h3 className="text-gray-800 dark:text-gray-100 font-semibold mb-3">
               Personal Info
@@ -218,46 +178,39 @@ function ViewEmployee() {
             </ul>
           </div>
         </div>
-
-        {/* RIGHT: Tabs */}
         <div className="col-span-1 lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow-md p-4">
           <div className="flex space-x-8 border-b border-gray-200 dark:border-gray-700 mb-4">
             <button
               onClick={() => setActiveTab("personal")}
-              className={`pb-2 text-sm font-medium transition-colors
-                ${
-                  activeTab === "personal"
-                    ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400"
-                    : "text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200"
-                }`}
+              className={`pb-2 text-sm font-medium transition-colors ${
+                activeTab === "personal"
+                  ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400"
+                  : "text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200"
+              }`}
             >
               Personal Details
             </button>
             <button
               onClick={() => setActiveTab("employment")}
-              className={`pb-2 text-sm font-medium transition-colors
-                ${
-                  activeTab === "employment"
-                    ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400"
-                    : "text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200"
-                }`}
+              className={`pb-2 text-sm font-medium transition-colors ${
+                activeTab === "employment"
+                  ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400"
+                  : "text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200"
+              }`}
             >
               Employment Information
             </button>
             <button
               onClick={() => setActiveTab("documents")}
-              className={`pb-2 text-sm font-medium transition-colors
-                ${
-                  activeTab === "documents"
-                    ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400"
-                    : "text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200"
-                }`}
+              className={`pb-2 text-sm font-medium transition-colors ${
+                activeTab === "documents"
+                  ? "text-blue-600 dark:text-blue-400 border-b-2 border-blue-600 dark:border-blue-400"
+                  : "text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-gray-200"
+              }`}
             >
               Documents
             </button>
           </div>
-
-          {/* PERSONAL DETAILS TAB */}
           {activeTab === "personal" && (
             <div className="leading-6 text-gray-700 dark:text-gray-300 text-sm space-y-3">
               <p>
@@ -352,8 +305,6 @@ function ViewEmployee() {
               </p>
             </div>
           )}
-
-          {/* EMPLOYMENT INFO TAB */}
           {activeTab === "employment" && (
             <div className="leading-6 text-gray-700 dark:text-gray-300 text-sm space-y-2">
               <p>
@@ -472,11 +423,8 @@ function ViewEmployee() {
               </p>
             </div>
           )}
-
-          {/* DOCUMENTS TAB */}
           {activeTab === "documents" && (
             <div className="leading-6 text-gray-700 dark:text-gray-300 text-sm space-y-4">
-              {/* Example of qualifications or other data */}
               <div>
                 <p>
                   <span className="font-semibold text-blue-600 dark:text-blue-400">
@@ -509,15 +457,11 @@ function ViewEmployee() {
                   : N/A
                 </p>
               </div>
-
               <h3 className="text-base font-bold text-gray-800 dark:text-gray-100 mt-2">
                 Documents
               </h3>
-              {/* Two columns for doc categories */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
-                {/* Example left docs */}
                 <div className="space-y-3">
-                  {/* If you want to display actual documents from employee.documents, map them: */}
                   {employee.documents?.map((doc) => (
                     <p key={doc._id}>
                       <span className="font-semibold text-blue-600 dark:text-blue-400">
@@ -525,28 +469,19 @@ function ViewEmployee() {
                       </span>{" "}
                       :{" "}
                       <span className="text-blue-600 dark:text-blue-400 underline ml-1 cursor-pointer">
-                        <a
-                          href={doc.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
+                        <a href={doc.url} target="_blank" rel="noopener noreferrer">
                           {doc.name || "Document"}
                         </a>
                       </span>
                     </p>
                   ))}
                 </div>
-                {/* Example right docs */}
-                <div className="space-y-3">
-                  {/* Additional doc categories or experience docs if needed */}
-                </div>
+                <div className="space-y-3"></div>
               </div>
             </div>
           )}
         </div>
       </div>
-
-      {/* PERMISSIONS MODAL */}
       {showPermissionsModal && (
         <div className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center p-4">
           <div className="bg-white dark:bg-gray-800 w-full max-w-2xl rounded shadow-lg relative p-6">
@@ -564,9 +499,7 @@ function ViewEmployee() {
                 {employee.permission.map((perm, idx) => (
                   <span
                     key={idx}
-                    className="px-2 py-1 text-sm rounded bg-gray-100 
-                               dark:bg-gray-700 text-gray-700 dark:text-gray-100 
-                               border border-gray-200 dark:border-gray-600"
+                    className="px-2 py-1 text-sm rounded bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-100 border border-gray-200 dark:border-gray-600"
                   >
                     {perm}
                   </span>

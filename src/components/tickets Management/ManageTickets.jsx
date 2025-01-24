@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEye, FaEdit, FaTrash, FaPrint, FaFilePdf } from "react-icons/fa";
@@ -7,7 +5,6 @@ import { MdOutlineFileDownload } from "react-icons/md";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Skeleton } from "@mui/material";
-
 import TicketFormModal from "./TicketFormModal";
 import TicketDetailsModal from "./TicketDetailsModal";
 import ConfirmationDialog from "../common/ConfirmationDialog";
@@ -17,11 +14,7 @@ const tableContainerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      // Stagger each child (row) by 0.05s
-      when: "beforeChildren",
-      staggerChildren: 0.05,
-    },
+    transition: { when: "beforeChildren", staggerChildren: 0.05 },
   },
 };
 
@@ -30,7 +23,7 @@ const tableRowVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-export default function TicketsPage() {
+export default function ManageTickets() {
   const {
     issues,
     fetchDeptIssues,
@@ -58,7 +51,6 @@ export default function TicketsPage() {
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Fetch data on mount
   useEffect(() => {
     fetchDeptIssues();
   }, [fetchDeptIssues]);
@@ -113,7 +105,6 @@ export default function TicketsPage() {
     await postComment(selectedIssue._id, commentText);
   };
 
-  // Filtering
   const filteredIssues = useMemo(() => {
     return issues.filter((issue) => {
       if (searchText) {
@@ -135,7 +126,6 @@ export default function TicketsPage() {
     });
   }, [issues, searchText, department, status, priorityFilter, selectedDate]);
 
-  // Pagination
   const totalPages = Math.ceil(filteredIssues.length / pageSize);
   const paginatedIssues = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
@@ -147,10 +137,8 @@ export default function TicketsPage() {
   };
 
   return (
-    <div className="mx-auto px-4 bg-bg-primary transition-colors text-text-primary ">
-      <h1 className="text-2xl font-bold mb-2 ">Employees Tickets</h1>
-
-      {/* Filters, page size, search, etc. */}
+    <div className="mx-auto px-4 bg-bg-primary transition-colors text-text-primary">
+      <h1 className="text-2xl font-bold mb-2">Employees Tickets</h1>
       <div className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow transition-colors mb-3">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
@@ -181,7 +169,6 @@ export default function TicketsPage() {
             />
           </div>
         </div>
-
         <div className="flex flex-wrap items-center gap-4">
           <DatePicker
             selected={selectedDate}
@@ -220,37 +207,27 @@ export default function TicketsPage() {
             <option value="Resolved">Resolved</option>
           </select>
           <div className="flex items-center gap-4 text-gray-500 dark:text-gray-300">
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-              title="Print"
-            >
+            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Print">
               <FaPrint size={18} />
             </button>
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-              title="Export to PDF"
-            >
+            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Export to PDF">
               <FaFilePdf size={18} />
             </button>
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-              title="Export CSV/Excel"
-            >
+            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Export CSV/Excel">
               <MdOutlineFileDownload size={20} />
             </button>
           </div>
         </div>
       </div>
-
       {loading ? (
-        <div className="bg-bg-secondary  rounded-md shadow p-4 transition-colors">
+        <div className="bg-bg-secondary rounded-md shadow p-4 transition-colors">
           {Array.from({ length: 10 }).map((_, i) => (
             <Skeleton key={i} variant="rectangular" height={40} className="mb-2" />
           ))}
         </div>
       ) : filteredIssues.length > 0 ? (
         <motion.div
-          className="bg-bg-secondary  rounded-md shadow overflow-x-auto transition-colors"
+          className="bg-bg-secondary rounded-md shadow overflow-x-auto transition-colors"
           variants={tableContainerVariants}
           initial="hidden"
           animate="visible"
@@ -272,8 +249,6 @@ export default function TicketsPage() {
             <tbody>
               {paginatedIssues.map((issue, index) => {
                 const globalIndex = (currentPage - 1) * pageSize + (index + 1);
-
-                // Priority styles
                 let priorityClasses =
                   "bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-500";
                 if (issue.priority === "High") {
@@ -286,8 +261,6 @@ export default function TicketsPage() {
                   priorityClasses =
                     "bg-green-50 dark:bg-green-700 text-green-600 dark:text-green-100 border border-green-200 dark:border-green-600";
                 }
-
-                // Status styles
                 let statusClasses =
                   "bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-500";
                 if (issue.issueStatus === "Pending") {
@@ -300,7 +273,6 @@ export default function TicketsPage() {
                   statusClasses =
                     "bg-green-50 dark:bg-green-700 text-green-600 dark:text-green-100 border border-green-200 dark:border-green-600";
                 }
-
                 return (
                   <motion.tr
                     key={issue._id}
@@ -360,8 +332,6 @@ export default function TicketsPage() {
               })}
             </tbody>
           </motion.table>
-
-          {/* Pagination */}
           <div className="flex flex-col md:flex-row justify-between items-center p-3 gap-2 text-sm">
             <div>
               Showing {paginatedIssues.length} of {filteredIssues.length} entries
@@ -388,8 +358,6 @@ export default function TicketsPage() {
           No matching records found
         </div>
       )}
-
-      {/* Confirmation Dialog */}
       <ConfirmationDialog
         open={confirmOpen}
         title={confirmTitle}
@@ -397,8 +365,6 @@ export default function TicketsPage() {
         onConfirm={confirmAction}
         onCancel={() => setConfirmOpen(false)}
       />
-
-      {/* AnimatePresence for the Ticket Form Modal */}
       <AnimatePresence>
         {isModalOpen && (
           <motion.div
@@ -409,10 +375,7 @@ export default function TicketsPage() {
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
           >
-            <motion.div
-              layout
-              className="bg-white dark:bg-gray-800 rounded-md p-4 max-w-lg w-full"
-            >
+            <motion.div layout className="bg-white dark:bg-gray-800 rounded-md p-4 max-w-lg w-full">
               <TicketFormModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
@@ -424,8 +387,6 @@ export default function TicketsPage() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* AnimatePresence for the Ticket Details Modal */}
       <AnimatePresence>
         {isDetailsModalOpen && (
           <motion.div
@@ -436,10 +397,7 @@ export default function TicketsPage() {
             transition={{ duration: 0.2 }}
             className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
           >
-            <motion.div
-              layout
-              className="bg-white dark:bg-gray-800 rounded-md p-4 max-w-xl w-full"
-            >
+            <motion.div layout className="bg-white dark:bg-gray-800 rounded-md p-4 max-w-xl w-full">
               <TicketDetailsModal
                 isOpen={isDetailsModalOpen}
                 onClose={() => setIsDetailsModalOpen(false)}
@@ -453,5 +411,3 @@ export default function TicketsPage() {
     </div>
   );
 }
-
-

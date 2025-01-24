@@ -1,6 +1,5 @@
-
-import React, { useEffect, useState } from 'react';
-import useAssetStore from '../../../store/useAssetStore';
+import React, { useEffect, useState } from "react";
+import useAssetStore from "../../../store/useAssetStore";
 
 export default function ViewAssignedAssetsModal({
   isOpen,
@@ -20,9 +19,8 @@ export default function ViewAssignedAssetsModal({
   useEffect(() => {
     if (isOpen && employeeId) {
       fetchAssignedAssets(employeeId);
-      // Prevent scroll
       const originalStyle = window.getComputedStyle(document.body).overflow;
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
       return () => {
         document.body.style.overflow = originalStyle;
       };
@@ -30,7 +28,6 @@ export default function ViewAssignedAssetsModal({
   }, [isOpen, employeeId, fetchAssignedAssets]);
 
   useEffect(() => {
-    // whenever assignedAssets for this employee updates, sync into local state
     if (employeeId && assignedAssets[employeeId]) {
       setLocalAssets(assignedAssets[employeeId]);
     }
@@ -39,13 +36,11 @@ export default function ViewAssignedAssetsModal({
   if (!isOpen) return null;
 
   const handleUpdateStatus = (assetId, currentStatus) => {
-    const newStatus = currentStatus === 'Assigned' ? 'Returned' : 'Assigned';
-    // For user confirmation, you can also integrate ConfirmationDialog if desired.
+    const newStatus = currentStatus === "Assigned" ? "Returned" : "Assigned";
     updateAssetStatus(employeeId, assetId, newStatus);
   };
 
   const handleDeleteAsset = (assetId) => {
-    // Confirmation if needed
     deleteAsset(employeeId, assetId);
   };
 
@@ -63,17 +58,28 @@ export default function ViewAssignedAssetsModal({
             ✕
           </button>
         </div>
-
         <div className="p-6 max-h-[70vh] overflow-y-auto">
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-blue-50 dark:bg-gray-700 text-left text-gray-700 dark:text-gray-200 text-sm uppercase tracking-wider">
-                <th className="p-3 border-b border-gray-200 dark:border-gray-600">Asset Number</th>
-                <th className="p-3 border-b border-gray-200 dark:border-gray-600">Asset Group</th>
-                <th className="p-3 border-b border-gray-200 dark:border-gray-600">Description</th>
-                <th className="p-3 border-b border-gray-200 dark:border-gray-600">Brand</th>
-                <th className="p-3 border-b border-gray-200 dark:border-gray-600">Model</th>
-                <th className="p-3 border-b border-gray-200 dark:border-gray-600">Status</th>
+                <th className="p-3 border-b border-gray-200 dark:border-gray-600">
+                  Asset Number
+                </th>
+                <th className="p-3 border-b border-gray-200 dark:border-gray-600">
+                  Asset Group
+                </th>
+                <th className="p-3 border-b border-gray-200 dark:border-gray-600">
+                  Description
+                </th>
+                <th className="p-3 border-b border-gray-200 dark:border-gray-600">
+                  Brand
+                </th>
+                <th className="p-3 border-b border-gray-200 dark:border-gray-600">
+                  Model
+                </th>
+                <th className="p-3 border-b border-gray-200 dark:border-gray-600">
+                  Status
+                </th>
                 <th className="p-3 border-b border-gray-200 dark:border-gray-600 text-right">
                   Actions
                 </th>
@@ -95,13 +101,11 @@ export default function ViewAssignedAssetsModal({
                     <td className="p-3">{asset.model}</td>
                     <td className="p-3">
                       <span
-                        className={`inline-block px-2 py-1 text-sm font-medium rounded
-                          ${
-                            asset.status === 'Assigned'
-                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                              : 'bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
-                          }
-                        `}
+                        className={`inline-block px-2 py-1 text-sm font-medium rounded ${
+                          asset.status === "Assigned"
+                            ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
+                            : "bg-gray-200 text-gray-800 dark:bg-gray-700 dark:text-gray-200"
+                        }`}
                       >
                         {asset.status}
                       </span>

@@ -6,7 +6,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Skeleton } from "@mui/material";
 import { toast } from "react-hot-toast";
-import TicketFormModal from "./TicketFormModal";
+import EmployessIssueModel from "./EmployessIssueModel";
 import ConfirmationDialog from "../common/ConfirmationDialog";
 import TicketDetailsModal from "./TicketDetailsModal";
 import useIssuesStore from "../../store/useIssuesStore";
@@ -16,11 +16,7 @@ const tableContainerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: {
-      // Stagger each child (row) by 0.05s
-      when: "beforeChildren",
-      staggerChildren: 0.05,
-    },
+    transition: { when: "beforeChildren", staggerChildren: 0.05 },
   },
 };
 
@@ -29,10 +25,10 @@ const tableRowVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-export default function AllTickets() {
+export default function RaiseTickets() {
   const {
     issues,
-    fetchAllIssues,
+    fetchOwnIssues,
     createIssue,
     editIssue,
     removeIssue,
@@ -40,7 +36,7 @@ export default function AllTickets() {
     postComment,
     loading,
   } = useIssuesStore();
-  const { departments, fetchDepartments } = useDepartmentStore();
+  const { departments } = useDepartmentStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("create");
@@ -59,9 +55,14 @@ export default function AllTickets() {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    fetchAllIssues();
-    fetchDepartments();
-  }, [fetchAllIssues, fetchDepartments]);
+    fetchOwnIssues();
+  }, [fetchOwnIssues]);
+
+  const handleRaiseTicket = () => {
+    setModalMode("create");
+    setSelectedIssue(null);
+    setIsModalOpen(true);
+  };
 
   const handleViewDetails = async (issue) => {
     setSelectedIssue(issue);
@@ -113,7 +114,6 @@ export default function AllTickets() {
     await postComment(selectedIssue._id, commentText);
   };
 
-  // Filter logic
   const filteredIssues = useMemo(() => {
     return issues.filter((issue) => {
       if (searchText) {
@@ -135,7 +135,6 @@ export default function AllTickets() {
     });
   }, [issues, searchText, department, status, priorityFilter, selectedDate]);
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredIssues.length / pageSize);
   const paginatedIssues = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
@@ -146,16 +145,19 @@ export default function AllTickets() {
     setCurrentPage(page);
   };
 
-  return (
-    <div className="mx-auto px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors  ">
-      <h1 className="text-2xl font-bold mb-2">ALL Tickets</h1>
+  const toolbarVariants = {
+    hidden: { opacity: 0, y: -10 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+  };
 
-      {/* Toolbar */}
+  return (
+    <div className="mx-auto px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
+      <h1 className="text-2xl font-bold mb-2">ALL Tickets</h1>
       <motion.div
         className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow transition-colors mb-4"
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4 }}
+        variants={toolbarVariants}
+        initial="hidden"
+        animate="visible"
       >
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
@@ -249,10 +251,14 @@ export default function AllTickets() {
               <MdOutlineFileDownload size={20} />
             </button>
           </div>
+          <button
+            onClick={handleRaiseTicket}
+            className="ml-auto bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 text-sm transition-colors"
+          >
+            + Raise Ticket
+          </button>
         </div>
       </motion.div>
-
-      {/* Table + row animations */}
       {loading ? (
         <div className="bg-white dark:bg-gray-800 rounded-md shadow p-4 transition-colors">
           {Array.from({ length: 10 }).map((_, i) => (
@@ -270,7 +276,6 @@ export default function AllTickets() {
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th className="p-3 text-sm font-semibold">S.L</th>
-                <th className="p-3 text-sm font-semibold">Emp ID</th>
                 <th className="p-3 text-sm font-semibold">Name</th>
                 <th className="p-3 text-sm font-semibold">Title</th>
                 <th className="p-3 text-sm font-semibold">Priority</th>
@@ -283,8 +288,6 @@ export default function AllTickets() {
             <tbody>
               {paginatedIssues.map((issue, index) => {
                 const globalIndex = (currentPage - 1) * pageSize + (index + 1);
-
-                // Priority classes
                 let priorityClasses =
                   "bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-500";
                 if (issue.priority === "High") {
@@ -297,8 +300,6 @@ export default function AllTickets() {
                   priorityClasses =
                     "bg-green-50 dark:bg-green-700 text-green-600 dark:text-green-100 border border-green-200 dark:border-green-600";
                 }
-
-                // Status classes
                 let statusClasses =
                   "bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-500";
                 if (issue.issueStatus === "Pending") {
@@ -311,7 +312,6 @@ export default function AllTickets() {
                   statusClasses =
                     "bg-green-50 dark:bg-green-700 text-green-600 dark:text-green-100 border border-green-200 dark:border-green-600";
                 }
-
                 return (
                   <motion.tr
                     key={issue._id}
@@ -319,9 +319,6 @@ export default function AllTickets() {
                     className="border-b last:border-b-0 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                   >
                     <td className="p-3 text-sm">{String(globalIndex).padStart(2, "0")}</td>
-                    <td className="p-3 text-sm text-blue-600 dark:text-blue-400 cursor-pointer">
-                      {issue.createdBy?.employee_Id || "--"}
-                    </td>
                     <td className="p-3 text-sm">
                       {issue.createdBy
                         ? `${issue.createdBy.first_Name} ${issue.createdBy.last_Name}`
@@ -349,8 +346,8 @@ export default function AllTickets() {
                     <td className="p-3 text-sm space-x-3">
                       <button
                         className="text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
-                        title="View Details"
                         onClick={() => handleViewDetails(issue)}
+                        title="View Details"
                       >
                         <FaEye size={16} />
                       </button>
@@ -374,8 +371,6 @@ export default function AllTickets() {
               })}
             </tbody>
           </motion.table>
-
-          {/* Pagination */}
           <div className="flex flex-col md:flex-row justify-between items-center p-3 gap-2 text-sm">
             <div>
               Showing {paginatedIssues.length} of {filteredIssues.length} entries
@@ -398,14 +393,10 @@ export default function AllTickets() {
           </div>
         </motion.div>
       ) : (
-        !loading && (
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow text-center text-gray-500 dark:text-gray-400">
-            No matching records found
-          </div>
-        )
+        <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow text-center text-gray-500 dark:text-gray-400">
+          No matching records found
+        </div>
       )}
-
-      {/* Confirmation Dialog */}
       <ConfirmationDialog
         open={confirmOpen}
         title={confirmTitle}
@@ -413,17 +404,13 @@ export default function AllTickets() {
         onConfirm={confirmAction}
         onCancel={() => setConfirmOpen(false)}
       />
-
-      {/* Ticket Details Modal */}
       <TicketDetailsModal
         isOpen={isDetailsModalOpen}
         onClose={() => setIsDetailsModalOpen(false)}
         ticket={selectedIssue}
         onAddComment={handleAddComment}
       />
-
-      {/* Ticket Form Modal */}
-      <TicketFormModal
+      <EmployessIssueModel
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         mode={modalMode}
@@ -433,4 +420,3 @@ export default function AllTickets() {
     </div>
   );
 }
-

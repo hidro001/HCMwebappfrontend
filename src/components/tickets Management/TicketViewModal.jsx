@@ -1,6 +1,3 @@
-
-
-// src/components/TicketViewModal.jsx
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaTimes } from "react-icons/fa";

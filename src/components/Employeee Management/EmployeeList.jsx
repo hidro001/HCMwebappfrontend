@@ -9,11 +9,8 @@ import {
   FaUserSlash,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-
-// Import your Zustand store hook
 import useEmployeesStore from "../../store/useAllEmployeesStore";
 
-// Animation variants for container & rows
 const tableContainerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -31,34 +28,29 @@ const tableRowVariants = {
 };
 
 export default function EmployeeList() {
-  // Pull what you need from the store
   const {
-    getAllEmployeesApi, // fetches from API
-    filteredEmployees, // automatically updated when searching
-    handleSearchChange, // handle search input
-    totalEmployeeCount, // returned by API or fallback to length
-    loading, // indicates API loading
+    getAllEmployeesApi,
+    filteredEmployees,
+    handleSearchChange,
+    totalEmployeeCount,
+    loading,
   } = useEmployeesStore();
 
-  // Local UI states
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [departmentFilter, setDepartmentFilter] = useState("");
   const [searchText, setSearchText] = useState("");
-  const navigate = useNavigate(); // Navigation hook
+  const navigate = useNavigate();
 
-  // Fetch employees on mount
   useEffect(() => {
     getAllEmployeesApi();
   }, [getAllEmployeesApi]);
 
-  // Whenever searchText changes, call the store’s “handleSearchChange”
   useEffect(() => {
     handleSearchChange(searchText);
     setCurrentPage(1);
   }, [searchText, handleSearchChange]);
 
-  // Filter further by department in the component
   const departmentFilteredData = useMemo(() => {
     if (!departmentFilter || departmentFilter === "All") {
       return filteredEmployees;
@@ -68,29 +60,26 @@ export default function EmployeeList() {
     );
   }, [filteredEmployees, departmentFilter]);
 
-  // Pagination
   const totalPages = Math.ceil(departmentFilteredData.length / pageSize);
+
   const paginatedEmployees = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     return departmentFilteredData.slice(startIndex, startIndex + pageSize);
   }, [departmentFilteredData, currentPage, pageSize]);
 
-  // For the top summary cards (active vs inactive, total, etc.)
   const totalActive = filteredEmployees.filter((emp) => emp.isActive).length;
   const totalInactive = filteredEmployees.filter((emp) => !emp.isActive).length;
 
   return (
     <div
       className="
-         min-h-screen 
+        min-h-screen 
         bg-gray-50 dark:bg-gray-900 
         text-gray-700 dark:text-gray-100 
         transition-colors
       "
     >
-      {/* Top Stats Row */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        {/* Total Employee */}
         <div
           className="
             bg-white dark:bg-gray-800 
@@ -114,7 +103,6 @@ export default function EmployeeList() {
           </div>
         </div>
 
-        {/* Total Active */}
         <div
           className="
             bg-white dark:bg-gray-800 
@@ -138,7 +126,6 @@ export default function EmployeeList() {
           </div>
         </div>
 
-        {/* Total Inactive */}
         <div
           className="
             bg-white dark:bg-gray-800 
@@ -163,10 +150,8 @@ export default function EmployeeList() {
         </div>
       </div>
 
-      {/* Title */}
       <h1 className="text-xl font-semibold mb-3">Employee List</h1>
 
-      {/* Filter Bar */}
       <div
         className="
           flex flex-wrap items-center justify-between 
@@ -175,9 +160,7 @@ export default function EmployeeList() {
           transition-colors
         "
       >
-        {/* Show X entries & Search */}
         <div className="flex items-center space-x-4">
-          {/* Page Size */}
           <div className="flex items-center space-x-2">
             <label className="text-sm font-medium">Show</label>
             <select
@@ -198,8 +181,6 @@ export default function EmployeeList() {
               <option value={20}>20</option>
             </select>
           </div>
-
-          {/* Search */}
           <div>
             <input
               className="
@@ -214,8 +195,6 @@ export default function EmployeeList() {
             />
           </div>
         </div>
-
-        {/* Department Filter & Add User */}
         <div className="flex items-center space-x-4 mt-2 md:mt-0">
           <select
             value={departmentFilter}
@@ -234,9 +213,7 @@ export default function EmployeeList() {
             <option value="IT">IT</option>
             <option value="HR">HR</option>
             <option value="Sales">Sales</option>
-            {/* ... add other dept options if needed */}
           </select>
-
           <button
             className="
               bg-blue-600 text-white rounded px-4 py-2 text-sm font-medium 
@@ -252,7 +229,6 @@ export default function EmployeeList() {
       {loading ? (
         <div className="text-center mt-4">Loading employees...</div>
       ) : (
-        /* Table Container with both horizontal and vertical scroll */
         <motion.div
           className="
             bg-white dark:bg-gray-800 
@@ -260,11 +236,11 @@ export default function EmployeeList() {
             overflow-auto  
          
             [&::-webkit-scrollbar]:w-1
-                [&::-webkit-scrollbar-track]:rounded-full
-                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
-                [&::-webkit-scrollbar-thumb]:rounded-full
-                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
-                transition-colors duration-300
+            [&::-webkit-scrollbar-track]:rounded-full
+            [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+            [&::-webkit-scrollbar-thumb]:rounded-full
+            [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+            transition-colors duration-300
           "
           variants={tableContainerVariants}
           initial="hidden"
@@ -279,23 +255,18 @@ export default function EmployeeList() {
                 <th className="p-3 text-sm font-semibold">Email</th>
                 <th className="p-3 text-sm font-semibold">Department</th>
                 <th className="p-3 text-sm font-semibold">Designation</th>
-                {/* Added text-center for Status */}
                 <th className="p-3 text-sm font-semibold text-center">Status</th>
-                {/* Added text-center for Action */}
                 <th className="p-3 text-sm font-semibold text-center">Action</th>
               </tr>
             </thead>
             <tbody>
               {paginatedEmployees.map((emp, index) => {
-                // Construct full name
                 const fullName = `${emp.first_Name || ""} ${
                   emp.last_Name || ""
                 }`.trim();
-                // Convert to “DD MMM YYYY” or just show raw date
                 const joinDate = emp.date_of_Joining
                   ? new Date(emp.date_of_Joining).toDateString()
                   : "-";
-                // For S.L
                 const slNumber = (currentPage - 1) * pageSize + (index + 1);
 
                 return (
@@ -313,7 +284,6 @@ export default function EmployeeList() {
                     </td>
                     <td className="p-3 text-sm">{joinDate}</td>
                     <td className="p-3 text-sm flex items-center gap-2">
-                      {/* Avatar placeholder or user_Avatar if available */}
                       <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-600 flex items-center justify-center">
                         {emp.user_Avatar ? (
                           <img
@@ -334,8 +304,6 @@ export default function EmployeeList() {
                     </td>
                     <td className="p-3 text-sm">{emp.department || "-"}</td>
                     <td className="p-3 text-sm">{emp.designation || "-"}</td>
-
-                    {/* Center the Status column */}
                     <td className="p-3 text-sm text-center">
                       <span
                         className={`
@@ -350,8 +318,6 @@ export default function EmployeeList() {
                         {emp.isActive ? "Active" : "Inactive"}
                       </span>
                     </td>
-
-                    {/* Center the Action column */}
                     <td className="p-3 text-sm text-center">
                       <div className="flex items-center justify-center space-x-2">
                         <button
@@ -385,8 +351,6 @@ export default function EmployeeList() {
               })}
             </tbody>
           </motion.table>
-
-          {/* Pagination */}
           <div className="flex flex-col md:flex-row justify-between items-center p-3 text-sm gap-2">
             <div>
               Showing {paginatedEmployees.length} of{" "}

@@ -1,4 +1,3 @@
-// src/components/NotificationDropdown.js
 import React from "react";
 import { motion } from "framer-motion";
 import { FaExclamationCircle, FaInfoCircle, FaBirthdayCake } from "react-icons/fa";

@@ -1,5 +1,5 @@
 import React from 'react'
-import { EmployeeList } from '../../components'
+import  EmployeeList  from '../../components/Employeee Management/EmployeeList'
 
 const AllEmployessPage = () => {
   return (

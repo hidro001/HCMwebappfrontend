@@ -1,34 +1,42 @@
 import React, { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Skeleton } from "@mui/material";
-import { FaEye, FaEdit, FaTrash, FaPrint, FaFilePdf } from "react-icons/fa";
+import {
+  FaEye,
+  FaComment,
+  FaEdit,
+  FaTrash,
+  FaPrint,
+  FaFilePdf,
+} from "react-icons/fa";
 import { MdOutlineFileDownload } from "react-icons/md";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-
+import { Skeleton } from "@mui/material";
 import IssueDetailsModal from "./IssueDetailsModal";
-import FilePoshModal from "./FilePoshModal";
+import EditStatusModal from "./EditStatusModal";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import { usePoshStore } from "../../../store/poshStore";
 
-export default function FilePosh() {
-  const { poshActs, fetchAllUserPoshActs, loading } = usePoshStore(); 
+export default function PoshManage() {
+  const { poshActs, fetchPoshActs, loading } = usePoshStore(); 
 
+  // State
   const [searchText, setSearchText] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
   const [statusFilter, setStatusFilter] = useState("All");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-
   const [viewModalOpen, setViewModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
 
+  // Fetch data on mount
   useEffect(() => {
-    fetchAllUserPoshActs();
-  }, [fetchAllUserPoshActs]);
+    fetchPoshActs();
+  }, [fetchPoshActs]);
 
+  // Handlers
   const handleView = (ticket) => {
     setSelectedItem(ticket);
     setViewModalOpen(true);
@@ -47,11 +55,12 @@ export default function FilePosh() {
   // Filtering
   const filteredData = useMemo(() => {
     return poshActs.filter((ticket) => {
+      // Search text
       if (searchText) {
-        const rId = ticket.reporterId?.toLowerCase() || "";
-        const rName = ticket.reporterName?.toLowerCase() || "";
-        const aId = ticket.accusedId?.toLowerCase() || "";
-        const aName = ticket.accusedName?.toLowerCase() || "";
+        const rId = ticket.reporterId.toLowerCase();
+        const rName = ticket.reporterName.toLowerCase();
+        const aId = ticket.accusedId.toLowerCase();
+        const aName = ticket.accusedName.toLowerCase();
         const searchLower = searchText.toLowerCase();
         if (
           !rId.includes(searchLower) &&
@@ -62,7 +71,9 @@ export default function FilePosh() {
           return false;
         }
       }
+      // Status filter
       if (statusFilter !== "All" && ticket.status !== statusFilter) return false;
+      // Date filter
       if (selectedDate) {
         const ticketDate = new Date(ticket.incidentDate).setHours(0, 0, 0, 0);
         const filterDate = selectedDate.setHours(0, 0, 0, 0);
@@ -81,25 +92,26 @@ export default function FilePosh() {
 
   const handlePageChange = (page) => setCurrentPage(page);
 
-  // Container variants (top-level fade + stagger)
+  // Container variants for top-level fade-in (toolbar)
   const containerVariants = {
     hidden: { opacity: 0, y: -10 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.2 } },
   };
 
+  // Table container variants for fade-in + staggered rows
   const tableContainerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        duration: 0.2,
+        duration: 0.2, 
         when: "beforeChildren",
         staggerChildren: 0.05,
       },
     },
   };
 
-  // Row variants (each row slides up & fades in)
+  // Row variants for each row animation
   const tableRowVariants = {
     hidden: { opacity: 0, y: 10 },
     visible: {
@@ -113,9 +125,9 @@ export default function FilePosh() {
   };
 
   return (
-    <div className="mx-auto px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors  ">
+    <div className="mx-auto px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors ">
       <h1 className="text-2xl font-bold mb-2">POSH Issues</h1>
-      
+
       {/* Toolbar */}
       <motion.div
         className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow transition-colors mb-3"
@@ -177,53 +189,39 @@ export default function FilePosh() {
             <option value="Under Review">Under Review</option>
           </select>
           <div className="flex items-center gap-4 text-gray-500 dark:text-gray-300">
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-              title="Print"
-            >
+            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Print">
               <FaPrint size={18} />
             </button>
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-              title="Export to PDF"
-            >
+            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Export to PDF">
               <FaFilePdf size={18} />
             </button>
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-              title="Export CSV/Excel"
-            >
+            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Export CSV/Excel">
               <MdOutlineFileDownload size={20} />
             </button>
           </div>
-          <button
-            onClick={handleEdit}
-            className="ml-auto bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 text-sm transition-colors"
-          >
-            + File Posh
-          </button>
         </div>
       </motion.div>
 
-      {/* Main table container (with staggering) */}
-      <motion.div
-        className="bg-white dark:bg-gray-800 rounded-md shadow overflow-x-auto transition-colors"
-        variants={tableContainerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {loading ? (
-          <div className="p-4">
-            {Array.from({ length: 10 }).map((_, i) => (
-              <Skeleton key={i} variant="rectangular" height={40} className="mb-2" />
-            ))}
-          </div>
-        ) : (
-          <table className="w-full text-left border-collapse min-w-max">
+      {/* Loading or Table */}
+      {loading ? (
+        <div className="bg-white dark:bg-gray-800 rounded-md shadow p-4 transition-colors">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <Skeleton key={i} variant="rectangular" height={40} className="mb-2" />
+          ))}
+        </div>
+      ) : (
+        <motion.div
+          className="bg-white dark:bg-gray-800 rounded-md shadow overflow-x-auto transition-colors"
+          variants={tableContainerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <motion.table className="w-full text-left border-collapse min-w-max">
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th className="p-3 text-sm font-semibold">S.L</th>
-                <th className="p-3 text-sm font-semibold">Type</th>
+                <th className="p-3 text-sm font-semibold">Reporter Emp ID</th>
+                <th className="p-3 text-sm font-semibold">Reporter Name</th>
                 <th className="p-3 text-sm font-semibold">Accused Emp ID</th>
                 <th className="p-3 text-sm font-semibold">Accused Name</th>
                 <th className="p-3 text-sm font-semibold">Incident Date</th>
@@ -235,7 +233,7 @@ export default function FilePosh() {
               {paginatedData.map((ticket, index) => {
                 const slIndex = (currentPage - 1) * pageSize + (index + 1);
 
-                // Status color classes
+                // Status classes
                 let statusClasses =
                   "bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-500";
                 if (ticket.status === "Pending") {
@@ -257,14 +255,13 @@ export default function FilePosh() {
                   >
                     <td className="p-3 text-sm">{String(slIndex).padStart(2, "0")}</td>
                     <td className="p-3 text-sm text-blue-600 dark:text-blue-400">
-                      {ticket.type}
+                      {ticket.reporterId}
                     </td>
+                    <td className="p-3 text-sm">{ticket.reporterName}</td>
                     <td className="p-3 text-sm text-blue-600 dark:text-blue-400">
                       {ticket.accusedId}
                     </td>
-                    <td className="p-3 text-sm">
-                      {ticket.accusedName}
-                    </td>
+                    <td className="p-3 text-sm">{ticket.accusedName}</td>
                     <td className="p-3 text-sm">
                       {ticket.incidentDate
                         ? new Date(ticket.incidentDate).toLocaleDateString("en-GB", {
@@ -308,42 +305,38 @@ export default function FilePosh() {
                 );
               })}
             </tbody>
-          </table>
-        )}
+          </motion.table>
 
-        {/* Pagination & No Records */}
-        {!loading && filteredData.length > 0 && (
-          <div className="flex flex-col md:flex-row justify-between items-center p-3 gap-2 text-sm">
-            <div>
-              Showing {paginatedData.length} of {filteredData.length} entries
+          {/* Pagination + No records handling */}
+          {filteredData.length > 0 && (
+            <div className="flex flex-col md:flex-row justify-between items-center p-3 gap-2 text-sm">
+              <div>
+                Showing {paginatedData.length} of {filteredData.length} entries
+              </div>
+              <div className="flex items-center space-x-1">
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    className={`px-3 py-1 rounded border transition-colors ${
+                      currentPage === i + 1
+                        ? "bg-blue-600 text-white border-blue-600"
+                        : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
+                    }`}
+                    onClick={() => handlePageChange(i + 1)}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+              </div>
             </div>
-            <div className="flex items-center space-x-1">
-              {Array.from({ length: totalPages }, (_, i) => (
-                <button
-                  key={i}
-                  className={`px-3 py-1 rounded border transition-colors ${
-                    currentPage === i + 1
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : `bg-white dark:bg-gray-700 
-                         text-gray-700 dark:text-gray-100 
-                         border-gray-200 dark:border-gray-600 
-                         hover:bg-gray-50 dark:hover:bg-gray-600`
-                  }`}
-                  onClick={() => handlePageChange(i + 1)}
-                >
-                  {i + 1}
-                </button>
-              ))}
+          )}
+          {filteredData.length === 0 && (
+            <div className="p-4 text-sm text-center text-gray-500 dark:text-gray-400">
+              No matching records found
             </div>
-          </div>
-        )}
-
-        {!loading && filteredData.length === 0 && (
-          <div className="p-4 text-sm text-center text-gray-500 dark:text-gray-400">
-            No matching records found
-          </div>
-        )}
-      </motion.div>
+          )}
+        </motion.div>
+      )}
 
       {/* Confirmation Dialog */}
       <ConfirmationDialog
@@ -360,24 +353,21 @@ export default function FilePosh() {
         onCancel={() => setDeleteDialogOpen(false)}
       />
 
-      {/* View Issue Modal */}
+      {/* Modals */}
       <IssueDetailsModal
         isOpen={viewModalOpen}
         onClose={() => setViewModalOpen(false)}
         issue={selectedItem}
       />
-
-      {/* File Posh (Edit/Create) Modal */}
-      <FilePoshModal
+      <EditStatusModal
         isOpen={editModalOpen}
         onClose={() => setEditModalOpen(false)}
-        ticket={selectedItem}
-        onSave={(formData) => {
-          setEditModalOpen(false);
-          // Optionally handle saving logic here
-        }}
+        item={selectedItem}
+        onUpdateStatus={() => {}}
       />
     </div>
   );
 }
+
+
 

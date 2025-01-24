@@ -7,8 +7,13 @@ import ViewEmployeePage from "./Employeee Management/ViewEmployeePage";
 import SubordinatesEmployessPage from "./Employeee Management/SubordinatesEmployessPage";
 import AssignAssetsPage from "./Employeee Management/Assign Assets/AssignAssetsPage";
 import AllEmployessPage from "./Employeee Management/AllEmployessPage";
-
-// import Chats from "./chats/chats";
+import ManageTicketsPage from "./Tickets Management/ManageTicketsPage";
+import RaiseTicketsPage from "./Tickets Management/RaiseTicketsPage";
+import AllTicketsPage from "./Tickets Management/AllTicketsPage";
+import FilePoshPage from "./Tickets Management/FilePoshPage";
+import PoshManagePage from "./Tickets Management/PoshManagePage";
+import FeedPage from "./Engagement Management/FeedPage";
+import EngPermissionDashboardPage from "./Engagement Management/EngPermissionDashboardPage";
 
 export {
   Login,
@@ -19,7 +24,13 @@ export {
   ViewEmployeePage,
   SubordinatesEmployessPage,
   AssignAssetsPage,
-  AllEmployessPage
+  AllEmployessPage,
+  ManageTicketsPage,
+  RaiseTicketsPage,
+  AllTicketsPage,
+  FilePoshPage,
+  PoshManagePage,
+  FeedPage,
+  EngPermissionDashboardPage
 
-  // Chats
 };

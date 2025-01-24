@@ -1,24 +1,13 @@
-
-import React, { useState, useEffect } from 'react';
-import {
-  FaFilePdf,
-  FaFileCsv,
-  FaPrint,
-  FaSearch,
-  FaEye,
-} from 'react-icons/fa';
-import { MdOutlineFileDownload } from 'react-icons/md';
-import { AiOutlinePlus } from 'react-icons/ai';
-import useAssetStore from '../../../store/useAssetStore';
-
-// Modals
-import AssetGroupModal from './AssetGroupModal';
-import ViewAssetGroupsModal from './ViewAssetGroupsModal';
-import AssignAssetModal from './AssignAssetModal';
-import ViewAssignedAssetsModal from './ViewAssignedAssetsModal';
-
-// Example animation variants if you still want them
-import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { FaFilePdf, FaFileCsv, FaPrint, FaSearch, FaEye } from "react-icons/fa";
+import { MdOutlineFileDownload } from "react-icons/md";
+import { AiOutlinePlus } from "react-icons/ai";
+import useAssetStore from "../../../store/useAssetStore";
+import AssetGroupModal from "./AssetGroupModal";
+import ViewAssetGroupsModal from "./ViewAssetGroupsModal";
+import AssignAssetModal from "./AssignAssetModal";
+import ViewAssignedAssetsModal from "./ViewAssignedAssetsModal";
+import { motion } from "framer-motion";
 
 const tableContainerVariants = {
   hidden: { opacity: 0, y: 10 },
@@ -28,27 +17,23 @@ const tableContainerVariants = {
     transition: { staggerChildren: 0.1, delayChildren: 0.2 },
   },
 };
+
 const tableRowVariants = {
   hidden: { opacity: 0, y: 5 },
   visible: { opacity: 1, y: 0 },
 };
 
 export default function AssignAssetsPage() {
-  const [searchValue, setSearchValue] = useState('');
-  const [selectedDepartment, setSelectedDepartment] = useState('All');
+  const [searchValue, setSearchValue] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("All");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
   const [assignModalOpen, setAssignModalOpen] = useState(false);
   const [viewAssignedModalOpen, setViewAssignedModalOpen] = useState(false);
-
-  // track the currently selected subordinate for "Assign" or "View" modals
   const [selectedEmployee, setSelectedEmployee] = useState(null);
 
-  // from store
   const {
     subordinates,
     getSubordinates,
@@ -56,39 +41,32 @@ export default function AssignAssetsPage() {
     errorSubordinates,
   } = useAssetStore();
 
-  // For demonstration, we might read userId from localStorage or context
-  const userId = localStorage.getItem('mongo_id');
+  const userId = localStorage.getItem("mongo_id");
 
   useEffect(() => {
-    // fetch subordinates
     if (userId) {
       getSubordinates(userId);
     }
   }, [userId, getSubordinates]);
 
-  // Filter & search
   const filtered = subordinates.filter((emp) => {
     const matchesSearch =
-      searchValue === '' ||
+      searchValue === "" ||
       `${emp.first_Name} ${emp.last_Name}`
         .toLowerCase()
         .includes(searchValue.toLowerCase()) ||
       emp.employee_Id.toLowerCase().includes(searchValue.toLowerCase());
-
     const matchesDept =
-      selectedDepartment === 'All' ||
+      selectedDepartment === "All" ||
       (emp.department &&
         emp.department.toLowerCase() === selectedDepartment.toLowerCase());
-
     return matchesSearch && matchesDept;
   });
 
-  // Department list
   const departmentsList = Array.from(
-    new Set(subordinates.map((s) => s.department || ''))
+    new Set(subordinates.map((s) => s.department || ""))
   ).filter(Boolean);
 
-  // Pagination
   const totalPages = Math.ceil(filtered.length / pageSize);
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedData = filtered.slice(startIndex, startIndex + pageSize);
@@ -120,17 +98,13 @@ export default function AssignAssetsPage() {
   }
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 dark:text-gray-100  p-4">
+    <div className="bg-gray-50 dark:bg-gray-900 dark:text-gray-100 p-4">
       <div className="mb-4 flex items-center justify-between">
         <h1 className="text-xl font-semibold">Assign Assets</h1>
       </div>
-
-      {/* Top controls row */}
       <div className="w-full bg-white dark:bg-gray-800 rounded-md shadow px-4 py-3 mb-6 transition-colors">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          {/* Left group */}
           <div className="flex flex-wrap items-center gap-4">
-            {/* Page size */}
             <div className="flex items-center space-x-2">
               <label className="text-sm font-medium">Show</label>
               <select
@@ -146,8 +120,6 @@ export default function AssignAssetsPage() {
                 <option value={20}>20</option>
               </select>
             </div>
-
-            {/* Search */}
             <div className="relative w-64">
               <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-gray-500">
                 <FaSearch />
@@ -155,9 +127,7 @@ export default function AssignAssetsPage() {
               <input
                 type="text"
                 placeholder="Search"
-                className="border border-gray-300 dark:border-gray-700
-                           rounded pl-8 pr-3 py-1 text-sm focus:outline-none
-                           bg-white dark:bg-gray-900 w-full"
+                className="border border-gray-300 dark:border-gray-700 rounded pl-8 pr-3 py-1 text-sm focus:outline-none bg-white dark:bg-gray-900 w-full"
                 value={searchValue}
                 onChange={(e) => {
                   setSearchValue(e.target.value);
@@ -165,8 +135,6 @@ export default function AssignAssetsPage() {
                 }}
               />
             </div>
-
-            {/* Department filter */}
             <div>
               <select
                 className="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 text-sm focus:outline-none bg-white dark:bg-gray-900"
@@ -185,33 +153,23 @@ export default function AssignAssetsPage() {
               </select>
             </div>
           </div>
-
-          {/* Right group */}
           <div className="flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-2">
-              {/* View asset groups */}
               <button
-                className="inline-flex items-center px-4 py-2 bg-blue-100 dark:bg-blue-600
-                           text-blue-600 dark:text-white rounded shadow-sm text-sm font-medium
-                           hover:bg-blue-200 dark:hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-blue-100 dark:bg-blue-600 text-blue-600 dark:text-white rounded shadow-sm text-sm font-medium hover:bg-blue-200 dark:hover:bg-blue-700 transition-colors"
                 onClick={() => setIsViewModalOpen(true)}
               >
                 <FaEye className="mr-2" size={16} />
                 View Assets Group
               </button>
-              {/* Add asset group */}
               <button
-                className="inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-600
-                           text-white rounded shadow-sm text-sm font-medium
-                           hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-blue-600 dark:bg-blue-600 text-white rounded shadow-sm text-sm font-medium hover:bg-blue-700 dark:hover:bg-blue-700 transition-colors"
                 onClick={() => setIsModalOpen(true)}
               >
                 <AiOutlinePlus className="mr-2" size={16} />
                 Add Asset Group
               </button>
             </div>
-
-            {/* Export icons */}
             <div className="flex items-center gap-3">
               <button className="hover:opacity-75 transition">
                 <FaPrint size={16} className="text-teal-500" />
@@ -229,8 +187,6 @@ export default function AssignAssetsPage() {
           </div>
         </div>
       </div>
-
-      {/* Table */}
       <motion.div
         className="bg-white dark:bg-gray-800 rounded-md shadow overflow-x-auto transition-colors"
         variants={tableContainerVariants}
@@ -259,7 +215,7 @@ export default function AssignAssetsPage() {
                     className="border-b last:border-0 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-sm"
                   >
                     <td className="py-3 px-4">
-                      {String(serialNumber).padStart(2, '0')}
+                      {String(serialNumber).padStart(2, "0")}
                     </td>
                     <td className="py-3 px-4 text-blue-600 dark:text-blue-400 cursor-pointer hover:underline">
                       #{emp.employee_Id}
@@ -268,7 +224,7 @@ export default function AssignAssetsPage() {
                       {emp.first_Name} {emp.last_Name}
                     </td>
                     <td className="py-3 px-4 text-gray-700 dark:text-gray-100">
-                      {emp.department || '—'}
+                      {emp.department || "—"}
                     </td>
                     <td className="py-3 px-4 text-center">
                       <button
@@ -303,8 +259,6 @@ export default function AssignAssetsPage() {
             )}
           </tbody>
         </table>
-
-        {/* Pagination */}
         {paginatedData.length > 0 && (
           <div className="flex flex-col md:flex-row items-center justify-between p-4 text-sm text-gray-600 dark:text-gray-300">
             <div>
@@ -316,8 +270,8 @@ export default function AssignAssetsPage() {
                   key={i}
                   className={`px-3 py-1 rounded border transition-colors ${
                     currentPage === i + 1
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
                   }`}
                   onClick={() => handlePageChange(i + 1)}
                 >
@@ -328,16 +282,8 @@ export default function AssignAssetsPage() {
           </div>
         )}
       </motion.div>
-
-      {/* Modals */}
-      <AssetGroupModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
-      <ViewAssetGroupsModal
-        isOpen={isViewModalOpen}
-        onClose={() => setIsViewModalOpen(false)}
-      />
+      <AssetGroupModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <ViewAssetGroupsModal isOpen={isViewModalOpen} onClose={() => setIsViewModalOpen(false)} />
       {selectedEmployee && (
         <AssignAssetModal
           isOpen={assignModalOpen}
