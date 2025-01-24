@@ -153,13 +153,13 @@ export const menuItems = [
         //   textAnimation: { x: 10 },
         // },
         {
-          name: "All Employee",
+          name: "Supordinates",
           link: "/dashboard/all-employee",
           permission: "updateEmployeeAdmin",
           textAnimation: { x: 10 },
         },
         {
-          name: "Asset",
+          name: "Asset Management",
           link: "/dashboard/assign-assets",
           permission: "assignAssets",
         },
@@ -188,7 +188,7 @@ export const menuItems = [
         //   textAnimation: { x: 10 },
         // },
         {
-          name: "Update Employees",
+          name: "All Employees",
           link: "/dashboard/employee-list",
           permission: "updateEmployeeSuperAdmin",
           textAnimation: { x: 10 },

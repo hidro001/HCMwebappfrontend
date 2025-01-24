@@ -125,7 +125,7 @@ function SupordinatesEmployess() {
   // ----- Render: Loading Skeletons -----
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg-secondary transition-colors duration-300">
+      <div className="bg-bg-secondary ">
         <Toaster />
         <div className="max-w-7xl mx-auto px-4 mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {Array.from({ length: 8 }).map((_, index) => (
@@ -213,7 +213,7 @@ function SupordinatesEmployess() {
       {/* Cards Container */}
       <div className="max-w-7xl mx-auto px-4 mt-6">
         <h2 className="mb-4 text-lg font-bold dark:text-white">
-          Total Employees: {totalEmployeeCount}
+          Supordinates Employees: {totalEmployeeCount}
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
