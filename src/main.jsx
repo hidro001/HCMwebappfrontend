@@ -16,7 +16,9 @@ import { ThemeProvider } from "./hooks/ThemeContext";
 
 createRoot(document.getElementById("root")).render(
     <ThemeProvider>
+
     <App />
+    
     </ThemeProvider>
  
 );

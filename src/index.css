@@ -49,6 +49,17 @@ body {
   /* backface-visibility: hidden; */
 }
 
+.hide-horizontal-scrollbar {
+  /* Hide scrollbars in Firefox/IE */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.hide-horizontal-scrollbar::-webkit-scrollbar {
+  /* Hide scrollbars in WebKit-based browsers (Chrome, Safari) */
+  display: none;
+}
+
 html {
   transition: background-color 0.8s, color 0.8s;
 }

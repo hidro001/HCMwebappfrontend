@@ -44,12 +44,12 @@ export default function ViewAssetGroupsModal({
     <AnimatePresence>
       {isOpen && (
         <motion.div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm border border-red-600"
           {...overlayAnimation}
         >
           <motion.div
             layout
-            className="bg-white dark:bg-gray-800 rounded-md p-6 w-full max-w-lg shadow-lg"
+            className="bg-white dark:bg-gray-800 rounded-md p-6 w-full max-w-lg shadow-lg border border-red-600"
             {...overlayAnimation}
           >
             {/* Header */}
@@ -65,7 +65,7 @@ export default function ViewAssetGroupsModal({
 
             {/* Body: list of groups */}
             <div
-              className="space-y-4 max-h-[70vh] overflow-auto pr-5     [&::-webkit-scrollbar]:w-2
+              className="space-y-4 max-h-[60vh] overflow-auto pr-5     [&::-webkit-scrollbar]:w-2
                 [&::-webkit-scrollbar-track]:rounded-full
                 [&::-webkit-scrollbar-track]:bg-gray-100 
                 dark:[&::-webkit-scrollbar-track]:bg-neutral-800

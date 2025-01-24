@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
-import { FaFilePdf, FaFileCsv, FaPrint, FaSearch } from "react-icons/fa";
+import { FaFilePdf, FaFileCsv, FaPrint, FaSearch, FaEye } from "react-icons/fa";
 import { MdOutlineFileDownload } from "react-icons/md";
 import { AiOutlinePlus } from "react-icons/ai";
 import "react-datepicker/dist/react-datepicker.css";
@@ -16,6 +16,7 @@ import {
 import AssetGroupModal from "./AssetGroupModal";
 import ViewAssetGroupsModal from "./ViewAssetGroupsModal";
 import AssignAssetModal from "./AssignAssetModal";
+import ViewAssignedAssetsModal from "./ViewAssignedAssetsModal";
 
 // // Dummy data for demonstration
 const DUMMY_EMPLOYEES = [
@@ -44,6 +45,26 @@ const DUMMY_GROUPS = [
   { id: "g2", name: "Some Group", description: "Another group" },
 
   // ...
+];
+
+const DUMMY_ASSIGNED_ASSETS = [
+  {
+    assetNumber: "ASSET-101",
+    assetGroup: "Group A",
+    description: "Laptop - Dell Inspiron",
+    brand: "Dell",
+    model: "Inspiron 14",
+    status: "Assigned",
+  },
+  {
+    assetNumber: "ASSET-102",
+    assetGroup: "Group B",
+    description: "Monitor - LG 24\"",
+    brand: "LG",
+    model: "24MK400H-B",
+    status: "Returned",
+  },
+  // ... add as many sample items as you need ...
 ];
 
 export default function AssignAssetsPage() {
@@ -98,6 +119,18 @@ export default function AssignAssetsPage() {
   const handleDeleteGroup = (groupId) => {
     // For example, remove the group from state or call an API
     setGroups((prev) => prev.filter((g) => g.id !== groupId));
+  };
+
+  const [isViewAssignedAssetsModalOpen, setIsViewAssignedAssetsModalOpen] =
+    useState(false);
+
+  const [currentEmployeeAssets, setCurrentEmployeeAssets] = useState([]);
+  const [currentEmployeeName, setCurrentEmployeeName] = useState("");
+
+  const handleViewAssignedAssets = (employee) => {
+    setCurrentEmployeeAssets(DUMMY_ASSIGNED_ASSETS);
+    setCurrentEmployeeName(employee.name);
+    setIsViewAssignedAssetsModalOpen(true);
   };
 
   return (
@@ -239,6 +272,7 @@ export default function AssignAssetsPage() {
               <th className="py-3 px-4">Employee Name</th>
               <th className="py-3 px-4">Department</th>
               <th className="py-3 px-4 text-center">Assets</th>
+              <th className="py-3 px-4 text-center">View Assign Assets</th>
             </tr>
           </thead>
           <tbody>
@@ -270,6 +304,15 @@ export default function AssignAssetsPage() {
                       >
                         <AiOutlinePlus className="mr-1" size={14} />
                         Assign Asset
+                      </button>
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <button
+                        className="inline-flex items-center bg-green-100 dark:bg-green-700 text-green-600 hover:bg-blue-900 dark:text-green-100 text-xs font-semibold px-3 py-1 rounded transition-colors"
+                        onClick={() => handleViewAssignedAssets(emp)}
+                      >
+                        <FaEye className="mr-1" size={14} />
+                        View Assign Assets
                       </button>
                     </td>
                   </motion.tr>
@@ -335,6 +378,13 @@ export default function AssignAssetsPage() {
           // Do an API call or state update
         }}
         employeeName="Kyser Shah"
+      />
+
+      <ViewAssignedAssetsModal
+        isOpen={isViewAssignedAssetsModalOpen}
+        onClose={() => setIsViewAssignedAssetsModalOpen(false)}
+        assignedAssets={currentEmployeeAssets}
+        employeeName={currentEmployeeName}
       />
     </div>
   );
