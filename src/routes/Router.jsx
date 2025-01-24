@@ -1,6 +1,25 @@
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import { Login, Dashboard, Page404,AddEmployeePage,UpdateEmployeePage ,ViewEmployeePage,SubordinatesEmployessPage,AssignAssetsPage,AllEmployessPage,ManageTicketsPage,RaiseTicketsPage,AllTicketsPage,FilePoshPage,PoshManagePage,FeedPage,EngPermissionDashboardPage} from "../pages";
+import {
+  Login,
+  Dashboard,
+  Page404,
+  AddEmployeePage,
+  UpdateEmployeePage,
+  ViewEmployeePage,
+  SubordinatesEmployessPage,
+  AssignAssetsPage,
+  AllEmployessPage,
+  ManageTicketsPage,
+  RaiseTicketsPage,
+  AllTicketsPage,
+  FilePoshPage,
+  PoshManagePage,
+  FeedPage,
+  EngPermissionDashboardPage,
+  EmployessMainPage,
+  AttendanceDashboardPage
+} from "../pages";
 import MainLayout from "./MainLayout";
 import useSocketStore from "../store/socketStore";
 
@@ -10,11 +29,9 @@ import {
   MakeAnnouncement,
   ViewAnnouncements,
   NotificationsPage,
-
 } from "../components";
 
 const router = createBrowserRouter([
-
   {
     path: "/reset-password/:resetToken",
     element: <ResetPassword />,
@@ -77,6 +94,10 @@ const router = createBrowserRouter([
         element: <FilePoshPage />,
       },
       {
+        path: "employees/management",
+        element: <EmployessMainPage />,
+      },
+      {
         path: "add-employee",
         element: <AddEmployeePage />,
       },
@@ -100,8 +121,10 @@ const router = createBrowserRouter([
         path: "all-employess",
         element: <AllEmployessPage />,
       },
-  
-  
+      {
+        path: "attendance-dashboard",
+        element: <AttendanceDashboardPage />,
+      },
     ],
   },
   {

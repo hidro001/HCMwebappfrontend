@@ -14,6 +14,8 @@ import FilePoshPage from "./Tickets Management/FilePoshPage";
 import PoshManagePage from "./Tickets Management/PoshManagePage";
 import FeedPage from "./Engagement Management/FeedPage";
 import EngPermissionDashboardPage from "./Engagement Management/EngPermissionDashboardPage";
+import EmployessMainPage from "./Employeee Management/EmployessMainPage";
+import AttendanceDashboardPage from "./attendence management/AttendanceDashboardPage";
 
 export {
   Login,
@@ -31,6 +33,8 @@ export {
   FilePoshPage,
   PoshManagePage,
   FeedPage,
-  EngPermissionDashboardPage
+  EngPermissionDashboardPage,
+  EmployessMainPage,
+  AttendanceDashboardPage
 
 };
