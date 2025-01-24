@@ -1,6 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import { Login, Dashboard, Page404,AddEmployeePage,UpdateEmployeePage ,ViewEmployeePage,SubordinatesEmployessPage,AssignAssetsPage} from "../pages";
+import { Login, Dashboard, Page404,AddEmployeePage,UpdateEmployeePage ,ViewEmployeePage,SubordinatesEmployessPage,AssignAssetsPage,AllEmployessPage} from "../pages";
 import MainLayout from "./MainLayout";
 import useSocketStore from "../store/socketStore";
 
@@ -17,7 +17,6 @@ import {
   EmployessIssue,
   PoshManager,
   FilePosh,
-  EmployeeList
 } from "../components";
 
 const router = createBrowserRouter([
@@ -88,7 +87,7 @@ const router = createBrowserRouter([
         element: <AddEmployeePage />,
       },
       {
-        path: "all-employee",
+        path: "supordinates-employees",
         element: <SubordinatesEmployessPage />,
       },
       {
@@ -104,8 +103,8 @@ const router = createBrowserRouter([
         element: <AssignAssetsPage />,
       },
       {
-        path: "employee-list",
-        element: <EmployeeList />,
+        path: "all-employess",
+        element: <AllEmployessPage />,
       },
   
   

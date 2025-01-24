@@ -6,6 +6,7 @@ import UpdateEmployeePage from "./Employeee Management/UpdateEmployee/UpdateEmpl
 import ViewEmployeePage from "./Employeee Management/ViewEmployeePage";
 import SubordinatesEmployessPage from "./Employeee Management/SubordinatesEmployessPage";
 import AssignAssetsPage from "./Employeee Management/Assign Assets/AssignAssetsPage";
+import AllEmployessPage from "./Employeee Management/AllEmployessPage";
 
 // import Chats from "./chats/chats";
 
@@ -17,7 +18,8 @@ export {
   UpdateEmployeePage,
   ViewEmployeePage,
   SubordinatesEmployessPage,
-  AssignAssetsPage
+  AssignAssetsPage,
+  AllEmployessPage
 
   // Chats
 };

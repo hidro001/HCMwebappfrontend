@@ -154,7 +154,7 @@ export const menuItems = [
         // },
         {
           name: "Supordinates",
-          link: "/dashboard/all-employee",
+          link: "/dashboard/supordinates-employees",
           permission: "updateEmployeeAdmin",
           textAnimation: { x: 10 },
         },
@@ -189,7 +189,7 @@ export const menuItems = [
         // },
         {
           name: "All Employees",
-          link: "/dashboard/employee-list",
+          link: "/dashboard/all-employess",
           permission: "updateEmployeeSuperAdmin",
           textAnimation: { x: 10 },
         },

@@ -8,7 +8,7 @@ import { toast } from "react-hot-toast";
 import useEmployeeStore from "../../../store/useEmployeeStore.js";
 import {
   createEmployee,
-  updateEmployee, // (IMPORTANT) Add this import so we can call updateEmployee
+  updateEmployee, 
 } from "../../../service/employeeService.js";
 
 import ConfirmationDialog from "../../common/ConfirmationDialog";
