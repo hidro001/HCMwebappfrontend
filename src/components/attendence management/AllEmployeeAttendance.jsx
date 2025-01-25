@@ -254,8 +254,8 @@ export default function AllEmployeeAttendance() {
               -800 Last 30 days Active
             </p>
           </div>
-          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-pink-500 text-white text-xl font-bold">
-            🏷
+          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-pink-400  text-xl font-bold">
+          🏠
           </div>
         </div>
 
