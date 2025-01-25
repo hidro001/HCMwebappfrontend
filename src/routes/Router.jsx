@@ -18,7 +18,12 @@ import {
   FeedPage,
   EngPermissionDashboardPage,
   EmployessMainPage,
-  AttendanceDashboardPage
+  AttendanceDashboardPage,
+  SubordinatesAttendancePage,
+  EmployeeFullAttendancePage,
+  OwmFullAttendancePage,
+  AllEmployeeAttendancePage
+
 } from "../pages";
 import MainLayout from "./MainLayout";
 import useSocketStore from "../store/socketStore";
@@ -125,6 +130,23 @@ const router = createBrowserRouter([
         path: "attendance-dashboard",
         element: <AttendanceDashboardPage />,
       },
+      {
+        path: "subordinates-attendance",
+        element: <SubordinatesAttendancePage />,
+      },
+      {
+        path: "attendance/:empID",
+        element: <EmployeeFullAttendancePage />,
+      },
+      {
+        path: "view-attendance",
+        element: <OwmFullAttendancePage />,
+      },
+      {
+        path: "all-employee-attendance",
+        element: <AllEmployeeAttendancePage />,
+      },
+
     ],
   },
   {

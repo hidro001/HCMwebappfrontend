@@ -16,6 +16,11 @@ import FeedPage from "./Engagement Management/FeedPage";
 import EngPermissionDashboardPage from "./Engagement Management/EngPermissionDashboardPage";
 import EmployessMainPage from "./Employeee Management/EmployessMainPage";
 import AttendanceDashboardPage from "./attendence management/AttendanceDashboardPage";
+import SubordinatesAttendancePage from "./attendence management/subordinatesAttendancePage";
+import EmployeeFullAttendancePage from "./attendence management/EmployeeFullAttendancePage";
+import OwmFullAttendancePage from "./attendence management/OwmFullAttendancePage";
+import AllEmployeeAttendancePage from "./attendence management/AllEmployeeAttendancePage";
+
 
 export {
   Login,
@@ -35,6 +40,10 @@ export {
   FeedPage,
   EngPermissionDashboardPage,
   EmployessMainPage,
-  AttendanceDashboardPage
+  AttendanceDashboardPage,
+  SubordinatesAttendancePage,
+  EmployeeFullAttendancePage,
+  OwmFullAttendancePage,
+  AllEmployeeAttendancePage
 
 };
