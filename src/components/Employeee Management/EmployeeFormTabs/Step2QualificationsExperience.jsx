@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import  { useEffect } from "react";
 import { useAnimate } from "framer-motion";
 import { useFormContext, useFieldArray } from "react-hook-form";
 import FormField from "../common/FormField";

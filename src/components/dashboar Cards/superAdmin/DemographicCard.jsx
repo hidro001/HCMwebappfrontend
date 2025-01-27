@@ -398,7 +398,7 @@
 
 
 // src/components/dashboar Cards/superAdmin/DemographicCard.jsx
-import React, { useEffect } from 'react';
+import  { useEffect } from 'react';
 import { useDashboardStore } from '../../../store/useDashboardStore'; // adjust import path as needed
 
 

@@ -213,7 +213,7 @@
 
 // export default AttendanceCard;
 
-// import React, { useEffect } from "react";
+// import  { useEffect } from "react";
 // import { useDashboardStore } from "../../../store/useDashboardStore"; // adjust path as needed
 
 // function AttendanceCard() {
@@ -331,7 +331,7 @@
 // export default AttendanceCard;
 
 
-import React, { useEffect } from 'react';
+import  { useEffect } from 'react';
 import { useDashboardStore } from '../../../store/useDashboardStore';
 import { Doughnut } from 'react-chartjs-2';
 

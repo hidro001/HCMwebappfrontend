@@ -1,6 +1,12 @@
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import { Login, Dashboard, Page404,AddEmployeePage,UpdateEmployeePage ,ViewEmployeePage,SubordinatesEmployessPage,AssignAssetsPage,AllEmployessPage,ManageTicketsPage,RaiseTicketsPage,AllTicketsPage,FilePoshPage,PoshManagePage,FeedPage,EngPermissionDashboardPage} from "../pages";
+import { Login, Dashboard, Page404,AddEmployeePage,UpdateEmployeePage ,ViewEmployeePage,SubordinatesEmployessPage,AssignAssetsPage,AllEmployessPage,ManageTicketsPage,RaiseTicketsPage,AllTicketsPage,FilePoshPage,PoshManagePage,FeedPage,EngPermissionDashboardPage,MainPage,
+  ManagePayrollPage,
+  ManageClaimsPage,
+
+
+
+} from "../pages";
 import MainLayout from "./MainLayout";
 import useSocketStore from "../store/socketStore";
 
@@ -99,6 +105,18 @@ const router = createBrowserRouter([
       {
         path: "all-employess",
         element: <AllEmployessPage />,
+      },
+      {
+        path: "main",
+        element: <MainPage />,
+      },
+      {
+        path: "manage-payroll",
+        element: <ManagePayrollPage />,
+      },
+      {
+        path: "manage-claims",
+        element: <ManageClaimsPage />,
       },
   
   

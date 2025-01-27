@@ -1,5 +1,5 @@
 // // src/components/ForgotPassword.js
-// import React, { useState } from 'react';
+// import  { useState } from 'react';
 // import PropTypes from 'prop-types';
 // import Button from '@mui/material/Button';
 // import Dialog from '@mui/material/Dialog';
@@ -84,7 +84,7 @@
 // export default ForgotPassword;
 
 //   // src/components/ForgotPassword.js
-// import React, { useState } from 'react';
+// import  { useState } from 'react';
 // import PropTypes from 'prop-types';
 // import Button from '@mui/material/Button';
 // import Dialog from '@mui/material/Dialog';
@@ -217,7 +217,7 @@
 
 // src/components/ForgotPassword.js
 
-import React, { useState } from "react";
+import  { useState } from "react";
 import PropTypes from "prop-types";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";

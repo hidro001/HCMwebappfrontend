@@ -1,6 +1,6 @@
 
 
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { FaBell, FaCog, FaSignOutAlt, FaHome, FaComments } from "react-icons/fa";
 import { MdOutlineDarkMode, MdLightMode } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";

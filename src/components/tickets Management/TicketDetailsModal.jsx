@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaTimes, FaPaperclip, FaPaperPlane } from "react-icons/fa";
 import useIssuesStore from "../../store/useIssuesStore";

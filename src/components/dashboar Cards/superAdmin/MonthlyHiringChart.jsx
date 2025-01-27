@@ -165,7 +165,7 @@
 // export default MonthlyHiringChart;
 
 // src/components/MonthlyHiringChart.jsx
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { useDashboardStore } from '../../../store/useDashboardStore'; 
 import { Line, Bar } from 'react-chartjs-2';
 
