@@ -20,6 +20,8 @@ import SubordinatesAttendancePage from "./attendence management/subordinatesAtte
 import EmployeeFullAttendancePage from "./attendence management/EmployeeFullAttendancePage";
 import OwmFullAttendancePage from "./attendence management/OwmFullAttendancePage";
 import AllEmployeeAttendancePage from "./attendence management/AllEmployeeAttendancePage";
+import RecruitDashboardPage from "./recruit management/RecruitDashboardPage";
+import AllVacanciesPage from "./recruit management/AllVacanciesPage";
 
 
 export {
@@ -44,6 +46,8 @@ export {
   SubordinatesAttendancePage,
   EmployeeFullAttendancePage,
   OwmFullAttendancePage,
-  AllEmployeeAttendancePage
+  AllEmployeeAttendancePage,
+  RecruitDashboardPage,
+  AllVacanciesPage
 
 };

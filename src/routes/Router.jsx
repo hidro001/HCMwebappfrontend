@@ -22,7 +22,9 @@ import {
   SubordinatesAttendancePage,
   EmployeeFullAttendancePage,
   OwmFullAttendancePage,
-  AllEmployeeAttendancePage
+  AllEmployeeAttendancePage,
+  RecruitDashboardPage,
+  AllVacanciesPage
 
 } from "../pages";
 import MainLayout from "./MainLayout";
@@ -145,6 +147,14 @@ const router = createBrowserRouter([
       {
         path: "all-employee-attendance",
         element: <AllEmployeeAttendancePage />,
+      },
+      {
+        path: "recruitment-main",
+        element: <RecruitDashboardPage />,
+      },
+      {
+        path: "all-vacancies",
+        element: <AllVacanciesPage />,
       },
 
     ],

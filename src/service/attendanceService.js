@@ -11,6 +11,13 @@ const attendanceService = {
       params: { userId },
     });
   },
+  getAllUser: (userId) => {
+    // Could also do query param like: `/admin/subordinates?userId=${userId}`
+    // or pass in data in the request body. Adjust as needed.
+    return axiosInstance.get("/superadmin/employees", {
+      params: { userId },
+    });
+  },
 
   // Fetch all departments
   getDepartments: () => {

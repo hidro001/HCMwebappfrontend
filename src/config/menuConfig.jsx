@@ -240,45 +240,7 @@ export const menuItems = [
     //     },
     //   ],
     // },
-    // {
-    //   name: "Outsourcing & Recruit Management",
-    //   icon: <FaFileAlt />,
-    //   color: "text-yellow-400",
-    //   iconAnimation: { scale: 1.2 },
-    //   textAnimation: { x: 10 },
-    //   options: [
-    //     {
-    //       name: "Job Posting",
-    //       link: "/dashboard/job-posting",
-    //       permission: "jobPostingAdmin",
-    //       textAnimation: { x: 10 },
-    //     },
-    //     {
-    //       name: "Vacancies Management",
-    //       link: "/dashboard/job-fetching",
-    //       permission: "jobVacancyAdmin",
-    //       textAnimation: { x: 10 },
-    //     },
-    //     {
-    //       name: "HR Referral Dashboard",
-    //       link: "/dashboard/hr-referral-dashboard",
-    //       permission: "HRreferralDashboard",
-    //       textAnimation: { x: 10 },
-    //     },
-    //     {
-    //       name: "Vacancies",
-    //       link: "/dashboard/employee-pending-jobs",
-    //       permission: "viewVacancies",
-    //       textAnimation: { x: 10 },
-    //     },
-    //     {
-    //       name: "Employee Referral Tracker",
-    //       link: "/dashboard/my-referral-dashboard",
-    //       permission: "employeeReferralDashboard",
-    //       textAnimation: { x: 10 },
-    //     },
-    //   ],
-    // },
+
     {
       name: "Ticket Management",
       icon: <FaBug />,
@@ -396,6 +358,51 @@ export const menuItems = [
           name: "All Employee Attendance",
           link: "/dashboard/all-employee-attendance",
           permission: "viewAttendance",
+          textAnimation: { x: 10 },
+        },
+      ],
+    },
+    {
+      name: "Outsourcing & Recruit Management",
+      icon: <FaFileAlt />,
+      color: "text-yellow-400",
+      iconAnimation: { scale: 1.2 },
+      textAnimation: { x: 10 },
+      options: [
+        {
+          name: "Main",
+          link: "/dashboard/recruitment-main",
+          permission: "jobPostingAdmin",
+          textAnimation: { x: 10 },
+        },
+        {
+          name: "All Vacancies",
+          link: "/dashboard/all-vacancies",
+          permission: "jobPostingAdmin",
+          textAnimation: { x: 10 },
+        },
+        {
+          name: "Vacancies Management",
+          link: "/dashboard/job-fetching",
+          permission: "jobVacancyAdmin",
+          textAnimation: { x: 10 },
+        },
+        {
+          name: "HR Referral Dashboard",
+          link: "/dashboard/hr-referral-dashboard",
+          permission: "HRreferralDashboard",
+          textAnimation: { x: 10 },
+        },
+        {
+          name: "Vacancies",
+          link: "/dashboard/employee-pending-jobs",
+          permission: "viewVacancies",
+          textAnimation: { x: 10 },
+        },
+        {
+          name: "Employee Referral Tracker",
+          link: "/dashboard/my-referral-dashboard",
+          permission: "employeeReferralDashboard",
           textAnimation: { x: 10 },
         },
       ],

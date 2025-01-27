@@ -38,6 +38,32 @@ const useAttendanceStore = create((set, get) => ({
     }
   },
 
+
+  // Fetch subordinates
+  fetchAllUser: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await attendanceService.getAllUser();
+      const data = response.data;
+
+      if (data.success) {
+        set({ subordinates: data.data });
+      } else {
+        throw new Error(data.message || "Failed to fetch subordinates.");
+      }
+    } catch (err) {
+      console.error("Error fetching subordinates:", err);
+      toast.error(err.message);
+      set({ error: err.message });
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+
+
+
+
   // Fetch departments
   fetchDepartments: async () => {
     set({ loading: true, error: null });
