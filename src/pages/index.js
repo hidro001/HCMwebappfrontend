@@ -22,6 +22,10 @@ import OwmFullAttendancePage from "./attendence management/OwmFullAttendancePage
 import AllEmployeeAttendancePage from "./attendence management/AllEmployeeAttendancePage";
 import RecruitDashboardPage from "./recruit management/RecruitDashboardPage";
 import AllVacanciesPage from "./recruit management/AllVacanciesPage";
+import CreateVacancyPage from "./recruit management/CreateVacancyPage";
+import ReferralListPage from "./recruit management/ReferralListPage";
+import VacanciesListPage from "./recruit management/VacanciesListPage";
+import EmployeeFnfPage from "./recruit management/EmployeeFnfPage";
 
 
 export {
@@ -48,6 +52,10 @@ export {
   OwmFullAttendancePage,
   AllEmployeeAttendancePage,
   RecruitDashboardPage,
-  AllVacanciesPage
+  AllVacanciesPage,
+  CreateVacancyPage,
+  ReferralListPage,
+  VacanciesListPage,
+  EmployeeFnfPage
 
 };

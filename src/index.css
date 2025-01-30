@@ -22,6 +22,7 @@ html,
 body {
   margin: 0;
   padding: 0;
+  
 }
 
 @layer utility {
@@ -54,6 +55,8 @@ body {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+
+
 
 .hide-horizontal-scrollbar::-webkit-scrollbar {
   /* Hide scrollbars in WebKit-based browsers (Chrome, Safari) */

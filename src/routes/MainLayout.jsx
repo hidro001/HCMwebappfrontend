@@ -233,8 +233,9 @@ const MainLayout = () => {
             <div
               id="scrollableDiv"
               className={`
+                
                 scroll-stabilize
-                flex-1 h-screen overflow-y-auto w-full
+                flex-1 h-screen overflow-y-auto overflow-x-hidden w-full
                 [&::-webkit-scrollbar]:w-2
                 [&::-webkit-scrollbar-track]:rounded-full
                 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800

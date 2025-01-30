@@ -24,7 +24,11 @@ import {
   OwmFullAttendancePage,
   AllEmployeeAttendancePage,
   RecruitDashboardPage,
-  AllVacanciesPage
+  AllVacanciesPage,
+  CreateVacancyPage,
+  ReferralListPage,
+  VacanciesListPage,
+  EmployeeFnfPage
 
 } from "../pages";
 import MainLayout from "./MainLayout";
@@ -156,6 +160,23 @@ const router = createBrowserRouter([
         path: "all-vacancies",
         element: <AllVacanciesPage />,
       },
+      {
+        path: "create-vacancies",
+        element: <CreateVacancyPage />,
+      },
+      {
+        path: "referral-list",
+        element: <ReferralListPage />,
+      },
+      {
+        path: "vancancies-list",
+        element: <VacanciesListPage />,
+      },
+      {
+        path: "employee-fnf",
+        element: <EmployeeFnfPage />,
+      },
+ 
 
     ],
   },
