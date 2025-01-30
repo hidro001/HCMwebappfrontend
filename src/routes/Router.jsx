@@ -28,7 +28,8 @@ import {
   CreateVacancyPage,
   ReferralListPage,
   VacanciesListPage,
-  EmployeeFnfPage
+  EmployeeFnfPage,
+  CompanyInfoPage
 
 } from "../pages";
 import MainLayout from "./MainLayout";
@@ -175,6 +176,10 @@ const router = createBrowserRouter([
       {
         path: "employee-fnf",
         element: <EmployeeFnfPage />,
+      },
+      {
+        path: "company-info",
+        element: <CompanyInfoPage />,
       },
  
 

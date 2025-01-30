@@ -26,6 +26,7 @@ import CreateVacancyPage from "./recruit management/CreateVacancyPage";
 import ReferralListPage from "./recruit management/ReferralListPage";
 import VacanciesListPage from "./recruit management/VacanciesListPage";
 import EmployeeFnfPage from "./recruit management/EmployeeFnfPage";
+import CompanyInfoPage from "./company setting/CompanyInfoPage";
 
 
 export {
@@ -56,6 +57,7 @@ export {
   CreateVacancyPage,
   ReferralListPage,
   VacanciesListPage,
-  EmployeeFnfPage
+  EmployeeFnfPage,
+  CompanyInfoPage
 
 };

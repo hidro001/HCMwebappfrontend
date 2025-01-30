@@ -504,20 +504,14 @@ export default function RecruitDashboard() {
 
   return (
     // Toggle dark mode with a parent .dark class
-    <div className={darkMode ? "dark" : ""}>
+    <div >
       <div className="min-h-screen bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 p-6 transition-colors">
         <div className="max-w-screen-2xl mx-auto">
           {/* Header with a dark-mode toggle button (optional) */}
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold">Recruitment Dashboard</h1>
 
-            {/* Dark-mode toggle */}
-            <button
-              onClick={() => setDarkMode(!darkMode)}
-              className="border border-gray-300 dark:border-gray-700 px-3 py-1 rounded hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            >
-              {darkMode ? <BsSunFill /> : <BsMoonFill />}
-            </button>
+         
           </div>
 
           {/* 2×2 stats + Bar Chart */}
