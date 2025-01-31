@@ -1,25 +1,21 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { FaTimes } from 'react-icons/fa';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { FaTimes } from "react-icons/fa";
 
 export default function UpdateStatusModal({ referral, onClose, onSubmit }) {
-  const [status, setStatus] = useState(referral.status || 'Pending');
-  const [feedback, setFeedback] = useState('');
+  const [status, setStatus] = useState(referral.status || "Pending");
+  const [feedback, setFeedback] = useState("");
 
   // Prevent body scroll when modal mounts
   useEffect(() => {
     const originalOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
+    document.body.style.overflow = "hidden";
     return () => {
       document.body.style.overflow = originalOverflow;
     };
   }, []);
 
-  
-
   const handleUpdate = () => {
-    // Pass the data back to parent
     onSubmit(status, feedback);
   };
 
@@ -44,7 +40,7 @@ export default function UpdateStatusModal({ referral, onClose, onSubmit }) {
           <FaTimes />
         </button>
         <h2 className="text-lg font-semibold mb-3">
-          Update Status for {referral.referredBy}
+          Update Status for {referral.candidateName}
         </h2>
         <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
           Please select the new status and provide any necessary feedback.
@@ -59,6 +55,8 @@ export default function UpdateStatusModal({ referral, onClose, onSubmit }) {
           >
             <option value="Pending">Pending</option>
             <option value="In Review">In Review</option>
+            <option value="Interview">Interview</option>
+            <option value="Accepted">Accepted</option>
             <option value="Rejected">Rejected</option>
             <option value="Onboard">Onboard</option>
           </select>
