@@ -29,7 +29,8 @@ import {
   ReferralListPage,
   VacanciesListPage,
   EmployeeFnfPage,
-  CompanyInfoPage
+  CompanyInfoPage,
+  CompanySettingPage
 
 } from "../pages";
 import MainLayout from "./MainLayout";
@@ -180,6 +181,10 @@ const router = createBrowserRouter([
       {
         path: "company-info",
         element: <CompanyInfoPage />,
+      },
+      {
+        path: "company-settings",
+        element: <CompanySettingPage />,
       },
  
 
