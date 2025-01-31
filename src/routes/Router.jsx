@@ -1,11 +1,42 @@
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 
-import { Login, Dashboard, Page404,AddEmployeePage,UpdateEmployeePage ,ViewEmployeePage,SubordinatesEmployessPage,AssignAssetsPage,AllEmployessPage,ManageTicketsPage,RaiseTicketsPage,AllTicketsPage,FilePoshPage,PoshManagePage,FeedPage,EngPermissionDashboardPage,MainPage,
+
+
+
+import {
+  Login,
+  Dashboard,
+  Page404,
+  AddEmployeePage,
+  UpdateEmployeePage,
+  ViewEmployeePage,
+  SubordinatesEmployessPage,
+  AssignAssetsPage,
+  AllEmployessPage,
+  ManageTicketsPage,
+  RaiseTicketsPage,
+  AllTicketsPage,
+  FilePoshPage,
+  PoshManagePage,
+  FeedPage,
+  EngPermissionDashboardPage,
+  EmployessMainPage,
+  AttendanceDashboardPage,
+  SubordinatesAttendancePage,
+  EmployeeFullAttendancePage,
+  OwmFullAttendancePage,
+  AllEmployeeAttendancePage,
+  RecruitDashboardPage,
+  AllVacanciesPage,
+  CreateVacancyPage,
+  ReferralListPage,
+  VacanciesListPage,
+  EmployeeFnfPage,
+  CompanyInfoPage,
+  MainPage,
   ManagePayrollPage,
   ManageClaimsPage,
-
-
 
 } from "../pages";
 import MainLayout from "./MainLayout";
@@ -17,11 +48,9 @@ import {
   MakeAnnouncement,
   ViewAnnouncements,
   NotificationsPage,
-
 } from "../components";
 
 const router = createBrowserRouter([
-
   {
     path: "/reset-password/:resetToken",
     element: <ResetPassword />,
@@ -85,6 +114,10 @@ const router = createBrowserRouter([
         element: <FilePoshPage />,
       },
       {
+        path: "employees/management",
+        element: <EmployessMainPage />,
+      },
+      {
         path: "add-employee",
         element: <AddEmployeePage />,
       },
@@ -118,10 +151,59 @@ const router = createBrowserRouter([
       },
       {
         path: "manage-claims",
-        element: <ManageClaimsPage />,
+        element: <ManageClaimsPage/>,
       },
   
-  
+  {
+        path: "attendance-dashboard",
+        element: <AttendanceDashboardPage />,
+      },
+      {
+        path: "subordinates-attendance",
+        element: <SubordinatesAttendancePage />,
+      },
+      {
+        path: "attendance/:empID",
+        element: <EmployeeFullAttendancePage />,
+      },
+      {
+        path: "view-attendance",
+        element: <OwmFullAttendancePage />,
+      },
+      {
+        path: "all-employee-attendance",
+        element: <AllEmployeeAttendancePage />,
+      },
+      {
+        path: "recruitment-main",
+        element: <RecruitDashboardPage />,
+      },
+      {
+        path: "all-vacancies",
+        element: <AllVacanciesPage />,
+      },
+      {
+        path: "create-vacancies",
+        element: <CreateVacancyPage />,
+      },
+      {
+        path: "referral-list",
+        element: <ReferralListPage />,
+      },
+      {
+        path: "vancancies-list",
+        element: <VacanciesListPage />,
+      },
+      {
+        path: "employee-fnf",
+        element: <EmployeeFnfPage />,
+      },
+      {
+        path: "company-info",
+        element: <CompanyInfoPage />,
+      },
+ 
+
     ],
   },
   {

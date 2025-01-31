@@ -14,6 +14,20 @@ import FilePoshPage from "./Tickets Management/FilePoshPage";
 import PoshManagePage from "./Tickets Management/PoshManagePage";
 import FeedPage from "./Engagement Management/FeedPage";
 import EngPermissionDashboardPage from "./Engagement Management/EngPermissionDashboardPage";
+import EmployessMainPage from "./Employeee Management/EmployessMainPage";
+import AttendanceDashboardPage from "./attendence management/AttendanceDashboardPage";
+import SubordinatesAttendancePage from "./attendence management/subordinatesAttendancePage";
+import EmployeeFullAttendancePage from "./attendence management/EmployeeFullAttendancePage";
+import OwmFullAttendancePage from "./attendence management/OwmFullAttendancePage";
+import AllEmployeeAttendancePage from "./attendence management/AllEmployeeAttendancePage";
+import RecruitDashboardPage from "./recruit management/RecruitDashboardPage";
+import AllVacanciesPage from "./recruit management/AllVacanciesPage";
+import CreateVacancyPage from "./recruit management/CreateVacancyPage";
+import ReferralListPage from "./recruit management/ReferralListPage";
+import VacanciesListPage from "./recruit management/VacanciesListPage";
+import EmployeeFnfPage from "./recruit management/EmployeeFnfPage";
+import CompanyInfoPage from "./company setting/CompanyInfoPage";
+
 
 import MainPage from "./payroll/MainPage";
 import ManagePayrollPage from "./payroll/ManagePayrollPage";
@@ -38,5 +52,19 @@ export {
   EngPermissionDashboardPage,
   MainPage,
   ManagePayrollPage,
-  ManageClaimsPage
+  ManageClaimsPage,
+  EmployessMainPage,
+  AttendanceDashboardPage,
+  SubordinatesAttendancePage,
+  EmployeeFullAttendancePage,
+  OwmFullAttendancePage,
+  AllEmployeeAttendancePage,
+  RecruitDashboardPage,
+  AllVacanciesPage,
+  CreateVacancyPage,
+  ReferralListPage,
+  VacanciesListPage,
+  EmployeeFnfPage,
+  CompanyInfoPage
+
 };
