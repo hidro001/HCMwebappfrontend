@@ -201,39 +201,34 @@ export const menuItems = [
       // },
     ],
   },
-  // {
-  //   name: "Task Management Manager",
-  //   icon: <FaTasks />,
-  //   color: "text-blue-400",
-  //   iconAnimation: { rotate: 360 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "View Daily Tasks",
-  //       link: "/dashboard/view-task-hr",
-  //       permission: "ViewTaskManager",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Update Daily Tasks",
-  //       link: "/dashboard/update-task",
-  //       permission: "updateTask",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Assign Task",
-  //       link: "/dashboard/manager-action-tracker",
-  //       permission: "ActionTrackerManager",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Assigned Tasks",
-  //       link: "/dashboard/action-tracker",
-  //       permission: "actionTracker",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+  {
+    name: "Task Management Manager",
+    icon: <FaTasks />,
+    color: "text-blue-400",
+    iconAnimation: { rotate: 360 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Main",
+        link: "/dashboard/main-task",
+        permission: "ViewTaskManager",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "View Daily Task",
+        link: "/dashboard/view-daily-task",
+        permission: "updateTask",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Assigned Task",
+        link: "/dashboard/assigned-task",
+        permission: "ActionTrackerManager",
+        textAnimation: { x: 10 },
+      },
+     
+    ],
+  },
 
     
   

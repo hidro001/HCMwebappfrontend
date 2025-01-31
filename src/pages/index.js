@@ -32,6 +32,10 @@ import CompanyInfoPage from "./company setting/CompanyInfoPage";
 import MainPage from "./payroll/MainPage";
 import ManagePayrollPage from "./payroll/ManagePayrollPage";
 import ManageClaimsPage from "./payroll/ManageClaimsPage";
+// task
+import AssignedTaskPage from "./task/AssignedTaskPage";
+import DailyTaskPage from "./task/DailyTaskPage";
+import TaskMainPage from "./task/TaskMainPage";
 
 export {
   Login,
@@ -65,6 +69,9 @@ export {
   ReferralListPage,
   VacanciesListPage,
   EmployeeFnfPage,
-  CompanyInfoPage
+  CompanyInfoPage,
+  AssignedTaskPage,
+DailyTaskPage,
+TaskMainPage,
 
 };

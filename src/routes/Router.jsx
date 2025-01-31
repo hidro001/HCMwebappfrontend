@@ -37,6 +37,11 @@ import {
   MainPage,
   ManagePayrollPage,
   ManageClaimsPage,
+  // 
+  TaskMainPage,
+  DailyTaskPage,
+  AssignedTaskPage,
+
 
 } from "../pages";
 import MainLayout from "./MainLayout";
@@ -49,6 +54,7 @@ import {
   ViewAnnouncements,
   NotificationsPage,
 } from "../components";
+
 
 const router = createBrowserRouter([
   {
@@ -201,6 +207,21 @@ const router = createBrowserRouter([
       {
         path: "company-info",
         element: <CompanyInfoPage />,
+      },
+
+      // task route
+
+      {
+        path: "main-task",
+        element: <TaskMainPage />,
+      },
+      {
+        path: "view-daily-task",
+        element: <DailyTaskPage />,
+      },
+      {
+        path: "assigned-task",
+        element: <AssignedTaskPage />,
       },
  
 

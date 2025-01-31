@@ -1,4 +1,4 @@
-import React from 'react'
+
 import FilePosh from '../../components/tickets Management/posh/FilePosh'
 
 const FilePoshPage = () => {

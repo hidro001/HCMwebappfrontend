@@ -1,4 +1,4 @@
-import React from 'react'
+
 import CompanyInfo from '../../components/company setting/CompanyInfo'
 
 const CompanyInfoPage = () => {
