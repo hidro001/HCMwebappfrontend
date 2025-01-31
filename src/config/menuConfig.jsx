@@ -15,7 +15,7 @@ import {
   FaMoneyCheckAlt,
   FaListAlt,
   FaCog,
-} from "react-icons/fa";
+  FaBookReader } from "react-icons/fa";
 import { TiSocialTwitter } from "react-icons/ti";
 import { GrDocumentPerformance } from "react-icons/gr";
 import { MdModelTraining } from "react-icons/md";
@@ -236,42 +236,7 @@ export const menuItems = [
   // },
 
     
-    {
-      name: "Announcements",
-      icon: <FaBullhorn />,
-      color: "text-yellow-400",
-      iconAnimation: { x: 7 },
-      options: [
-        {
-          name: "Create Announcement",
-          link: "/dashboard/add-announcement",
-          permission: "AddAnnouncement",
-        },
-        {
-          name: "View Announcement",
-          link: "/dashboard/view-announcement",
-          permission: "AddAnnouncement",
-        },
-      ],
-    },
-    {
-      name: "Engagement",
-      icon: <TiSocialTwitter />,
-      color: "text-blue-400",
-      iconAnimation: { rotate: 360 },
-      options: [
-        {
-          name: "Engagement Feed",
-          link: "/dashboard/engagement-feed",
-          permission: "AddAnnouncement",
-        },
-        {
-          name: "permission dashboard",
-          link: "/dashboard/engagement-permission-dashboard",
-          permission: "AddAnnouncement",
-        },
-      ],
-    },
+  
     // {
     //   name: " Company Policies",
     //   icon: <FaClipboard />,
@@ -314,74 +279,7 @@ export const menuItems = [
     //     },
     //   ],
     // },
-    {
-      name: "Manage Employees",
-      icon: <FaUsers />,
-      color: "text-orange-400",
-      iconAnimation: { rotate: -360 },
-      textAnimation: { x: 10 },
-      options: [
-        {
-          name: "Add Employee",
-          link: "/dashboard/add-employee",
-          permission: "addEmployeeAdmin",
-          textAnimation: { x: 10 },
-        },
-        // {
-        //   name: "Add Employee",
-        //   link: "/dashboard/add-employee2",
-        //   permission: "addEmployeeManager",
-        //   textAnimation: { x: 10 },
-        // },
-        {
-          name: "Supordinates",
-          link: "/dashboard/supordinates-employees",
-          permission: "updateEmployeeAdmin",
-          textAnimation: { x: 10 },
-        },
-        {
-          name: "Asset Management",
-          link: "/dashboard/assign-assets",
-          permission: "assignAssets",
-        },
-        // {
-        //   name: "Update Employee",
-        //   link: "/dashboard/update-employeev2",
-        //   permission: "updateEmployeeManager",
-        //   textAnimation: { x: 10 },
-        // },
-        // {
-        //   name: "Delete Employee",
-        //   link: "/dashboard/delete-employee",
-        //   permission: "deleteEmployeeAdmin",
-        //   textAnimation: { x: 10 },
-        // },
-        // {
-        //   name: "View Employee",
-        //   link: "/dashboard/all-employees",
-        //   permission: "viewEmployeeAdmin",
-        //   textAnimation: { x: 10 },
-        // },
-        // {
-        //   name: "Employee Status",
-        //   link: "/dashboard/active-inactive-employee",
-        //   permission: "active/InactiveEmployeeAdmin",
-        //   textAnimation: { x: 10 },
-        // },
-        {
-          name: "All Employees",
-          link: "/dashboard/all-employess",
-          permission: "updateEmployeeSuperAdmin",
-          textAnimation: { x: 10 },
-        },
-        // {
-        //   name: "Asset",
-        //   link: "/dashboard/asset",
-        //   permission: "assignAssets",
-        //   textAnimation: { x: 10 },
-        // },
-      ],
-    },
+    
     // {
     //   name: "Task Management Manager",
     //   icon: <FaTasks />,
@@ -758,45 +656,7 @@ export const menuItems = [
     //     },
     //   ],
     // },
-  {
-    name: "Ticket Management",
-    icon: <FaBug />,
-    color: "text-green-400",
-    iconAnimation: { scale: 1.2 },
-    textAnimation: { x: 10 },
-    options: [
-      {
-        name: "Manage Tickets",
-        link: "/dashboard/manage-tickets",
-        permission: "manageIssuesAdmin",
-        textAnimation: { x: 10 },
-      },
-      {
-        name: "Raise Ticket ",
-        link: "/dashboard/raise-ticket",
-        permission: "getSupport",
-        textAnimation: { x: 10 },
-      },
-      {
-        name: "All Tickets",
-        link: "/dashboard/all-tickets",
-        permission: "IssueManagementSuperAdmin",
-        textAnimation: { x: 10 },
-      },
-      {
-        name: "Posh Manage",
-        link: "/dashboard/posh-manage",
-        permission: "IssueManagementSuperAdmin",
-        textAnimation: { x: 10 },
-      },
-      {
-        name: "File Posh",
-        link: "/dashboard/file-posh",
-        permission: "IssueManagementSuperAdmin",
-        textAnimation: { x: 10 },
-      },
-    ],
-  },
+ 
   // {
   //   name: "RACI",
   //   icon: <FaGlobe />,
@@ -847,7 +707,7 @@ export const menuItems = [
   // },
   {
     name: "Attendence",
-    icon: <FaMoneyCheckAlt />,
+    icon: <FaBookReader  />,
     color: "text-orange-400",
     iconAnimation: { scale: 1.2 },
     textAnimation: { x: 10 },
