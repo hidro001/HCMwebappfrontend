@@ -1,4 +1,4 @@
-import React from 'react'
+
 import SubordinatesAttendance from '../../components/attendence management/subordinatesAttendance'
 
 const SubordinatesAttendancePage = () => {
