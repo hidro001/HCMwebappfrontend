@@ -876,16 +876,16 @@ export const menuItems = [
       //   permission: "superAdminDepartmentDesignation",
       //   textAnimation: { x: 10 },
       // },
-      // {
-      //   name: "Company Settings",
-      //   link: "/dashboard/company-settings",
-      //   permission: "CompanySettings",
-      //   textAnimation: { x: 10 },
-      // },
       {
         name: "Company Info",
         link: "/dashboard/company-info",
         permission: "companyInfo",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Company Settings",
+        link: "/dashboard/company-settings",
+        permission: "CompanySettings",
         textAnimation: { x: 10 },
       },
       // {

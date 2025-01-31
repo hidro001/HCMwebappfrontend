@@ -34,6 +34,7 @@ import {
   VacanciesListPage,
   EmployeeFnfPage,
   CompanyInfoPage,
+  CompanySettingPage,
   MainPage,
   ManagePayrollPage,
   ManageClaimsPage,
@@ -222,6 +223,10 @@ const router = createBrowserRouter([
       {
         path: "assigned-task",
         element: <AssignedTaskPage />,
+      },
+      {
+        path: "company-settings",
+        element: <CompanySettingPage />,
       },
  
 
