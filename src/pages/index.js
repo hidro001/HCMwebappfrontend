@@ -30,6 +30,10 @@ import CompanyInfoPage from "./company setting/CompanyInfoPage";
 import CompanySettingPage from "./company setting/CompanySettingPage";
 
 
+import MainPage from "./payroll/MainPage";
+import ManagePayrollPage from "./payroll/ManagePayrollPage";
+import ManageClaimsPage from "./payroll/ManageClaimsPage";
+
 export {
   Login,
   Dashboard,
@@ -47,6 +51,9 @@ export {
   PoshManagePage,
   FeedPage,
   EngPermissionDashboardPage,
+  MainPage,
+  ManagePayrollPage,
+  ManageClaimsPage,
   EmployessMainPage,
   AttendanceDashboardPage,
   SubordinatesAttendancePage,

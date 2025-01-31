@@ -24,7 +24,7 @@
 // }
 
 // src/pages/UpdateEmployeePage/index.jsx
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useEmployeeStore from "../../../store/useEmployeeStore.js.js";
 import EmployeeFormTabs from "../../../components/Employeee Management/EmployeeFormTabs/index";

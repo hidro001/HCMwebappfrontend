@@ -1,8 +1,9 @@
 // src/components/Feed/Feed.js
-import React, { useEffect } from "react";
+import  { useEffect } from "react";
 import PostCard from "./PostCard";
 import PollCard from "./PollCard";
 import { toast } from "react-toastify";
+import React from 'react'
 import {
   Dialog,
   DialogTitle,

@@ -1,5 +1,5 @@
 // src/context/SocketContext.js
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import  { createContext, useContext, useEffect, useState } from 'react';
 import { io } from 'socket.io-client';
 import useAuthStore from '../store/store'; // Adjust the path as needed
 

@@ -1,5 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
+
+
+
+
 import {
   Login,
   Dashboard,
@@ -30,11 +34,14 @@ import {
   VacanciesListPage,
   EmployeeFnfPage,
   CompanyInfoPage,
-  CompanySettingPage
+  CompanySettingPage,
+  MainPage,
+  ManagePayrollPage,
+  ManageClaimsPage,
 
 } from "../pages";
 import MainLayout from "./MainLayout";
-import useSocketStore from "../store/socketStore";
+
 
 import {
   Footer,
@@ -86,6 +93,7 @@ const router = createBrowserRouter([
         path: "engagement-permission-dashboard",
         element: <EngPermissionDashboardPage />,
       },
+      
       {
         path: "manage-tickets",
         element: <ManageTicketsPage />,
@@ -135,6 +143,19 @@ const router = createBrowserRouter([
         element: <AllEmployessPage />,
       },
       {
+        path: "main",
+        element: <MainPage />,
+      },
+      {
+        path: "manage-payroll",
+        element: <ManagePayrollPage />,
+      },
+      {
+        path: "manage-claims",
+        element: <ManageClaimsPage/>,
+      },
+  
+  {
         path: "attendance-dashboard",
         element: <AttendanceDashboardPage />,
       },

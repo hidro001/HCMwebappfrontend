@@ -330,7 +330,7 @@
 
 // src/components/EmployeeStatusChart.jsx
 
-import React, { useEffect } from 'react';
+import  { useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import { useDashboardStore } from "../../../store/useDashboardStore"; // your zustand store
 

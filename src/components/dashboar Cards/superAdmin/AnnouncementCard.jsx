@@ -226,7 +226,7 @@
 // export default AnnouncementCard;
 
 // src/components/AnnouncementCard.jsx
-import React, { useEffect, useState } from "react";
+import  { useEffect, useState } from "react";
 import useAnnouncementStore from "../../../store/announcementStore";
 import AnnouncementModal from "./AnnouncementModal"; // import our new modal
 

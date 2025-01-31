@@ -225,7 +225,7 @@
 
 // export default DepartmentChart;
 
-// import React, { useEffect, useMemo } from 'react';
+// import  { useEffect, useMemo } from 'react';
 // import {
 //   useDashboardStore,
 // } from "../../../store/useDashboardStore"; // your zustand store
@@ -334,7 +334,7 @@
 
 // export default DepartmentChart;
 
-import React, { useEffect } from "react";
+import  { useEffect } from "react";
 import { Bar } from "react-chartjs-2";
 import { useDashboardStore } from "../../../store/useDashboardStore"; // your zustand store
 function DepartmentChart() {
