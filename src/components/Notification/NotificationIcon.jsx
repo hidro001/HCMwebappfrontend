@@ -1,4 +1,4 @@
-// src/components/NotificationIcon.js
+
 import React from "react";
 import { FaBell } from "react-icons/fa";
 import Badge from "@mui/material/Badge";

@@ -1,24 +1,25 @@
+
+
 import React, { useEffect, useState } from "react";
-import { FaBell, FaCog, FaSignOutAlt, FaHome } from "react-icons/fa";
+import { FaBell, FaCog, FaSignOutAlt, FaHome, FaComments } from "react-icons/fa";
 import { MdOutlineDarkMode, MdLightMode } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/store";
-import useNotificationStore from "../../store/notificationStore"; // Import notification store
+import useNotificationStore from "../../store/notificationStore";
 import { toast } from "react-toastify";
 import ThemeToggleButton from "../theme toggle button/ThemeToggleButton";
-import NotificationDropdown from "../Notification/NotificationDropdown"; // Create this component
+import NotificationDropdown from "../Notification/NotificationDropdown";
 
 const Navbar = () => {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const [showNotificationDropdown, setShowNotificationDropdown] =
-    useState(false);
-  const navigate = useNavigate();
+  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
+  const [showChatDropdown, setShowChatDropdown] = useState(false); // <-- ADDED for chat
+  const [currentDate, setCurrentDate] = useState("");
 
+  const navigate = useNavigate();
   const authStore = useAuthStore();
-  const fetchNotifications = useNotificationStore(
-    (state) => state.fetchNotifications
-  );
+  const fetchNotifications = useNotificationStore((state) => state.fetchNotifications);
   const unreadCount = useNotificationStore((state) => state.unreadCount);
   const notifications = useNotificationStore((state) => state.notifications);
   const loading = useNotificationStore((state) => state.loading);
@@ -30,6 +31,14 @@ const Navbar = () => {
       fetchNotifications();
     }
   }, [authStore.isAuthenticated, fetchNotifications]);
+
+  // Set current date on mount
+  useEffect(() => {
+    const today = new Date();
+    const options = { day: "numeric", month: "long", year: "numeric" };
+    const formatted = today.toLocaleDateString(undefined, options);
+    setCurrentDate(formatted);
+  }, []);
 
   const handleSignOut = () => {
     authStore.logout();
@@ -47,20 +56,25 @@ const Navbar = () => {
 
   return (
     <nav
-      className={"bg-green-300 text-black dark:text-white dark:bg-green-800 z-50 border-b border-gray-500 px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 shadow-md stickey w-full top-0 left-0"}
+      className={
+        "bg-white text-black dark:text-white dark:bg-gray-800 z-50 border-b border-gray-500 px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16 shadow-md stickey w-full top-0 left-0 "
+      }
     >
       {/* Left Section: Company Branding */}
       <div className="flex items-center space-x-4">
         <div className="text-2xl font-bold text-white">
           <img className="w-24" src={companyLogo} alt="Company Logo" />
         </div>
-        <div className="hidden sm:block text-sm font-light">
+        {/* <div className="hidden sm:block text-sm font-light">
           Empowering Teams, Building Successs
-        </div>
+        </div> */}
       </div>
 
       {/* Right Section */}
       <div className="flex items-center space-x-6">
+        {/* Date in Bold on the Right Side */}
+        <div className="font-bold ">{currentDate}</div>
+
         {/* Notification Icon with Unread Count */}
         <div className="relative">
           <FaBell
@@ -85,6 +99,28 @@ const Navbar = () => {
                 error={error}
                 onClose={() => setShowNotificationDropdown(false)}
               />
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Chat Icon */}
+        <div className="relative">
+          <FaComments
+            className="text-blue-500 w-6 h-6 cursor-pointer"
+            onClick={() => setShowChatDropdown((prev) => !prev)}
+          />
+          {/* Example: If you want a dropdown/popup for chat messages, you can add AnimatePresence here */}
+          <AnimatePresence>
+            {showChatDropdown && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute right-0 mt-2 w-48 bg-gray-700 dark:bg-gray-800 text-white rounded-md shadow-lg z-10 p-4"
+              >
+                {/* Replace with your Chat UI or Chat panel */}
+                <p className="text-sm">Chat Panel (Coming soon)</p>
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
@@ -152,3 +188,5 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
+
