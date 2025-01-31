@@ -1,21 +1,27 @@
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
-import { Login, Dashboard, Page404 } from "../pages";
+
+import { Login, Dashboard, Page404,AddEmployeePage,UpdateEmployeePage ,ViewEmployeePage,SubordinatesEmployessPage,AssignAssetsPage,AllEmployessPage,ManageTicketsPage,RaiseTicketsPage,AllTicketsPage,FilePoshPage,PoshManagePage,FeedPage,EngPermissionDashboardPage,MainPage,
+  ManagePayrollPage,
+  ManageClaimsPage,
+
+
+
+} from "../pages";
 import MainLayout from "./MainLayout";
-import { ToastContainer } from "react-toastify";
-import useSocketStore from "../store/socketStore";
+
+
 import {
   Footer,
   ResetPassword,
   MakeAnnouncement,
   ViewAnnouncements,
   NotificationsPage,
-  Feednew,
-  EngPermissionDashboard,
+
 } from "../components";
 
 const router = createBrowserRouter([
-  <ToastContainer />,
+
   {
     path: "/reset-password/:resetToken",
     element: <ResetPassword />,
@@ -51,20 +57,78 @@ const router = createBrowserRouter([
 
       {
         path: "engagement-feed",
-        element: <Feednew />,
+        element: <FeedPage />,
       },
       {
         path: "engagement-permission-dashboard",
-        element: <EngPermissionDashboard />,
+        element: <EngPermissionDashboardPage />,
       },
       
+      {
+        path: "manage-tickets",
+        element: <ManageTicketsPage />,
+      },
+      {
+        path: "all-tickets",
+        element: <AllTicketsPage />,
+      },
+      {
+        path: "raise-ticket",
+        element: <RaiseTicketsPage />,
+      },
+      {
+        path: "posh-manage",
+        element: <PoshManagePage />,
+      },
+      {
+        path: "File-Posh",
+        element: <FilePoshPage />,
+      },
+      {
+        path: "add-employee",
+        element: <AddEmployeePage />,
+      },
+      {
+        path: "supordinates-employees",
+        element: <SubordinatesEmployessPage />,
+      },
+      {
+        path: "update-employee/:id",
+        element: <UpdateEmployeePage />,
+      },
+      {
+        path: "employees/details/:id",
+        element: <ViewEmployeePage />,
+      },
+      {
+        path: "assign-assets",
+        element: <AssignAssetsPage />,
+      },
+      {
+        path: "all-employess",
+        element: <AllEmployessPage />,
+      },
+      {
+        path: "main",
+        element: <MainPage />,
+      },
+      {
+        path: "manage-payroll",
+        element: <ManagePayrollPage />,
+      },
+      {
+        path: "manage-claims",
+        element: <ManageClaimsPage />,
+      },
+  
+  
     ],
   },
   {
     path: "*",
     element: <Page404 />, // Fallback for undefined routes
   },
-  <Footer />,
+  // <Footer />,
 ]);
 
 export default router;

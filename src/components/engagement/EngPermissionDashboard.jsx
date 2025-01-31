@@ -1,6 +1,6 @@
 
 
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
   Box,
@@ -67,7 +67,7 @@ import ConfirmationDialog from '../common/ConfirmationDialog'; // Adjust the pat
 // Import Socket Context
 import { useSocket } from '../../contexts/SocketContext'; // Adjust the path
 
-const AdminDashboard = () => {
+const EngPermissionDashboard = () => {
   const theme = useTheme();
   const socket = useSocket();
 
@@ -934,4 +934,4 @@ const a11yProps = (index) => {
   };
 };
 
-export default AdminDashboard;
+export default EngPermissionDashboard;

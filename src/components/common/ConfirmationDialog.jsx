@@ -1,7 +1,5 @@
-// src/components/common/ConfirmationDialog.js
 
-import React from 'react';
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import {
   Dialog,
   DialogTitle,
@@ -9,47 +7,67 @@ import {
   DialogContentText,
   DialogActions,
   Button,
-} from '@mui/material';
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
 
-/**
- * ConfirmationDialog Component
- * 
- * Props:
- * - open: Boolean to control the visibility of the dialog.
- * - title: Title text of the dialog.
- * - message: Message text within the dialog.
- * - onConfirm: Function to execute when the user confirms the action.
- * - onCancel: Function to execute when the user cancels/closes the dialog.
- * - confirmText: (Optional) Custom text for the confirm button.
- * - cancelText: (Optional) Custom text for the cancel button.
- */
 const ConfirmationDialog = ({
   open,
   title,
   message,
   onConfirm,
   onCancel,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  confirmText = "Confirm",
+  cancelText = "Cancel",
 }) => {
+  const theme = useTheme();
+
+  // If you want to switch to "fullScreen" behavior on extra-small devices
+  // you can do something like this:
+  const fullScreen = useMediaQuery(theme.breakpoints.down("xs"));
+
   return (
     <Dialog
       open={open}
       onClose={onCancel}
+      fullWidth
+      maxWidth="sm" // up to "sm" (600px) by default
+      // If you want to go fully fullscreen on super-small devices, enable this:
+      // fullScreen={fullScreen}
+      PaperProps={{
+        sx: {
+          // Instead of minWidth: 400, use responsive breakpoints:
+          width: {
+            xs: "90%", // on extra-small screens, occupy 90% of the viewport
+            sm: "600px", // once we hit "sm", allow default
+          },
+          // Provide horizontal margin so it doesn't edge-snug on small screens
+          mx: "auto",
+          // Optional dark-mode style
+
+          backgroundColor: "rgba(30,30,30,0.9)",
+          color: "#fff",
+          // Some vertical padding if you like
+          py: 2,
+        },
+      }}
       aria-labelledby="confirmation-dialog-title"
       aria-describedby="confirmation-dialog-description"
     >
       <DialogTitle id="confirmation-dialog-title">{title}</DialogTitle>
       <DialogContent>
-        <DialogContentText id="confirmation-dialog-description">
+        <DialogContentText
+          id="confirmation-dialog-description"
+          sx={{ color: "inherit" }}
+        >
           {message}
         </DialogContentText>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onCancel} color="secondary">
+      <DialogActions sx={{ p: 2 }}>
+        <Button onClick={onCancel} color="secondary" variant="contained">
           {cancelText}
         </Button>
-        <Button onClick={onConfirm} color="primary" autoFocus>
+        <Button onClick={onConfirm} color="primary" variant="contained" autoFocus>
           {confirmText}
         </Button>
       </DialogActions>
@@ -68,3 +86,4 @@ ConfirmationDialog.propTypes = {
 };
 
 export default ConfirmationDialog;
+
