@@ -72,3 +72,8 @@ html {
 *::after {
   box-sizing: border-box;
 }
+
+
+.modal-body-locked {
+  overflow: hidden !important;
+}

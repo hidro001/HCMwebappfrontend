@@ -27,8 +27,7 @@ import { ChatBubble } from "@mui/icons-material";
 export const menuItems = [
   {
     name: "Dashboard",
-    icon: <FaHome title="Dashboard" />,
-    title: "Dashboard",
+    icon: <FaHome  />,
     color: "text-blue-400",
     iconAnimation: { scale: 1.2 },
     options: [
@@ -52,7 +51,7 @@ export const menuItems = [
 
   {
     name: "Announcements",
-    icon: <FaBullhorn />,
+    icon: <FaBullhorn  />,
     color: "text-yellow-400",
     iconAnimation: { x: 7 },
     options: [
@@ -70,7 +69,7 @@ export const menuItems = [
   },
   {
     name: "Engagement",
-    icon: <TiSocialTwitter />,
+    icon: <TiSocialTwitter  />,
     color: "text-blue-400",
     iconAnimation: { rotate: 360 },
     options: [
@@ -130,7 +129,7 @@ export const menuItems = [
   // },
   {
     name: "Manage Employees",
-    icon: <FaUsers />,
+    icon: <FaUsers  />,
     color: "text-orange-400",
     iconAnimation: { rotate: -360 },
     textAnimation: { x: 10 },
@@ -203,8 +202,8 @@ export const menuItems = [
     ],
   },
   {
-    name: "Task Management Manager",
-    icon: <FaTasks />,
+    name: "Task Management ",
+    icon: <FaTasks  />,
     color: "text-blue-400",
     iconAnimation: { rotate: 360 },
     textAnimation: { x: 10 },
@@ -406,8 +405,8 @@ export const menuItems = [
   //   ],
   // },
   {
-    name: "Payroll & Attendence",
-    icon: <FaMoneyCheckAlt />,
+    name: "Payroll",
+    icon: <FaMoneyCheckAlt  />,
     color: "text-orange-400",
     iconAnimation: { scale: 1.2 },
     textAnimation: { x: 10 },
@@ -699,7 +698,7 @@ export const menuItems = [
   // },
   {
     name: "Attendence",
-    icon: <FaBookReader />,
+    icon: <FaBookReader  />,
     color: "text-orange-400",
     iconAnimation: { scale: 1.2 },
     textAnimation: { x: 10 },
@@ -732,8 +731,8 @@ export const menuItems = [
   },
 
   {
-    name: "Outsourcing & Recruit Management",
-    icon: <FaFileAlt />,
+    name: "Recruit Management",
+    icon: <FaFileAlt  />,
     color: "text-yellow-400",
     iconAnimation: { scale: 1.2 },
     textAnimation: { x: 10 },
@@ -768,18 +767,18 @@ export const menuItems = [
         permission: "viewVacancies",
         textAnimation: { x: 10 },
       },
-      // {
-      //   name: "Employee Referral Tracker",
-      //   link: "/dashboard/my-referral-dashboard",
-      //   permission: "employeeReferralDashboard",
-      //   textAnimation: { x: 10 },
-      // },
       {
         name: "Employee FNF",
         link: "/dashboard/employee-fnf",
         permission: "employeeReferralDashboard",
         textAnimation: { x: 10 },
       },
+      // {
+      //   name: "Employee Referral Tracker",
+      //   link: "/dashboard/my-referral-dashboard",
+      //   permission: "employeeReferralDashboard",
+      //   textAnimation: { x: 10 },
+      // },
     ],
   },
   // {
@@ -862,7 +861,7 @@ export const menuItems = [
   // },
   {
     name: "Company Settings",
-    icon: <FaCog />,
+    icon: <FaCog  />,
     color: "text-red-400",
     iconAnimation: { scale: 1.3 },
     textAnimation: { x: 10 },
@@ -897,7 +896,7 @@ export const menuItems = [
         permission: "PolicySystem",
         textAnimation: { x: 10 },
       },
-            {
+      {
         name: "Update Induction",
         link: "/dashboard/post-induction",
         permission: "postInduction",
