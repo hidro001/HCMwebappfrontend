@@ -77,14 +77,44 @@ const useVacancyStore = create((set) => ({
 
     // 2) Create a Referral (POST /referrals)
   // If you want to handle referral submissions in the same store:
+  // createReferral: async (payload) => {
+  //   try {
+  //     // payload should be FormData if you are uploading a resume
+  //     // or standard JSON if not uploading files
+  //     set({ loading: true, error: null });
+  //     const response = await axiosInstance.post('job-referral/referrals', payload
+
+        
+  //     );
+  //     set({ loading: false });
+  //     return response.data; 
+  //   } catch (err) {
+  //     console.error('Error creating referral:', err);
+  //     set({
+  //       error: err?.response?.data?.message || 'Error creating referral',
+  //       loading: false,
+  //     });
+  //     throw err;
+  //   }
+  // },
   createReferral: async (payload) => {
     try {
       // payload should be FormData if you are uploading a resume
       // or standard JSON if not uploading files
       set({ loading: true, error: null });
-      const response = await axiosInstance.post('job-referral/referrals', payload);
+  
+      const response = await axiosInstance.post(
+        'job-referral/referrals',
+        payload,
+        {
+          headers: {
+            'Content-Type': payload instanceof FormData ? 'multipart/form-data' : 'application/json',
+          },
+        }
+      );
+  
       set({ loading: false });
-      return response.data; 
+      return response.data;
     } catch (err) {
       console.error('Error creating referral:', err);
       set({
@@ -94,6 +124,8 @@ const useVacancyStore = create((set) => ({
       throw err;
     }
   },
+  
+
 }));
 
 export default useVacancyStore;

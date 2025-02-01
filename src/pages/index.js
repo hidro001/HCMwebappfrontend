@@ -16,7 +16,7 @@ import FeedPage from "./Engagement Management/FeedPage";
 import EngPermissionDashboardPage from "./Engagement Management/EngPermissionDashboardPage";
 import EmployessMainPage from "./Employeee Management/EmployessMainPage";
 import AttendanceDashboardPage from "./attendence management/AttendanceDashboardPage";
-import SubordinatesAttendancePage from "./attendence management/subordinatesAttendancePage";
+import SubordinatesAttendancePage from "./attendence management/SubordinatesAttendancePage";
 import EmployeeFullAttendancePage from "./attendence management/EmployeeFullAttendancePage";
 import OwmFullAttendancePage from "./attendence management/OwmFullAttendancePage";
 import AllEmployeeAttendancePage from "./attendence management/AllEmployeeAttendancePage";
@@ -29,7 +29,6 @@ import EmployeeFnfPage from "./recruit management/EmployeeFnfPage";
 import CompanyInfoPage from "./company setting/CompanyInfoPage";
 import CompanySettingPage from "./company setting/CompanySettingPage";
 
-
 import MainPage from "./payroll/MainPage";
 import ManagePayrollPage from "./payroll/ManagePayrollPage";
 import ManageClaimsPage from "./payroll/ManageClaimsPage";
@@ -37,6 +36,11 @@ import ManageClaimsPage from "./payroll/ManageClaimsPage";
 import AssignedTaskPage from "./task/AssignedTaskPage";
 import DailyTaskPage from "./task/DailyTaskPage";
 import TaskMainPage from "./task/TaskMainPage";
+
+import AddHierarchyPage from "./company setting/AddHierarchyPage";
+import CompanyPoliciesPage from "./company setting/CompanyPoliciesPage";
+import CompanyInductionPage from "./company setting/CompanyInductionPage";
+import BreakSettingsPage from "./company setting/BreakSettingsPage";
 
 export {
   Login,
@@ -72,8 +76,11 @@ export {
   EmployeeFnfPage,
   CompanyInfoPage,
   AssignedTaskPage,
-DailyTaskPage,
-TaskMainPage,
-  CompanySettingPage
-
+  DailyTaskPage,
+  TaskMainPage,
+  CompanySettingPage,
+  AddHierarchyPage,
+  CompanyPoliciesPage,
+  CompanyInductionPage,
+  BreakSettingsPage,
 };

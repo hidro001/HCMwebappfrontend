@@ -1,9 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 
-
-
-
 import {
   Login,
   Dashboard,
@@ -38,15 +35,16 @@ import {
   MainPage,
   ManagePayrollPage,
   ManageClaimsPage,
-  // 
+  //
   TaskMainPage,
   DailyTaskPage,
   AssignedTaskPage,
-
-
+  AddHierarchyPage,
+  CompanyPoliciesPage,
+  CompanyInductionPage,
+  BreakSettingsPage,
 } from "../pages";
 import MainLayout from "./MainLayout";
-
 
 import {
   Footer,
@@ -55,7 +53,6 @@ import {
   ViewAnnouncements,
   NotificationsPage,
 } from "../components";
-
 
 const router = createBrowserRouter([
   {
@@ -99,7 +96,7 @@ const router = createBrowserRouter([
         path: "engagement-permission-dashboard",
         element: <EngPermissionDashboardPage />,
       },
-      
+
       {
         path: "manage-tickets",
         element: <ManageTicketsPage />,
@@ -158,10 +155,10 @@ const router = createBrowserRouter([
       },
       {
         path: "manage-claims",
-        element: <ManageClaimsPage/>,
+        element: <ManageClaimsPage />,
       },
-  
-  {
+
+      {
         path: "attendance-dashboard",
         element: <AttendanceDashboardPage />,
       },
@@ -228,8 +225,22 @@ const router = createBrowserRouter([
         path: "company-settings",
         element: <CompanySettingPage />,
       },
- 
-
+      {
+        path: "add-hierarchy",
+        element: <AddHierarchyPage />,
+      },
+      {
+        path: "update-policies",
+        element: <CompanyPoliciesPage />,
+      },
+      {
+        path: "post-induction",
+        element: <CompanyInductionPage />,
+      },
+      {
+        path: "break-settings",
+        element: <BreakSettingsPage />,
+      },
     ],
   },
   {
