@@ -1,18 +1,10 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
 import useIssuesStore from "../../../store/useIssuesStore";
+import BaseModal from "../../common/BaseModal";
 
-// 1) Import your BaseModal
-import BaseModal from "../../common/BaseModal"; // adjust the path if needed
-
-export default function CommentModal({
-  isOpen,
-  onClose,
-  ticket,
-  onAddComment,
-}) {
+export default function CommentModal({ isOpen, onClose, ticket, onAddComment }) {
   const [newComment, setNewComment] = useState("");
   const { comments, isCommentLoading } = useIssuesStore();
 
@@ -25,12 +17,7 @@ export default function CommentModal({
   };
 
   return (
-    // 2) Wrap your content in <BaseModal>
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      {/* 
-        3) Keep your "white box" design in a <motion.div> 
-        for the fade/slide animation 
-      */}
       <motion.div
         className="relative z-10 w-full max-w-md bg-white dark:bg-gray-800 
                    border border-gray-200 dark:border-gray-700 
@@ -51,7 +38,6 @@ export default function CommentModal({
             <FaTimes />
           </button>
         </div>
-
         {isCommentLoading ? (
           <p>Loading comments...</p>
         ) : (
@@ -83,7 +69,6 @@ export default function CommentModal({
             ))}
           </div>
         )}
-
         <div className="mt-4">
           <textarea
             className="w-full border border-gray-200 dark:border-gray-600 
@@ -109,4 +94,3 @@ export default function CommentModal({
     </BaseModal>
   );
 }
-

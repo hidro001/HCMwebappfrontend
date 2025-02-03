@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useForm, useFieldArray } from 'react-hook-form';
-import { motion } from 'framer-motion';
-import { toast } from 'react-hot-toast';
-import { FaTrash } from 'react-icons/fa';
-import useCompanyStore from '../../store/companyStore';
-import FullScreenLoader from '../common/FullScreenLoader';
-import ConfirmationDialog from '../common/ConfirmationDialog';
+import React, { useState, useEffect } from "react";
+import { useForm, useFieldArray } from "react-hook-form";
+import { motion } from "framer-motion";
+import { toast } from "react-hot-toast";
+import { FaTrash } from "react-icons/fa";
+import useCompanyStore from "../../store/companyStore";
+import FullScreenLoader from "../common/FullScreenLoader";
+import ConfirmationDialog from "../common/ConfirmationDialog";
 
 export default function CompanyInfo() {
-  // Destructure the zustand store methods and state.
   const {
     companies,
     loading,
@@ -21,12 +20,10 @@ export default function CompanyInfo() {
     clearEditingCompany,
   } = useCompanyStore();
 
-  // Local state for logo preview and confirmation dialog.
   const [logoPreview, setLogoPreview] = useState(null);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [companyToDelete, setCompanyToDelete] = useState(null);
 
-  // Full currency options as provided.
   const currencyOptions = [
     { label: "USD - United States Dollar", value: "USD" },
     { label: "EUR - Euro", value: "EUR" },
@@ -60,10 +57,8 @@ export default function CompanyInfo() {
     { label: "EGP - Egyptian Pound", value: "EGP" },
     { label: "PKR - Pakistani Rupee", value: "PKR" },
     { label: "VND - Vietnamese Dong", value: "VND" },
-];
+  ];
 
-
-  // Setup react-hook-form.
   const {
     register,
     handleSubmit,
@@ -72,51 +67,48 @@ export default function CompanyInfo() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      companyName: '',
+      companyName: "",
       companyLogo: null,
-      contactNumber: '',
-      currency: '',
-      email: '',
-      offices: [{ longitude: '', latitude: '', address: '' }],
+      contactNumber: "",
+      currency: "",
+      email: "",
+      offices: [{ longitude: "", latitude: "", address: "" }],
     },
   });
 
-  const { fields, append, remove } = useFieldArray({ control, name: 'offices' });
+  const { fields, append, remove } = useFieldArray({ control, name: "offices" });
 
-  // Fetch companies on mount.
   useEffect(() => {
     fetchCompanies();
   }, [fetchCompanies]);
 
-  // When editing, update the form values.
   useEffect(() => {
     if (editingCompany) {
       reset({
-        companyName: editingCompany.name || '',
-        contactNumber: editingCompany.contact || '',
-        email: editingCompany.email || '',
-        currency: editingCompany.currency || '',
+        companyName: editingCompany.name || "",
+        contactNumber: editingCompany.contact || "",
+        email: editingCompany.email || "",
+        currency: editingCompany.currency || "",
         offices:
           editingCompany.addresses && editingCompany.addresses.length > 0
             ? editingCompany.addresses
-            : [{ longitude: '', latitude: '', address: '' }],
+            : [{ longitude: "", latitude: "", address: "" }],
         companyLogo: null,
       });
       setLogoPreview(editingCompany.logo || null);
     } else {
       reset({
-        companyName: '',
-        contactNumber: '',
-        email: '',
-        currency: '',
-        offices: [{ longitude: '', latitude: '', address: '' }],
+        companyName: "",
+        contactNumber: "",
+        email: "",
+        currency: "",
+        offices: [{ longitude: "", latitude: "", address: "" }],
         companyLogo: null,
       });
       setLogoPreview(null);
     }
   }, [editingCompany, reset]);
 
-  // Handle logo file change.
   const handleLogoChange = (e) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -126,14 +118,12 @@ export default function CompanyInfo() {
     }
   };
 
-  // Form submit handler.
   const onSubmit = async (data) => {
-    // Build a FormData object for file upload.
     const formData = new FormData();
-    formData.append('name', data.companyName);
-    formData.append('contact', data.contactNumber);
-    formData.append('email', data.email);
-    formData.append('currency', data.currency);
+    formData.append("name", data.companyName);
+    formData.append("contact", data.contactNumber);
+    formData.append("email", data.email);
+    formData.append("currency", data.currency);
 
     data.offices.forEach((office, index) => {
       formData.append(`addresses[${index}][address]`, office.address.trim());
@@ -142,10 +132,9 @@ export default function CompanyInfo() {
     });
 
     if (data.companyLogo && data.companyLogo[0]) {
-      formData.append('logo', data.companyLogo[0]);
+      formData.append("logo", data.companyLogo[0]);
     }
 
-    // Update if editing, else create new.
     if (editingCompany && (editingCompany._id || editingCompany.id)) {
       const id = editingCompany._id || editingCompany.id;
       await updateCompany(id, formData);
@@ -153,31 +142,27 @@ export default function CompanyInfo() {
       await saveCompany(formData);
     }
 
-    // Reset the form.
     reset({
-      companyName: '',
-      contactNumber: '',
-      email: '',
-      currency: '',
-      offices: [{ longitude: '', latitude: '', address: '' }],
+      companyName: "",
+      contactNumber: "",
+      email: "",
+      currency: "",
+      offices: [{ longitude: "", latitude: "", address: "" }],
       companyLogo: null,
     });
     setLogoPreview(null);
     clearEditingCompany();
   };
 
-  // Edit company handler.
   const handleEditCompany = (company) => {
     setEditingCompany(company);
   };
 
-  // Delete button click – open the confirmation dialog.
   const handleDeleteClick = (company) => {
     setCompanyToDelete(company);
     setOpenConfirm(true);
   };
 
-  // Confirm deletion.
   const handleConfirmDelete = async () => {
     if (companyToDelete && (companyToDelete._id || companyToDelete.id)) {
       const id = companyToDelete._id || companyToDelete.id;
@@ -187,20 +172,18 @@ export default function CompanyInfo() {
     setCompanyToDelete(null);
   };
 
-  // Cancel deletion.
   const handleCancelDelete = () => {
     setOpenConfirm(false);
     setCompanyToDelete(null);
   };
 
-  // Cancel editing.
   const handleCancelEdit = () => {
     reset({
-      companyName: '',
-      contactNumber: '',
-      email: '',
-      currency: '',
-      offices: [{ longitude: '', latitude: '', address: '' }],
+      companyName: "",
+      contactNumber: "",
+      email: "",
+      currency: "",
+      offices: [{ longitude: "", latitude: "", address: "" }],
       companyLogo: null,
     });
     setLogoPreview(null);
@@ -210,7 +193,6 @@ export default function CompanyInfo() {
   return (
     <>
       {loading && <FullScreenLoader />}
-
       <div className="p-4 md:p-6 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
         <motion.div
           initial={{ opacity: 0, y: 10 }}
@@ -219,13 +201,10 @@ export default function CompanyInfo() {
           className="mx-auto w-full bg-white dark:bg-gray-800 rounded-md shadow p-6"
         >
           <h2 className="text-2xl font-semibold mb-6">
-            {editingCompany ? 'Edit Company Information' : 'Add Company Information'}
+            {editingCompany ? "Edit Company Information" : "Add Company Information"}
           </h2>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* LEFT: Form */}
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:col-span-2">
-              {/* Row 1: Company Name & Logo */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="companyName" className="block font-medium mb-1">
@@ -234,7 +213,7 @@ export default function CompanyInfo() {
                   <input
                     id="companyName"
                     type="text"
-                    {...register('companyName', { required: true })}
+                    {...register("companyName", { required: true })}
                     className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-800"
                     placeholder="Enter Company Name"
                   />
@@ -242,7 +221,6 @@ export default function CompanyInfo() {
                     <p className="text-red-500 text-sm mt-1">Company Name is required</p>
                   )}
                 </div>
-
                 <div>
                   <label htmlFor="companyLogo" className="block font-medium mb-1">
                     Company Logo
@@ -251,7 +229,7 @@ export default function CompanyInfo() {
                     id="companyLogo"
                     type="file"
                     accept="image/*"
-                    {...register('companyLogo')}
+                    {...register("companyLogo")}
                     onChange={handleLogoChange}
                     className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-800"
                   />
@@ -262,8 +240,6 @@ export default function CompanyInfo() {
                   )}
                 </div>
               </div>
-
-              {/* Row 2: Contact Number & Currency */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="contactNumber" className="block font-medium mb-1">
@@ -272,7 +248,7 @@ export default function CompanyInfo() {
                   <input
                     id="contactNumber"
                     type="tel"
-                    {...register('contactNumber', { required: true })}
+                    {...register("contactNumber", { required: true })}
                     className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-800"
                     placeholder="Enter Contact Number"
                   />
@@ -280,14 +256,13 @@ export default function CompanyInfo() {
                     <p className="text-red-500 text-sm mt-1">Contact Number is required</p>
                   )}
                 </div>
-
                 <div>
                   <label htmlFor="currency" className="block font-medium mb-1">
                     Currency <span className="text-red-500">*</span>
                   </label>
                   <select
                     id="currency"
-                    {...register('currency', { required: true })}
+                    {...register("currency", { required: true })}
                     className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-800"
                   >
                     <option value="">Select Currency</option>
@@ -302,8 +277,6 @@ export default function CompanyInfo() {
                   )}
                 </div>
               </div>
-
-              {/* Row 3: Email */}
               <div>
                 <label htmlFor="email" className="block font-medium mb-1">
                   Email <span className="text-red-500">*</span>
@@ -311,7 +284,7 @@ export default function CompanyInfo() {
                 <input
                   id="email"
                   type="email"
-                  {...register('email', { required: true })}
+                  {...register("email", { required: true })}
                   className="w-full border border-gray-300 dark:border-gray-600 rounded-md p-2 bg-white dark:bg-gray-800"
                   placeholder="Enter Email Address"
                 />
@@ -319,8 +292,6 @@ export default function CompanyInfo() {
                   <p className="text-red-500 text-sm mt-1">Email is required</p>
                 )}
               </div>
-
-              {/* Dynamic Office Addresses */}
               <div className="mt-4">
                 <h3 className="text-lg font-medium mb-2">Office Addresses</h3>
                 {fields.map((item, index) => (
@@ -376,14 +347,12 @@ export default function CompanyInfo() {
                 ))}
                 <button
                   type="button"
-                  onClick={() => append({ longitude: '', latitude: '', address: '' })}
+                  onClick={() => append({ longitude: "", latitude: "", address: "" })}
                   className="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors text-sm"
                 >
                   Add Office Address
                 </button>
               </div>
-
-              {/* Form Actions */}
               <div className="flex space-x-4 mt-6">
                 <button
                   type="button"
@@ -396,12 +365,10 @@ export default function CompanyInfo() {
                   type="submit"
                   className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors"
                 >
-                  {editingCompany ? 'Update' : 'Save'}
+                  {editingCompany ? "Update" : "Save"}
                 </button>
               </div>
             </form>
-
-            {/* RIGHT: Company Cards */}
             <div className="space-y-6 md:col-span-1 w-full">
               {companies.map((company, idx) => (
                 <div
@@ -409,7 +376,7 @@ export default function CompanyInfo() {
                   className="shadow-lg p-4 rounded-md bg-white dark:bg-gray-800"
                 >
                   <h3 className="font-semibold text-xl mb-4 text-center">
-                    {company.name || 'Unnamed Company'} (Branch - {idx + 1})
+                    {company.name || "Unnamed Company"} (Branch - {idx + 1})
                   </h3>
                   <div className="w-full flex items-center justify-center mb-4">
                     {company.logo ? (
@@ -429,30 +396,30 @@ export default function CompanyInfo() {
                   <div className="text-sm space-y-2">
                     <p className="flex flex-col lg:flex-row lg:justify-between">
                       <strong className="uppercase mr-1">Contact:</strong>
-                      <span>{company.contact || '—'}</span>
+                      <span>{company.contact || "—"}</span>
                     </p>
                     <p className="flex flex-col lg:flex-row lg:justify-between">
                       <strong className="uppercase mr-1">Email:</strong>
-                      <span>{company.email || '—'}</span>
+                      <span>{company.email || "—"}</span>
                     </p>
                     <p className="flex flex-col lg:flex-row lg:justify-between">
                       <strong className="uppercase mr-1">Currency:</strong>
-                      <span>{company.currency || '—'}</span>
+                      <span>{company.currency || "—"}</span>
                     </p>
                     {company.addresses &&
                       company.addresses.map((office, i) => (
                         <div key={i} className="pt-3">
                           <p className="flex flex-col lg:flex-row lg:justify-between">
                             <strong className="uppercase mr-1">Address #{i + 1}:</strong>
-                            <span>{office.address || 'No address'}</span>
+                            <span>{office.address || "No address"}</span>
                           </p>
                           <p className="flex flex-col lg:flex-row lg:justify-between">
                             <strong className="uppercase mr-1">Latitude:</strong>
-                            <span>{office.latitude || '—'}</span>
+                            <span>{office.latitude || "—"}</span>
                           </p>
                           <p className="flex flex-col lg:flex-row lg:justify-between">
                             <strong className="uppercase mr-1">Longitude:</strong>
-                            <span>{office.longitude || '—'}</span>
+                            <span>{office.longitude || "—"}</span>
                           </p>
                         </div>
                       ))}
@@ -477,7 +444,6 @@ export default function CompanyInfo() {
           </div>
         </motion.div>
       </div>
-
       <ConfirmationDialog
         open={openConfirm}
         title="Confirm Deletion"
@@ -490,4 +456,3 @@ export default function CompanyInfo() {
     </>
   );
 }
-

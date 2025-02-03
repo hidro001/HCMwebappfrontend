@@ -2,9 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaTimes, FaPaperclip, FaPaperPlane } from "react-icons/fa";
 import { usePoshStore } from "../../../../store/poshStore";
-
-// 1) Import your BaseModal
-import BaseModal from "../../../common/BaseModal"; // adjust path if necessary
+import BaseModal from "../../../common/BaseModal";
 
 export default function IssueDetailsModal({ isOpen, onClose, issue }) {
   const [commentText, setCommentText] = useState("");
@@ -20,7 +18,6 @@ export default function IssueDetailsModal({ isOpen, onClose, issue }) {
     }
   }, [isOpen, issue?.id, fetchPoshActDetails]);
 
-  // Merge the store item with the passed `issue` data
   const currentItem = poshActs.find((act) => act.id === issue?.id) || issue;
 
   const handleSendComment = async () => {
@@ -31,41 +28,34 @@ export default function IssueDetailsModal({ isOpen, onClose, issue }) {
     } catch {}
   };
 
-  // If modal is closed or we have no issue to show, don't render anything
   if (!isOpen || !issue) return null;
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      {/* 2) Keep your two‐column "glass" container in a motion.div */}
       <motion.div
-        className="relative w-full max-w-5xl h-[80vh] md:h-[70vh] lg:h-[75vh] 
-                   flex pointer-events-none"
+        className="relative w-full max-w-5xl h-[80vh] md:h-[70vh] lg:h-[75vh] flex pointer-events-none"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
       >
-        {/* The "glass" layout */}
         <div
-          className="
-            pointer-events-auto 
-            flex flex-1 
-            bg-white/5 dark:bg-gray-800 
-            backdrop-blur-md 
-            border border-gray-300 dark:border-gray-700
-            text-gray-900 dark:text-gray-100
-            rounded-lg overflow-hidden shadow-lg
-          "
+          className="pointer-events-auto flex flex-1 bg-white/5 dark:bg-gray-800 
+            backdrop-blur-md border border-gray-300 dark:border-gray-700
+            text-gray-900 dark:text-gray-100 rounded-lg overflow-hidden shadow-lg"
         >
-          {/* Left Column - Issue Details */}
           <div className="flex flex-col w-1/2 p-4 border-r border-white/20 dark:border-white/10">
             <h2 className="text-xl font-bold mb-4">Issue Details</h2>
             <div className="mb-4">
               <p className="font-semibold">Reporter</p>
-              <p>{currentItem?.reporterName || "N/A"} ({currentItem?.reporterId})</p>
+              <p>
+                {currentItem?.reporterName || "N/A"} ({currentItem?.reporterId})
+              </p>
             </div>
             <div className="mb-4">
               <p className="font-semibold">Accused</p>
-              <p>{currentItem?.accusedName || "N/A"} ({currentItem?.accusedId})</p>
+              <p>
+                {currentItem?.accusedName || "N/A"} ({currentItem?.accusedId})
+              </p>
             </div>
             <div className="mb-4">
               <p className="font-semibold">Incident Date</p>
@@ -108,8 +98,6 @@ export default function IssueDetailsModal({ isOpen, onClose, issue }) {
               </p>
             </div>
           </div>
-
-          {/* Right Column - Comments */}
           <div className="flex flex-col w-1/2 p-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold">Comment</h2>
@@ -161,4 +149,3 @@ export default function IssueDetailsModal({ isOpen, onClose, issue }) {
     </BaseModal>
   );
 }
-

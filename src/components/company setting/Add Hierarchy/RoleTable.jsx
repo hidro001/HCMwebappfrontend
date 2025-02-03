@@ -1,68 +1,49 @@
 import React, { useEffect, useState } from "react";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { toast } from "react-hot-toast";
-
 import SkeletonRows from "./SkeletonRows";
 import FullScreenLoader from "../../common/FullScreenLoader";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
-
 import { useHierarchyStore } from "../../../store/useHierarchyStore";
 import RoleAddModal from "./model/RoleAddModal";
 import RolePermissionModal from "./model/RolePermissionModal";
 
 export default function RoleTable({ isLoading }) {
-  // ---------- Zustand Store ----------
   const { roles, loading, error, fetchRoles, addRole, updateRole, deleteRole } =
     useHierarchyStore();
 
-  // ---------- Local State (Add Role Modal) ----------
   const [showAddModal, setShowAddModal] = useState(false);
   const [addRoleName, setAddRoleName] = useState("");
   const [addSelectedPerms, setAddSelectedPerms] = useState([]);
-
-  // ---------- Local State (View/Edit Modal) ----------
   const [showPermissionModal, setShowPermissionModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editRoleId, setEditRoleId] = useState(null);
   const [editRoleName, setEditRoleName] = useState("");
   const [editPermissions, setEditPermissions] = useState([]);
-
-  // ---------- Local State (Delete Confirmation) ----------
-  const [deleteData, setDeleteData] = useState({
-    open: false,
-    id: null,
-    name: "",
-  });
-
-  // ---------- Action Loading State ----------
+  const [deleteData, setDeleteData] = useState({ open: false, id: null, name: "" });
   const [actionLoading, setActionLoading] = useState(false);
 
-  // ---------- Fetch roles on mount ----------
   useEffect(() => {
     fetchRoles();
   }, [fetchRoles]);
 
-  // =========== ADD ROLE ===========
   function handleOpenAddModal() {
     setShowAddModal(true);
     setAddRoleName("");
     setAddSelectedPerms([]);
   }
+
   function handleCloseAddModal() {
     setShowAddModal(false);
   }
 
-  // Toggle permission in Add Role modal
   function handleToggleAddPerm(permObj) {
-    // permObj = { name: "Manager Dashboard", permission: "managerDashboard" }
     const exists = addSelectedPerms.find((p) => p.value === permObj.permission);
     if (exists) {
-      // remove
       setAddSelectedPerms(
         addSelectedPerms.filter((p) => p.value !== permObj.permission)
       );
     } else {
-      // add
       setAddSelectedPerms([
         ...addSelectedPerms,
         { label: permObj.name, value: permObj.permission },
@@ -70,7 +51,6 @@ export default function RoleTable({ isLoading }) {
     }
   }
 
-  // Submit Add Role
   async function handleAddRoleSubmit() {
     if (!addRoleName.trim()) {
       toast.error("Role name is required");
@@ -88,12 +68,10 @@ export default function RoleTable({ isLoading }) {
     }
   }
 
-  // =========== VIEW/EDIT ROLE PERMISSIONS ===========
   function handleOpenPermissionModal(role, editMode) {
     setIsEditing(editMode);
     setEditRoleId(role._id);
     setEditRoleName(role.role_name);
-    // Convert role.permission array to shape: [{ label, value }, ...]
     const mapped = (role.permission || []).map((p) => ({
       label: p.name,
       value: p.permission,
@@ -101,6 +79,7 @@ export default function RoleTable({ isLoading }) {
     setEditPermissions(mapped);
     setShowPermissionModal(true);
   }
+
   function handleClosePermissionModal() {
     setShowPermissionModal(false);
     setIsEditing(false);
@@ -109,16 +88,13 @@ export default function RoleTable({ isLoading }) {
     setEditPermissions([]);
   }
 
-  // Toggle permission in the "edit" modal
   function handleToggleEditPerm(permObj) {
     const exists = editPermissions.find((p) => p.value === permObj.permission);
     if (exists) {
-      // remove
       setEditPermissions(
         editPermissions.filter((p) => p.value !== permObj.permission)
       );
     } else {
-      // add
       setEditPermissions([
         ...editPermissions,
         { label: permObj.name, value: permObj.permission },
@@ -126,7 +102,6 @@ export default function RoleTable({ isLoading }) {
     }
   }
 
-  // Save changes from the "edit" modal
   async function handleSaveEditedRole() {
     if (!editRoleName.trim()) {
       toast.error("Role name is required");
@@ -144,14 +119,10 @@ export default function RoleTable({ isLoading }) {
     }
   }
 
-  // =========== DELETE ROLE ===========
   function handleConfirmDelete(role) {
-    setDeleteData({
-      open: true,
-      id: role._id,
-      name: role.role_name,
-    });
+    setDeleteData({ open: true, id: role._id, name: role.role_name });
   }
+
   async function onDeleteConfirm() {
     setActionLoading(true);
     try {
@@ -164,15 +135,14 @@ export default function RoleTable({ isLoading }) {
       setDeleteData({ open: false, id: null, name: "" });
     }
   }
+
   function onDeleteCancel() {
     setDeleteData({ open: false, id: null, name: "" });
   }
 
   return (
     <div>
-      {/* Show FullScreenLoader during user actions */}
       {actionLoading && <FullScreenLoader />}
-
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Manage Roles</h2>
         <button
@@ -182,7 +152,6 @@ export default function RoleTable({ isLoading }) {
           + Add Role
         </button>
       </div>
-
       <div className="overflow-x-auto">
         <table className="min-w-full text-left border-collapse">
           <thead>
@@ -204,7 +173,6 @@ export default function RoleTable({ isLoading }) {
               </tr>
             ) : (
               roles.map((role, idx) => {
-                // Display first two permissions; if more, show a "See all" button
                 const firstTwo = role.permission.slice(0, 2);
                 const hasMore = role.permission.length > 2;
                 return (
@@ -264,8 +232,6 @@ export default function RoleTable({ isLoading }) {
           </tbody>
         </table>
       </div>
-
-      {/* Separated Add Role Modal */}
       <RoleAddModal
         show={showAddModal}
         onClose={handleCloseAddModal}
@@ -275,8 +241,6 @@ export default function RoleTable({ isLoading }) {
         onTogglePerm={handleToggleAddPerm}
         onSubmit={handleAddRoleSubmit}
       />
-
-      {/* Separated View/Edit Role Modal */}
       <RolePermissionModal
         show={showPermissionModal}
         onClose={handleClosePermissionModal}
@@ -287,8 +251,6 @@ export default function RoleTable({ isLoading }) {
         onTogglePerm={handleToggleEditPerm}
         onSave={handleSaveEditedRole}
       />
-
-      {/* Delete Confirmation Dialog */}
       <ConfirmationDialog
         open={deleteData.open}
         title="Delete Role"

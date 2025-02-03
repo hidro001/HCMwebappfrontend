@@ -1,24 +1,15 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
-
-// 1) Import your BaseModal
-import BaseModal from "../../common/BaseModal"; // Adjust path as needed
+import BaseModal from "../../common/BaseModal";
 
 export default function TicketViewModal({ isOpen, onClose, ticket }) {
   const [showAttachments, setShowAttachments] = useState(false);
 
-  // If the modal is closed or no ticket provided, render nothing
   if (!isOpen || !ticket) return null;
 
   return (
-    // 2) Wrap your content in <BaseModal>
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      {/* 
-        3) Keep your "white box" design in a motion.div 
-        for the entrance/exit animations 
-      */}
       <motion.div
         className="relative z-50 w-full max-w-2xl bg-white dark:bg-gray-800 
                    border border-gray-200 dark:border-gray-700
@@ -28,7 +19,6 @@ export default function TicketViewModal({ isOpen, onClose, ticket }) {
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 50, opacity: 0 }}
       >
-        {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-extrabold text-gray-800 dark:text-gray-100">
             Issue Details
@@ -41,8 +31,6 @@ export default function TicketViewModal({ isOpen, onClose, ticket }) {
             <FaTimes />
           </button>
         </div>
-
-        {/* Info Section */}
         <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden text-sm">
           <div className="grid grid-cols-3 gap-4 p-3 bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
             <div className="font-semibold text-gray-700 dark:text-gray-200">
@@ -52,7 +40,6 @@ export default function TicketViewModal({ isOpen, onClose, ticket }) {
               {ticket.issueTitle}
             </div>
           </div>
-
           <div className="grid grid-cols-3 gap-4 p-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
             <div className="font-semibold text-gray-700 dark:text-gray-200">
               Description:
@@ -61,7 +48,6 @@ export default function TicketViewModal({ isOpen, onClose, ticket }) {
               {ticket.issueDescription}
             </div>
           </div>
-
           <div className="grid grid-cols-3 gap-4 p-3 bg-gray-100 dark:bg-gray-700">
             <div className="font-semibold text-gray-700 dark:text-gray-200">
               User Details:
@@ -89,8 +75,6 @@ export default function TicketViewModal({ isOpen, onClose, ticket }) {
             </div>
           </div>
         </div>
-
-        {/* Toggle attachments */}
         <div className="text-center mt-5">
           <button
             onClick={() => setShowAttachments((prev) => !prev)}
@@ -100,7 +84,6 @@ export default function TicketViewModal({ isOpen, onClose, ticket }) {
             {showAttachments ? "Hide Attachments" : "Show Attachments"}
           </button>
         </div>
-
         {showAttachments && (
           <div className="mt-5 space-y-4">
             {ticket.file ? (
@@ -116,7 +99,6 @@ export default function TicketViewModal({ isOpen, onClose, ticket }) {
             ) : (
               <p>No primary attachment found</p>
             )}
-
             {ticket.additionalFiles &&
               ticket.additionalFiles.length > 0 &&
               ticket.additionalFiles.map((af, idx) => (

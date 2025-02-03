@@ -1,14 +1,10 @@
-
-
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaTimes } from "react-icons/fa";
 import useDepartmentStore from "../../../store/departmentStore";
-
-// Import your BaseModal
-import BaseModal from "../../common/BaseModal"; // Adjust path as needed
+import BaseModal from "../../common/BaseModal";
 
 export default function TicketFormModal({
   isOpen,
@@ -73,15 +69,18 @@ export default function TicketFormModal({
     e.stopPropagation();
     setIsDragging(true);
   };
+
   const handleDragLeave = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
   };
+
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
   };
+
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -116,12 +115,10 @@ export default function TicketFormModal({
     onSubmit(formData);
   };
 
-  // If closed, render nothing
   if (!isOpen) return null;
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      {/* Keep your "white box" style in a motion.div to animate the dialog */}
       <motion.div
         className="relative bg-white dark:bg-gray-800 border border-gray-200 
                    dark:border-gray-700 rounded-md w-full max-w-lg mx-4 my-8 
@@ -130,7 +127,6 @@ export default function TicketFormModal({
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 50, opacity: 0 }}
       >
-        {/* Header */}
         <div className="bg-blue-900 text-white p-4 rounded-t-md flex items-center justify-between">
           <h2 className="text-lg font-semibold">
             {mode === "edit" ? "Edit Ticket" : "Raise Ticket"}
@@ -139,15 +135,12 @@ export default function TicketFormModal({
             <FaTimes />
           </button>
         </div>
-
-        {/* Form content */}
         <div className="p-4 space-y-4">
           <p className="text-sm text-gray-600 dark:text-gray-300">
             {mode === "edit"
               ? "Update the ticket details."
               : "Fill the form to raise a new ticket."}
           </p>
-
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label className="block text-sm font-medium mb-1">Title *</label>
@@ -162,7 +155,6 @@ export default function TicketFormModal({
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium mb-1">
                 Department
@@ -182,7 +174,6 @@ export default function TicketFormModal({
                 ))}
               </select>
             </div>
-
             <div>
               <label className="block text-sm font-medium mb-1">Emp ID</label>
               <input
@@ -195,7 +186,6 @@ export default function TicketFormModal({
                 onChange={(e) => setEmpId(e.target.value)}
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium mb-1">Date</label>
               <DatePicker
@@ -208,7 +198,6 @@ export default function TicketFormModal({
                            dark:text-gray-100 focus:outline-none"
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium mb-1">Priority</label>
               <select
@@ -223,7 +212,6 @@ export default function TicketFormModal({
                 <option value="Low">Low</option>
               </select>
             </div>
-
             <div>
               <label className="block text-sm font-medium mb-1">Status</label>
               <select
@@ -238,7 +226,6 @@ export default function TicketFormModal({
                 <option value="Resolved">Resolved</option>
               </select>
             </div>
-
             <div>
               <label className="block text-sm font-medium mb-1">
                 Description
@@ -253,8 +240,6 @@ export default function TicketFormModal({
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
-
-            {/* Attachment + Drag-and-Drop */}
             <div>
               <label className="block text-sm font-medium mb-1">
                 Attachment
@@ -297,8 +282,6 @@ export default function TicketFormModal({
                 </div>
               )}
             </div>
-
-            {/* Buttons */}
             <div className="flex justify-end gap-2 mt-4">
               <button
                 type="button"

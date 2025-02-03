@@ -1,11 +1,8 @@
-
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { FaTimes, FaPaperclip, FaPaperPlane } from "react-icons/fa";
 import useIssuesStore from "../../../store/useIssuesStore";
-
-// 1) Import your BaseModal
-import BaseModal from "../../common/BaseModal"; // Adjust path if needed
+import BaseModal from "../../common/BaseModal";
 
 export default function TicketDetailsModal({
   isOpen,
@@ -16,7 +13,6 @@ export default function TicketDetailsModal({
   const { comments, isCommentLoading } = useIssuesStore();
   const [newComment, setNewComment] = useState("");
 
-  // If the modal is closed or no ticket is provided, render nothing
   if (!isOpen || !ticket) return null;
 
   const handleSubmitComment = () => {
@@ -27,27 +23,18 @@ export default function TicketDetailsModal({
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      {/* 
-        2) Keep the "two-column" layout in a <motion.div> 
-        for scale/opacity animation. 
-      */}
       <motion.div
-        className="relative w-full max-w-5xl h-[80vh] md:h-[70vh] lg:h-[75vh] flex 
-                   pointer-events-none" 
+        className="relative w-full max-w-5xl h-[80vh] md:h-[70vh] lg:h-[75vh] flex pointer-events-none"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 30 }}
       >
-        {/* 
-          3) The main "glass" container 
-          pointer-events-auto so this area is clickable
-        */}
-        <div className="pointer-events-auto flex flex-1 bg-white/5 dark:bg-gray-800
-                        backdrop-blur-md border border-gray-300 dark:border-gray-700 
-                        text-gray-900 dark:text-gray-100 
-                        rounded-lg overflow-hidden shadow-lg"
+        <div
+          className="pointer-events-auto flex flex-1 bg-white/5 dark:bg-gray-800
+                     backdrop-blur-md border border-gray-300 dark:border-gray-700
+                     text-gray-900 dark:text-gray-100 
+                     rounded-lg overflow-hidden shadow-lg"
         >
-          {/* Left Column - Ticket Details */}
           <div className="flex flex-col w-1/2 p-4 border-r border-white/20 dark:border-white/10">
             <h2 className="text-xl font-bold mb-4">Ticket Details</h2>
             <div className="mb-4">
@@ -98,7 +85,6 @@ export default function TicketDetailsModal({
                 {ticket.issueDescription || "No description provided..."}
               </p>
             </div>
-
             {ticket.additionalFiles && ticket.additionalFiles.length > 0 && (
               <div className="mb-4">
                 <p className="font-semibold">Additional Attachments</p>
@@ -121,8 +107,6 @@ export default function TicketDetailsModal({
               </div>
             )}
           </div>
-
-          {/* Right Column - Comments */}
           <div className="flex flex-col w-1/2 p-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold">Comments</h2>
@@ -130,7 +114,6 @@ export default function TicketDetailsModal({
                 <FaTimes size={20} />
               </button>
             </div>
-
             <div className="flex-1 overflow-y-auto pr-2 space-y-3">
               {isCommentLoading ? (
                 <p>Loading comments...</p>
@@ -157,7 +140,6 @@ export default function TicketDetailsModal({
                 ))
               )}
             </div>
-
             <div className="mt-3 bg-white text-gray-700 rounded flex items-center p-2">
               <input
                 type="text"
@@ -186,4 +168,3 @@ export default function TicketDetailsModal({
     </BaseModal>
   );
 }
-

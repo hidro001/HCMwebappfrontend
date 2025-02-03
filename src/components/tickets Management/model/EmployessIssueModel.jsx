@@ -1,14 +1,10 @@
-
-
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { FaTimes } from "react-icons/fa";
 import useDepartmentStore from "../../../store/departmentStore";
-
-// 1) Import your BaseModal
-import BaseModal from "../../common/BaseModal"; // adjust the path as needed
+import BaseModal from "../../common/BaseModal";
 
 export default function EmployessIssueModel({
   isOpen,
@@ -73,15 +69,18 @@ export default function EmployessIssueModel({
     e.stopPropagation();
     setIsDragging(true);
   };
+
   const handleDragLeave = (e) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragging(false);
   };
+
   const handleDragOver = (e) => {
     e.preventDefault();
     e.stopPropagation();
   };
+
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -118,15 +117,10 @@ export default function EmployessIssueModel({
     onSubmit(formData);
   };
 
-  // If closed, don't render anything
   if (!isOpen) return null;
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      {/* 
-        2) Use motion.div for your "white box" 
-        and keep all your Tailwind classes the same
-      */}
       <motion.div
         className="relative bg-white dark:bg-gray-800 border border-gray-200 
                    dark:border-gray-700 rounded-md w-full max-w-lg mx-4 my-8 
@@ -135,7 +129,6 @@ export default function EmployessIssueModel({
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 50, opacity: 0 }}
       >
-        {/* Modal Header */}
         <div className="bg-blue-900 text-white p-4 rounded-t-md flex items-center justify-between">
           <h2 className="text-lg font-semibold">
             {mode === "edit" ? "Edit Ticket" : "Raise Ticket"}
@@ -144,15 +137,12 @@ export default function EmployessIssueModel({
             <FaTimes />
           </button>
         </div>
-
-        {/* Modal Body */}
         <div className="p-4 space-y-4">
           <p className="text-sm text-gray-600 dark:text-gray-300">
             {mode === "edit"
               ? "Update the ticket details."
               : "Fill the form to raise a new ticket."}
           </p>
-
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
               <label className="block text-sm font-medium mb-1">Title *</label>
@@ -167,7 +157,6 @@ export default function EmployessIssueModel({
                 required
               />
             </div>
-
             <div>
               <label className="block text-sm font-medium mb-1">
                 Department
@@ -187,7 +176,6 @@ export default function EmployessIssueModel({
                 ))}
               </select>
             </div>
-
             <div>
               <label className="block text-sm font-medium mb-1">Priority</label>
               <select
@@ -202,7 +190,6 @@ export default function EmployessIssueModel({
                 <option value="Low">Low</option>
               </select>
             </div>
-
             <div>
               <label className="block text-sm font-medium mb-1">
                 Description
@@ -217,8 +204,6 @@ export default function EmployessIssueModel({
                 onChange={(e) => setDescription(e.target.value)}
               />
             </div>
-
-            {/* Attachment + Drag/Drop */}
             <div>
               <label className="block text-sm font-medium mb-1">
                 Attachment
@@ -256,15 +241,12 @@ export default function EmployessIssueModel({
                     />
                   ) : (
                     <p className="mt-1 text-sm text-gray-700 dark:text-gray-200">
-                      {attachment.name} ({(attachment.size / 1024).toFixed(1)}{" "}
-                      KB)
+                      {attachment.name} ({(attachment.size / 1024).toFixed(1)} KB)
                     </p>
                   )}
                 </div>
               )}
             </div>
-
-            {/* Buttons */}
             <div className="flex justify-end gap-2 mt-4">
               <button
                 type="button"

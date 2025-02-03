@@ -1,13 +1,10 @@
-
 import { useState, useEffect, useMemo } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePoshStore } from "../../../../store/poshStore";
-
-// 1) Import your BaseModal
-import BaseModal from "../../../common/BaseModal"; // Adjust the path as needed
+import BaseModal from "../../../common/BaseModal";
 
 export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
   const [accusedId, setAccusedId] = useState("");
@@ -55,7 +52,6 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
       if (fileAttachment) {
         formData.append("attachments", fileAttachment);
       }
-
       if (isEdit && ticket?.id) {
         await updatePoshAct(ticket.id, formData);
       } else {
@@ -85,9 +81,7 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
   if (!isOpen) return null;
 
   return (
-    // 2) Wrap everything in a BaseModal
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      {/* 3) Keep <AnimatePresence> + <motion.div> for the panel animation */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -99,7 +93,6 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
             <h2 className="text-xl font-semibold mb-4 dark:text-gray-100">
               {isEdit ? "Edit POSH Issue" : "File a POSH Issue"}
             </h2>
-
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block font-medium text-sm mb-1 dark:text-gray-100">
@@ -126,8 +119,7 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
                   Type of Complaint
                 </label>
                 <select
-                  className="w-full border rounded px-3 py-1 focus:outline-none 
-                             dark:bg-gray-700 dark:text-gray-100"
+                  className="w-full border rounded px-3 py-1 focus:outline-none dark:bg-gray-700 dark:text-gray-100"
                   value={complaintType}
                   onChange={(e) => setComplaintType(e.target.value)}
                   required
@@ -147,8 +139,7 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
                   selected={incidentDate}
                   onChange={(date) => setIncidentDate(date)}
                   dateFormat="dd/MM/yyyy"
-                  className="w-full border rounded px-3 py-1 dark:bg-gray-700 
-                             dark:text-gray-100 focus:outline-none"
+                  className="w-full border rounded px-3 py-1 dark:bg-gray-700 dark:text-gray-100 focus:outline-none"
                   placeholderText="DD/MM/YYYY"
                 />
               </div>
@@ -157,8 +148,7 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
                   Description
                 </label>
                 <textarea
-                  className="w-full border rounded px-3 py-1 h-24 dark:bg-gray-700 
-                             dark:text-gray-100 focus:outline-none"
+                  className="w-full border rounded px-3 py-1 h-24 dark:bg-gray-700 dark:text-gray-100 focus:outline-none"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   required
@@ -170,13 +160,7 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
                 </label>
                 <input
                   type="file"
-                  className="block w-full text-sm text-gray-900 
-                             file:mr-4 file:py-2 file:px-4 file:rounded 
-                             file:border-0 file:text-sm file:font-semibold 
-                             file:bg-blue-50 file:text-blue-700 
-                             hover:file:bg-blue-100 
-                             dark:bg-gray-700 dark:text-gray-100 
-                             dark:file:bg-gray-600 dark:file:text-gray-100"
+                  className="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:bg-gray-700 dark:text-gray-100 dark:file:bg-gray-600 dark:file:text-gray-100"
                   onChange={(e) => setFileAttachment(e.target.files?.[0] || null)}
                 />
               </div>
@@ -184,16 +168,13 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2 rounded bg-gray-300 dark:bg-gray-600 
-                             text-sm font-semibold hover:bg-gray-400 
-                             dark:hover:bg-gray-500"
+                  className="px-4 py-2 rounded bg-gray-300 dark:bg-gray-600 text-sm font-semibold hover:bg-gray-400 dark:hover:bg-gray-500"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded bg-blue-600 text-white text-sm 
-                             font-semibold hover:bg-blue-700"
+                  className="px-4 py-2 rounded bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700"
                 >
                   {isEdit ? "Update Posh" : "Submit Posh"}
                 </button>

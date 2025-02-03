@@ -1,4 +1,4 @@
-import  { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEye, FaEdit, FaTrash, FaPrint, FaFilePdf } from "react-icons/fa";
 import { MdOutlineFileDownload } from "react-icons/md";
@@ -14,7 +14,10 @@ const tableContainerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { when: "beforeChildren", staggerChildren: 0.05 },
+    transition: {
+      when: "beforeChildren",
+      staggerChildren: 0.05,
+    },
   },
 };
 
@@ -112,21 +115,33 @@ export default function ManageTickets() {
         const matchEmployeeId = issue.createdBy?.employee_Id
           ?.toLowerCase()
           .includes(searchText.toLowerCase());
-        if (!matchTitle && !matchEmployeeId) return false;
+
+        if (!matchTitle && !matchEmployeeId) {
+          return false;
+        }
       }
-      if (department !== "All" && issue.assignedTo !== department) return false;
-      if (status !== "All" && issue.issueStatus !== status) return false;
-      if (priorityFilter !== "All" && issue.priority !== priorityFilter) return false;
+      if (department !== "All" && issue.assignedTo !== department) {
+        return false;
+      }
+      if (status !== "All" && issue.issueStatus !== status) {
+        return false;
+      }
+      if (priorityFilter !== "All" && issue.priority !== priorityFilter) {
+        return false;
+      }
       if (selectedDate) {
         const issueDate = new Date(issue.createdAt).setHours(0, 0, 0, 0);
         const filterDate = selectedDate.setHours(0, 0, 0, 0);
-        if (issueDate !== filterDate) return false;
+        if (issueDate !== filterDate) {
+          return false;
+        }
       }
       return true;
     });
   }, [issues, searchText, department, status, priorityFilter, selectedDate]);
 
   const totalPages = Math.ceil(filteredIssues.length / pageSize);
+
   const paginatedIssues = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     return filteredIssues.slice(startIndex, startIndex + pageSize);
@@ -207,13 +222,22 @@ export default function ManageTickets() {
             <option value="Resolved">Resolved</option>
           </select>
           <div className="flex items-center gap-4 text-gray-500 dark:text-gray-300">
-            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Print">
+            <button
+              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
+              title="Print"
+            >
               <FaPrint size={18} />
             </button>
-            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Export to PDF">
+            <button
+              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
+              title="Export to PDF"
+            >
               <FaFilePdf size={18} />
             </button>
-            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Export CSV/Excel">
+            <button
+              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
+              title="Export CSV/Excel"
+            >
               <MdOutlineFileDownload size={20} />
             </button>
           </div>
@@ -249,6 +273,7 @@ export default function ManageTickets() {
             <tbody>
               {paginatedIssues.map((issue, index) => {
                 const globalIndex = (currentPage - 1) * pageSize + (index + 1);
+
                 let priorityClasses =
                   "bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-500";
                 if (issue.priority === "High") {
@@ -261,6 +286,7 @@ export default function ManageTickets() {
                   priorityClasses =
                     "bg-green-50 dark:bg-green-700 text-green-600 dark:text-green-100 border border-green-200 dark:border-green-600";
                 }
+
                 let statusClasses =
                   "bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-500";
                 if (issue.issueStatus === "Pending") {
@@ -273,6 +299,7 @@ export default function ManageTickets() {
                   statusClasses =
                     "bg-green-50 dark:bg-green-700 text-green-600 dark:text-green-100 border border-green-200 dark:border-green-600";
                 }
+
                 return (
                   <motion.tr
                     key={issue._id}
@@ -290,12 +317,16 @@ export default function ManageTickets() {
                     </td>
                     <td className="p-3 text-sm">{issue.issueTitle}</td>
                     <td className="p-3 text-sm">
-                      <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-md ${priorityClasses}`}>
+                      <span
+                        className={`inline-block px-2 py-1 text-xs font-semibold rounded-md ${priorityClasses}`}
+                      >
                         {issue.priority}
                       </span>
                     </td>
                     <td className="p-3 text-sm">
-                      <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-md ${statusClasses}`}>
+                      <span
+                        className={`inline-block px-2 py-1 text-xs font-semibold rounded-md ${statusClasses}`}
+                      >
                         {issue.issueStatus}
                       </span>
                     </td>
@@ -358,6 +389,7 @@ export default function ManageTickets() {
           No matching records found
         </div>
       )}
+
       <ConfirmationDialog
         open={confirmOpen}
         title={confirmTitle}
@@ -365,6 +397,7 @@ export default function ManageTickets() {
         onConfirm={confirmAction}
         onCancel={() => setConfirmOpen(false)}
       />
+
       <AnimatePresence>
         {isModalOpen && (
           <motion.div
@@ -387,6 +420,7 @@ export default function ManageTickets() {
           </motion.div>
         )}
       </AnimatePresence>
+
       <AnimatePresence>
         {isDetailsModalOpen && (
           <motion.div

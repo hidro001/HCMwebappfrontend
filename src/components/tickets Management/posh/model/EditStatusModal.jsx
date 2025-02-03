@@ -1,11 +1,7 @@
-
-
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion"; 
+import { motion } from "framer-motion";
 import { usePoshStore } from "../../../../store/poshStore";
-
-// 1) Import your BaseModal
-import BaseModal from "../../../common/BaseModal"; // Adjust the path if needed
+import BaseModal from "../../../common/BaseModal";
 
 export default function EditStatusModal({ isOpen, onClose, item, onUpdateStatus }) {
   const [status, setStatus] = useState("Pending");
@@ -19,7 +15,6 @@ export default function EditStatusModal({ isOpen, onClose, item, onUpdateStatus 
     }
   }, [item]);
 
-  // If there's no item or the modal isn't open, don't render anything
   if (!isOpen || !item) return null;
 
   const handleSave = async () => {
@@ -31,12 +26,7 @@ export default function EditStatusModal({ isOpen, onClose, item, onUpdateStatus 
   };
 
   return (
-    // 2) Wrap your content in <BaseModal>
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      {/* 
-        3) Keep the "white box" content in a <motion.div> 
-        for the fade/slide animation. 
-      */}
       <motion.div
         className="relative z-50 w-full max-w-md bg-white dark:bg-gray-800 
                    rounded-md shadow-lg p-6 transition-colors border border-gray-200
@@ -48,7 +38,6 @@ export default function EditStatusModal({ isOpen, onClose, item, onUpdateStatus 
         <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
           Update Issue Status
         </h2>
-
         <p className="text-sm text-gray-600 dark:text-gray-300 mb-6">
           Are you sure you want to update the status of{" "}
           <span className="font-semibold">
@@ -56,8 +45,6 @@ export default function EditStatusModal({ isOpen, onClose, item, onUpdateStatus 
           </span>
           ’s issue?
         </p>
-
-        {/* Status selection (radio or dropdown) */}
         <div className="mb-4">
           <label className="block text-sm font-medium mb-1 dark:text-gray-200">
             Select New Status
@@ -75,8 +62,6 @@ export default function EditStatusModal({ isOpen, onClose, item, onUpdateStatus 
             <option value="Resolved">Resolved</option>
           </select>
         </div>
-
-        {/* Action Buttons */}
         <div className="flex items-center justify-end gap-3">
           <button
             onClick={onClose}

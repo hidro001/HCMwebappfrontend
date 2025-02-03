@@ -1,4 +1,4 @@
-import  { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { FaEye, FaEdit, FaTrash, FaPrint, FaFilePdf } from "react-icons/fa";
 import { MdOutlineFileDownload } from "react-icons/md";
@@ -17,7 +17,6 @@ const tableContainerVariants = {
   visible: {
     opacity: 1,
     transition: {
-      // Stagger each child (row) by 0.05s
       when: "beforeChildren",
       staggerChildren: 0.05,
     },
@@ -40,6 +39,7 @@ export default function AllTickets() {
     postComment,
     loading,
   } = useIssuesStore();
+
   const { departments, fetchDepartments } = useDepartmentStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -113,7 +113,6 @@ export default function AllTickets() {
     await postComment(selectedIssue._id, commentText);
   };
 
-  // Filter logic
   const filteredIssues = useMemo(() => {
     return issues.filter((issue) => {
       if (searchText) {
@@ -135,8 +134,8 @@ export default function AllTickets() {
     });
   }, [issues, searchText, department, status, priorityFilter, selectedDate]);
 
-  // Pagination logic
   const totalPages = Math.ceil(filteredIssues.length / pageSize);
+
   const paginatedIssues = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     return filteredIssues.slice(startIndex, startIndex + pageSize);
@@ -147,10 +146,8 @@ export default function AllTickets() {
   };
 
   return (
-    <div className="mx-auto px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors  ">
+    <div className="mx-auto px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
       <h1 className="text-2xl font-bold mb-2">ALL Tickets</h1>
-
-      {/* Toolbar */}
       <motion.div
         className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow transition-colors mb-4"
         initial={{ opacity: 0, y: -10 }}
@@ -239,20 +236,27 @@ export default function AllTickets() {
             <option value="Resolved">Resolved</option>
           </select>
           <div className="flex items-center gap-4 text-gray-500 dark:text-gray-300">
-            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Print">
+            <button
+              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
+              title="Print"
+            >
               <FaPrint size={18} />
             </button>
-            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Export to PDF">
+            <button
+              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
+              title="Export to PDF"
+            >
               <FaFilePdf size={18} />
             </button>
-            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Export CSV/Excel">
+            <button
+              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
+              title="Export CSV/Excel"
+            >
               <MdOutlineFileDownload size={20} />
             </button>
           </div>
         </div>
       </motion.div>
-
-      {/* Table + row animations */}
       {loading ? (
         <div className="bg-white dark:bg-gray-800 rounded-md shadow p-4 transition-colors">
           {Array.from({ length: 10 }).map((_, i) => (
@@ -283,8 +287,6 @@ export default function AllTickets() {
             <tbody>
               {paginatedIssues.map((issue, index) => {
                 const globalIndex = (currentPage - 1) * pageSize + (index + 1);
-
-                // Priority classes
                 let priorityClasses =
                   "bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-500";
                 if (issue.priority === "High") {
@@ -297,8 +299,6 @@ export default function AllTickets() {
                   priorityClasses =
                     "bg-green-50 dark:bg-green-700 text-green-600 dark:text-green-100 border border-green-200 dark:border-green-600";
                 }
-
-                // Status classes
                 let statusClasses =
                   "bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-500";
                 if (issue.issueStatus === "Pending") {
@@ -311,7 +311,6 @@ export default function AllTickets() {
                   statusClasses =
                     "bg-green-50 dark:bg-green-700 text-green-600 dark:text-green-100 border border-green-200 dark:border-green-600";
                 }
-
                 return (
                   <motion.tr
                     key={issue._id}
@@ -329,12 +328,16 @@ export default function AllTickets() {
                     </td>
                     <td className="p-3 text-sm">{issue.issueTitle}</td>
                     <td className="p-3 text-sm">
-                      <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-md ${priorityClasses}`}>
+                      <span
+                        className={`inline-block px-2 py-1 text-xs font-semibold rounded-md ${priorityClasses}`}
+                      >
                         {issue.priority}
                       </span>
                     </td>
                     <td className="p-3 text-sm">
-                      <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-md ${statusClasses}`}>
+                      <span
+                        className={`inline-block px-2 py-1 text-xs font-semibold rounded-md ${statusClasses}`}
+                      >
                         {issue.issueStatus}
                       </span>
                     </td>
@@ -374,8 +377,6 @@ export default function AllTickets() {
               })}
             </tbody>
           </motion.table>
-
-          {/* Pagination */}
           <div className="flex flex-col md:flex-row justify-between items-center p-3 gap-2 text-sm">
             <div>
               Showing {paginatedIssues.length} of {filteredIssues.length} entries
@@ -404,8 +405,6 @@ export default function AllTickets() {
           </div>
         )
       )}
-
-      {/* Confirmation Dialog */}
       <ConfirmationDialog
         open={confirmOpen}
         title={confirmTitle}
@@ -413,16 +412,12 @@ export default function AllTickets() {
         onConfirm={confirmAction}
         onCancel={() => setConfirmOpen(false)}
       />
-
-      {/* Ticket Details Modal */}
       <TicketDetailsModal
         isOpen={isDetailsModalOpen}
         onClose={() => setIsDetailsModalOpen(false)}
         ticket={selectedIssue}
         onAddComment={handleAddComment}
       />
-
-      {/* Ticket Form Modal */}
       <TicketFormModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -433,4 +428,3 @@ export default function AllTickets() {
     </div>
   );
 }
-

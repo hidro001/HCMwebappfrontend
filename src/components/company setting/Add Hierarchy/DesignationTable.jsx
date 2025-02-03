@@ -6,12 +6,10 @@ import { toast } from "react-hot-toast";
 import SkeletonRows from "./SkeletonRows";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import FullScreenLoader from "../../common/FullScreenLoader";
-import DesignationModal from "./model/DesignationModal"; // Separated modal component
-
+import DesignationModal from "./model/DesignationModal";
 import { useHierarchyStore } from "../../../store/useHierarchyStore";
 
 export default function DesignationTable({ isLoading }) {
-  // Extract the relevant designations actions/state from the store
   const {
     designations,
     loading,
@@ -22,56 +20,47 @@ export default function DesignationTable({ isLoading }) {
     deleteDesignation,
   } = useHierarchyStore();
 
-  // Local states for modal and deletion dialog
   const [showModal, setShowModal] = useState(false);
   const [designationIdToEdit, setDesignationIdToEdit] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
-
   const [deleteData, setDeleteData] = useState({
     open: false,
     id: null,
     name: "",
   });
 
-  // react-hook-form
   const { register, handleSubmit, reset } = useForm({
     defaultValues: {
       designationName: "",
     },
   });
 
-  // Fetch designations on mount
   useEffect(() => {
     fetchDesignations();
   }, [fetchDesignations]);
 
-  // Modal: Open for "Add" (clear form)
   function handleOpenModal() {
     setShowModal(true);
     setDesignationIdToEdit(null);
     reset({ designationName: "" });
   }
 
-  // Modal: Close
   function handleCloseModal() {
     setShowModal(false);
     setDesignationIdToEdit(null);
     reset({ designationName: "" });
   }
 
-  // Click "Edit" → pre-fill form and open modal
   function handleEdit(des) {
     setDesignationIdToEdit(des._id);
     reset({ designationName: des.designation });
     setShowModal(true);
   }
 
-  // Click "Delete" → show confirmation
   function handleConfirmDelete(des) {
     setDeleteData({ open: true, id: des._id, name: des.designation });
   }
 
-  // Confirmation dialog: user clicked Confirm
   async function onDeleteConfirm() {
     setActionLoading(true);
     try {
@@ -85,22 +74,18 @@ export default function DesignationTable({ isLoading }) {
     }
   }
 
-  // Confirmation dialog: user clicked Cancel
   function onDeleteCancel() {
     setDeleteData({ open: false, id: null, name: "" });
   }
 
-  // Add/Update Submit
   const onSubmit = async (data) => {
     const { designationName } = data;
     setActionLoading(true);
     try {
       if (designationIdToEdit) {
-        // Edit existing designation
         await updateDesignation(designationIdToEdit, designationName);
         toast.success("Designation updated successfully!");
       } else {
-        // Add new designation
         await addDesignation(designationName);
         toast.success("Designation added successfully!");
       }
@@ -114,9 +99,7 @@ export default function DesignationTable({ isLoading }) {
 
   return (
     <div>
-      {/* Show FullScreenLoader during add/edit/delete operations */}
       {actionLoading && <FullScreenLoader />}
-
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Add Designations</h2>
         <button
@@ -126,7 +109,6 @@ export default function DesignationTable({ isLoading }) {
           + Add Designation
         </button>
       </div>
-
       <div className="overflow-x-auto">
         <table className="min-w-full text-left border-collapse">
           <thead>
@@ -138,7 +120,6 @@ export default function DesignationTable({ isLoading }) {
           </thead>
           <tbody>
             {loading ? (
-              // While the initial API fetch is loading, show SkeletonRows
               <SkeletonRows count={5} columns={3} />
             ) : (
               designations.map((des, idx) => (
@@ -172,8 +153,6 @@ export default function DesignationTable({ isLoading }) {
           </tbody>
         </table>
       </div>
-
-      {/* Separated ADD/EDIT Modal */}
       <DesignationModal
         show={showModal}
         onClose={handleCloseModal}
@@ -181,8 +160,6 @@ export default function DesignationTable({ isLoading }) {
         register={register}
         designationIdToEdit={designationIdToEdit}
       />
-
-      {/* Separated Confirmation Dialog for DELETE */}
       <ConfirmationDialog
         open={deleteData.open}
         title="Delete Designation"

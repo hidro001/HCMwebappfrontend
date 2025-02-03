@@ -1,9 +1,7 @@
 import React from "react";
 import { FaTimes } from "react-icons/fa";
 import { availablePermission } from "../../../../service/availablePermissions";
-
-// 1) Import your BaseModal
-import BaseModal from "../../../common/BaseModal"; // Adjust the path if needed
+import BaseModal from "../../../common/BaseModal";
 
 export default function RolePermissionModal({
   show,
@@ -15,13 +13,10 @@ export default function RolePermissionModal({
   onTogglePerm,
   onSave,
 }) {
-  // If we're not showing, don't render anything
   if (!show) return null;
 
   return (
-    // 2) Wrap the content in <BaseModal>
     <BaseModal isOpen={show} onClose={onClose}>
-      {/* 3) Your existing modal box */}
       <div className="relative w-96 max-h-[80vh] overflow-y-auto bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <button
           onClick={onClose}
@@ -29,11 +24,9 @@ export default function RolePermissionModal({
         >
           <FaTimes />
         </button>
-
         <h2 className="text-lg font-semibold mb-4">
           {isEditing ? `Edit Role (${roleName})` : `View Role (${roleName})`}
         </h2>
-
         {isEditing && (
           <>
             <label className="block mb-2 font-medium" htmlFor="editRoleName">
@@ -49,7 +42,6 @@ export default function RolePermissionModal({
             />
           </>
         )}
-
         <p className="font-medium mb-2">Permissions</p>
         <div className="space-y-2 mb-4">
           {availablePermission.map((perm) => {
@@ -57,10 +49,7 @@ export default function RolePermissionModal({
               (p) => p.value === perm.permission
             );
             return (
-              <label
-                key={perm.permission}
-                className="flex items-center space-x-2"
-              >
+              <label key={perm.permission} className="flex items-center space-x-2">
                 <input
                   type="checkbox"
                   className="w-4 h-4 accent-blue-500"
@@ -72,14 +61,11 @@ export default function RolePermissionModal({
                   }}
                   disabled={!isEditing}
                 />
-                <span className="dark:text-gray-100 text-gray-800">
-                  {perm.name}
-                </span>
+                <span className="dark:text-gray-100 text-gray-800">{perm.name}</span>
               </label>
             );
           })}
         </div>
-
         <div className="flex justify-end space-x-4">
           <button
             onClick={onClose}

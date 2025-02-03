@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import DepartmentTable from "./DepartmentTable";
@@ -13,7 +12,6 @@ export default function AddHierarchy() {
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 200);
-
     return () => clearTimeout(timer);
   }, []);
 
@@ -51,7 +49,6 @@ export default function AddHierarchy() {
           Add Role
         </button>
       </div>
-
       <motion.div
         key={activeTab}
         initial={{ opacity: 0, y: 15 }}

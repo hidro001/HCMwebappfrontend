@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
 import {
@@ -12,13 +10,10 @@ import {
   FaFilePdf,
 } from "react-icons/fa";
 import { MdOutlineFileDownload } from "react-icons/md";
-
 import { Skeleton } from "@mui/material";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import ResignationDetailsModal from "./ResignationDetailsModal";  // <— Import the modal
-
-// Chart.js imports
+import ResignationDetailsModal from "./model/ResignationDetailsModal";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -32,7 +27,6 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 
-// Register ChartJS components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -44,7 +38,6 @@ ChartJS.register(
   Legend
 );
 
-// ---------- Motion Variants ----------
 const tableContainerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -58,19 +51,17 @@ const tableRowVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-// ---------- Dummy Data ----------
 const DUMMY_STATS = {
   totalResignations: 20,
   pending: 12,
   rejected: 3,
   approved: 5,
-  totalResignationsIncrease: +200,
+  totalResignationsIncrease: 200,
   pendingIncrease: -200,
-  rejectedIncrease: +200,
-  approvedIncrease: +200,
+  rejectedIncrease: 200,
+  approvedIncrease: 200,
 };
 
-// Example Yearly Data
 const yearlyLabels = [
   "2001",
   "2002",
@@ -98,7 +89,6 @@ const yearlyLabels = [
   "2024",
   "2025",
 ];
-
 const yearlyBarValues = [
   20, 30, 40, 35, 50, 45, 60, 20, 30, 40, 35, 50, 45, 60, 20, 30, 40, 35, 50,
   45, 60, 20, 30, 40, 35, 50, 45,
@@ -108,7 +98,6 @@ const yearlyLineValues = [
   40, 55, 15, 25, 30, 28, 45, 40,
 ];
 
-// Example Monthly Data (12 months)
 const monthlyLabels = [
   "January",
   "February",
@@ -154,15 +143,11 @@ const DUMMY_VACANCIES = [
     submittedAt: "25 Jan 2025",
     status: "Rejected",
   },
-  // etc…
 ];
 
-// ---------- Main Component ----------
 export default function EmployeeFnf() {
   const [loading, setLoading] = useState(true);
   const [vacancies, setVacancies] = useState([]);
-
-  // Filters
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchText, setSearchText] = useState("");
@@ -171,11 +156,7 @@ export default function EmployeeFnf() {
   const [statusFilter, setStatusFilter] = useState("All");
   const [showModal, setShowModal] = useState(false);
   const [selectedResignation, setSelectedResignation] = useState(null);
-
-  // Chart filter
   const [chartPeriod, setChartPeriod] = useState("Yearly");
-
-  // Chart ref
   const chartRef = useRef(null);
 
   const handleViewDetails = (item) => {
@@ -187,49 +168,34 @@ export default function EmployeeFnf() {
     setShowModal(false);
     setSelectedResignation(null);
   };
+
   useEffect(() => {
-    // Grab the scrollable div from MainLayout by its id
     const scrollableDiv = document.getElementById("scrollableDiv");
     if (!scrollableDiv) return;
-  
     if (showModal) {
-      // Lock scroll
       scrollableDiv.style.overflowY = "hidden";
     } else {
-      // Restore scroll
       scrollableDiv.style.overflowY = "auto";
     }
-  
-    // Cleanup on unmount or re-render
     return () => {
       scrollableDiv.style.overflowY = "auto";
     };
   }, [showModal]);
-  // ---------- Select Data Based on Period ----------
-  const chartData = useMemo(() => {
-    // Decide which labels, bars, and lines to use
-    const labels = chartPeriod === "Yearly" ? yearlyLabels : monthlyLabels;
-    const barData =
-      chartPeriod === "Yearly" ? yearlyBarValues : monthlyBarValues;
-    const lineData =
-      chartPeriod === "Yearly" ? yearlyLineValues : monthlyLineValues;
 
-    // Choose bar color based on period
+  const chartData = useMemo(() => {
+    const labels = chartPeriod === "Yearly" ? yearlyLabels : monthlyLabels;
+    const barData = chartPeriod === "Yearly" ? yearlyBarValues : monthlyBarValues;
+    const lineData = chartPeriod === "Yearly" ? yearlyLineValues : monthlyLineValues;
+
     const barColor =
       chartPeriod === "Yearly"
-        ? "rgba(96, 165, 250, 0.3)" // a bluish tint
-        : "rgba(255, 159, 64, 0.3)"; // an orange tint for monthly
-
-    // Choose line color based on period
-    const lineColor =
-      chartPeriod === "Yearly"
-        ? "#3b82f6" // tailwind blue-500
-        : "#FF9F40"; // matching the orange set
+        ? "rgba(96, 165, 250, 0.3)"
+        : "rgba(255, 159, 64, 0.3)";
+    const lineColor = chartPeriod === "Yearly" ? "#3b82f6" : "#FF9F40";
 
     return {
       labels,
       datasets: [
-        // Bars dataset
         {
           type: "bar",
           label: "Bar Data",
@@ -240,7 +206,6 @@ export default function EmployeeFnf() {
           borderRadius: 6,
           order: 1,
         },
-        // Line dataset
         {
           type: "line",
           label: "Line Data",
@@ -251,7 +216,6 @@ export default function EmployeeFnf() {
           borderWidth: 2,
           pointRadius: 4,
           pointBackgroundColor: lineColor,
-          // Create gradient fill:
           backgroundColor: (ctx) => {
             const chart = ctx.chart;
             const { ctx: canvasCtx, chartArea } = chart;
@@ -262,7 +226,6 @@ export default function EmployeeFnf() {
               0,
               chartArea.bottom
             );
-            // fade from ~35% color to 0 at bottom
             gradient.addColorStop(0, `${lineColor}55`);
             gradient.addColorStop(1, `${lineColor}00`);
             return gradient;
@@ -273,20 +236,13 @@ export default function EmployeeFnf() {
     };
   }, [chartPeriod]);
 
-  // Simulate data fetching
   useEffect(() => {
-  
-      
     setVacancies(DUMMY_VACANCIES);
     setLoading(false);
-
-  
   }, []);
 
-  // ---------- Table Filter Logic ----------
   const filteredVacancies = useMemo(() => {
     return vacancies.filter((item) => {
-      // Search text
       if (searchText) {
         const matchName = item.empNameAndId
           .toLowerCase()
@@ -296,11 +252,8 @@ export default function EmployeeFnf() {
           .includes(searchText.toLowerCase());
         if (!matchName && !matchDesignation) return false;
       }
-      // Department
       if (department !== "All" && item.department !== department) return false;
-      // Status
       if (statusFilter !== "All" && item.status !== statusFilter) return false;
-      // Date (demo: all items are 25 Jan 2025)
       if (selectedDate) {
         const itemDate = new Date(2025, 0, 25).setHours(0, 0, 0, 0);
         const filterDate = selectedDate.setHours(0, 0, 0, 0);
@@ -310,7 +263,6 @@ export default function EmployeeFnf() {
     });
   }, [vacancies, searchText, department, statusFilter, selectedDate]);
 
-  // Pagination
   const totalPages = Math.ceil(filteredVacancies.length / pageSize);
   const currentTableData = useMemo(() => {
     const startIdx = (currentPage - 1) * pageSize;
@@ -319,19 +271,17 @@ export default function EmployeeFnf() {
 
   const handlePageChange = (page) => setCurrentPage(page);
 
-  // Helpers for “Increase by …”
   function getColor(val) {
     return val >= 0 ? "text-green-500" : "text-orange-500";
   }
+
   function getArrow(val) {
     return val >= 0 ? <FaArrowUp /> : <FaArrowDown />;
   }
 
   return (
-    <div className=" mx-auto p-4 dark:bg-gray-900 dark:text-gray-100 transition-colors">
-      {/* ---------- TOP STAT CARDS ---------- */}
+    <div className="mx-auto p-4 dark:bg-gray-900 dark:text-gray-100 transition-colors">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        {/* Card: Total Resignations */}
         <div
           className="
             p-4 rounded-lg shadow flex items-center 
@@ -341,7 +291,6 @@ export default function EmployeeFnf() {
           "
         >
           <div className="h-10 w-10 bg-blue-500 text-white rounded-md flex items-center justify-center mr-3">
-            {/* People icon */}
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -373,8 +322,6 @@ export default function EmployeeFnf() {
             </p>
           </div>
         </div>
-
-        {/* Card: Pending */}
         <div
           className="
             p-4 rounded-lg shadow flex items-center 
@@ -384,7 +331,6 @@ export default function EmployeeFnf() {
           "
         >
           <div className="h-10 w-10 bg-purple-500 text-white rounded-md flex items-center justify-center mr-3">
-            {/* Some icon */}
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -412,8 +358,6 @@ export default function EmployeeFnf() {
             </p>
           </div>
         </div>
-
-        {/* Card: Rejected */}
         <div
           className="
             p-4 rounded-lg shadow flex items-center 
@@ -423,7 +367,6 @@ export default function EmployeeFnf() {
           "
         >
           <div className="h-10 w-10 bg-red-500 text-white rounded-md flex items-center justify-center mr-3">
-            {/* Rejected icon */}
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -451,8 +394,6 @@ export default function EmployeeFnf() {
             </p>
           </div>
         </div>
-
-        {/* Card: Approved */}
         <div
           className="
             p-4 rounded-lg shadow flex items-center 
@@ -462,7 +403,6 @@ export default function EmployeeFnf() {
           "
         >
           <div className="h-10 w-10 bg-green-500 text-white rounded-md flex items-center justify-center mr-3">
-            {/* Approved icon */}
             <svg
               viewBox="0 0 24 24"
               fill="none"
@@ -489,8 +429,6 @@ export default function EmployeeFnf() {
           </div>
         </div>
       </div>
-
-      {/* ---------- Resignations Statistics (bars + line) ---------- */}
       <div className="bg-white dark:bg-gray-800 rounded-md shadow p-4 mb-6 transition-colors">
         <div className="flex items-center justify-between mb-2">
           <h2 className="text-lg font-semibold">Resignations Statistics</h2>
@@ -516,9 +454,7 @@ export default function EmployeeFnf() {
               options={{
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                  legend: { display: false },
-                },
+                plugins: { legend: { display: false } },
                 scales: {
                   y: {
                     beginAtZero: true,
@@ -533,23 +469,16 @@ export default function EmployeeFnf() {
           </div>
         )}
       </div>
-
-      {/* ---------- VACANCIES MANAGEMENT TABLE ---------- */}
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-xl font-bold">Vacancies Management</h2>
         <button className="bg-blue-500 text-white text-sm px-4 py-2 rounded hover:bg-blue-600 transition-colors">
           Import
         </button>
       </div>
-
-      {/* Filters row */}
       <div className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow mb-4 transition-colors">
         <div className="flex items-center gap-4">
-          {/* Page size */}
           <div className="flex items-center gap-2">
-            <label className="text-sm font-semibold whitespace-nowrap">
-              Show
-            </label>
+            <label className="text-sm font-semibold whitespace-nowrap">Show</label>
             <select
               className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
               value={pageSize}
@@ -563,8 +492,6 @@ export default function EmployeeFnf() {
               <option value={20}>20</option>
             </select>
           </div>
-
-          {/* Search */}
           <div>
             <input
               type="text"
@@ -578,9 +505,7 @@ export default function EmployeeFnf() {
             />
           </div>
         </div>
-
         <div className="flex flex-wrap items-center gap-4">
-          {/* Date picker */}
           <DatePicker
             selected={selectedDate}
             onChange={(date) => {
@@ -591,7 +516,6 @@ export default function EmployeeFnf() {
             placeholderText="25 Jan 2025"
             className="border rounded px-3 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
           />
-          {/* Department */}
           <select
             className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
             value={department}
@@ -604,7 +528,6 @@ export default function EmployeeFnf() {
             <option value="IT">IT</option>
             <option value="Marketing">Marketing</option>
           </select>
-          {/* Status */}
           <select
             className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
             value={statusFilter}
@@ -618,8 +541,6 @@ export default function EmployeeFnf() {
             <option value="Pending">Pending</option>
             <option value="Rejected">Rejected</option>
           </select>
-
-          {/* Export icons */}
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-300">
             <button
               className="hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
@@ -642,17 +563,10 @@ export default function EmployeeFnf() {
           </div>
         </div>
       </div>
-
-      {/* Table + Skeleton loading */}
       {loading ? (
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow transition-colors">
           {Array.from({ length: pageSize }).map((_, i) => (
-            <Skeleton
-              key={i}
-              variant="rectangular"
-              height={40}
-              className="mb-2"
-            />
+            <Skeleton key={i} variant="rectangular" height={40} className="mb-2" />
           ))}
         </div>
       ) : (
@@ -671,9 +585,7 @@ export default function EmployeeFnf() {
                     <th className="p-3 text-sm font-semibold">Emp Name & ID</th>
                     <th className="p-3 text-sm font-semibold">Designation</th>
                     <th className="p-3 text-sm font-semibold">Department</th>
-                    <th className="p-3 text-sm font-semibold">
-                      Assigned Manager
-                    </th>
+                    <th className="p-3 text-sm font-semibold">Assigned Manager</th>
                     <th className="p-3 text-sm font-semibold">Submitted At</th>
                     <th className="p-3 text-sm font-semibold">Status</th>
                     <th className="p-3 text-sm font-semibold">Action</th>
@@ -682,8 +594,6 @@ export default function EmployeeFnf() {
                 <tbody>
                   {currentTableData.map((item, index) => {
                     const rowIndex = (currentPage - 1) * pageSize + (index + 1);
-
-                    // color-coded status
                     let statusClasses =
                       "bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-100 border border-gray-200 dark:border-gray-500 px-2 py-1 rounded text-xs font-semibold";
                     if (item.status === "Pending") {
@@ -696,16 +606,13 @@ export default function EmployeeFnf() {
                       statusClasses =
                         "bg-red-50 dark:bg-red-700 text-red-600 dark:text-red-100 border border-red-200 dark:border-red-600 px-2 py-1 rounded text-xs font-semibold";
                     }
-
                     return (
                       <motion.tr
                         key={item.id}
                         variants={tableRowVariants}
                         className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                       >
-                        <td className="p-3 text-sm">
-                          {String(rowIndex).padStart(2, "0")}
-                        </td>
+                        <td className="p-3 text-sm">{String(rowIndex).padStart(2, "0")}</td>
                         <td className="p-3 text-sm">{item.empNameAndId}</td>
                         <td className="p-3 text-sm">{item.designation}</td>
                         <td className="p-3 text-sm">{item.department}</td>
@@ -718,8 +625,7 @@ export default function EmployeeFnf() {
                           <div className="flex items-center space-x-3">
                             <button
                               className="text-blue-500 hover:text-blue-600 transition-colors"
-                            //   onClick={() => alert(`View item ID: ${item.id}`)}
-                            onClick={() => handleViewDetails(item)}
+                              onClick={() => handleViewDetails(item)}
                             >
                               <FaEye />
                             </button>
@@ -731,9 +637,7 @@ export default function EmployeeFnf() {
                             </button>
                             <button
                               className="text-red-500 hover:text-red-600 transition-colors"
-                              onClick={() =>
-                                alert(`Delete item ID: ${item.id}`)
-                              }
+                              onClick={() => alert(`Delete item ID: ${item.id}`)}
                             >
                               <FaTrash />
                             </button>
@@ -744,11 +648,9 @@ export default function EmployeeFnf() {
                   })}
                 </tbody>
               </motion.table>
-              {/* Pagination */}
               <div className="flex flex-col md:flex-row justify-between items-center p-3 gap-2 text-sm">
                 <div>
-                  Showing {currentTableData.length} of{" "}
-                  {filteredVacancies.length} entries
+                  Showing {currentTableData.length} of {filteredVacancies.length} entries
                 </div>
                 <div className="flex items-center space-x-1">
                   {Array.from({ length: totalPages }, (_, i) => (
@@ -774,12 +676,7 @@ export default function EmployeeFnf() {
           )}
         </>
       )}
-
-<ResignationDetailsModal
-        isOpen={showModal}
-        data={selectedResignation}
-        onClose={handleCloseModal}
-      />
+      <ResignationDetailsModal isOpen={showModal} data={selectedResignation} onClose={handleCloseModal} />
     </div>
   );
 }

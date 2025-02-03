@@ -1,24 +1,19 @@
+import React, { useState, useEffect, useMemo } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { FaEye, FaEdit, FaTrash, FaPrint, FaFilePdf } from "react-icons/fa";
+import { MdOutlineFileDownload } from "react-icons/md";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { Skeleton } from "@mui/material";
+import ViewReferralModal from "./model/ViewReferralModal";
+import UpdateStatusModal from "./model/UpdateStatusModal";
+import useReferralStore from "../../store/useReferralStore";
 
-
-import React, { useState, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaEye, FaEdit, FaTrash, FaPrint, FaFilePdf } from 'react-icons/fa';
-import { MdOutlineFileDownload } from 'react-icons/md';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { Skeleton } from '@mui/material';
-import ViewReferralModal from './ViewReferralModal';
-import UpdateStatusModal from './UpdateStatusModal';
-
-// Zustand store
-import useReferralStore from '../../store/useReferralStore';
-
-// ========== Framer Motion Variants ==========
 const tableContainerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { when: 'beforeChildren', staggerChildren: 0.05 },
+    transition: { when: "beforeChildren", staggerChildren: 0.05 },
   },
 };
 
@@ -28,64 +23,46 @@ const tableRowVariants = {
 };
 
 export default function ReferralList() {
-  // ====== Get data and actions from store ======
   const { referrals, loading, error, fetchAllReferrals, updateReferralStatus } =
     useReferralStore();
 
-  // Table state
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-
-  // Filters
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
-  const [department, setDepartment] = useState('All');
-
-  // ============ Modals ============
+  const [department, setDepartment] = useState("All");
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [selectedReferral, setSelectedReferral] = useState(null);
 
-  // ====== Fetch from backend on mount ======
   useEffect(() => {
     fetchAllReferrals();
   }, [fetchAllReferrals]);
 
-  // ================== Filtering logic ==================
   const filteredReferrals = useMemo(() => {
     if (!referrals) return [];
-
     return referrals.filter((item) => {
-      // 1) Filter by search text (designation or candidateName)
       if (searchText) {
-        const matchesDesignation = item.designation
+        const matchDesignation = item.designation
           .toLowerCase()
           .includes(searchText.toLowerCase());
-        const matchesCandidate = item.candidateName
+        const matchCandidate = item.candidateName
           .toLowerCase()
           .includes(searchText.toLowerCase());
-        if (!matchesDesignation && !matchesCandidate) {
-          return false;
-        }
+        if (!matchDesignation && !matchCandidate) return false;
       }
-      // 2) Filter by department
-      if (department !== 'All' && item.department !== department) {
-        return false;
-      }
-      // 3) Filter by date (for demo, let's pretend each row has same date)
+      if (department !== "All" && item.department !== department) return false;
       if (selectedDate) {
         const itemDate = new Date(2025, 0, 1).setHours(0, 0, 0, 0);
         const filterDate = selectedDate.setHours(0, 0, 0, 0);
-        if (itemDate !== filterDate) {
-          return false;
-        }
+        if (itemDate !== filterDate) return false;
       }
       return true;
     });
   }, [referrals, searchText, department, selectedDate]);
 
-  // ================== Pagination ==================
   const totalPages = Math.ceil(filteredReferrals.length / pageSize);
+
   const currentTableData = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     return filteredReferrals.slice(startIndex, startIndex + pageSize);
@@ -95,7 +72,6 @@ export default function ReferralList() {
     setCurrentPage(page);
   };
 
-  // ============ Handlers for opening/closing modals ============
   const handleOpenViewModal = (referral) => {
     setSelectedReferral(referral);
     setIsViewModalOpen(true);
@@ -109,17 +85,15 @@ export default function ReferralList() {
   const handleUpdateStatus = async (newStatus, feedback) => {
     if (!selectedReferral) return;
     try {
-      // Call Zustand store action
       await updateReferralStatus(selectedReferral.id, newStatus, feedback);
       alert(`Status updated to '${newStatus}'.`);
       setIsUpdateModalOpen(false);
     } catch (err) {
-      alert('Error updating referral status.');
+      alert("Error updating referral status.");
       console.error(err);
     }
   };
 
-  // ============== Render ==============
   return (
     <div className="px-4 py-6 bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-100 transition-colors">
       <div className="flex items-center justify-between mb-4">
@@ -128,11 +102,8 @@ export default function ReferralList() {
           Import
         </button>
       </div>
-
-      {/* Top filters row */}
       <div className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow mb-4 transition-colors">
         <div className="flex items-center gap-4">
-          {/* Page size */}
           <div className="flex items-center gap-2">
             <label className="text-sm font-semibold whitespace-nowrap">Show</label>
             <select
@@ -148,8 +119,6 @@ export default function ReferralList() {
               <option value={20}>20</option>
             </select>
           </div>
-
-          {/* Search */}
           <div>
             <input
               type="text"
@@ -163,9 +132,7 @@ export default function ReferralList() {
             />
           </div>
         </div>
-
         <div className="flex flex-wrap items-center gap-4">
-          {/* Date picker */}
           <DatePicker
             selected={selectedDate}
             onChange={(date) => {
@@ -177,8 +144,6 @@ export default function ReferralList() {
             placeholderText="JAN 2025"
             className="border rounded px-3 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
           />
-
-          {/* Department dropdown */}
           <select
             className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
             value={department}
@@ -191,8 +156,6 @@ export default function ReferralList() {
             <option value="IT">IT</option>
             <option value="Marketing">Marketing</option>
           </select>
-
-          {/* Export icons */}
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-300">
             <button
               className="hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
@@ -215,24 +178,11 @@ export default function ReferralList() {
           </div>
         </div>
       </div>
-
-      {/* If there's a fetch error */}
-      {error && (
-        <div className="bg-red-100 text-red-800 p-3 rounded mb-4">
-          {error}
-        </div>
-      )}
-
-      {/* Table & skeleton loading */}
+      {error && <div className="bg-red-100 text-red-800 p-3 rounded mb-4">{error}</div>}
       {loading ? (
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow transition-colors">
           {Array.from({ length: pageSize }).map((_, index) => (
-            <Skeleton
-              key={index}
-              variant="rectangular"
-              height={40}
-              className="mb-2"
-            />
+            <Skeleton key={index} variant="rectangular" height={40} className="mb-2" />
           ))}
         </div>
       ) : (
@@ -261,31 +211,28 @@ export default function ReferralList() {
                 <tbody>
                   {currentTableData.map((item, index) => {
                     const rowIndex = (currentPage - 1) * pageSize + (index + 1);
-
-                    // Color‐coding the status
                     let statusClasses =
-                      'bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-100 border border-gray-200 dark:border-gray-500 px-2 py-1 rounded text-xs font-semibold';
-                    if (item.status === 'Onboard') {
+                      "bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-100 border border-gray-200 dark:border-gray-500 px-2 py-1 rounded text-xs font-semibold";
+                    if (item.status === "Onboard") {
                       statusClasses =
-                        'bg-green-50 dark:bg-green-700 text-green-600 dark:text-green-100 border border-green-200 dark:border-green-600 px-2 py-1 rounded text-xs font-semibold';
-                    } else if (item.status === 'In Review') {
+                        "bg-green-50 dark:bg-green-700 text-green-600 dark:text-green-100 border border-green-200 dark:border-green-600 px-2 py-1 rounded text-xs font-semibold";
+                    } else if (item.status === "In Review") {
                       statusClasses =
-                        'bg-yellow-50 dark:bg-yellow-700 text-yellow-600 dark:text-yellow-100 border border-yellow-200 dark:border-yellow-600 px-2 py-1 rounded text-xs font-semibold';
-                    } else if (item.status === 'Rejected') {
+                        "bg-yellow-50 dark:bg-yellow-700 text-yellow-600 dark:text-yellow-100 border border-yellow-200 dark:border-yellow-600 px-2 py-1 rounded text-xs font-semibold";
+                    } else if (item.status === "Rejected") {
                       statusClasses =
-                        'bg-red-50 dark:bg-red-700 text-red-600 dark:text-red-100 border border-red-200 dark:border-red-600 px-2 py-1 rounded text-xs font-semibold';
-                    } else if (item.status === 'Pending') {
+                        "bg-red-50 dark:bg-red-700 text-red-600 dark:text-red-100 border border-red-200 dark:border-red-600 px-2 py-1 rounded text-xs font-semibold";
+                    } else if (item.status === "Pending") {
                       statusClasses =
-                        'bg-orange-50 dark:bg-orange-700 text-orange-600 dark:text-orange-100 border border-orange-200 dark:border-orange-600 px-2 py-1 rounded text-xs font-semibold';
+                        "bg-orange-50 dark:bg-orange-700 text-orange-600 dark:text-orange-100 border border-orange-200 dark:border-orange-600 px-2 py-1 rounded text-xs font-semibold";
                     }
-
                     return (
                       <motion.tr
                         key={item.id}
                         variants={tableRowVariants}
                         className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                       >
-                        <td className="p-3 text-sm">{String(rowIndex).padStart(2, '0')}</td>
+                        <td className="p-3 text-sm">{String(rowIndex).padStart(2, "0")}</td>
                         <td className="p-3 text-sm">{item.designation}</td>
                         <td className="p-3 text-sm">{item.department}</td>
                         <td className="p-3 text-sm">{item.referredBy}</td>
@@ -297,21 +244,18 @@ export default function ReferralList() {
                         </td>
                         <td className="p-3 text-sm">
                           <div className="flex items-center gap-2">
-                            {/* View modal */}
                             <button
                               className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors"
                               onClick={() => handleOpenViewModal(item)}
                             >
                               <FaEye size={14} />
                             </button>
-                            {/* Update status modal */}
                             <button
                               className="text-green-500 hover:text-green-600 dark:text-green-400 dark:hover:text-green-300 transition-colors"
                               onClick={() => handleOpenUpdateModal(item)}
                             >
                               <FaEdit size={14} />
                             </button>
-                            {/* Delete (demo) */}
                             <button
                               className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors"
                               onClick={() => alert(`Delete referral ${item.id}`)}
@@ -325,8 +269,6 @@ export default function ReferralList() {
                   })}
                 </tbody>
               </motion.table>
-
-              {/* Pagination */}
               <div className="flex flex-col md:flex-row justify-between items-center p-3 gap-2 text-sm text-gray-600 dark:text-gray-200 transition-colors">
                 <div>
                   Showing {currentTableData.length} of {filteredReferrals.length} entries
@@ -337,8 +279,8 @@ export default function ReferralList() {
                       key={i}
                       className={`px-3 py-1 rounded border transition-colors ${
                         currentPage === i + 1
-                          ? 'bg-blue-600 text-white border-blue-600'
-                          : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
+                          ? "bg-blue-600 text-white border-blue-600"
+                          : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
                       }`}
                       onClick={() => handlePageChange(i + 1)}
                     >
@@ -355,8 +297,6 @@ export default function ReferralList() {
           )}
         </>
       )}
-
-      {/* AnimatePresence handles fade in/out of modals */}
       <AnimatePresence>
         {isViewModalOpen && selectedReferral && (
           <ViewReferralModal
@@ -365,18 +305,15 @@ export default function ReferralList() {
           />
         )}
       </AnimatePresence>
-
       <AnimatePresence>
         {isUpdateModalOpen && selectedReferral && (
           <UpdateStatusModal
             referral={selectedReferral}
             onClose={() => setIsUpdateModalOpen(false)}
-            onSubmit={handleUpdateStatus} // calls our store
+            onSubmit={handleUpdateStatus}
           />
         )}
       </AnimatePresence>
     </div>
   );
 }
-
-
