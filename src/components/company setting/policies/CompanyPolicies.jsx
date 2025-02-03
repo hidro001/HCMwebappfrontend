@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
 import { FaPlus } from "react-icons/fa";
-import AddNewPolicyModal from "./AddNewPolicyModal"; // <-- Import the modal
+import AddNewPolicyModal from "./model/AddNewPolicyModal"; // <-- Import the modal
 // Some dummy policy data
 const DUMMY_POLICIES = [
   {

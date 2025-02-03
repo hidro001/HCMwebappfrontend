@@ -6,8 +6,8 @@ import { MdOutlineFileDownload } from "react-icons/md";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import IssueDetailsModal from "./IssueDetailsModal";
-import FilePoshModal from "./FilePoshModal";
+import IssueDetailsModal from "./model/IssueDetailsModal";
+import FilePoshModal from "./model/FilePoshModal";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import { usePoshStore } from "../../../store/poshStore";
 

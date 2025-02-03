@@ -5,8 +5,8 @@ import { MdOutlineFileDownload } from "react-icons/md";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Skeleton } from "@mui/material";
-import TicketFormModal from "./TicketFormModal";
-import TicketDetailsModal from "./TicketDetailsModal";
+import TicketFormModal from "./model/TicketFormModal";
+import TicketDetailsModal from "./model/TicketDetailsModal";
 import ConfirmationDialog from "../common/ConfirmationDialog";
 import useIssuesStore from "../../store/useIssuesStore";
 

@@ -6,9 +6,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Skeleton } from "@mui/material";
 import { toast } from "react-hot-toast";
-import TicketFormModal from "./TicketFormModal";
+import TicketFormModal from "./model/TicketFormModal";
 import ConfirmationDialog from "../common/ConfirmationDialog";
-import TicketDetailsModal from "./TicketDetailsModal";
+import TicketDetailsModal from "./model/TicketDetailsModal";
 import useIssuesStore from "../../store/useIssuesStore";
 import useDepartmentStore from "../../store/departmentStore";
 

@@ -170,11 +170,183 @@
 
 // export default ShiftTimings;
 
-// src/components/ShiftTimings.jsx
+
+// import React, { useEffect, useState } from "react";
+// import { toast } from "react-hot-toast";
+// import { FaEdit, FaTrash } from "react-icons/fa";
+// import useCompanySettingsStore from "../../../store/useCompanySettingsStore";
+
+// const ShiftTimings = () => {
+//   const {
+//     shiftTimings,
+//     fetchShiftTimings,
+//     addOrUpdateShiftTiming,
+//     deleteShiftTiming,
+//   } = useCompanySettingsStore();
+
+//   // Local states for modal
+//   const [isModalOpen, setIsModalOpen] = useState(false);
+//   const [name, setName] = useState("");
+//   const [start, setStart] = useState("");
+//   const [end, setEnd] = useState("");
+//   const [editId, setEditId] = useState(null);
+
+//   // Fetch on mount
+//   useEffect(() => {
+//     fetchShiftTimings();
+//   }, [fetchShiftTimings]);
+
+//   // Handle add or update
+//   const handleSave = () => {
+//     if (!name || !start || !end) {
+//       toast.error("Please fill out all fields.");
+//       return;
+//     }
+//     const payload = {
+//       id: editId,
+//       name,
+//       startTime: start,
+//       endTime: end,
+//     };
+//     addOrUpdateShiftTiming(payload);
+
+//     setIsModalOpen(false);
+//     setName("");
+//     setStart("");
+//     setEnd("");
+//     setEditId(null);
+//   };
+
+//   const handleDelete = (id) => {
+//     deleteShiftTiming(id);
+//   };
+
+//   const handleEditClick = (shift) => {
+//     setEditId(shift.id);
+//     setName(shift.name);
+//     setStart(shift.startTime);
+//     setEnd(shift.endTime);
+//     setIsModalOpen(true);
+//   };
+
+//   return (
+//     <div className="bg-white dark:bg-gray-800 shadow rounded p-6 relative">
+//       <div className="flex justify-between items-center mb-4">
+//         <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
+//           Shift Timings
+//         </h2>
+//         <button
+//           onClick={() => setIsModalOpen(true)}
+//           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+//         >
+//           Add Shift Timing
+//         </button>
+//       </div>
+
+//       <table className="min-w-full text-left border dark:border-gray-700">
+//         <thead className="bg-gray-100 dark:bg-gray-700 border-b dark:border-gray-700">
+//           <tr>
+//             <th className="p-2 text-gray-800 dark:text-gray-100">Name</th>
+//             <th className="p-2 text-gray-800 dark:text-gray-100">Start Time</th>
+//             <th className="p-2 text-gray-800 dark:text-gray-100">End Time</th>
+//             <th className="p-2 text-gray-800 dark:text-gray-100">Action</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {shiftTimings.map((st) => (
+//             <tr key={st.id} className="border-b dark:border-gray-700">
+//               <td className="p-2 text-gray-700 dark:text-gray-200">{st.name}</td>
+//               <td className="p-2 text-gray-700 dark:text-gray-200">{st.startTime}</td>
+//               <td className="p-2 text-gray-700 dark:text-gray-200">{st.endTime}</td>
+//               <td className="p-2 flex space-x-2">
+//                 <button
+//                   onClick={() => handleEditClick(st)}
+//                   className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200"
+//                 >
+//                   <FaEdit />
+//                 </button>
+//                 <button
+//                   onClick={() => handleDelete(st.id)}
+//                   className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200"
+//                 >
+//                   <FaTrash />
+//                 </button>
+//               </td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+
+//       {isModalOpen && (
+//         <div
+//           className="fixed inset-0 bg-gray-500 bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50"
+//         >
+//           <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-md max-w-sm w-full">
+//             <h2 className="text-xl font-semibold mb-4">
+//               {editId ? "Edit Shift Timing" : "Add Shift Timing"}
+//             </h2>
+//             <div className="mb-3">
+//               <label className="block mb-1">Name</label>
+//               <input
+//                 type="text"
+//                 value={name}
+//                 onChange={(e) => setName(e.target.value)}
+//                 className="w-full p-2 border dark:border-gray-600 rounded dark:bg-gray-700"
+//               />
+//             </div>
+//             <div className="mb-3">
+//               <label className="block mb-1">Start</label>
+//               <input
+//                 type="time"
+//                 value={start}
+//                 onChange={(e) => setStart(e.target.value)}
+//                 className="w-full p-2 border dark:border-gray-600 rounded dark:bg-gray-700"
+//               />
+//             </div>
+//             <div className="mb-4">
+//               <label className="block mb-1">End</label>
+//               <input
+//                 type="time"
+//                 value={end}
+//                 onChange={(e) => setEnd(e.target.value)}
+//                 className="w-full p-2 border dark:border-gray-600 rounded dark:bg-gray-700"
+//               />
+//             </div>
+//             <div className="flex justify-end space-x-2">
+//               <button
+//                 onClick={() => {
+//                   setIsModalOpen(false);
+//                   setName("");
+//                   setStart("");
+//                   setEnd("");
+//                   setEditId(null);
+//                 }}
+//                 className="px-4 py-2 rounded bg-gray-300 dark:bg-gray-600 dark:text-gray-200 hover:bg-gray-400"
+//               >
+//                 Cancel
+//               </button>
+//               <button
+//                 onClick={handleSave}
+//                 className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+//               >
+//                 {editId ? "Save" : "Add"}
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default ShiftTimings;
+
+
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import useCompanySettingsStore from "../../../store/useCompanySettingsStore";
+import ShiftTimingModal from "./models/ShiftTimingModal"; 
 
 const ShiftTimings = () => {
   const {
@@ -184,19 +356,19 @@ const ShiftTimings = () => {
     deleteShiftTiming,
   } = useCompanySettingsStore();
 
-  // Local states for modal
+  // Local states for modal and shift timing fields
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [name, setName] = useState("");
   const [start, setStart] = useState("");
   const [end, setEnd] = useState("");
   const [editId, setEditId] = useState(null);
 
-  // Fetch on mount
+  // Fetch shift timings on component mount
   useEffect(() => {
     fetchShiftTimings();
   }, [fetchShiftTimings]);
 
-  // Handle add or update
+  // Handle add or update of a shift timing
   const handleSave = () => {
     if (!name || !start || !end) {
       toast.error("Please fill out all fields.");
@@ -210,6 +382,7 @@ const ShiftTimings = () => {
     };
     addOrUpdateShiftTiming(payload);
 
+    // Reset the modal state after saving
     setIsModalOpen(false);
     setName("");
     setStart("");
@@ -227,6 +400,14 @@ const ShiftTimings = () => {
     setStart(shift.startTime);
     setEnd(shift.endTime);
     setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setName("");
+    setStart("");
+    setEnd("");
+    setEditId(null);
   };
 
   return (
@@ -277,64 +458,18 @@ const ShiftTimings = () => {
         </tbody>
       </table>
 
-      {isModalOpen && (
-        <div
-          className="fixed inset-0 bg-gray-500 bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50"
-        >
-          <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-md max-w-sm w-full">
-            <h2 className="text-xl font-semibold mb-4">
-              {editId ? "Edit Shift Timing" : "Add Shift Timing"}
-            </h2>
-            <div className="mb-3">
-              <label className="block mb-1">Name</label>
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="w-full p-2 border dark:border-gray-600 rounded dark:bg-gray-700"
-              />
-            </div>
-            <div className="mb-3">
-              <label className="block mb-1">Start</label>
-              <input
-                type="time"
-                value={start}
-                onChange={(e) => setStart(e.target.value)}
-                className="w-full p-2 border dark:border-gray-600 rounded dark:bg-gray-700"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block mb-1">End</label>
-              <input
-                type="time"
-                value={end}
-                onChange={(e) => setEnd(e.target.value)}
-                className="w-full p-2 border dark:border-gray-600 rounded dark:bg-gray-700"
-              />
-            </div>
-            <div className="flex justify-end space-x-2">
-              <button
-                onClick={() => {
-                  setIsModalOpen(false);
-                  setName("");
-                  setStart("");
-                  setEnd("");
-                  setEditId(null);
-                }}
-                className="px-4 py-2 rounded bg-gray-300 dark:bg-gray-600 dark:text-gray-200 hover:bg-gray-400"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSave}
-                className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
-              >
-                {editId ? "Save" : "Add"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <ShiftTimingModal
+        isOpen={isModalOpen}
+        editId={editId}
+        name={name}
+        start={start}
+        end={end}
+        onNameChange={(e) => setName(e.target.value)}
+        onStartChange={(e) => setStart(e.target.value)}
+        onEndChange={(e) => setEnd(e.target.value)}
+        onClose={handleCloseModal}
+        onSave={handleSave}
+      />
     </div>
   );
 };
