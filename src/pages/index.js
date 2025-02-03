@@ -37,6 +37,8 @@ import ManageClaimsPage from "./payroll/ManageClaimsPage";
 import AssignedTaskPage from "./task/AssignedTaskPage";
 import DailyTaskPage from "./task/DailyTaskPage";
 import TaskMainPage from "./task/TaskMainPage";
+// chats
+import ChatPage from "./chats/ChatPage";
 
 export {
   Login,
@@ -74,6 +76,7 @@ export {
   AssignedTaskPage,
 DailyTaskPage,
 TaskMainPage,
-  CompanySettingPage
+  CompanySettingPage,
+  ChatPage
 
 };

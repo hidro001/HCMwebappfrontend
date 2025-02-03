@@ -986,19 +986,19 @@ export const menuItems = [
   //     },
   //   ],
   // },
-  // {
-  //   name: "Chats",
-  //   icon: <ChatBubble />,
-  //   color: "text-orange-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "chats",
-  //       link: "/dashboard/chats",
-  //       permission: "useChats",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+  {
+    name: "Chats",
+    icon: <ChatBubble />,
+    color: "text-orange-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "chats",
+        link: "/dashboard/chats",
+        permission: "useChats",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
 ];

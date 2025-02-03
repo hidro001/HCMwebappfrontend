@@ -42,6 +42,7 @@ import {
   TaskMainPage,
   DailyTaskPage,
   AssignedTaskPage,
+  ChatPage,
 
 
 } from "../pages";
@@ -227,6 +228,10 @@ const router = createBrowserRouter([
       {
         path: "company-settings",
         element: <CompanySettingPage />,
+      },
+      {
+        path: "chats",
+        element: <ChatPage />,
       },
  
 

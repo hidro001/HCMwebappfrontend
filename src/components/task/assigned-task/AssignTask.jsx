@@ -1,16 +1,75 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { FaTimes, FaPaperclip } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { fetchSubordinates, submitTask } from "../../../service/taskService";
+import toast from "react-hot-toast";
 
 const TaskForm = ({ onClose }) => {
   const modalRef = useRef(null);
   const [attachment, setAttachment] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [subordinates, setSubordinates] = useState([]);
+  const [filteredSubordinates, setFilteredSubordinates] = useState([]);
+  const [selectedAssignee, setSelectedAssignee] = useState(null);
+  const [title, setTitle] = useState("");
+  const [dueDate, setDueDate] = useState("");
+  const [priority, setPriority] = useState("High");
+  const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Handle file upload
+  useEffect(() => {
+    const loadSubordinates = async () => {
+      const data = await fetchSubordinates();
+      setSubordinates(data);
+    };
+    loadSubordinates();
+  }, []);
+
+  useEffect(() => {
+    if (searchQuery.trim() === "") {
+      setFilteredSubordinates([]);
+    } else {
+      const results = subordinates.filter((sub) =>
+        `${sub.first_Name} ${sub.last_Name} ${sub.employee_Id}`
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      );
+      setFilteredSubordinates(results);
+    }
+  }, [searchQuery, subordinates]);
+
   const handleFileUpload = (e) => {
     if (e.target.files.length > 0) {
       setAttachment(e.target.files[0]);
     }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!title || !selectedAssignee || !dueDate || !priority) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
+    setLoading(true);
+    const taskData = {
+      title,
+      description,
+      assigned_to: selectedAssignee.employee_Id,
+      due_date: dueDate,
+      priority,
+      attachment: attachment ? attachment.name : null,
+    };
+
+    console.log("Submitting Task Data:", taskData);
+    try {
+      await submitTask(taskData);
+      toast.success("Task submitted successfully!");
+      onClose();
+    } catch (error) {
+      alert("Error submitting task.");
+    }
+    setLoading(false);
   };
 
   return (
@@ -30,167 +89,134 @@ const TaskForm = ({ onClose }) => {
           exit={{ scale: 0.9 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
         >
-          {/* Close Button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-gray-700 dark:text-gray-300 hover:text-red-600 transition duration-200"
             aria-label="Close form"
+            disabled={loading}
           >
             <FaTimes size={20} />
           </button>
 
-          {/* Header */}
           <div className="bg-blue-900 text-white dark:bg-blue-700 p-4 text-lg font-semibold">
-            Assigned Task
+            Assign Task
           </div>
 
-          {/* Form Content */}
           <div className="p-6">
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              You can assign tasks to team members, set deadlines, and track their progress seamlessly.
+              Assign tasks to team members, set deadlines, and track progress seamlessly.
             </p>
 
-            <form className="space-y-4">
-              {/* Task Name */}
+            <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
-                <label className="block text-sm font-medium">Task Name*</label>
+                <label className="block text-sm font-medium">Title*</label>
                 <input
                   type="text"
-                  placeholder="Enter Task Name"
+                  placeholder="Enter Task Title"
                   className="w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
                   required
+                  disabled={loading}
                 />
               </div>
 
-              {/* Assignee & Department */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium">Assignee</label>
-                  <input
-                    type="text"
-                    value="Riya Mishra (RI0023)"
-                    disabled
-                    className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-700 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium">Department</label>
-                  <input
-                    type="text"
-                    value="IT"
-                    disabled
-                    className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-700 dark:text-white"
-                  />
-                </div>
-              </div>
-
-              {/* Employee Name & ID */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium">Employee Name</label>
-                  <input
-                    type="text"
-                    value="Akhilesh"
-                    disabled
-                    className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-700 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium">Employee ID</label>
-                  <input
-                    type="text"
-                    value="RI0056"
-                    disabled
-                    className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-700 dark:text-white"
-                  />
-                </div>
-              </div>
-
-              {/* Due Date */}
-              <div>
-                <label className="block text-sm font-medium">Due Date</label>
+              <div className="relative">
+                <label className="block text-sm font-medium">Assignee*</label>
                 <input
-                  type="date"
+                  type="text"
+                  placeholder="Search for an assignee..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  disabled={loading}
                 />
-              </div>
-
-              {/* Priority & Status */}
-              <div className="space-y-2">
-                <fieldset className="flex space-x-4">
-                  <legend className="text-sm font-medium">Priority*</legend>
-                  {["High", "Medium", "Low"].map((level) => (
-                    <label key={level} className="inline-flex items-center">
-                      <input type="radio" name="priority" value={level} className="mr-2" />
-                      <span
-                        className={
-                          level === "High"
-                            ? "text-red-500"
-                            : level === "Medium"
-                            ? "text-yellow-500"
-                            : "text-green-500"
-                        }
+                {filteredSubordinates.length > 0 && (
+                  <ul className="absolute z-10 bg-white dark:bg-gray-700 border rounded-md mt-1 w-full shadow-lg max-h-40 overflow-y-auto">
+                    {filteredSubordinates.map((sub) => (
+                      <li
+                        key={sub._id}
+                        onClick={() => {
+                          setSelectedAssignee(sub);
+                          setSearchQuery(`${sub.first_Name} ${sub.last_Name} (${sub.employee_Id})`);
+                          setFilteredSubordinates([]);
+                        }}
+                        className="p-2 hover:bg-gray-200 dark:hover:bg-gray-600 cursor-pointer"
                       >
-                        {level}
-                      </span>
-                    </label>
-                  ))}
-                </fieldset>
-                <fieldset className="flex space-x-4">
-                  <legend className="text-sm font-medium">Status*</legend>
-                  {["On Hold", "Not Started", "Done"].map((state) => (
-                    <label key={state} className="inline-flex items-center">
-                      <input type="radio" name="status" value={state} className="mr-2" />
-                      <span
-                        className={
-                          state === "On Hold"
-                            ? "text-blue-500"
-                            : state === "Not Started"
-                            ? "text-orange-500"
-                            : "text-green-500"
-                        }
-                      >
-                        {state}
-                      </span>
-                    </label>
-                  ))}
-                </fieldset>
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="block text-sm font-medium">Description</label>
-                <textarea
-                  placeholder="Enter a description..."
-                  className="w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white"
-                />
-              </div>
-
-              {/* Attachment Upload */}
-              <div>
-                <label className="block text-sm font-medium">Attachment</label>
-                <div className="flex items-center space-x-4 border rounded-md p-3 bg-gray-50 dark:bg-gray-700 dark:text-white">
-                  <FaPaperclip className="text-gray-600 dark:text-gray-300" />
-                  <input
-                    type="file"
-                    onChange={handleFileUpload}
-                    className="text-sm text-gray-700 dark:text-gray-300"
-                  />
-                </div>
-                {attachment && (
-                  <div className="mt-2 flex items-center p-2 border rounded-md bg-gray-100 dark:bg-gray-800">
-                    <FaPaperclip className="text-gray-600 dark:text-gray-300 mr-2" />
-                    <span className="text-gray-800 dark:text-gray-200 text-sm">{attachment.name}</span>
-                  </div>
+                        {sub.first_Name} {sub.last_Name} ({sub.employee_Id})
+                      </li>
+                    ))}
+                  </ul>
                 )}
               </div>
 
-              {/* Submit Button */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium">Emp Name</label>
+                  <input
+                    type="text"
+                    value={selectedAssignee ? `${selectedAssignee.first_Name} ${selectedAssignee.last_Name}` : ""}
+                    className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-700 dark:text-white"
+                    disabled
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium">Emp ID</label>
+                  <input
+                    type="text"
+                    value={selectedAssignee ? selectedAssignee.employee_Id : ""}
+                    className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-700 dark:text-white"
+                    disabled
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium">Due Date*</label>
+                <input
+                  type="date"
+                  className="w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                  required
+                  disabled={loading}
+                />
+              </div>
+
+              <fieldset className="flex space-x-4">
+                <legend className="text-sm font-medium">Priority*</legend>
+                {["High", "Medium", "Low"].map((level) => (
+                  <label key={level} className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="priority"
+                      value={level}
+                      checked={priority === level}
+                      onChange={() => setPriority(level)}
+                      className="mr-2"
+                    />
+                    {level}
+                  </label>
+                ))}
+              </fieldset>
+
+              <div>
+                <label className="block text-sm font-medium">Description</label>
+                <textarea
+                  placeholder="Enter Task Description"
+                  className="w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  disabled={loading}
+                />
+              </div>
+
               <button
                 type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md transition duration-200"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-md"
+                disabled={loading}
               >
-                Submit Change
+                {loading ? "Submitting..." : "Submit Task"}
               </button>
             </form>
           </div>
