@@ -43,6 +43,8 @@ import {
   CompanyPoliciesPage,
   CompanyInductionPage,
   BreakSettingsPage,
+  PerformanceManagementDashboardPage,
+  PostAndViewPerformersPage,
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -240,6 +242,14 @@ const router = createBrowserRouter([
       {
         path: "break-settings",
         element: <BreakSettingsPage />,
+      },
+      {
+        path: "performance-dashboard",
+        element: <PerformanceManagementDashboardPage />,
+      },
+      {
+        path: "top-performers",
+        element: <PostAndViewPerformersPage />,
       },
     ],
   },

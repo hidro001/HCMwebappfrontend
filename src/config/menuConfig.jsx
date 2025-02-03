@@ -835,30 +835,33 @@ export const menuItems = [
   //     },
   //   ],
   // },
-  // {
-  //   name: "Performance management",
-  //   icon: <GrDocumentPerformance />,
-  //   color: "text-green-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Post Top Performer",
-  //       link: "topratedemployees",
-  //       permission: "postTopPerformer",
-  //     },
-  //     {
-  //       name: "View Top Performers",
-  //       link: "topperformanceemployees",
-  //       permission: "viewTopPerformers",
-  //     },
-  //     {
-  //       name: "Set KPIs",
-  //       link: "admin-action-tracker2",
-  //       permission: "setKPIs",
-  //     },
-  //   ],
-  // },
+
+
+  {
+    name: "Performance management",
+    icon: <GrDocumentPerformance />,
+    color: "text-green-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Main",
+        link: "/dashboard/performance-dashboard",
+        permission: "postTopPerformer",
+      },
+      {
+        name: "Top Performers",
+        link: "/dashboard/top-performers",
+        permission: "viewTopPerformers",
+      },
+      {
+        name: "Set KPIs",
+        link: "admin-action-tracker2",
+        permission: "setKPIs",
+      },
+    ],
+  },
+
   {
     name: "Company Settings",
     icon: <FaCog  />,

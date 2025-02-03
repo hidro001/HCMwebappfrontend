@@ -41,6 +41,9 @@ import AddHierarchyPage from "./company setting/AddHierarchyPage";
 import CompanyPoliciesPage from "./company setting/CompanyPoliciesPage";
 import CompanyInductionPage from "./company setting/CompanyInductionPage";
 import BreakSettingsPage from "./company setting/BreakSettingsPage";
+import PerformanceManagementDashboardPage from "./performance management/PerformanceManagementDashboardPage";
+import PostAndViewPerformersPage from "./performance management/PostAndViewPerformersPage";
+
 
 export {
   Login,
@@ -83,4 +86,7 @@ export {
   CompanyPoliciesPage,
   CompanyInductionPage,
   BreakSettingsPage,
+  PerformanceManagementDashboardPage,
+  PostAndViewPerformersPage
+
 };
