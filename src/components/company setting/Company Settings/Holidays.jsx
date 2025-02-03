@@ -1,52 +1,52 @@
-
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import useCompanySettingsStore from "../../../store/useCompanySettingsStore";
 
 const Holidays = () => {
-  const [holidays, setHolidays] = useState([
-    { id: 1, name: "Republic Day", date: "26 Jan 2025", recurring: "No" },
-    { id: 2, name: "Some Festival", date: "10 Feb 2025", recurring: "Yes" },
-  ]);
+  const { holidays, fetchHolidays, addOrUpdateHoliday, deleteHoliday } =
+    useCompanySettingsStore();
 
-  // Form fields for a new holiday
-  const [newName, setNewName] = useState("");
-  const [newDate, setNewDate] = useState("");
-  const [newRecurring, setNewRecurring] = useState("No");
-
-  // State for showing/hiding the modal
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [holidayName, setHolidayName] = useState("");
+  const [holidayDate, setHolidayDate] = useState("");
+  const [recurring, setRecurring] = useState(false);
+  const [editId, setEditId] = useState(null);
 
-  const handleAddHoliday = () => {
-    if (!newName || !newDate) {
+  useEffect(() => {
+    fetchHolidays();
+  }, [fetchHolidays]);
+
+  const handleSave = () => {
+    if (!holidayName || !holidayDate) {
       toast.error("Please fill out holiday name and date.");
       return;
     }
-
-    const newHol = {
-      id: Date.now(),
-      name: newName,
-      date: newDate,
-      recurring: newRecurring,
+    const payload = {
+      id: editId,
+      name: holidayName,
+      date: holidayDate,
+      recurring,
     };
-    setHolidays([...holidays, newHol]);
-    toast.success("Holiday added!");
+    addOrUpdateHoliday(payload);
 
-    // Clear form and close modal
-    setNewName("");
-    setNewDate("");
-    setNewRecurring("No");
     setIsModalOpen(false);
+    setHolidayName("");
+    setHolidayDate("");
+    setRecurring(false);
+    setEditId(null);
   };
 
-  const handleDeleteHoliday = (id) => {
-    setHolidays(holidays.filter((h) => h.id !== id));
-    toast.success("Holiday deleted.");
+  const handleEdit = (hol) => {
+    setEditId(hol.id);
+    setHolidayName(hol.name);
+    setHolidayDate(hol.date);
+    setRecurring(hol.recurring);
+    setIsModalOpen(true);
   };
 
-  const handleEditHoliday = (id) => {
-    toast("Edit not implemented in this example.");
+  const handleDelete = (id) => {
+    deleteHoliday(id);
   };
 
   return (
@@ -73,26 +73,24 @@ const Holidays = () => {
           </tr>
         </thead>
         <tbody>
-          {holidays.map((hol) => (
-            <tr key={hol.id} className="border-b dark:border-gray-700">
+          {holidays.map((h) => (
+            <tr key={h.id} className="border-b dark:border-gray-700">
+              <td className="p-2 text-gray-700 dark:text-gray-200">{h.name}</td>
               <td className="p-2 text-gray-700 dark:text-gray-200">
-                {hol.name}
+                {h.date.split("T")[0]}
               </td>
               <td className="p-2 text-gray-700 dark:text-gray-200">
-                {hol.date}
-              </td>
-              <td className="p-2 text-gray-700 dark:text-gray-200">
-                {hol.recurring}
+                {h.recurring ? "Yes" : "No"}
               </td>
               <td className="p-2 flex space-x-2">
                 <button
-                  onClick={() => handleEditHoliday(hol.id)}
+                  onClick={() => handleEdit(h)}
                   className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200"
                 >
                   <FaEdit />
                 </button>
                 <button
-                  onClick={() => handleDeleteHoliday(hol.id)}
+                  onClick={() => handleDelete(h.id)}
                   className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-200"
                 >
                   <FaTrash />
@@ -103,78 +101,60 @@ const Holidays = () => {
         </tbody>
       </table>
 
-      {/* -- MODAL OVERLAY & CONTENT -- */}
+      {/* Modal */}
       {isModalOpen && (
-        <div
-          className="
-            fixed inset-0 
-            bg-gray-500 bg-opacity-50 
-            backdrop-blur-sm 
-            flex justify-center items-center 
-            z-50
-          "
-        >
-          <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-md max-w-sm w-full relative">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100 mb-4">
-              Declare Holiday
+        <div className="fixed inset-0 bg-gray-500 bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-md max-w-sm w-full">
+            <h2 className="text-xl font-semibold mb-4">
+              {editId ? "Edit Holiday" : "Declare Holiday"}
             </h2>
-
-            {/* Holiday Name */}
             <div className="mb-3">
-              <label className="block text-gray-700 dark:text-gray-200 mb-1">
-                Holiday Name
-              </label>
+              <label className="block mb-1">Holiday Name</label>
               <input
                 type="text"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 focus:outline-none"
-                placeholder="Enter Holiday Name"
+                value={holidayName}
+                onChange={(e) => setHolidayName(e.target.value)}
+                className="w-full p-2 border dark:border-gray-600 rounded dark:bg-gray-700"
               />
             </div>
-
-            {/* Date */}
             <div className="mb-3">
-              <label className="block text-gray-700 dark:text-gray-200 mb-1">
-                Date
-              </label>
+              <label className="block mb-1">Date</label>
               <input
-                type="text"
-                value={newDate}
-                onChange={(e) => setNewDate(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 focus:outline-none"
-                placeholder="DD-MM-YY"
+                type="date"
+                value={holidayDate}
+                onChange={(e) => setHolidayDate(e.target.value)}
+                className="w-full p-2 border dark:border-gray-600 rounded dark:bg-gray-700"
               />
             </div>
-
-            {/* Recurring */}
             <div className="mb-4">
-              <label className="block text-gray-700 dark:text-gray-200 mb-1">
-                Recurring
-              </label>
+              <label className="block mb-1">Recurring</label>
               <select
-                value={newRecurring}
-                onChange={(e) => setNewRecurring(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 focus:outline-none"
+                value={recurring ? "true" : "false"}
+                onChange={(e) => setRecurring(e.target.value === "true")}
+                className="w-full p-2 border dark:border-gray-600 rounded dark:bg-gray-700"
               >
-                <option value="No">No</option>
-                <option value="Yes">Yes</option>
+                <option value="false">No</option>
+                <option value="true">Yes</option>
               </select>
             </div>
-
-            {/* Modal Buttons */}
             <div className="flex justify-end space-x-2">
               <button
-                onClick={() => setIsModalOpen(false)}
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setHolidayName("");
+                  setHolidayDate("");
+                  setRecurring(false);
+                  setEditId(null);
+                }}
                 className="px-4 py-2 rounded bg-gray-300 dark:bg-gray-600 dark:text-gray-200 hover:bg-gray-400"
               >
                 Cancel
               </button>
               <button
-                onClick={handleAddHoliday}
+                onClick={handleSave}
                 className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
               >
-                Declare Holiday
+                {editId ? "Save" : "Declare"}
               </button>
             </div>
           </div>
@@ -185,4 +165,3 @@ const Holidays = () => {
 };
 
 export default Holidays;
-
