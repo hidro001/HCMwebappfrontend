@@ -27,7 +27,7 @@ import { ChatBubble } from "@mui/icons-material";
 export const menuItems = [
   {
     name: "Dashboard",
-    icon: <FaHome  />,
+    icon: <FaHome />,
     color: "text-blue-400",
     iconAnimation: { scale: 1.2 },
     options: [
@@ -51,7 +51,7 @@ export const menuItems = [
 
   {
     name: "Announcements",
-    icon: <FaBullhorn  />,
+    icon: <FaBullhorn />,
     color: "text-yellow-400",
     iconAnimation: { x: 7 },
     options: [
@@ -69,7 +69,7 @@ export const menuItems = [
   },
   {
     name: "Engagement",
-    icon: <TiSocialTwitter  />,
+    icon: <TiSocialTwitter />,
     color: "text-blue-400",
     iconAnimation: { rotate: 360 },
     options: [
@@ -129,7 +129,7 @@ export const menuItems = [
   // },
   {
     name: "Manage Employees",
-    icon: <FaUsers  />,
+    icon: <FaUsers />,
     color: "text-orange-400",
     iconAnimation: { rotate: -360 },
     textAnimation: { x: 10 },
@@ -203,7 +203,7 @@ export const menuItems = [
   },
   {
     name: "Task Management ",
-    icon: <FaTasks  />,
+    icon: <FaTasks />,
     color: "text-blue-400",
     iconAnimation: { rotate: 360 },
     textAnimation: { x: 10 },
@@ -406,7 +406,7 @@ export const menuItems = [
   // },
   {
     name: "Payroll",
-    icon: <FaMoneyCheckAlt  />,
+    icon: <FaMoneyCheckAlt />,
     color: "text-orange-400",
     iconAnimation: { scale: 1.2 },
     textAnimation: { x: 10 },
@@ -698,7 +698,7 @@ export const menuItems = [
   // },
   {
     name: "Attendence",
-    icon: <FaBookReader  />,
+    icon: <FaBookReader />,
     color: "text-orange-400",
     iconAnimation: { scale: 1.2 },
     textAnimation: { x: 10 },
@@ -732,7 +732,7 @@ export const menuItems = [
 
   {
     name: "Recruit Management",
-    icon: <FaFileAlt  />,
+    icon: <FaFileAlt />,
     color: "text-yellow-400",
     iconAnimation: { scale: 1.2 },
     textAnimation: { x: 10 },
@@ -836,7 +836,6 @@ export const menuItems = [
   //   ],
   // },
 
-
   {
     name: "Performance management",
     icon: <GrDocumentPerformance />,
@@ -856,15 +855,27 @@ export const menuItems = [
       },
       {
         name: "Set KPIs",
-        link: "admin-action-tracker2",
+        link: "/dashboard/set-kpis",
         permission: "setKPIs",
+      },
+      {
+        name: "Team Performance",
+        link: "/dashboard/team-performance",
+        permission: "rateSubordinate",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "All Employes Rating",
+        link: "/dashboard/all-emp-ratings",
+        permission: "viewAllEmployeeRatings",
+        textAnimation: { x: 10 },
       },
     ],
   },
 
   {
     name: "Company Settings",
-    icon: <FaCog  />,
+    icon: <FaCog />,
     color: "text-red-400",
     iconAnimation: { scale: 1.3 },
     textAnimation: { x: 10 },

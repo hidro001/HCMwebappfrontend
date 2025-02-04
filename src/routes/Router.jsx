@@ -45,6 +45,9 @@ import {
   BreakSettingsPage,
   PerformanceManagementDashboardPage,
   PostAndViewPerformersPage,
+  SetKpiForDesignationPage,
+  TeamsPerformancePage,
+  AllEmpRatingsPage
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -250,6 +253,18 @@ const router = createBrowserRouter([
       {
         path: "top-performers",
         element: <PostAndViewPerformersPage />,
+      },
+      {
+        path: "set-kpis",
+        element: <SetKpiForDesignationPage />,
+      },
+      {
+        path: "team-performance",
+        element: <TeamsPerformancePage />,
+      },
+      {
+        path: "all-emp-ratings",
+        element: <AllEmpRatingsPage />,
       },
     ],
   },

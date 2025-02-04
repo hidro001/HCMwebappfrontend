@@ -43,6 +43,12 @@ import CompanyInductionPage from "./company setting/CompanyInductionPage";
 import BreakSettingsPage from "./company setting/BreakSettingsPage";
 import PerformanceManagementDashboardPage from "./performance management/PerformanceManagementDashboardPage";
 import PostAndViewPerformersPage from "./performance management/PostAndViewPerformersPage";
+import SetKpiForDesignationPage from "./performance management/SetKpiForDesignationPage";
+import TeamsPerformancePage from "./performance management/TeamsPerformancePage";
+import AllEmpRatingsPage from "./performance management/AllEmpRatingsPage";
+
+
+
 
 
 export {
@@ -87,6 +93,9 @@ export {
   CompanyInductionPage,
   BreakSettingsPage,
   PerformanceManagementDashboardPage,
-  PostAndViewPerformersPage
+  PostAndViewPerformersPage,
+  SetKpiForDesignationPage,
+  TeamsPerformancePage,
+  AllEmpRatingsPage
 
 };
