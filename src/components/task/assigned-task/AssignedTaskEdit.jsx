@@ -1,22 +1,45 @@
-import React, { useRef, useState } from "react";
-import { FaTimes, FaPaperclip } from "react-icons/fa";
+// AssignedTaskEdit.jsx
+import React, { useRef, useEffect } from "react";
+import { FaTimes } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import { updateTask } from "../../../service/taskService"; // Adjust the path as needed
 
-const AssignedTaskEdit = ({ onClose }) => {
+const AssignedTaskEdit = ({ task, onClose, onEditSuccess }) => {
+  // If task is not provided, don't render the modal.
+  if (!task) return null;
+
   const modalRef = useRef(null);
-  const [attachment, setAttachment] = useState(null);
 
-  // Handle file upload
-  const handleFileUpload = (e) => {
-    if (e.target.files.length > 0) {
-      setAttachment(e.target.files[0]);
+  // Lock the background scroll when the modal is open.
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
+  // Submit handler that collects form data and calls updateTask.
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    // Convert FormData to a plain object.
+    const updatedTaskData = Object.fromEntries(formData.entries());
+    const result = await updateTask(task._id, updatedTaskData);
+    if (result) {
+      // Call onEditSuccess to refresh the tasks list.
+      if (onEditSuccess) {
+        onEditSuccess();
+      }
+      onClose(); // Close modal on successful update.
+    } else {
+      console.error("Task update failed.");
     }
   };
 
   return (
     <AnimatePresence>
       <motion.div
-        className="fixed inset-0 flex justify-center items-center bg-gray-900 bg-opacity-50 dark:bg-opacity-75 z-50"
+        className="fixed inset-0 flex justify-center items-center bg-gray-900 bg-opacity-50 dark:bg-opacity-75 z-50 p-4"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
@@ -40,23 +63,28 @@ const AssignedTaskEdit = ({ onClose }) => {
           </button>
 
           {/* Header */}
-          <div className="bg-blue-900 text-white dark:bg-blue-700 p-4 text-lg font-semibold">
-            Assigned Task
+          <div className="bg-blue-900 dark:bg-blue-700 p-4 text-lg font-semibold text-white">
+            Edit Assigned Task
           </div>
 
           {/* Form Content */}
           <div className="p-6">
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              You can assign tasks to team members, set deadlines, and track their progress seamlessly.
+              Edit the task details below.
             </p>
 
-            <form className="space-y-4">
-              {/* Task Name */}
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              {/* Task Description */}
               <div>
-                <label className="block text-sm font-medium">Task Name*</label>
+                <label className="block text-sm font-medium mb-1" htmlFor="taskDesc">
+                  Task Description*
+                </label>
                 <input
+                  id="taskDesc"
+                  name="assignTaskDesc"
                   type="text"
-                  placeholder="Enter Task Name"
+                  placeholder="Enter Task Description"
+                  defaultValue={task.assignTaskDesc || ""}
                   className="w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                   required
                 />
@@ -65,41 +93,53 @@ const AssignedTaskEdit = ({ onClose }) => {
               {/* Assignee & Department */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium">Assignee</label>
+                  <label className="block text-sm font-medium mb-1" htmlFor="assignee">
+                    Assignee
+                  </label>
                   <input
+                    id="assignee"
                     type="text"
-                    value="Riya Mishra (RI0023)"
+                    value={`${task.assignedToName || ""} (${task.assignedToEmployeeId || ""})`}
                     disabled
                     className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-700 dark:text-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium">Department</label>
+                  <label className="block text-sm font-medium mb-1" htmlFor="department">
+                    Department
+                  </label>
                   <input
+                    id="department"
                     type="text"
-                    value="IT"
+                    value={task.selectedDepartment || task.assignedToDepartment || ""}
                     disabled
                     className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-700 dark:text-white"
                   />
                 </div>
               </div>
 
-              {/* Employee Name & ID */}
+              {/* Assigned By & Designation */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium">Employee Name</label>
+                  <label className="block text-sm font-medium mb-1" htmlFor="assignedBy">
+                    Assigned By
+                  </label>
                   <input
+                    id="assignedBy"
                     type="text"
-                    value="Akhilesh"
+                    value={task.assignedByName || ""}
                     disabled
                     className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-700 dark:text-white"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium">Employee ID</label>
+                  <label className="block text-sm font-medium mb-1" htmlFor="designation">
+                    Designation
+                  </label>
                   <input
+                    id="designation"
                     type="text"
-                    value="RI0056"
+                    value={task.assignedToDesignation || ""}
                     disabled
                     className="w-full p-2 border rounded-md bg-gray-200 dark:bg-gray-700 dark:text-white"
                   />
@@ -108,81 +148,92 @@ const AssignedTaskEdit = ({ onClose }) => {
 
               {/* Due Date */}
               <div>
-                <label className="block text-sm font-medium">Due Date</label>
+                <label className="block text-sm font-medium mb-1" htmlFor="dueDate">
+                  Due Date
+                </label>
                 <input
+                  id="dueDate"
+                  name="dueDate"
                   type="date"
+                  defaultValue={
+                    task.dueDate
+                      ? new Date(task.dueDate).toISOString().substr(0, 10)
+                      : ""
+                  }
                   className="w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
               </div>
 
               {/* Priority & Status */}
               <div className="space-y-2">
-                <fieldset className="flex space-x-4">
-                  <legend className="text-sm font-medium">Priority*</legend>
-                  {["High", "Medium", "Low"].map((level) => (
-                    <label key={level} className="inline-flex items-center">
-                      <input type="radio" name="priority" value={level} className="mr-2" />
-                      <span
-                        className={
-                          level === "High"
-                            ? "text-red-500"
-                            : level === "Medium"
-                            ? "text-yellow-500"
-                            : "text-green-500"
-                        }
-                      >
-                        {level}
-                      </span>
-                    </label>
-                  ))}
+                <fieldset>
+                  <legend className="text-sm font-medium mb-1">Priority*</legend>
+                  <div className="flex space-x-4">
+                    {["Low", "Medium", "High"].map((level) => (
+                      <label key={level} className="inline-flex items-center">
+                        <input
+                          type="radio"
+                          name="priority"
+                          value={level}
+                          defaultChecked={task.priority === level}
+                          className="mr-2"
+                        />
+                        <span
+                          className={
+                            level === "Low"
+                              ? "text-green-500"
+                              : level === "Medium"
+                              ? "text-yellow-500"
+                              : "text-red-500"
+                          }
+                        >
+                          {level}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 </fieldset>
-                <fieldset className="flex space-x-4">
-                  <legend className="text-sm font-medium">Status*</legend>
-                  {["On Hold", "Not Started", "Done"].map((state) => (
-                    <label key={state} className="inline-flex items-center">
-                      <input type="radio" name="status" value={state} className="mr-2" />
-                      <span
-                        className={
-                          state === "On Hold"
-                            ? "text-blue-500"
-                            : state === "Not Started"
-                            ? "text-orange-500"
-                            : "text-green-500"
-                        }
-                      >
-                        {state}
-                      </span>
-                    </label>
-                  ))}
+                <fieldset>
+                  <legend className="text-sm font-medium mb-1">Status*</legend>
+                  <div className="flex space-x-4">
+                    {["Not Started", "In Progress", "Completed"].map((state) => (
+                      <label key={state} className="inline-flex items-center">
+                        <input
+                          type="radio"
+                          name="status"
+                          value={state}
+                          defaultChecked={task.status === state}
+                          className="mr-2"
+                        />
+                        <span
+                          className={
+                            state === "Not Started"
+                              ? "text-orange-500"
+                              : state === "In Progress"
+                              ? "text-blue-500"
+                              : "text-green-500"
+                          }
+                        >
+                          {state}
+                        </span>
+                      </label>
+                    ))}
+                  </div>
                 </fieldset>
               </div>
 
-              {/* Description */}
+              {/* Updates/Comments */}
               <div>
-                <label className="block text-sm font-medium">Description</label>
+                <label className="block text-sm font-medium mb-1" htmlFor="updatesComments">
+                  Updates/Comments
+                </label>
                 <textarea
-                  placeholder="Enter a description..."
+                  id="updatesComments"
+                  name="updatesComments"
+                  placeholder="Enter updates or comments..."
+                  defaultValue={task.updatesComments || ""}
                   className="w-full p-2 border rounded-md bg-gray-50 dark:bg-gray-700 dark:text-white"
                 />
-              </div>
-
-              {/* Attachment Upload */}
-              <div>
-                <label className="block text-sm font-medium">Attachment</label>
-                <div className="flex items-center space-x-4 border rounded-md p-3 bg-gray-50 dark:bg-gray-700 dark:text-white">
-                  <FaPaperclip className="text-gray-600 dark:text-gray-300" />
-                  <input
-                    type="file"
-                    onChange={handleFileUpload}
-                    className="text-sm text-gray-700 dark:text-gray-300"
-                  />
-                </div>
-                {attachment && (
-                  <div className="mt-2 flex items-center p-2 border rounded-md bg-gray-100 dark:bg-gray-800">
-                    <FaPaperclip className="text-gray-600 dark:text-gray-300 mr-2" />
-                    <span className="text-gray-800 dark:text-gray-200 text-sm">{attachment.name}</span>
-                  </div>
-                )}
               </div>
 
               {/* Submit Button */}

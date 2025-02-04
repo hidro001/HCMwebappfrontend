@@ -40,7 +40,7 @@ import {
   ManageClaimsPage,
   // 
   TaskMainPage,
-  DailyTaskPage,
+  ViewDailyTaskPage,
   AssignedTaskPage,
   ChatPage,
 
@@ -56,6 +56,7 @@ import {
   ViewAnnouncements,
   NotificationsPage,
 } from "../components";
+import DailyTaskPage from "../pages/task/DailyTaskPage";
 
 
 const router = createBrowserRouter([
@@ -219,11 +220,15 @@ const router = createBrowserRouter([
       },
       {
         path: "view-daily-task",
-        element: <DailyTaskPage />,
+        element: <ViewDailyTaskPage />,
       },
       {
         path: "assigned-task",
         element: <AssignedTaskPage />,
+      },
+      {
+        path: "daily-task",
+        element: <DailyTaskPage />,
       },
       {
         path: "company-settings",

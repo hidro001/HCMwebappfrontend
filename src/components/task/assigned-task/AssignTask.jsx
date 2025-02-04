@@ -1,10 +1,11 @@
+// AssignTask.jsx (or AssignTask.jsx)
 import React, { useRef, useState, useEffect } from "react";
 import { FaTimes, FaPaperclip } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import { fetchSubordinates, submitTask } from "../../../service/taskService";
 import toast from "react-hot-toast";
 
-const TaskForm = ({ onClose }) => {
+const AssignTask = ({ onClose, onAddSuccess }) => {
   const modalRef = useRef(null);
   const [attachment, setAttachment] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -17,6 +18,7 @@ const TaskForm = ({ onClose }) => {
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Load subordinates on mount.
   useEffect(() => {
     const loadSubordinates = async () => {
       const data = await fetchSubordinates();
@@ -25,6 +27,7 @@ const TaskForm = ({ onClose }) => {
     loadSubordinates();
   }, []);
 
+  // Filter subordinates when search query changes.
   useEffect(() => {
     if (searchQuery.trim() === "") {
       setFilteredSubordinates([]);
@@ -58,13 +61,18 @@ const TaskForm = ({ onClose }) => {
       assigned_to: selectedAssignee.employee_Id,
       due_date: dueDate,
       priority,
+      // For simplicity, we are saving only the attachment name;
+      // if you need to upload a file, consider using FormData.
       attachment: attachment ? attachment.name : null,
     };
 
-    console.log("Submitting Task Data:", taskData);
     try {
       await submitTask(taskData);
       toast.success("Task submitted successfully!");
+      // Call the onAddSuccess callback to refresh tasks in the parent
+      if (onAddSuccess) {
+        onAddSuccess();
+      }
       onClose();
     } catch (error) {
       alert("Error submitting task.");
@@ -89,6 +97,7 @@ const TaskForm = ({ onClose }) => {
           exit={{ scale: 0.9 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
         >
+          {/* Close Button */}
           <button
             onClick={onClose}
             className="absolute top-4 right-4 text-gray-700 dark:text-gray-300 hover:text-red-600 transition duration-200"
@@ -98,10 +107,12 @@ const TaskForm = ({ onClose }) => {
             <FaTimes size={20} />
           </button>
 
+          {/* Header */}
           <div className="bg-blue-900 text-white dark:bg-blue-700 p-4 text-lg font-semibold">
             Assign Task
           </div>
 
+          {/* Form Content */}
           <div className="p-6">
             <p className="text-gray-600 dark:text-gray-300 mb-4">
               Assign tasks to team members, set deadlines, and track progress seamlessly.
@@ -226,4 +237,4 @@ const TaskForm = ({ onClose }) => {
   );
 };
 
-export default TaskForm;
+export default AssignTask;

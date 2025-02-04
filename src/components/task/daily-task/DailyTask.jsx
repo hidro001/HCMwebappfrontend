@@ -1,134 +1,190 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
+import { addTask, fetchAllTasks } from '../../../service/taskService'; // Adjust the import path as needed
+import { toast } from 'react-hot-toast';
 
-import CommentModal from "./CommentModal";
-import DailyTaskModal from "./DailyTaskModal";
-import ConfirmationDialog from "../../common/ConfirmationDialog";
-import { FaSearch, FaFileAlt, FaFileExcel, FaFilePdf, FaPrint,FaEye, FaTrash, FaCommentDots,  } from "react-icons/fa";
-const DailyTask = () => {
-  const allTasks = [
-    { id: "#526534", name: "Kathryn Murphy", date: "2024-01-25", status: "Done" },
-    { id: "#696589", name: "Annette Black", date: "2024-01-25", status: "On Hold" },
-    { id: "#256584", name: "Ronald Richards", date: "2024-02-10", status: "Done" },
-    { id: "#526587", name: "Eleanor Pena", date: "2024-02-10", status: "Done" },
-    { id: "#105986", name: "Leslie Alexander", date: "2024-03-15", status: "Pending" },
-    { id: "#526589", name: "Albert Flores", date: "2024-03-15", status: "Done" },
-    { id: "#526520", name: "Jacob Jones", date: "2024-04-27", status: "Done" },
-    { id: "#256584", name: "Jerome Bell", date: "2024-04-27", status: "Pending" },
-    { id: "#200257", name: "Marvin McKinney", date: "2024-04-30", status: "Done" },
-    { id: "#526525", name: "Cameron Williamson", date: "2024-04-30", status: "Done" },
-  ];
+export default function UpdateTask() {
+  // Each “task” is just a string
+  const [taskList, setTaskList] = useState(['']);
+  // This state will hold the tasks fetched from the GET API
+  const [fetchedTasks, setFetchedTasks] = useState([]);
+  
+  // Hardcoded employee ID; in a real app, you might pass this as a prop or derive it from context.
+  const empId = "RI0526";
 
-  const [tasks, setTasks] = useState(allTasks);
+  // Add a new text area
+  const handleAddTask = () => {
+    setTaskList((prev) => [...prev, '']);
+  };
 
-  const [selectedTask, setSelectedTask] = useState(null);
-  const [commentTask, setCommentTask] = useState(null);
-  const [deleteTask, setDeleteTask] = useState(null);
+  // Delete a specific row
+  const handleDeleteTask = (index) => {
+    setTaskList((prev) => prev.filter((_, i) => i !== index));
+  };
 
-  // Handle Task Deletion
-  const handleDelete = (taskId) => {
-    setTasks(tasks.filter(task => task.id !== taskId));
-    setDeleteTask(null);
+  // Update the user’s text
+  const handleChange = (index, value) => {
+    setTaskList((prev) =>
+      prev.map((task, i) => (i === index ? value : task))
+    );
+  };
+
+  // Function to fetch tasks from the API
+  const fetchTasks = async () => {
+    try {
+      const res = await fetchAllTasks(empId);
+      if (res && res.success) {
+        setFetchedTasks(res.data);
+      }
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+      toast.error("Error fetching tasks.");
+    }
+  };
+
+  // Fetch tasks when the component mounts
+  useEffect(() => {
+    fetchTasks();
+  }, [empId]);
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    // Filter out empty tasks (trim whitespace)
+    const nonEmptyTasks = taskList.filter(task => task.trim().length > 0);
+    if (nonEmptyTasks.length === 0) {
+      toast.error("Please enter at least one non-empty task.");
+      return;
+    }
+    // Build the payload; adjust the key ("task") as required by your backend.
+    const payload = { task: nonEmptyTasks };
+
+    try {
+      const result = await addTask(payload);
+      console.log('Submitted tasks:', result);
+      toast.success("Tasks submitted successfully!");
+      // Clear the fields after submission by resetting the state.
+      setTaskList(['']);
+      // Optionally refetch tasks to update the table with the new submission.
+      fetchTasks();
+    } catch (error) {
+      console.error('Submission failed:', error);
+      toast.error("Submission failed. Please try again.");
+    }
   };
 
   return (
-    <div className="p-6 min-h-screen bg-gray-50 text-black dark:bg-gray-900 dark:text-white transition-all">
-      <div className="mb-4">
-        <h2 className="text-xl font-bold">View Daily Task</h2>
-      </div>
-
-      <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 px-4 mb-4">
-      {/* Show select */}
-      <div className="flex items-center">
-        <label className="mr-2 text-sm font-medium text-gray-700 dark:text-gray-300">Show</label>
-        <select className="border border-gray-300 dark:border-gray-700 rounded-md px-2 py-1 text-sm bg-white dark:bg-gray-800" disabled>
-          <option>10</option>
-        </select>
-      </div>
-
-      {/* Search */}
-      <div className="flex items-center border border-gray-300 dark:border-gray-700 rounded-md px-2 py-1 text-sm">
-        <FaSearch className="text-gray-400 mr-2" />
-        <input type="text" placeholder="Search by Employee ID" className="w-full focus:outline-none dark:bg-gray-900" disabled value="" />
-      </div>
-
-      {/* Month + Department */}
-      <div className="flex items-center gap-2 ml-auto">
-        <input type="month" className="border border-gray-300 dark:border-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none dark:bg-gray-900" disabled value="2024-01" />
-
-        <select className="border border-gray-300 dark:border-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none dark:bg-gray-900" disabled>
-          <option>All Departments</option>
-        </select>
-      </div>
-
-      {/* Export Buttons */}
-      <div className="flex items-center gap-2">
-        <button title="Export CSV" className="w-10 h-10 flex items-center justify-center rounded-md bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-200" disabled>
-          <FaFileAlt className="w-4 h-4" />
+    <div className="min-h-screen p-6 bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100">
+      {/* Top banner with "Hide Help" */}
+      <div className="relative mb-6 rounded-md border border-green-300 bg-green-50 p-4 dark:border-green-700 dark:bg-gray-800">
+        <button
+          type="button"
+          className="absolute top-4 right-4 text-sm font-medium text-gray-700 hover:underline dark:text-gray-200"
+        >
+          Hide Help
         </button>
-        <button title="Export Excel" className="w-10 h-10 flex items-center justify-center rounded-md bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-200" disabled>
-          <FaFileExcel className="w-4 h-4" />
-        </button>
-        <button title="Export PDF" className="w-10 h-10 flex items-center justify-center rounded-md bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-200" disabled>
-          <FaFilePdf className="w-4 h-4" />
-        </button>
-        <button title="Print" className="w-10 h-10 flex items-center justify-center rounded-md bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-200" disabled>
-          <FaPrint className="w-4 h-4" />
-        </button>
+        <p className="leading-snug">
+          Stay on top of your department's progress with Department Statistics! Gain insights into 
+          department-wise tasks, track delayed and assigned tasks, and highlight important dates on 
+          the calendar. Keep your team organized, efficient, and always a step ahead!
+        </p>
       </div>
-    </div>
 
-      <div className="shadow-lg rounded-lg p-4 bg-white dark:bg-gray-800 transition-all">
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-sm">
-            <thead>
-              <tr className="bg-gray-100 dark:bg-gray-700 text-left text-black dark:text-white">
-                <th className="p-3">S.L</th>
-                <th className="p-3">Emp ID</th>
-                <th className="p-3">Name</th>
-                <th className="p-3">Assigned Date</th>
-                <th className="p-3">Status</th>
-                <th className="p-3">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tasks.map((task, index) => (
-                <tr key={task.id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                  <td className="p-3">{index + 1}</td>
-                  <td className="p-3 text-blue-500 cursor-pointer">{task.id}</td>
-                  <td className="p-3">{task.name}</td>
-                  <td className="p-3">{task.date}</td>
-                  <td className="p-3">
-                    <span className={`px-3 py-1 rounded text-xs font-semibold ${
-                      task.status === "Done" ? "bg-green-100 dark:bg-green-700 text-green-600 dark:text-green-200" :
-                      task.status === "On Hold" ? "bg-yellow-100 dark:bg-yellow-700 text-yellow-600 dark:text-yellow-200" :
-                      "bg-red-100 dark:bg-red-700 text-red-600 dark:text-red-200"
-                    }`}>{task.status}</span>
+      {/* Update Task card */}
+      <div className="rounded-md border border-green-300 p-6 dark:border-green-700 dark:bg-gray-800">
+        <h2 className="mb-6 text-2xl font-semibold text-blue-700 dark:text-blue-400">
+          Update Task
+        </h2>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {taskList.map((task, index) => (
+            <div key={index} className="relative p-2 border rounded-md border-gray-300 dark:border-gray-600">
+              <label
+                htmlFor={`task-${index}`}
+                className="mb-1 block text-sm font-medium"
+              >
+                Task {index + 1}
+              </label>
+              <textarea
+                id={`task-${index}`}
+                value={task}
+                onChange={(e) => handleChange(index, e.target.value)}
+                placeholder="Write here something..."
+                rows={1}
+                className="block w-full rounded border border-gray-300 bg-white p-2 
+                           text-gray-700 focus:outline-none dark:border-gray-600 
+                           dark:bg-gray-700 dark:text-gray-200"
+              />
+              {/* “X” button in top-right corner if more than 1 task */}
+              {taskList.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => handleDeleteTask(index)}
+                  className="absolute top-2 right-2 text-gray-500 hover:text-red-600 
+                             dark:text-gray-300 dark:hover:text-red-500"
+                  title="Delete this task"
+                >
+                  &#10005;
+                </button>
+              )}
+            </div>
+          ))}
+
+          {/* Buttons row aligned to the right */}
+          <div className="flex items-center gap-4 justify-end">
+            <button
+              type="button"
+              onClick={handleAddTask}
+              className="rounded border border-purple-500 px-6 py-1 font-medium 
+                         text-purple-500 transition-colors hover:bg-purple-500 hover:text-white"
+            >
+              Add
+            </button>
+            <button
+              type="submit"
+              className="rounded border border-orange-500 px-6 py-1 font-medium
+                         text-orange-500 transition-colors hover:bg-orange-500 hover:text-white"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Table Section: Display fetched tasks */}
+      <div className="mt-8 overflow-x-auto">
+        <table className="min-w-full text-left text-sm">
+          <thead>
+            <tr className="bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
+              <th className="px-4 py-2">S.L</th>
+              <th className="px-4 py-2">Task</th>
+              <th className="px-4 py-2">Date</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white dark:bg-gray-800">
+            {fetchedTasks.length > 0 ? (
+              fetchedTasks.map((item, index) => (
+                <tr key={item._id}>
+                  <td className="px-4 py-2">{index + 1}</td>
+                  <td className="px-4 py-2">
+                    {item.task && item.task.map((t, idx) => (
+                      <div key={idx}>
+                        {idx + 1}. {t}
+                      </div>
+                    ))}
                   </td>
-                  <td className="p-3 flex gap-3">
-  <FaEye size={20} className="text-blue-500 cursor-pointer" onClick={() => setSelectedTask(task)} />
-  <FaCommentDots size={20} className="text-gray-500 cursor-pointer" onClick={() => setCommentTask(task)} />
-  <FaTrash size={20} className="text-red-500 cursor-pointer" onClick={() => setDeleteTask(task)} />
-</td>
-
+                  <td className="px-4 py-2">{item.task_Date}</td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              ))
+            ) : (
+              <tr>
+                <td className="px-4 py-2" colSpan="3">
+                  No tasks available.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
-
-      {/* Modals */}
-      <DailyTaskModal task={selectedTask} onClose={() => setSelectedTask(null)} />
-      <CommentModal task={commentTask} onClose={() => setCommentTask(null)} />
-      <ConfirmationDialog
-        open={!!deleteTask}
-        title="Delete Task"
-        message="Are you sure you want to delete this task? This action cannot be undone."
-        onConfirm={() => handleDelete(deleteTask?.id)}
-        onCancel={() => setDeleteTask(null)}
-      />
     </div>
   );
-};
-
-export default DailyTask;
+}

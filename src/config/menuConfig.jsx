@@ -226,6 +226,12 @@ export const menuItems = [
         permission: "ActionTrackerManager",
         textAnimation: { x: 10 },
       },
+      {
+        name: "Daily Task",
+        link: "/dashboard/daily-task",
+        permission: "ActionTrackerManager",
+        textAnimation: { x: 10 },
+      },
      
     ],
   },

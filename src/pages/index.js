@@ -35,7 +35,7 @@ import ManagePayrollPage from "./payroll/ManagePayrollPage";
 import ManageClaimsPage from "./payroll/ManageClaimsPage";
 // task
 import AssignedTaskPage from "./task/AssignedTaskPage";
-import DailyTaskPage from "./task/DailyTaskPage";
+import ViewDailyTaskPage from "./task/ViewDailyTaskPage";
 import TaskMainPage from "./task/TaskMainPage";
 // chats
 import ChatPage from "./chats/ChatPage";
@@ -74,7 +74,7 @@ export {
   EmployeeFnfPage,
   CompanyInfoPage,
   AssignedTaskPage,
-DailyTaskPage,
+ViewDailyTaskPage,
 TaskMainPage,
   CompanySettingPage,
   ChatPage
