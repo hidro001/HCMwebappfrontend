@@ -47,7 +47,8 @@ import {
   PostAndViewPerformersPage,
   SetKpiForDesignationPage,
   TeamsPerformancePage,
-  AllEmpRatingsPage
+  AllEmpRatingsPage,
+  RaciDashboardPage
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -265,6 +266,10 @@ const router = createBrowserRouter([
       {
         path: "all-emp-ratings",
         element: <AllEmpRatingsPage />,
+      },
+      {
+        path: "raci-dashboard",
+        element: <RaciDashboardPage />,
       },
     ],
   },

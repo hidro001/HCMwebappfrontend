@@ -109,7 +109,7 @@ export default function ViewRatingModal({ show, onClose, ratingItem }) {
                   </tbody>
                 </table>
               ) : (
-                <p>No KPI details.</p>
+                <p>No KPI details Available Please Add Kpis.</p>
               )}
             </div>
           </motion.div>

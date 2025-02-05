@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 
-import BaseModal from "../../common/BaseModal";  // Your custom modal
+import BaseModal from "../../common/BaseModal";  
 import { useKpiStore } from "../../../store/useKpiStore";
 
 function AddKpiModal({ isOpen, onClose }) {

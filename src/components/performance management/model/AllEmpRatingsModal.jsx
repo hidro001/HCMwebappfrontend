@@ -4,7 +4,6 @@ import React from "react";
 import { motion } from "framer-motion";
 import { AiOutlineClose } from "react-icons/ai";
 
-// Import the BaseModal
 import BaseModal from "../../common/BaseModal"; 
 
 function AllEmpRatingsModal({ isOpen, rating, onClose }) {
@@ -13,7 +12,6 @@ function AllEmpRatingsModal({ isOpen, rating, onClose }) {
   const ratedTo = rating.ratedTo;
   const ratedBy = rating.ratedBy;
 
-  // If not open, return nothing
   if (!isOpen) return null;
 
   return (

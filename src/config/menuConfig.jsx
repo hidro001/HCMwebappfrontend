@@ -648,27 +648,33 @@ export const menuItems = [
   //   ],
   // },
 
-  // {
-  //   name: "RACI",
-  //   icon: <FaGlobe />,
-  //   color: "text-red-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "RACI Business",
-  //       link: "/dashboard/raci2",
-  //       permission: "Raci2",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "RACI OPS",
-  //       link: "/dashboard/raci",
-  //       permission: "superAdminRaci",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+  {
+    name: "RACI",
+    icon: <FaGlobe />,
+    color: "text-red-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Main",
+        link: "/dashboard/raci-dashboard",
+        permission: "Raci2",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "RACI Business",
+        link: "/dashboard/raci2",
+        permission: "Raci2",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "RACI OPS",
+        link: "/dashboard/raci",
+        permission: "superAdminRaci",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
   // {
   //   name: "Payroll & Attendence",
   //   icon: <FaMoneyCheckAlt />,

@@ -11,7 +11,6 @@ function EditKpiModal({ isOpen, onClose, kpiId }) {
 
   const { register, handleSubmit, reset } = useForm();
 
-  // Load existing KPI data into the form
   useEffect(() => {
     if (isOpen && kpiId) {
       const foundKpi = kpis.find((k) => k._id === kpiId);

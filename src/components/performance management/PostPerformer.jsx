@@ -7,8 +7,8 @@ import { useForm } from 'react-hook-form';
 import { AiOutlineEye } from 'react-icons/ai';
 
 import PostAndViewPerformersStore from '../../store/PostAndViewPerformersStore';
-import EmployeeRatingModal from './model/EmployeeRatingModal'; // For KPI detail
-import PostPerformerModal from './model/PostPerformerModal';   // For posting new performer
+import EmployeeRatingModal from './model/EmployeeRatingModal'; 
+import PostPerformerModal from './model/PostPerformerModal';   
 
 // For framer-motion animation
 const containerVariants = {

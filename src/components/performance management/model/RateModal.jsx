@@ -19,7 +19,7 @@ export default function RateModal({ show, onClose, selectedMember }) {
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
   const [comment, setComment] = useState("");
-  const [ratings, setRatings] = useState({}); // {kpiId: numericScore, ...}
+  const [ratings, setRatings] = useState({}); 
 
   // Fetch KPIs whenever the subordinate changes
   useEffect(() => {
