@@ -48,7 +48,8 @@ import {
   SetKpiForDesignationPage,
   TeamsPerformancePage,
   AllEmpRatingsPage,
-  RaciDashboardPage
+  RaciDashboardPage,
+  RaciBusinessPage
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -270,6 +271,10 @@ const router = createBrowserRouter([
       {
         path: "raci-dashboard",
         element: <RaciDashboardPage />,
+      },
+      {
+        path: "raci-business",
+        element: <RaciBusinessPage />,
       },
     ],
   },

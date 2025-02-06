@@ -46,7 +46,9 @@ import PostAndViewPerformersPage from "./performance management/PostAndViewPerfo
 import SetKpiForDesignationPage from "./performance management/SetKpiForDesignationPage";
 import TeamsPerformancePage from "./performance management/TeamsPerformancePage";
 import AllEmpRatingsPage from "./performance management/AllEmpRatingsPage";
-import RaciDashboardPage from "./raci dashboard/RaciDashboardPage";
+import RaciDashboardPage from "./raci management/RaciDashboardPage";
+import RaciBusinessPage from "./raci management/RaciBusinessPage";
+
 
 export {
   Login,
@@ -94,6 +96,7 @@ export {
   SetKpiForDesignationPage,
   TeamsPerformancePage,
   AllEmpRatingsPage,
-  RaciDashboardPage
+  RaciDashboardPage,
+  RaciBusinessPage
 
 };

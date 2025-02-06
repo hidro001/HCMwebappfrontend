@@ -663,7 +663,7 @@ export const menuItems = [
       },
       {
         name: "RACI Business",
-        link: "/dashboard/raci2",
+        link: "/dashboard/raci-business",
         permission: "Raci2",
         textAnimation: { x: 10 },
       },
