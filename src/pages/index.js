@@ -51,6 +51,7 @@ import TeamsPerformancePage from "./performance management/TeamsPerformancePage"
 import AllEmpRatingsPage from "./performance management/AllEmpRatingsPage";
 import RaciDashboardPage from "./raci management/RaciDashboardPage";
 import RaciBusinessPage from "./raci management/RaciBusinessPage";
+import RaciOperationsPage from "./raci management/RaciOperationsPage";
 
 
 export {
@@ -87,9 +88,7 @@ export {
   EmployeeFnfPage,
   CompanyInfoPage,
   AssignedTaskPage,
-ViewDailyTaskPage,
-
-  
+  ViewDailyTaskPage,
   ChatPage,
   DailyTaskPage,
   TaskMainPage,
@@ -104,6 +103,7 @@ ViewDailyTaskPage,
   TeamsPerformancePage,
   AllEmpRatingsPage,
   RaciDashboardPage,
-  RaciBusinessPage
+  RaciBusinessPage,
+  RaciOperationsPage
 
 };

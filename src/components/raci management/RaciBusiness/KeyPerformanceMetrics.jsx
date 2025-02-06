@@ -82,7 +82,7 @@ export default function KeyPerformanceMetrics() {
 
 
   return (
-    <div className="max-w-3xl mx-auto p-6 dark:bg-gray-900 dark:text-gray-100">
+    <div className=" mx-auto w-full p-6 dark:bg-gray-900 dark:text-gray-100 border rounded-2xl mt-2 ">
       {/* Hot Toast container */}
  
 
@@ -99,7 +99,7 @@ export default function KeyPerformanceMetrics() {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto hide-horizontal-scrollbar ">
         <table className="w-full border border-gray-300 dark:border-gray-700">
           <thead className="bg-gray-100 dark:bg-gray-800">
             <tr>

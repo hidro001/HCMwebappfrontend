@@ -1,5 +1,5 @@
 import React from "react";
-import RaciBusiness from "../../components/raci management/RaciBusiness";
+import RaciBusiness from "../../components/raci management/RaciBusiness/RaciBusiness";
 
 const RaciBusinessPage = () => {
   return (

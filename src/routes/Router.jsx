@@ -49,7 +49,8 @@ import {
   TeamsPerformancePage,
   AllEmpRatingsPage,
   RaciDashboardPage,
-  RaciBusinessPage
+  RaciBusinessPage,
+  RaciOperationsPage
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -280,6 +281,10 @@ const router = createBrowserRouter([
       {
         path: "raci-business",
         element: <RaciBusinessPage />,
+      },
+      {
+        path: "raci-operations",
+        element: <RaciOperationsPage />,
       },
     ],
   },

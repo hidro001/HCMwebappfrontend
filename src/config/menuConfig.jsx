@@ -668,8 +668,8 @@ export const menuItems = [
         textAnimation: { x: 10 },
       },
       {
-        name: "RACI OPS",
-        link: "/dashboard/raci",
+        name: "RACI Operations",
+        link: "/dashboard/raci-operations",
         permission: "superAdminRaci",
         textAnimation: { x: 10 },
       },

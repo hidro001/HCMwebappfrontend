@@ -15,11 +15,11 @@ export default function PreviousScores() {
  
 
   return (
-    <div className="max-w-xl mx-auto p-4 dark:bg-gray-900 dark:text-gray-100">
+    <div className="max-w-xl mx-auto p-4 dark:bg-gray-900 dark:text-gray-100 border rounded-2xl mt-2">
 
       <h1 className="text-lg font-semibold mb-4">Previous Scores</h1>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto hide-horizontal-scrollbar">
         {/* Key change: border-collapse for continuous borders */}
         <table className="w-full border border-gray-300 dark:border-gray-700 border-collapse">
           <thead className="bg-gray-100 dark:bg-gray-800">

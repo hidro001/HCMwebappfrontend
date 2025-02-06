@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
-// Example questions
+// Questions
 const questions = [
   { id: 1, text: 'Business operates in a well-established, stable industry' },
   { id: 2, text: 'The industry / market is growing' },
@@ -12,42 +12,46 @@ const questions = [
   { id: 5, text: 'Future industry trends will positively affect the business' },
 ];
 
-// The dropdown options, each with a label and color class
+// Dropdown options with color classes
 const responseOptions = [
   { value: '', label: 'No response', colorClass: 'text-gray-500' },
   { value: 'definitely', label: 'Definitely', colorClass: 'text-green-600' },
-  { value: 'probably', label: 'Probably', colorClass: 'text-orange-500' },
-  { value: 'slight', label: 'No – Will change slightly', colorClass: 'text-blue-500' },
-  { value: 'moderate', label: 'No – Will change moderately', colorClass: 'text-yellow-500' },
-  { value: 'significant', label: 'No – Will change significantly', colorClass: 'text-red-500' },
+  { value: 'probably', label: 'Probably', colorClass: 'text-blue-600' },
+  { value: 'no-slight', label: 'No – Will change slightly', colorClass: 'text-yellow-600' },
+  { value: 'no-moderate', label: 'No – Will change moderately', colorClass: 'text-orange-600' },
+  { value: 'no-significant', label: 'No – Will change significantly', colorClass: 'text-red-600' },
 ];
 
-export default function BusinessPerformanceTable() {
-  // Store which dropdown option is selected for each question
+export default function IndustryPerformanceTable() {
+  // Track dropdown selections
   const [responses, setResponses] = useState({});
-  // Store the automatically mirrored Performance Review text
-  const [performanceReviews, setPerformanceReviews] = useState({});
+  // Track automatically mirrored Performance Review text
+  const [reviews, setReviews] = useState({});
 
-  // Called whenever the user picks a dropdown value
-  const handleResponseChange = (questionId, newValue) => {
-    setResponses(prev => ({ ...prev, [questionId]: newValue }));
+  const handleResponseChange = (id, newValue) => {
+    // Update the responses
+    setResponses(prev => ({ ...prev, [id]: newValue }));
 
-    // Also set Performance Review text to the matching label
-    const selected = responseOptions.find(opt => opt.value === newValue);
-    setPerformanceReviews(prev => ({
+    // Also update Performance Review with the selected label
+    const selectedOption = responseOptions.find(opt => opt.value === newValue);
+    setReviews(prev => ({
       ...prev,
-      [questionId]: (selected && selected.label) || '',
+      [id]: (selectedOption && selectedOption.label) || '',
     }));
+  };
 
+  // If you still want manual editing in Performance Review, keep this:
+  const handleReviewChange = (id, newValue) => {
+    setReviews(prev => ({ ...prev, [id]: newValue }));
   };
 
   return (
-    <div className="container px-4 py-8 dark:bg-gray-900 dark:text-gray-100 border rounded-2xl mt-2">
+    <div className="container mx-auto px-4 py-8 dark:bg-gray-900 dark:text-gray-100 h-fit border rounded-2xl mt-2 overflow-x-auto">
    
 
-      <h1 className="text-2xl font-bold mb-4">Business Performance Assessment</h1>
+      <h1 className="text-2xl font-bold mb-4">Industry Performance Assessment</h1>
 
-      <table className="min-w-full border border-gray-300 dark:border-gray-700">
+      <table className="min-w-full border border-gray-300 dark:border-gray-700 overflow-x-auto">
         <thead className="bg-gray-100 dark:bg-gray-800">
           <tr>
             <th className="py-2 px-4 border-b dark:border-gray-700">Question</th>
@@ -55,13 +59,12 @@ export default function BusinessPerformanceTable() {
             <th className="py-2 px-4 border-b dark:border-gray-700">Performance Review</th>
           </tr>
         </thead>
-        <tbody>
-          {questions.map(q => (
+        <tbody className=''>
+          {questions.map((q) => (
             <tr key={q.id} className="border-b dark:border-gray-700">
-              {/* Question */}
               <td className="py-2 px-4 align-top">{q.text}</td>
-              
-              {/* Response dropdown */}
+
+              {/* Dropdown Cell */}
               <td className="py-2 px-4 align-top">
                 <ResponseDropdown
                   questionId={q.id}
@@ -71,20 +74,16 @@ export default function BusinessPerformanceTable() {
                 />
               </td>
 
-              {/* Performance Review: 
-                  mirrored automatically from the dropdown's selected label 
-                  (not user-editable in this version) 
-              */}
+              {/* Performance Review Cell */}
               <td className="py-2 px-4 align-top">
                 <input
                   type="text"
-                  placeholder="No response"
                   className="w-full border dark:border-gray-700 rounded px-2 py-1 
-                             bg-gray-50 dark:bg-gray-800 dark:text-gray-100 
-                             focus:outline-none focus:ring-1 focus:ring-blue-500"
-                  value={performanceReviews[q.id] || ''}
-                  onChange={() => {}}
-                  disabled
+                             focus:outline-none dark:bg-gray-800 dark:text-gray-100"
+                  placeholder="No response"
+                  value={reviews[q.id] || ''}
+                  onChange={(e) => handleReviewChange(q.id, e.target.value)}
+                  // If you want read-only, add: disabled or readOnly
                 />
               </td>
             </tr>
@@ -95,13 +94,12 @@ export default function BusinessPerformanceTable() {
   );
 }
 
-// Separate component for the dropdown
 function ResponseDropdown({ questionId, options, value, onChange }) {
   const [open, setOpen] = useState(false);
 
   const selectedOption = options.find(opt => opt.value === value) || options[0];
 
-  const handleSelect = (optionValue) => {
+  const handleOptionClick = (optionValue) => {
     onChange(questionId, optionValue);
     setOpen(false);
   };
@@ -112,13 +110,12 @@ function ResponseDropdown({ questionId, options, value, onChange }) {
         type="button"
         onClick={() => setOpen(!open)}
         className="flex items-center justify-between w-full border 
-                   dark:border-gray-700 px-3 py-2 rounded shadow-sm
+                   dark:border-gray-700 px-3 py-2 rounded shadow-sm 
                    dark:bg-gray-800 dark:text-gray-100"
       >
         {selectedOption.label}
         {open ? <FaChevronUp /> : <FaChevronDown />}
       </button>
-
       <AnimatePresence>
         {open && (
           <motion.ul
@@ -128,20 +125,19 @@ function ResponseDropdown({ questionId, options, value, onChange }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
           >
-            {options.map(opt => (
-         
+            {options.map(option => (
               <li
-  key={opt.value}
-  onClick={() => handleSelect(opt.value)}
-  className={`
-    px-3 py-2 text-sm cursor-pointer 
-    hover:bg-gray-100 dark:hover:bg-gray-700 
-    ${opt.colorClass} 
-    ${opt.value === value ? 'bg-gray-100 dark:bg-gray-700 font-medium' : ''}
-  `}
->
-  {opt.label}
-</li>
+                key={option.value}
+                onClick={() => handleOptionClick(option.value)}
+                className={`
+                  px-3 py-2 text-sm cursor-pointer 
+                  hover:bg-gray-100 dark:hover:bg-gray-700 
+                  ${option.colorClass}
+                  ${option.value === value ? 'bg-gray-100 dark:bg-gray-700 font-medium' : ''}
+                `}
+              >
+                {option.label}
+              </li>
             ))}
           </motion.ul>
         )}
@@ -149,3 +145,4 @@ function ResponseDropdown({ questionId, options, value, onChange }) {
     </div>
   );
 }
+
