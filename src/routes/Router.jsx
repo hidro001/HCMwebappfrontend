@@ -1,9 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import PrivateRoute from "./PrivateRoute";
 
-
-
-
 import {
   Login,
   Dashboard,
@@ -38,16 +35,23 @@ import {
   MainPage,
   ManagePayrollPage,
   ManageClaimsPage,
-  // 
+  //
   TaskMainPage,
   ViewDailyTaskPage,
   AssignedTaskPage,
-  ChatPage,
-
-
+  AddHierarchyPage,
+  CompanyPoliciesPage,
+  CompanyInductionPage,
+  BreakSettingsPage,
+  PerformanceManagementDashboardPage,
+  PostAndViewPerformersPage,
+  SetKpiForDesignationPage,
+  TeamsPerformancePage,
+  AllEmpRatingsPage,
+  RaciDashboardPage,
+  RaciBusinessPage
 } from "../pages";
 import MainLayout from "./MainLayout";
-
 
 import {
   Footer,
@@ -57,7 +61,6 @@ import {
   NotificationsPage,
 } from "../components";
 import DailyTaskPage from "../pages/task/DailyTaskPage";
-
 
 const router = createBrowserRouter([
   {
@@ -101,7 +104,7 @@ const router = createBrowserRouter([
         path: "engagement-permission-dashboard",
         element: <EngPermissionDashboardPage />,
       },
-      
+
       {
         path: "manage-tickets",
         element: <ManageTicketsPage />,
@@ -160,10 +163,10 @@ const router = createBrowserRouter([
       },
       {
         path: "manage-claims",
-        element: <ManageClaimsPage/>,
+        element: <ManageClaimsPage />,
       },
-  
-  {
+
+      {
         path: "attendance-dashboard",
         element: <AttendanceDashboardPage />,
       },
@@ -235,11 +238,49 @@ const router = createBrowserRouter([
         element: <CompanySettingPage />,
       },
       {
-        path: "chats",
-        element: <ChatPage />,
+        path: "add-hierarchy",
+        element: <AddHierarchyPage />,
       },
- 
-
+      {
+        path: "update-policies",
+        element: <CompanyPoliciesPage />,
+      },
+      {
+        path: "post-induction",
+        element: <CompanyInductionPage />,
+      },
+      {
+        path: "break-settings",
+        element: <BreakSettingsPage />,
+      },
+      {
+        path: "performance-dashboard",
+        element: <PerformanceManagementDashboardPage />,
+      },
+      {
+        path: "top-performers",
+        element: <PostAndViewPerformersPage />,
+      },
+      {
+        path: "set-kpis",
+        element: <SetKpiForDesignationPage />,
+      },
+      {
+        path: "team-performance",
+        element: <TeamsPerformancePage />,
+      },
+      {
+        path: "all-emp-ratings",
+        element: <AllEmpRatingsPage />,
+      },
+      {
+        path: "raci-dashboard",
+        element: <RaciDashboardPage />,
+      },
+      {
+        path: "raci-business",
+        element: <RaciBusinessPage />,
+      },
     ],
   },
   {

@@ -1,4 +1,4 @@
-import  { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { FaEye, FaEdit, FaTrash, FaPrint, FaFilePdf } from "react-icons/fa";
 import { MdOutlineFileDownload } from "react-icons/md";
@@ -6,9 +6,9 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Skeleton } from "@mui/material";
 import { toast } from "react-hot-toast";
-import EmployessIssueModel from "./EmployessIssueModel";
+import EmployessIssueModel from "./model/EmployessIssueModel";
 import ConfirmationDialog from "../common/ConfirmationDialog";
-import TicketDetailsModal from "./TicketDetailsModal";
+import TicketDetailsModal from "./model/TicketDetailsModal";
 import useIssuesStore from "../../store/useIssuesStore";
 import useDepartmentStore from "../../store/departmentStore";
 
@@ -36,6 +36,7 @@ export default function RaiseTickets() {
     postComment,
     loading,
   } = useIssuesStore();
+
   const { departments } = useDepartmentStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -136,6 +137,7 @@ export default function RaiseTickets() {
   }, [issues, searchText, department, status, priorityFilter, selectedDate]);
 
   const totalPages = Math.ceil(filteredIssues.length / pageSize);
+
   const paginatedIssues = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     return filteredIssues.slice(startIndex, startIndex + pageSize);

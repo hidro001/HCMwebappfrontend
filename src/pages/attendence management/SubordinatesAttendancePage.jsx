@@ -1,10 +1,11 @@
-
-import SubordinatesAttendance from '../../components/attendence management/subordinatesAttendance'
+import SubordinatesAttendance from "../../components/attendence management/SubordinatesAttendance";
 
 const SubordinatesAttendancePage = () => {
   return (
-    <div><SubordinatesAttendance/></div>
-  )
-}
+    <div>
+      <SubordinatesAttendance />
+    </div>
+  );
+};
 
-export default SubordinatesAttendancePage
+export default SubordinatesAttendancePage;

@@ -12,8 +12,8 @@ import { MdOutlineFileDownload } from "react-icons/md";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Skeleton } from "@mui/material";
-import IssueDetailsModal from "./IssueDetailsModal";
-import EditStatusModal from "./EditStatusModal";
+import IssueDetailsModal from "./model/IssueDetailsModal";
+import EditStatusModal from "./model/EditStatusModal";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import { usePoshStore } from "../../../store/poshStore";
 
