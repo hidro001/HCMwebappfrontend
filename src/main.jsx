@@ -11,13 +11,20 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
 import { ThemeProvider } from "./hooks/ThemeContext";
-
+import { CallProvider } from "./contexts/CallContext.jsx";
+import CallModal from "./components/chats/calls/CallModal.jsx"
+import CallWindow from "./components/chats/calls/CallWindow.jsx"
+import VideoCallModal from "./components/chats/calls/VideoCallModal.jsx"
 
 
 createRoot(document.getElementById("root")).render(
     <ThemeProvider>
-
+  <CallProvider>
+  <CallModal />
+ <CallWindow />
+ <VideoCallModal />
     <App />
+  </CallProvider>
     
     </ThemeProvider>
  
