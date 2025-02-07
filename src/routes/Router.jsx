@@ -293,6 +293,7 @@ const router = createBrowserRouter([
         path: "raci-operations",
         element: <RaciOperationsPage />,
       // chat
+      },
       {
         path: "chats",
         element: <ChatPage />,
