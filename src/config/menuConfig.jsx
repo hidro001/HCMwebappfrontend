@@ -149,7 +149,7 @@ export const menuItems = [
       //   textAnimation: { x: 10 },
       // },
       {
-        name: "Supordinates",
+        name: "Subordinates",
         link: "/dashboard/supordinates-employees",
         permission: "updateEmployeeAdmin",
         textAnimation: { x: 10 },
