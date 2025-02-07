@@ -50,7 +50,7 @@ export async function updatePayroll(payrollId, updates) {
 export async function fetchAllRequests() {
  
   const response = await axiosInstance.get(
-    'http://localhost:6060/api/v1/superadmin/companysettings/requests',
+    'https://apiv2.humanmaximizer.com/api/v1/superadmin/companysettings/requests',
    
   );
   return response.data?.data || [];
@@ -63,7 +63,7 @@ export async function fetchAllRequests() {
 export async function deleteRequests(id) {
   try {
     const response = await axiosInstance.delete(
-      `http://localhost:6060/api/v1/superadmin/companysettings/requests/${id}`
+      `https://apiv2.humanmaximizer.com/api/v1/superadmin/companysettings/requests/${id}`
     );
     return response.data?.data || [];
   } catch (error) {
@@ -74,7 +74,7 @@ export async function deleteRequests(id) {
 export async function getDepartment() {
   try {
     const response = await axiosInstance.get(
-      `http://localhost:6060/api/v1/superadmin/departments`
+      `https://apiv2.humanmaximizer.com/api/v1/superadmin/departments`
     );
     return response.data?.data || [];
   } catch (error) {

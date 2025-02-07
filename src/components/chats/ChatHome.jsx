@@ -142,10 +142,10 @@ export default function ChatHome() {
     }
     try {
       const [subsResponse, managersResponse] = await Promise.all([
-        axios.get("http://localhost:6060/api/v1/admin/subordinates", {
+        axios.get("https://apiv2.humanmaximizer.com/api/v1/admin/subordinates", {
           headers: { Authorization: `Bearer ${accessToken}` },
         }),
-        axios.get("http://localhost:6060/api/v1/admin/both", {
+        axios.get("https://apiv2.humanmaximizer.com/api/v1/admin/both", {
           headers: { Authorization: `Bearer ${accessToken}` },
         }),
       ]);

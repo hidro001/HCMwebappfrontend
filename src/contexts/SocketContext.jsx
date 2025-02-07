@@ -16,7 +16,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (token) {
-      const newSocket = io(import.meta.env.REACT_APP_SOCKET_URL || 'http://localhost:6060', {
+      const newSocket = io(import.meta.env.REACT_APP_SOCKET_URL || 'https://apiv2.humanmaximizer.com', {
         auth: {
           token,
         },
