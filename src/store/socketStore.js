@@ -22,7 +22,7 @@ const useSocketStore = create((set, get) => ({
       return;
     }
 
-    const socket = io("https://apiv2.humanmaximizer.com", {
+    const socket = io("https://hmback.onrender.com", {
       transports: ["websocket"],
       auth: {
         token: token,
