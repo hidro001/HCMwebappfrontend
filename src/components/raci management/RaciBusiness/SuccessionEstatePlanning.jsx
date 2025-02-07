@@ -74,7 +74,7 @@ const SuccessionEstatePlanning = ({ setScore }) => {
               </td>
               <td className="p-2">
                 <div
-                  className={`inline-block px-2 py-1 text-sm rounded ${
+                  className={`inline-block px-2 py-1 text-sm rounded dark:bg-slate-600 ${
                     getColorFromValue(values[index])
                   }`}
                 >

@@ -61,7 +61,6 @@
 
 // export default Heading;
 
-
 import * as React from "react";
 
 function HeadingWithSubtitle({ heading, subtitle }) {

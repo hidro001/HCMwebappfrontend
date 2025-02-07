@@ -452,7 +452,7 @@ const RaciBusiness = () => {
 
   return (
     <div>
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 dark:text-white">
+      <div className=" bg-gray-100 dark:bg-gray-900 dark:text-white">
         <div className="p-4 max-w-7xl mx-auto">
           <h1 className="text-2xl font-bold mb-6">
             Key Performance Metrics RaciBusiness

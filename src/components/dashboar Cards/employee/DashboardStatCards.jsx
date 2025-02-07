@@ -32,11 +32,13 @@ function DashboardStatCards() {
   const waveDarkRed = "https://iili.io/2D0bZCv.png"
 
 
+
+
   const statCardsData = [
     {
       icon: <FaUsers className="text-blue-600" />,
       count: totalUsers,
-      label: "Total Employees",
+      label: "Total Logged In",
       chartLight: waveLightGreen,  // Light version
       chartDark: waveDarkGreen,    // Dark version
       onClickDetail: null,
@@ -44,7 +46,7 @@ function DashboardStatCards() {
     {
       icon: <FaUserCheck className="text-green-600" />,
       count: usersLoggedInToday,
-      label: "Users Logged In Today",
+      label: "Total Leaves Taken",
       chartLight: waveLightYellow,
       chartDark: waveDarkYellow,
       onClickDetail: fetchAttendanceDetails,
@@ -52,7 +54,7 @@ function DashboardStatCards() {
     {
       icon: <FaUserTimes className="text-red-600" />,
       count: employeesOnLeaveToday,
-      label: "Employees On Leave Today",
+      label: "Total Task Pending",
       chartLight: waveLightRed,
       chartDark: waveDarkRed,
       onClickDetail: fetchLeaveDetails,
@@ -60,9 +62,9 @@ function DashboardStatCards() {
   ];
 
   return (
-    <div className="flex flex-col gap-5 md:flex-row">
+    <div className="flex flex-col gap-5 md:flex-row bg-blend-darken">
       {statCardsData.map((item, index) => (
-        <StatCard key={index} {...item} />
+        <StatCard  key={index} {...item} />
       ))}
     </div>
   );

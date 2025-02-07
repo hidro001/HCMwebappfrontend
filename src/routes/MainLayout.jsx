@@ -77,8 +77,8 @@
 //                     backdrop-blur-sm
 //                     gap-2
 //                     overflow-x-auto
-//                     hide-scrollbar 
-                 
+//                     hide-scrollbar
+
 //                   `}
 //                 >
 //                   {activeSection.options.map((option, idx) => {
@@ -91,7 +91,7 @@
 //                           relative px-4 py-2 mx-1 text-base font-bold
 //                           transition-colors duration-300
 //                           rounded-lg
-                     
+
 //                           ${
 //                             isActive
 //                               ? "text-green-600 dark:text-green-400 border-b-1 border-green-500"
@@ -105,7 +105,7 @@
 //                             className={`
 //                               absolute left-0 bottom-0 w-full h-[2px] bg-green-500
 //                               dark:bg-green-300
-                           
+
 //                             `}
 //                           />
 //                         )}
@@ -130,12 +130,9 @@
 
 // export default MainLayout;
 
-
-import  { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sidebar, Breadcrumb, Navbar } from "../components";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-// Removed unused icon imports
-// import { MdDarkMode, MdLightMode } from "react-icons/md";
 
 // Import the same menu config
 import { menuItems } from "../config/menuConfig";
@@ -146,6 +143,14 @@ const MainLayout = () => {
   const [darkMode, setDarkMode] = useState(false);
 
   const currentPath = location.pathname;
+
+  // Scroll to top whenever the route (pathname) changes.
+  useEffect(() => {
+    const scrollableDiv = document.getElementById("scrollableDiv");
+    if (scrollableDiv) {
+      scrollableDiv.scrollTop = 0;
+    }
+  }, [currentPath]);
 
   let activeSection = null;
   let activeOption = null;
@@ -186,10 +191,10 @@ const MainLayout = () => {
           <Sidebar onSectionSelect={handleSectionSelect} />
 
           <div className="flex-1 h-screen flex flex-col w-full overflow-x-scroll hide-horizontal-scrollbar">
-         <Breadcrumb />
-    {activeSection && activeSection.options && (
-                <div
-                  className={`
+            <Breadcrumb />
+            {activeSection && activeSection.options && (
+              <div
+                className={`
                     flex items-center
                     bg-gray-200 dark:bg-gray-900
                     border-b border-gray-300 dark:border-gray-700
@@ -198,14 +203,14 @@ const MainLayout = () => {
                     overflow-x-auto
                     hide-scrollbar 
                   `}
-                >
-                  {activeSection.options.map((option, idx) => {
-                    const isActive = option.link === currentPath;
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => handleTabClick(option)}
-                        className={`
+              >
+                {activeSection.options.map((option, idx) => {
+                  const isActive = option.link === currentPath;
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => handleTabClick(option)}
+                      className={`
                           relative px-4 py-2 mx-1 text-base font-bold
                           transition-colors duration-300
                           rounded-lg
@@ -215,21 +220,21 @@ const MainLayout = () => {
                               : "text-gray-600 dark:text-gray-200 hover:text-cyan-500 dark:hover:text-cyan-300"
                           }
                         `}
-                      >
-                        {option.name}
-                        {isActive && (
-                          <span
-                            className={`
+                    >
+                      {option.name}
+                      {isActive && (
+                        <span
+                          className={`
                               absolute left-0 bottom-0 w-full h-[2px] bg-green-500
                               dark:bg-green-300
                             `}
-                          />
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
+                        />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
             <div
               id="scrollableDiv"
               className={`
@@ -244,10 +249,7 @@ const MainLayout = () => {
                 transition-colors duration-300
               `}
             >
-     
-
               {/* If we found an activeSection, show its horizontal sub-tabs */}
-          
 
               {/* Page Content */}
               <div className="container mx-auto px-4 py-3 mb-20">
@@ -264,4 +266,3 @@ const MainLayout = () => {
 };
 
 export default MainLayout;
-

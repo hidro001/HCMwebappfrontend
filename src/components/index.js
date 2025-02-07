@@ -14,8 +14,6 @@ import NotificationsPage from "./Notification/NotificationsPage";
 
 
 // import Unauthorized from './components/Unauthorized';
-import DashboardLayout from "./dashboar Cards/superAdmin/DashboardLayout";
-import DashboardLayoutEmployee from "./dashboar Cards/employee/DashboardLayoutEmployee";
 
 
 
@@ -35,8 +33,7 @@ export {
   ViewAnnouncements,
   NotificationsPage,
   ThemeToggleButton,
-  DashboardLayout,
-  DashboardLayoutEmployee,
+ 
  
  
 

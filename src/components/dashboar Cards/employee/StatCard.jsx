@@ -1,51 +1,187 @@
+// // src/components/StatCard.jsx
+
+// import React from "react";
+
+// function StatCard({ icon, count, label, chart, onClickDetail }) {
+//   return (
+//     <div
+//       className="
+//         relative
+//         flex flex-col
+//         w-full max-w-lg
+//         p-4
+//         rounded-xl
+//         bg-white dark:bg-gray-800
+//         text-gray-800 dark:text-gray-100
+//         shadow-2xl
+//         overflow-hidden
+//       "
+//     >
+//       {/* Top Right Button */}
+//       <div className="flex justify-end mb-2">
+//         <button
+//           className="
+//             flex items-center gap-1
+//             text-sm font-semibold
+//             text-gray-400 hover:text-gray-600
+//             dark:text-gray-300 dark:hover:text-gray-100
+//           "
+//           onClick={onClickDetail} // <--- NEW
+//         >
+//           <span>See Detail</span>
+//           <svg
+//             xmlns="http://www.w3.org/2000/svg"
+//             fill="none"
+//             viewBox="0 0 24 24"
+//             strokeWidth="2"
+//             stroke="currentColor"
+//             className="w-4 h-4"
+//           >
+//             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+//           </svg>
+//         </button>
+//       </div>
+
+//       {/* Icon + Stats */}
+//       <div className="flex flex-col gap-2">
+//         {/* Icon in a circular background */}
+//         <div className="flex items-center">
+//           <div
+//             className="
+//               flex items-center justify-center
+//               w-10 h-10
+//               rounded-full
+//               bg-gray-100 dark:bg-gray-700
+//             "
+//           >
+//             {/* For a React Icon or an <img> */}
+//             {icon}
+//           </div>
+//         </div>
+
+//         {/* Count / Label */}
+//         <div className="mt-1">
+//           <div className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+//             {count}
+//           </div>
+//           <div className="text-sm text-gray-500 dark:text-gray-300">
+//             {label}
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Wave Image at the bottom or Chart */}
+//       <img
+//         src={chart}
+//         alt={`${label} trend chart`}
+//         className="
+//           w-full h-auto
+//         "
+//         loading="lazy"
+//       />
+//     </div>
+//   );
+// }
+
+// export default StatCard;
 
 
-function StatCard({ icon, iconBg, value, label, chart }) {
+import React from "react";
+
+function StatCard({ 
+  icon, 
+  count, 
+  label, 
+  chartLight, 
+  chartDark,    // <-- We’ll accept two image URLs
+  onClickDetail 
+}) {
   return (
-    <div className="flex flex-col w-[33%] max-md:ml-0 max-md:w-full">
-      <div className="flex flex-col w-full max-md:mt-3.5">
-        <div className="flex gap-2 items-center self-end p-2.5 text-lg font-semibold text-lime-600 min-h-[44px]">
-          <button className="flex gap-2 items-center">
-            <span className="self-stretch my-auto">See Detail</span>
-            <img
-              loading="lazy"
-              src="https://cdn.builder.io/api/v1/image/assets/TEMP/e8a2457d76929a46a176d41345e3d825ae0222b9de4ba5a3b6b72b87738bc8f0?placeholderIfAbsent=true&apiKey=20f8535bc9c14cd29ad8328e998bd290"
-              alt=""
-              className="object-contain shrink-0 self-stretch my-auto w-6 aspect-square"
+    <div
+      className="
+        relative
+        flex flex-col
+        w-full max-w-lg
+        p-4
+        rounded-xl
+        bg-white dark:bg-gray-800
+        text-gray-800 dark:text-gray-100
+        shadow-2xl
+        overflow-hidden
+      "
+    >
+      {/* Top Right Button */}
+      <div className="flex justify-end mb-2">
+        <button
+          className="
+            flex items-center gap-1
+            text-sm font-semibold
+            text-gray-400 hover:text-gray-600
+            dark:text-gray-300 dark:hover:text-gray-100
+          "
+          onClick={onClickDetail}
+        >
+          <span>See Detail</span>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth="2"
+            stroke="currentColor"
+            className="w-4 h-4"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              d="M9 5l7 7-7 7" 
             />
-          </button>
-        </div>
-        <div className="flex z-10 flex-col pt-5 mt-0 rounded-lg max-md:mr-2">
-          <div className="flex flex-col items-start ml-6 max-w-full w-[114px] max-md:ml-2.5">
-            <div className="flex relative flex-col justify-center px-2.5 py-2.5 aspect-[1.044] w-[47px]">
-              <img
-                loading="lazy"
-                src={iconBg}
-                alt=""
-                className="object-cover absolute inset-0 size-full"
-              />
-              <img
-                loading="lazy"
-                src={icon}
-                alt=""
-                className="object-contain w-full aspect-[0.88]"
-              />
-            </div>
-            <div className="mt-4 text-2xl font-bold text-zinc-800">
-              {value}
-            </div>
-            <div className="self-stretch mt-4 text-sm leading-3 text-zinc-800">
-              {label}
-            </div>
+          </svg>
+        </button>
+      </div>
+
+      {/* Icon + Stats */}
+      <div className="flex flex-col gap-2">
+        {/* Icon in a circular background */}
+        <div className="flex items-center">
+          <div
+            className="
+              flex items-center justify-center
+              w-10 h-10
+              rounded-full
+              bg-gray-100 dark:bg-gray-700
+            "
+          >
+            {icon}
           </div>
-          <img
-            loading="lazy"
-            src={chart}
-            alt={`${label} chart`}
-            className="object-contain mt-7 aspect-[4.55] w-[286px]"
-          />
+        </div>
+
+        {/* Count / Label */}
+        <div className="mt-1">
+          <div className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+            {count}
+          </div>
+          <div className="text-sm text-gray-500 dark:text-gray-300">
+            {label}
+          </div>
         </div>
       </div>
+
+      {/* Wave / Chart Images */}
+      {/* Light-mode image: shown in light mode, hidden in dark mode */}
+      <img
+        src={chartLight}
+        alt={`${label} trend chart (light)`}
+        className="block dark:hidden w-full h-auto"
+        loading="lazy"
+      />
+      
+      {/* Dark-mode image: hidden in light mode, shown in dark mode */}
+      <img
+        src={chartDark}
+        alt={`${label} trend chart (dark)`}
+        className="hidden dark:block w-full h-auto"
+        loading="lazy"
+      />
     </div>
   );
 }

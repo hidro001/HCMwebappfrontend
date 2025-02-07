@@ -50,7 +50,9 @@ import {
   AllEmpRatingsPage,
   RaciDashboardPage,
   RaciBusinessPage,
-  RaciOperationsPage
+  RaciOperationsPage,
+  SuperAdminDashboardPage,
+  EmployeeDashboardPage
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -82,7 +84,11 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Dashboard />,
+        element: <SuperAdminDashboardPage />,
+      },
+      {
+        path: "employee",
+        element: <EmployeeDashboardPage />,
       },
       {
         path: "notifications",

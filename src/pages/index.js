@@ -1,5 +1,5 @@
 import Login from "./auth/login/Login";
-import Dashboard from "./dashboard/Dashboard";
+import Dashboard from "./dashboard/SuperAdminDashboardPage";
 import Page404 from "./page404/Page404";
 import AddEmployeePage from "./Employeee Management/AddEmployee/AddEmployeePage";
 import UpdateEmployeePage from "./Employeee Management/UpdateEmployee/UpdateEmployeePage";
@@ -52,6 +52,8 @@ import AllEmpRatingsPage from "./performance management/AllEmpRatingsPage";
 import RaciDashboardPage from "./raci management/RaciDashboardPage";
 import RaciBusinessPage from "./raci management/RaciBusinessPage";
 import RaciOperationsPage from "./raci management/RaciOperationsPage";
+import SuperAdminDashboardPage from "./dashboard/SuperAdminDashboardPage";
+import EmployeeDashboardPage from "./dashboard/EmployeeDashboardPage";
 
 
 export {
@@ -104,6 +106,7 @@ export {
   AllEmpRatingsPage,
   RaciDashboardPage,
   RaciBusinessPage,
-  RaciOperationsPage
-
+  RaciOperationsPage,
+  SuperAdminDashboardPage,
+  EmployeeDashboardPage
 };

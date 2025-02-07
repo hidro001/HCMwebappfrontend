@@ -589,9 +589,7 @@ import ScoreDetailsModal from "./ScoreDetailsModal";
 
 function RaciOperations() {
   // Optional dark mode
-  const [isDarkMode, setIsDarkMode] = useState(false);
 
-  // If you have Redux storing employeeId (or from localStorage):
   const employeeIdFromRedux = localStorage.getItem("employeeId");
 
   // Metrics & Key Success Factors

@@ -36,14 +36,10 @@ export const menuItems = [
         link: "/dashboard",
         permission: "employeeDashboard",
       },
-      {
-        name: "Manager",
-        link: "/dashboard/manager-dashboard",
-        permission: "managerDashboard",
-      },
+   
       {
         name: "Employee",
-        link: "/dashboard/employee-dashboardr",
+        link: "/dashboard/employee",
         permission: "employeeDashboard",
       },
     ],

@@ -1,26 +1,20 @@
 import React from "react";
-import { motion } from "framer-motion"; // <-- 1) Import from framer-motion
+import { motion } from "framer-motion";
 
-// Import all your individual components
 import Heading from "./Heading";
 import DashboardStatCards from "./DashboardStatCards";
-import EmployeeStatusChart from "./EmployeeStatusChart";
-import DepartmentChart from "./DepartmentChart";
-import WhoIsInCard from "./WhoIsInCard";
-import PerformanceChart from "./PerformanceChart";
-import MonthlyHiringChart from "./MonthlyHiringChart";
-import RaciOperationsChart from "./RaciOperationsChart";
-import DemographicCard from "./DemographicCard";
 import AttendanceCard from "./AttendanceCard";
 import AnnouncementCard from "./AnnouncementCard";
+import AssignedTaskListCard from "./AssignedTaskListCard";
+import UpcomingHolidaysCard from "./UpcomingHolidaysCard";
+import PerformanceCard from "./PerformanceCard";
 
-function SuperAdminDashboard() {
+function EmployeeDashboardLayout() {
   return (
-    // 2) Replace your outer container with motion.div to animate the entire page
     <motion.div
       className="min-h-screen w-full bg-gray-50 dark:bg-[#121212] pt-2"
-      initial={{ opacity: 0 }}       // Starts transparent
-      animate={{ opacity: 1 }}       // Fades in
+      initial={{ opacity: 0 }} // Starts transparent
+      animate={{ opacity: 1 }} // Fades in
       transition={{ duration: 0.5 }} // Duration of half a second
     >
       {/* 1) Top Banner */}
@@ -43,22 +37,17 @@ function SuperAdminDashboard() {
             <DashboardStatCards />
 
             {/* Row: Employee Status + Department */}
-            <div className="flex flex-col md:flex-row gap-7">
-              <EmployeeStatusChart />
-              <DepartmentChart />
+            <div className=" ">
+              <AssignedTaskListCard />
             </div>
 
             {/* Row: WhoIsInCard + Performance */}
             <div className="flex flex-col md:flex-row gap-7">
-              <WhoIsInCard />
-              <PerformanceChart />
+              {/* <WhoIsInCard /> */}
+              <UpcomingHolidaysCard />
+              {/* <PerformanceChart /> */}
+              <PerformanceCard />
             </div>
-
-            {/* Monthly Hiring Chart */}
-            <MonthlyHiringChart />
-
-            {/* RACI Operations Chart */}
-            <RaciOperationsChart />
           </motion.div>
 
           {/* Right Column (Sidebar) with slide-in from the right */}
@@ -68,18 +57,16 @@ function SuperAdminDashboard() {
             animate={{ x: 0, opacity: 1 }}
             transition={{ duration: 0.6 }}
           >
-            <DemographicCard />
+         
             <AttendanceCard />
             <AnnouncementCard />
           </motion.aside>
         </div>
       </main>
 
-      {/* Bottom padding, or a footer if desired */}
       <div className="h-10" />
     </motion.div>
   );
 }
 
-export default SuperAdminDashboard;
-
+export default EmployeeDashboardLayout;
