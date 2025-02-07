@@ -1,5 +1,5 @@
 import React from 'react'
-import TeamsPerformance from '../../components/performance management/teamsperformance'
+import TeamsPerformance from '../../components/performance management/TeamsPerformance'
 
 const TeamsPerformancePage = () => {
   return (
