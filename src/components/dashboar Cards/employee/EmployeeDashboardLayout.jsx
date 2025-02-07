@@ -12,7 +12,7 @@ import PerformanceCard from "./PerformanceCard";
 function EmployeeDashboardLayout() {
   return (
     <motion.div
-      className="min-h-screen w-full bg-gray-50 dark:bg-[#121212] pt-2"
+      className="min-h-screen w-full bg-gray-50 dark:bg-[#12121200] pt-2"
       initial={{ opacity: 0 }} // Starts transparent
       animate={{ opacity: 1 }} // Fades in
       transition={{ duration: 0.5 }} // Duration of half a second

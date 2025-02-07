@@ -32,13 +32,13 @@ export const menuItems = [
     iconAnimation: { scale: 1.2 },
     options: [
       {
-        name: "Super Admin",
+        name: "Dashboard",
         link: "/dashboard",
         permission: "employeeDashboard",
       },
    
       {
-        name: "Employee",
+        name: "Dashboard",
         link: "/dashboard/employee",
         permission: "employeeDashboard",
       },

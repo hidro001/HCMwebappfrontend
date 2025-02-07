@@ -292,26 +292,9 @@ const LoginCard = () => {
 
     toast.success("Login Successful!");
 
-    // Navigate based on user role
-    // switch (permission_role) {
-    //   case "Employee":
-    //     navigate("/dashboard");
-    //     break;
-    //   case "manager":
-    //     navigate("/dashboard/manager-dashboard");
-    //     break;
-    //   case "super-admin":
-    //     navigate("/dashboard/super-admin-dashboard");
-    //     break;
-    //   default:
-    //     toast.error("Unknown user role");
-    // }
     switch (user_Role.toLowerCase()) {
       case "employee":
-        navigate("/dashboard");
-        break;
-      case "manager":
-        navigate("/dashboard/manager-dashboard");
+        navigate("/dashboard/employee");
         break;
       case "super-admin":
         navigate("/dashboard");
