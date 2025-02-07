@@ -31,7 +31,11 @@ const NotificationDropdown = ({ notifications, loading, error, onClose }) => {
         </Typography>
       </Box>
 
-      <Box className="max-h-60 overflow-y-auto">
+      <Box className="max-h-60 overflow-y-auto  [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600">
         {loading ? (
           <Box className="flex justify-center items-center p-4">
             <CircularProgress size={24} />

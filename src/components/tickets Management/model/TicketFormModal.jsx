@@ -121,8 +121,14 @@ export default function TicketFormModal({
     <BaseModal isOpen={isOpen} onClose={onClose}>
       <motion.div
         className="relative bg-white dark:bg-gray-800 border border-gray-200 
-                   dark:border-gray-700 rounded-md w-full max-w-lg mx-4 my-8 
-                   shadow-xl"
+                   dark:border-gray-700 rounded-md w-full max-w-lg mx-4 my-8 h-[40vh] md:h-[50vh] lg:h-[60vh] 
+                   shadow-xl      
+                   
+                   overflow-auto [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600"
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: 50, opacity: 0 }}
@@ -276,7 +282,8 @@ export default function TicketFormModal({
                     />
                   ) : (
                     <p className="mt-1 text-sm text-gray-700 dark:text-gray-200">
-                      {attachment.name} ({(attachment.size / 1024).toFixed(1)} KB)
+                      {attachment.name} ({(attachment.size / 1024).toFixed(1)}{" "}
+                      KB)
                     </p>
                   )}
                 </div>

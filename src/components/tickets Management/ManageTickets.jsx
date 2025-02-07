@@ -72,7 +72,9 @@ export default function ManageTickets() {
 
   const handleDelete = (issue) => {
     setConfirmTitle("Delete Issue");
-    setConfirmMessage(`Are you sure you want to delete issue "${issue.issueTitle}"?`);
+    setConfirmMessage(
+      `Are you sure you want to delete issue "${issue.issueTitle}"?`
+    );
     setConfirmAction(() => async () => {
       setConfirmOpen(false);
       await removeIssue(issue._id);
@@ -111,7 +113,9 @@ export default function ManageTickets() {
   const filteredIssues = useMemo(() => {
     return issues.filter((issue) => {
       if (searchText) {
-        const matchTitle = issue.issueTitle?.toLowerCase().includes(searchText.toLowerCase());
+        const matchTitle = issue.issueTitle
+          ?.toLowerCase()
+          .includes(searchText.toLowerCase());
         const matchEmployeeId = issue.createdBy?.employee_Id
           ?.toLowerCase()
           .includes(searchText.toLowerCase());
@@ -157,7 +161,9 @@ export default function ManageTickets() {
       <div className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow transition-colors mb-3">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-semibold whitespace-nowrap">Show</label>
+            <label className="text-sm font-semibold whitespace-nowrap">
+              Show
+            </label>
             <select
               className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none"
               value={pageSize}
@@ -246,7 +252,12 @@ export default function ManageTickets() {
       {loading ? (
         <div className="bg-bg-secondary rounded-md shadow p-4 transition-colors">
           {Array.from({ length: 10 }).map((_, i) => (
-            <Skeleton key={i} variant="rectangular" height={40} className="mb-2" />
+            <Skeleton
+              key={i}
+              variant="rectangular"
+              height={40}
+              className="mb-2"
+            />
           ))}
         </div>
       ) : filteredIssues.length > 0 ? (
@@ -306,7 +317,9 @@ export default function ManageTickets() {
                     variants={tableRowVariants}
                     className="border-b last:border-b-0 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                   >
-                    <td className="p-3 text-sm">{String(globalIndex).padStart(2, "0")}</td>
+                    <td className="p-3 text-sm">
+                      {String(globalIndex).padStart(2, "0")}
+                    </td>
                     <td className="p-3 text-sm text-blue-600 dark:text-blue-400 cursor-pointer">
                       {issue.createdBy?.employee_Id || "--"}
                     </td>
@@ -365,7 +378,8 @@ export default function ManageTickets() {
           </motion.table>
           <div className="flex flex-col md:flex-row justify-between items-center p-3 gap-2 text-sm">
             <div>
-              Showing {paginatedIssues.length} of {filteredIssues.length} entries
+              Showing {paginatedIssues.length} of {filteredIssues.length}{" "}
+              entries
             </div>
             <div className="flex items-center space-x-1">
               {Array.from({ length: totalPages }, (_, i) => (
@@ -406,9 +420,12 @@ export default function ManageTickets() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
+            className="fixed inset-0 z-50 flex items-center justify-center "
           >
-            <motion.div layout className="bg-white dark:bg-gray-800 rounded-md p-4 max-w-lg w-full">
+            <motion.div
+              layout
+              className="bg-white dark:bg-gray-800 rounded-md p-4 max-w-lg w-full"
+            >
               <TicketFormModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
@@ -429,9 +446,12 @@ export default function ManageTickets() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
+            className="fixed inset-0 z-50 flex items-center justify-center "
           >
-            <motion.div layout className="bg-white dark:bg-gray-800 rounded-md p-4 max-w-xl w-full">
+            <motion.div
+              layout
+              className="bg-white dark:bg-gray-800 rounded-md p-4 max-w-xl w-full"
+            >
               <TicketDetailsModal
                 isOpen={isDetailsModalOpen}
                 onClose={() => setIsDetailsModalOpen(false)}

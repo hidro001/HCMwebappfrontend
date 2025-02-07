@@ -24,14 +24,18 @@ export default function TicketDetailsModal({
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
       <motion.div
-        className="relative w-full max-w-5xl h-[80vh] md:h-[70vh] lg:h-[75vh] flex pointer-events-none"
+        className="relative w-full max-w-5xl h-[40vh] md:h-[50vh] lg:h-[60vh] flex pointer-events-none bg-gray-300 dark:bg-gray-800  overflow-auto [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 30 }}
       >
         <div
           className="pointer-events-auto flex flex-1 bg-white/5 dark:bg-gray-800
-                     backdrop-blur-md border border-gray-300 dark:border-gray-700
+                     border border-gray-300 dark:border-gray-700
                      text-gray-900 dark:text-gray-100 
                      rounded-lg overflow-hidden shadow-lg"
         >
@@ -114,7 +118,11 @@ export default function TicketDetailsModal({
                 <FaTimes size={20} />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto pr-2 space-y-3">
+            <div className="flex-1 overflow-y-auto pr-2 space-y-3  overflow-auto [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600">
               {isCommentLoading ? (
                 <p>Loading comments...</p>
               ) : comments.length === 0 ? (
@@ -125,7 +133,7 @@ export default function TicketDetailsModal({
                 comments.map((cmt, idx) => (
                   <div
                     key={cmt._id || idx}
-                    className="bg-white text-gray-800 rounded p-3"
+                    className="bg-white dark:bg-gray-700 text-gray-800 rounded p-3 text-text-primary  border"
                   >
                     <p className="text-sm font-semibold mb-1">
                       {typeof cmt.commenter === "object"

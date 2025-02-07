@@ -24,7 +24,7 @@ const Breadcrumb = () => {
   const theme = useTheme();
   // Access userName and permissionRole from Zustand store
   const userName = useAuthStore((state) => state.userName);
-  const permissionRole = useAuthStore((state) => state.permissionRole);
+  const permissionRole = useAuthStore((state) => state.designation);
 
   // Function to format breadcrumb names
   const formatBreadcrumb = (name) => capitalizeWords(name.replace(/-/g, " "));
@@ -76,7 +76,10 @@ const Breadcrumb = () => {
 
         {/* Dynamically Generated Breadcrumbs */}
         {pathnames
-          .filter((value, index) => !(index === 0 && value.toLowerCase() === "dashboard"))
+          .filter(
+            (value, index) =>
+              !(index === 0 && value.toLowerCase() === "dashboard")
+          )
           .map((value, index) => {
             const to = `/${pathnames.slice(0, index + 1).join("/")}`;
             const displayName = formatBreadcrumb(value);
@@ -84,28 +87,28 @@ const Breadcrumb = () => {
 
             const isLast = index === pathnames.length - 1;
 
-          return isLast ? (
-            <Typography
-              key={to}
-              color="text.primary"
-              sx={{ display: "flex", alignItems: "center" }}
-            >
-              {icon}
-              {displayName}
-            </Typography>
-          ) : (
-            <Link
-              component={RouterLink}
-              to={to}
-              key={to}
-              color="inherit"
-              sx={{ display: "flex", alignItems: "center" }}
-            >
-              {icon}
-              {displayName}
-            </Link>
-          );
-        })}
+            return isLast ? (
+              <Typography
+                key={to}
+                color="text.primary"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                {icon}
+                {displayName}
+              </Typography>
+            ) : (
+              <Link
+                component={RouterLink}
+                to={to}
+                key={to}
+                color="inherit"
+                sx={{ display: "flex", alignItems: "center" }}
+              >
+                {icon}
+                {displayName}
+              </Link>
+            );
+          })}
       </Breadcrumbs>
     );
   };
@@ -116,17 +119,13 @@ const Breadcrumb = () => {
         Welcome Back,{" "}
         <span className="font-semibold">
           {userName
-            ? `${capitalizeWords(userName)} (${capitalizeWords(
-                permissionRole
-              )})`
-            : "Guest"}
+            ? `${capitalizeWords(userName)} (${capitalizeWords
+                 ( permissionRole )     })`: "Guest"}
         </span>
       </div>
       <div>{generateBreadcrumbs()}</div>
     </div>
   );
 };
-
-
 
 export default Breadcrumb;

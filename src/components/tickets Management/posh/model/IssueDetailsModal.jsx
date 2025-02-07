@@ -33,7 +33,7 @@ export default function IssueDetailsModal({ isOpen, onClose, issue }) {
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
       <motion.div
-        className="relative w-full max-w-5xl h-[80vh] md:h-[70vh] lg:h-[75vh] flex pointer-events-none"
+        className="relative w-full max-w-5xl h-[80vh] md:h-[70vh] lg:h-[75vh] flex pointer-events-none bg-gray-300 dark:bg-gray-80"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
