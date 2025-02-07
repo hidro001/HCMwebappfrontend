@@ -1,16 +1,24 @@
 import axiosInstance from "./axiosInstance";
 
-export const fetchSubordinates = async () => {
-  try {
-    const response = await axiosInstance.get("/admin/subordinates");
-    if (response.data.success) {
-      return response.data.data; 
-    }
-  } catch (error) {
-    console.error("Error fetching subordinates:", error);
-    return [];
-  }
+import axios from 'axios';
+
+const BASE_URL = 'http://localhost:6060/api/v1/admin';
+
+
+export const fetchSubordinates = (accessToken) => {
+  return axios.get(`${BASE_URL}/subordinates`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
 };
 
+export const fetchBoth = (accessToken) => {
+  return axios.get(`${BASE_URL}/both`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+};
 
 
