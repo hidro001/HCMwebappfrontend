@@ -1,59 +1,258 @@
-import { useState } from "react";
-import { FaPhone, FaVideo, FaPaperclip, FaCommentDots } from "react-icons/fa";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  FaPhone,
+  FaVideo,
+  FaPaperclip,
+  FaCommentDots,
+} from "react-icons/fa";
 import { IoSend } from "react-icons/io5";
+import { PuffLoader } from "react-spinners";
+import { toast } from "react-hot-toast";
+import { useCall } from "../../contexts/CallContext";
+export default function ChatList({
+  messages,
+  currentUser,
+  selectedUser,
+  selectedUserId,
+  sendMessage,
+  message,
+  setMessage,
+  sendFile,
+}) {
+  const chatEndRef = useRef(null);
+  const [uploadingFiles, setUploadingFiles] = useState({});
+  const { initiateCall } = useCall(); // Destructure initiateCall
+  // Scroll to the bottom whenever messages update
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
 
-export default function ChatList({ selectedChat, chatMessages, setChatMessages }) {
-  const [message, setMessage] = useState("");
+  // ---- File Handling ----
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const maxSize = 10 * 1024 * 1024; // 10MB
+      const allowedTypes = [
+        "image/png",
+        "image/jpeg",
+        "image/gif",
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      ];
 
+      if (file.size > maxSize) {
+        toast.error("File size exceeds 10MB limit.");
+        return;
+      }
+      if (!allowedTypes.includes(file.type)) {
+        toast.error("Unsupported file type.");
+        return;
+      }
+      sendFileWithLoading(file);
+      e.target.value = null; // reset file input
+    }
+  };
+
+  const sendFileWithLoading = async (file) => {
+    const uniqueId = `${file.name}-${Date.now()}`;
+    setUploadingFiles((prev) => ({ ...prev, [uniqueId]: true }));
+    try {
+      await sendFile(file);
+      setUploadingFiles((prev) => {
+        const updated = { ...prev };
+        delete updated[uniqueId];
+        return updated;
+      });
+      toast.success("File sent successfully.");
+    } catch (error) {
+      console.error("Error sending file:", error);
+      setUploadingFiles((prev) => {
+        const updated = { ...prev };
+        delete updated[uniqueId];
+        return updated;
+      });
+      toast.error("Failed to send file.");
+    }
+  };
+
+  // ---- Call handling ----
+  const handleVideoCall = () => {
+    if (!selectedUserId) {
+      toast.error("Select a user to call.");
+      return;
+    }
+    // Initiate a video call
+    initiateCall({ callType: "video", participants: [selectedUserId] });
+  };
+
+  const handleVoiceCall = () => {
+    if (!selectedUserId) {
+      toast.error("Select a user to call.");
+      return;
+    }
+    // Initiate a voice call
+    initiateCall({ callType: "voice", participants: [selectedUserId] });
+  };
+
+  // ---- Message Sending ----
   const handleSend = () => {
     if (!message.trim()) return;
-    setChatMessages((prev) => ({
-      ...prev,
-      [selectedChat]: [...(prev[selectedChat] || []), { sender: "Me", text: message, time: new Date().toLocaleTimeString() }],
-    }));
-    setMessage("");
+    sendMessage({ preventDefault: () => {} });
+  };
+
+  // Allow sending message via Enter key
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
+  // Helper for rendering file messages
+  const renderFileMessage = (msg) => {
+    // Display an inline preview if it's an image
+    if (msg.fileType?.startsWith("image/") && msg.fileUrl) {
+      return (
+        <img
+          src={msg.fileUrl}
+          alt={msg.fileName}
+          className="max-w-xs rounded-md"
+        />
+      );
+    }
+    // Otherwise, show a download link
+    return (
+      <div className="flex items-center">
+        <a
+          href={msg.fileUrl}
+          download={msg.fileName}
+          className="text-blue-500 underline break-all"
+        >
+          {msg.fileName}
+        </a>
+      </div>
+    );
   };
 
   return (
-    <div className="flex flex-col flex-grow bg-white dark:bg-gray-800 shadow-lg md:w-3/4 w-full overflow-hidden">
-      <div className="flex justify-between items-center p-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white">
-        <h2 className="text-lg font-semibold">{selectedChat || "Select a chat"}</h2>
-        <div className="flex gap-3">
-          <FaVideo className="cursor-pointer" />
-          <FaPhone className="cursor-pointer" />
-        </div>
-      </div>
+    <div className="flex flex-col bg-white dark:bg-gray-800 shadow-lg w-full" style={{height:"80vh"}}>
+      {/* HEADER */}
+      <header className="flex flex-col sm:flex-row justify-between items-center p-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white">
+        <h2 className="text-lg font-semibold mb-2 sm:mb-0">
+          {selectedUser || "Select a User"}{" "}
+          {selectedUserId && <span className="text-sm">({selectedUserId})</span>}
+        </h2>
+        <div className="flex gap-4">
+  <button
+    onClick={handleVideoCall}
+    className="focus:outline-none w-10 h-10 flex items-center justify-center 
+               bg-white text-gray-800 rounded-full shadow hover:bg-gray-100 
+               transition-colors"
+    title="Start Video Call"
+  >
+    <FaVideo size={20} />
+  </button>
+  <button
+    onClick={handleVoiceCall}
+    className="focus:outline-none w-10 h-10 flex items-center justify-center 
+               bg-white text-gray-800 rounded-full shadow hover:bg-gray-100 
+               transition-colors"
+    title="Start Voice Call"
+  >
+    <FaPhone size={20} />
+  </button>
+</div>
 
+      </header>
+
+      {/* CHAT MESSAGES (independent scroll) */}
       <div className="flex flex-col flex-grow p-4 space-y-4 overflow-y-auto">
-        {selectedChat && chatMessages[selectedChat] ? (
-          chatMessages[selectedChat].map((msg, index) => (
-            <div key={index} className={`max-w-xs p-3 rounded-lg ${msg.sender === "Me" ? "bg-gray-100 dark:bg-gray-700 self-end shadow-sm" : "bg-gray-200 dark:bg-gray-800 self-start shadow-sm"}`}>
-              <p className="text-gray-900 dark:text-gray-100">{msg.text}</p>
-              <span className="text-xs text-gray-500 dark:text-gray-400 block mt-1">{msg.time}</span>
-            </div>
-          ))
+        {messages && messages.length > 0 ? (
+          messages.map((msg, index) => {
+            const isOwn = msg.sender === currentUser;
+            return (
+              <div
+                key={index}
+                className={`max-w-xs p-3 rounded-lg break-words shadow-sm ${
+                  isOwn
+                    ? "bg-gray-100 dark:bg-gray-700 self-end"
+                    : "bg-gray-200 dark:bg-gray-800 self-start"
+                }`}
+              >
+                {msg.type === "file" ? (
+                  renderFileMessage(msg)
+                ) : (
+                  <p className="text-gray-900 dark:text-gray-100">{msg.message}</p>
+                )}
+                <span className="block text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {msg.time}
+                </span>
+              </div>
+            );
+          })
         ) : (
           <div className="flex flex-col items-center justify-center h-full text-gray-600 dark:text-gray-400">
-            <FaCommentDots className="w-20 h-20 mb-4 text-gray-400 dark:text-gray-500" />
-            <p className="text-lg font-semibold">Empty, Message...</p>
-            <p className="text-sm text-gray-500 dark:text-gray-300">Don't worry, just take a deep breath & say "Hello"</p>
+            <FaCommentDots className="w-20 h-20 mb-4" />
+            <p className="text-lg font-semibold">No messages yet</p>
+            <p className="text-sm text-gray-500 dark:text-gray-300">
+              Say "Hello" to start the conversation.
+            </p>
           </div>
         )}
+
+        {/* Uploading Files Indicator */}
+        {Object.keys(uploadingFiles).map((fileId) => (
+          <div key={fileId} className="mb-3 w-full clear-both">
+            <div className="text-xs text-gray-500">
+              {currentUser} &middot; Sending...
+            </div>
+            <div className="flex items-center justify-center bg-gray-100 dark:bg-gray-700 p-3 rounded-lg shadow-sm">
+              <PuffLoader size={40} color="#1e90ff" />
+              <span className="ml-2 text-blue-500">Uploading...</span>
+            </div>
+          </div>
+        ))}
+
+        <div ref={chatEndRef} />
       </div>
 
-      <div className="flex items-center p-4 border-t mt-4 rounded-full bg-gray-200 dark:bg-gray-700 shadow-md">
-        <input 
-          type="text" 
-          className="flex-grow p-2 bg-transparent outline-none text-gray-900 dark:text-gray-100" 
-          placeholder="Start typing here" 
-          value={message} 
-          onChange={(e) => setMessage(e.target.value)}
-        />
-        <FaPaperclip className="cursor-pointer text-gray-500 dark:text-gray-400 mx-2" />
-        <button onClick={handleSend} className="bg-purple-600 text-white p-2 rounded-full shadow-md">
-          <IoSend />
-        </button>
-      </div>
+      {/* FOOTER / INPUT */}
+      <footer className="p-4 border-t bg-gray-200 dark:bg-gray-700">
+        <div className="flex items-center space-x-2">
+        <input
+  type="text"
+  className="flex-grow p-2 rounded-full bg-white dark:bg-gray-800 
+             outline-none text-gray-900 dark:text-gray-100 shadow-md"
+  placeholder="Type your message..."
+  value={message}
+  onChange={(e) => setMessage(e.target.value)}
+  onKeyDown={handleKeyDown}
+  aria-label="Message input"
+/>
+
+          <label className="cursor-pointer text-gray-500 dark:text-gray-400">
+            <FaPaperclip size={20} />
+            <input
+              type="file"
+              className="hidden"
+              onChange={handleFileChange}
+              accept=".png,.jpg,.jpeg,.gif,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+            />
+          </label>
+          <button
+            onClick={handleSend}
+            className="bg-purple-600 hover:bg-purple-700 focus:outline-none text-white p-2 rounded-full shadow-md"
+            aria-label="Send message"
+          >
+            <IoSend size={20} />
+          </button>
+        </div>
+      </footer>
     </div>
   );
 }

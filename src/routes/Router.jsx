@@ -52,7 +52,8 @@ import {
   RaciBusinessPage,
   RaciOperationsPage,
   SuperAdminDashboardPage,
-  EmployeeDashboardPage
+  EmployeeDashboardPage,
+  ChatPage
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -291,6 +292,10 @@ const router = createBrowserRouter([
       {
         path: "raci-operations",
         element: <RaciOperationsPage />,
+      // chat
+      {
+        path: "chats",
+        element: <ChatPage />,
       },
     ],
   },
