@@ -172,10 +172,10 @@ import { ThemeContext } from "../../../hooks/ThemeContext";
 function HeadingWithSubtitle({ heading, subtitle }) {
   return (
     <div className="flex flex-col w-full text-white">
-      <div className="text-5xl font-bold max-md:text-4xl">
+      <div className="text-5xl font-bold max-md:text-4xl  text-orange-600">
         {heading}
       </div>
-      <div className="mt-4 text-xl max-md:max-w-full">
+      <div className="mt-4 text-xl max-md:max-w-full text-orange-600">
         {subtitle}
       </div>
     </div>
@@ -227,7 +227,7 @@ function Heading() {
   }
 
   return (
-    <div className="w-full">
+    <div className="w-full bg-white">
       {/* Relative container so we can position text above the absolute image */}
       <div className="relative w-full h-64 overflow-hidden rounded-lg shadow-2xl">
         {/* The image fills the parent (absolute). */}
