@@ -302,7 +302,7 @@ function AnnouncementCard() {
           <h2 className="text-base font-bold text-lime-600 dark:text-lime-400">
             Latest Announcements
           </h2>
-          <button className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-300">
+          {/* <button className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-300">
             <span>Add</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -318,7 +318,7 @@ function AnnouncementCard() {
                 d="M13.5 4.5L18 9m0 0l-4.5 4.5M18 9H6"
               />
             </svg>
-          </button>
+          </button> */}
         </div>
 
         {/* Divider */}

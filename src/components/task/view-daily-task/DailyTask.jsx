@@ -144,7 +144,7 @@ const DailyTask = () => {
                 <th className="p-3">Emp ID</th>
                 <th className="p-3">Name</th>
                 <th className="p-3">Assigned Date</th>
-                <th className="p-3">Status</th>
+                {/* <th className="p-3">Status</th> */}
                 <th className="p-3">Action</th>
               </tr>
             </thead>
@@ -159,10 +159,11 @@ const DailyTask = () => {
                 tasks.map((task, index) => (
                   <tr key={task.id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-700 transition">
                     <td className="p-3">{index + 1}</td>
-                    <td className="p-3 text-blue-500 cursor-pointer">{task.id}</td>
-                    <td className="p-3">{task.name}</td>
-                    <td className="p-3">{task.date}</td>
-                    <td className="p-3">
+                    <td className="p-3 text-blue-500 cursor-pointer">{task.employee_Id}</td>
+                    <td className="p-3">{task.full_Name}</td>
+                    <td className="p-3">{new Date(task.createdAt || "N/A").toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}
+                    </td>
+                    {/* <td className="p-3">
                       <span
                         className={`px-3 py-1 rounded text-xs font-semibold ${
                           task.status === "Done"
@@ -174,7 +175,7 @@ const DailyTask = () => {
                       >
                         {task.status}
                       </span>
-                    </td>
+                    </td> */}
                     <td className="p-3 flex gap-3">
                       <FaEye
                         size={20}

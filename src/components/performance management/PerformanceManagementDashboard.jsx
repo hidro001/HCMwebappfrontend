@@ -1,6 +1,5 @@
-
-
-import React, { useState } from 'react'
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -8,15 +7,16 @@ import {
   PointElement,
   LineElement,
   BarElement,
+  ArcElement,
   Title,
   Tooltip,
   Legend,
-  ArcElement,
-} from 'chart.js'
-import { Line, Doughnut } from 'react-chartjs-2'
-import { motion } from 'framer-motion'
-import { FaMedal, FaChartLine, FaMeh } from 'react-icons/fa'
+} from "chart.js";
+import { Line, Doughnut } from "react-chartjs-2";
+import { motion } from "framer-motion";
+import { FaMedal, FaChartLine, FaMeh } from "react-icons/fa";
 
+// Register ChartJS
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -27,139 +27,163 @@ ChartJS.register(
   Title,
   Tooltip,
   Legend
-)
+);
 
 export default function PerformanceManagementDashboard() {
-  // Framer Motion variants for a simple fade/slide effect
-  const cardVariants = {
-    hidden: { opacity: 0, y: 25 },
-    visible: (i) => ({
-      opacity: 1,
-      y: 0,
-      transition: {
-        delay: i * 0.1,
-        duration: 0.4,
-        ease: 'easeInOut',
-      },
-    }),
-  }
+  const BASE_URL = "https://apiv2.humanmaximizer.com/api/v1/kpi";
+  const token = localStorage.getItem("accessToken") || "";
 
-  // State to control which range (Yearly, Monthly, Weekly) is selected
-  const [selectedRange, setSelectedRange] = useState('Monthly')
+  const [selectedRange, setSelectedRange] = useState("Monthly");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // Stats data for the top cards
-  const statsData = [
-    {
-      title: 'Top Performer',
-      value: 20,
-      increment: +200,
-      icon: <FaMedal className="text-blue-600 dark:text-blue-200" size={24} />,
-      colorClass:
-        'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100',
-    },
-    {
-      title: 'Average Performer',
-      value: 12,
-      increment: -200,
-      icon: <FaChartLine className="text-purple-600 dark:text-purple-200" size={24} />,
-      colorClass:
-        'bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-100',
-    },
-    {
-      title: 'Below Average Performer',
-      value: 3,
-      increment: +200,
-      icon: <FaMeh className="text-red-600 dark:text-red-200" size={24} />,
-      colorClass:
-        'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-100',
-    },
-  ]
+  // Stats
+  const [topPerformerCount, setTopPerformerCount] = useState(0);
+  const [avgPerformerCount, setAvgPerformerCount] = useState(0);
+  const [belowAvgPerformerCount, setBelowAvgPerformerCount] = useState(0);
 
-  // ------------------
-  // MAIN CHART DATA
-  // ------------------
-  const yearlyData = {
-    labels: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+  // Chart
+  const [chartData, setChartData] = useState({
+    labels: [],
+    datasets: [],
+  });
+
+  // Donut
+  const [donutData, setDonutData] = useState({
+    labels: ["Male", "Female"],
     datasets: [
       {
-        type: 'bar',
-        label: 'Revenue',
-        data: [100000, 50000, 20000, 35000, 80000, 45000, 30000, 60000, 35000, 90000, 20000, 50000],
-        backgroundColor: 'rgba(156, 163, 175, 0.3)', // Gray
-        borderWidth: 0,
-        yAxisID: 'y',
-      },
-      {
-        type: 'line',
-        label: 'Performance',
-        data: [25, 15, 10, 20, 30, 28, 18, 20, 25, 15, 8, 20],
-        borderColor: 'rgba(59, 130, 246, 1)', // Blue-500
-        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-        tension: 0.4,
-        yAxisID: 'y2',
+        data: [0, 0],
+        backgroundColor: ["rgb(59,130,246)", "rgb(245,158,11)"],
+        hoverOffset: 4,
       },
     ],
+  });
+
+  // Table
+  const [topPerformerList, setTopPerformerList] = useState([]);
+
+  useEffect(() => {
+    loadAllData();
+    // eslint-disable-next-line
+  }, [selectedRange]);
+
+  function loadAllData() {
+    setLoading(true);
+    setError("");
+
+    fetchStats()
+      .then(() => fetchChart())
+      .then(() => fetchDonut())
+      .then(() => fetchTopPerformerList())
+      .catch((err) => {
+        console.error("Error loading data:", err);
+        setError(err.response?.data?.message || "Failed to load dashboard");
+      })
+      .finally(() => setLoading(false));
   }
 
-  const monthlyData = {
-    labels: ['Week 1','Week 2','Week 3','Week 4','Week 5'],
-    datasets: [
-      {
-        type: 'bar',
-        label: 'Revenue',
-        data: [18000, 12000, 25000, 22000, 30000],
-        backgroundColor: 'rgba(156, 163, 175, 0.3)',
-        borderWidth: 0,
-        yAxisID: 'y',
-      },
-      {
-        type: 'line',
-        label: 'Performance',
-        data: [15, 20, 28, 22, 30],
-        borderColor: 'rgba(59, 130, 246, 1)',
-        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-        tension: 0.4,
-        yAxisID: 'y2',
-      },
-    ],
+  // 1) STATS
+  function fetchStats() {
+    return axios
+      .get(`${BASE_URL}/dashboard/stats?range=${selectedRange}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (res.data?.data) {
+          setTopPerformerCount(res.data.data.top || 0);
+          setAvgPerformerCount(res.data.data.average || 0);
+          setBelowAvgPerformerCount(res.data.data.below || 0);
+        }
+      });
   }
 
-  const weeklyData = {
-    labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-    datasets: [
-      {
-        type: 'bar',
-        label: 'Revenue',
-        data: [3500, 2800, 4200, 1500, 5600, 6200, 2000],
-        backgroundColor: 'rgba(156, 163, 175, 0.3)',
-        borderWidth: 0,
-        yAxisID: 'y',
-      },
-      {
-        type: 'line',
-        label: 'Performance',
-        data: [10, 14, 18, 9, 20, 24, 12],
-        borderColor: 'rgba(59, 130, 246, 1)',
-        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-        tension: 0.4,
-        yAxisID: 'y2',
-      },
-    ],
+  // 2) CHART
+  function fetchChart() {
+    return axios
+      .get(`${BASE_URL}/dashboard/chart?range=${selectedRange}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (res.data?.data) {
+          const { labels, revenueData, performanceData } = res.data.data;
+          setChartData({
+            labels,
+            datasets: [
+              {
+                type: "bar",
+                label: "Revenue",
+                data: revenueData,
+                backgroundColor: "rgba(156,163,175,0.3)",
+                borderWidth: 0,
+                yAxisID: "y",
+              },
+              {
+                type: "line",
+                label: "Performance",
+                data: performanceData,
+                borderColor: "rgba(59,130,246,1)",
+                backgroundColor: "rgba(59,130,246,0.2)",
+                tension: 0.4,
+                yAxisID: "y2",
+              },
+            ],
+          });
+        }
+      });
   }
 
-  function getChartData() {
-    switch (selectedRange) {
-      case 'Weekly':
-        return weeklyData
-      case 'Monthly':
-        return monthlyData
-      case 'Yearly':
-      default:
-        return yearlyData
-    }
+  // 3) DONUT
+  function fetchDonut() {
+    return axios
+      .get(`${BASE_URL}/dashboard/donut?range=${selectedRange}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (res.data?.data) {
+          const { maleCount, femaleCount } = res.data.data;
+          setDonutData({
+            labels: ["Male", "Female"],
+            datasets: [
+              {
+                data: [maleCount, femaleCount],
+                backgroundColor: ["rgb(59,130,246)", "rgb(245,158,11)"],
+                hoverOffset: 4,
+              },
+            ],
+          });
+        }
+      });
   }
 
-  // Chart options
+  // 4) TABLE (Top Performer List)
+  function fetchTopPerformerList() {
+    // We'll call your existing /ratings/top-rated?month=...&year=...&limit=4
+    // or you can do your own approach
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+    const limit = 4;
+
+    return axios
+      .get(
+        `${BASE_URL}/ratings/top-rated?month=${month}&year=${year}&limit=${limit}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      .then((res) => {
+        if (!res.data?.data) return;
+        const mapped = res.data.data.map((emp, idx) => ({
+          empId: emp.employeeId || `EMP${idx + 1}`,
+          name: `${emp.firstName || ""} ${emp.lastName || ""}`.trim(),
+          department: emp.department || "N/A",
+          date: `${month}-${year}`,
+          designation: emp.designation || "N/A",
+        }));
+        setTopPerformerList(mapped);
+      });
+  }
+
+  // Chart Options
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -169,153 +193,114 @@ export default function PerformanceManagementDashboard() {
     },
     scales: {
       y: {
-        type: 'linear',
+        type: "linear",
         display: true,
-        position: 'left',
-        ticks: {
-          color: '#6B7280', // Gray-500
-        },
-        grid: {
-          color: 'rgba(107,114,128,0.1)',
-        },
+        position: "left",
+        ticks: { color: "#6B7280" },
+        grid: { color: "rgba(107,114,128,0.1)" },
       },
       y2: {
-        type: 'linear',
+        type: "linear",
         display: true,
-        position: 'right',
-        grid: {
-          drawOnChartArea: false,
-        },
-        ticks: {
-          color: '#3B82F6', // Blue-500
-        },
+        position: "right",
+        grid: { drawOnChartArea: false },
+        ticks: { color: "#3B82F6" },
       },
       x: {
-        ticks: {
-          color: '#6B7280',
-        },
-        grid: {
-          color: 'rgba(107,114,128,0.05)',
-        },
+        ticks: { color: "#6B7280" },
+        grid: { color: "rgba(107,114,128,0.05)" },
       },
     },
-  }
-
-  // ------------------
-  // DONUT CHART DATA
-  // ------------------
-
-  // Dummy male/female data for each range
-  const donutDataMap = {
-    Weekly: {
-      maleCount: 5000,
-      femaleCount: 7000,
-      malePercent: '+15%',
-      femalePercent: '+20%',
-    },
-    Monthly: {
-      maleCount: 20000,
-      femaleCount: 25000,
-      malePercent: '+25%',
-      femalePercent: '+30%',
-    },
-    Yearly: {
-      maleCount: 240000,
-      femaleCount: 300000,
-      malePercent: '+30%',
-      femalePercent: '+40%',
-    },
-  }
-
-  // Return a Chart.js data object based on the current `selectedRange`
-  function getDonutData() {
-    const { maleCount, femaleCount } = donutDataMap[selectedRange] || donutDataMap.Monthly
-    return {
-      labels: ['Male', 'Female'],
-      datasets: [
-        {
-          data: [maleCount, femaleCount],
-          backgroundColor: [
-            'rgb(59, 130, 246)', // Blue
-            'rgb(245, 158, 11)', // Orange
-          ],
-          hoverOffset: 4,
-        },
-      ],
-    }
-  }
+  };
 
   const donutOptions = {
-    cutout: '60%',
+    cutout: "60%",
     plugins: {
       legend: { display: false },
     },
-  }
+  };
 
-  // ------------------
-  // TABLE DATA
-  // ------------------
-  const topPerformerList = [
-    {
-      empId: 'Ri0001',
-      name: 'Nikunj',
-      department: 'IT-Development',
-      date: 'dd-mm-yy',
-      designation: 'Web Developer',
-    },
-    {
-      empId: 'Ri0002',
-      name: 'Amit',
-      department: 'Marketing',
-      date: 'dd-mm-yy',
-      designation: 'UI/UX Designer',
-    },
-    {
-      empId: 'Ri0003',
-      name: 'Akhilesh',
-      department: 'Marketing',
-      date: 'dd-mm-yy',
-      designation: 'Sales Executive',
-    },
-    {
-      empId: 'Ri0004',
-      name: 'Sapna',
-      department: 'IT-Designing',
-      date: 'dd-mm-yy',
-      designation: 'Web Developer',
-    },
-  ]
+  // For Framer Motion (optional)
+  const cardVariants = {
+    hidden: { opacity: 0, y: 25 },
+    visible: (i) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.1,
+        duration: 0.4,
+        ease: "easeInOut",
+      },
+    }),
+  };
 
   return (
     <div className="space-y-6">
+      {loading && <p className="text-blue-500">Loading...</p>}
+      {error && (
+        <p className="text-red-500">
+          <strong>Error:</strong> {error}
+        </p>
+      )}
+
       {/* --- Stats Cards (top row) --- */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {statsData.map((stat, idx) => (
-          <motion.div
-            key={stat.title}
-            custom={idx}
-            variants={cardVariants}
-            initial="hidden"
-            animate="visible"
-            className={`flex flex-col rounded-lg p-4 shadow ${stat.colorClass}`}
-          >
-            <div className="flex items-center gap-2">
-              {stat.icon}
-              <h2 className="text-md font-semibold">{stat.title}</h2>
-            </div>
-            <p className="text-2xl font-bold my-3">{stat.value}</p>
-            <p
-              className={`text-sm font-medium ${
-                stat.increment >= 0
-                  ? 'text-green-600 dark:text-green-300'
-                  : 'text-red-600 dark:text-red-300'
-              }`}
-            >
-              {stat.increment >= 0 ? 'Increase' : 'Decrease'} by {stat.increment}{' '}
-              this Month
-            </p>
-          </motion.div>
-        ))}
+        {/* Top Performer */}
+        <motion.div
+          custom={0}
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          className="flex flex-col rounded-lg p-4 shadow bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100"
+        >
+          <div className="flex items-center gap-2">
+            <FaMedal className="text-blue-600 dark:text-blue-200" size={24} />
+            <h2 className="text-md font-semibold">Top Performer</h2>
+          </div>
+          <p className="text-2xl font-bold my-3">{topPerformerCount}</p>
+          <p className="text-sm font-medium text-green-600 dark:text-green-300">
+            Increase by 200 this Month
+          </p>
+        </motion.div>
+
+        {/* Average Performer */}
+        <motion.div
+          custom={1}
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          className="flex flex-col rounded-lg p-4 shadow bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-100"
+        >
+          <div className="flex items-center gap-2">
+            <FaChartLine
+              className="text-purple-600 dark:text-purple-200"
+              size={24}
+            />
+            <h2 className="text-md font-semibold">Average Performer</h2>
+          </div>
+          <p className="text-2xl font-bold my-3">{avgPerformerCount}</p>
+          <p className="text-sm font-medium text-red-600 dark:text-red-300">
+            Decrease by 200 this Month
+          </p>
+        </motion.div>
+
+        {/* Below Average Performer */}
+        <motion.div
+          custom={2}
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          className="flex flex-col rounded-lg p-4 shadow bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-100"
+        >
+          <div className="flex items-center gap-2">
+            <FaMeh className="text-red-600 dark:text-red-200" size={24} />
+            <h2 className="text-md font-semibold">Below Average Performer</h2>
+          </div>
+          <p className="text-2xl font-bold my-3">{belowAvgPerformerCount}</p>
+          <p className="text-sm font-medium text-green-600 dark:text-green-300">
+            Increase by 200 this Month
+          </p>
+        </motion.div>
       </div>
 
       {/* --- Chart Section (middle) --- */}
@@ -346,22 +331,20 @@ export default function PerformanceManagementDashboard() {
               <option value="Monthly">Monthly</option>
               <option value="Weekly">Weekly</option>
             </select>
-            {/* Simple arrow indicator */}
             <div className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
               ▼
             </div>
           </div>
         </div>
 
-        {/* Chart Container */}
         <div className="w-full h-64">
-          <Line data={getChartData()} options={chartOptions} />
+          <Line data={chartData} options={chartOptions} />
         </div>
       </motion.div>
 
       {/* --- Bottom row: Table (2/3) + Donut (1/3) --- */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Top Performer List */}
+        {/* Top Performer Table */}
         <motion.div
           variants={cardVariants}
           initial="hidden"
@@ -398,7 +381,7 @@ export default function PerformanceManagementDashboard() {
           </div>
         </motion.div>
 
-        {/* Donut Chart (Performance) */}
+        {/* Donut Chart (Male vs Female) */}
         <motion.div
           variants={cardVariants}
           initial="hidden"
@@ -407,51 +390,36 @@ export default function PerformanceManagementDashboard() {
         >
           <div className="flex justify-between items-center mb-4">
             <h3 className="font-semibold text-lg">Performance</h3>
-            {/* Show current selection (Yearly, Monthly, Weekly) */}
             <span className="text-sm text-gray-500 dark:text-gray-400">
               {selectedRange}
             </span>
           </div>
 
-          {/* Donut Chart */}
           <div className="flex flex-col items-center justify-center">
             <div className="w-40 h-40 mb-2">
-              <Doughnut data={getDonutData()} options={donutOptions} />
+              <Doughnut data={donutData} />
             </div>
 
-            {/* Dynamic labels based on selectedRange */}
-            {(() => {
-              const {
-                maleCount,
-                femaleCount,
-                malePercent,
-                femalePercent,
-              } = donutDataMap[selectedRange] || donutDataMap.Monthly
-
-              return (
-                <div className="flex space-x-4 mt-2 text-sm font-medium">
-                  <div className="flex flex-col items-center">
-                    <span className="text-blue-500 dark:text-blue-400">
-                      {malePercent}
-                    </span>
-                    <span className="text-gray-600 dark:text-gray-200">
-                      Male: {maleCount.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex flex-col items-center">
-                    <span className="text-orange-500 dark:text-orange-300">
-                      {femalePercent}
-                    </span>
-                    <span className="text-gray-600 dark:text-gray-200">
-                      Female: {femaleCount.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              )
-            })()}
+            {/* placeholders for % changes */}
+            <div className="flex space-x-4 mt-2 text-sm font-medium">
+              <div className="flex flex-col items-center">
+                <span className="text-blue-500 dark:text-blue-400">+15%</span>
+                <span className="text-gray-600 dark:text-gray-200">
+                  Male: {donutData.datasets[0].data[0]}
+                </span>
+              </div>
+              <div className="flex flex-col items-center">
+                <span className="text-orange-500 dark:text-orange-300">
+                  +20%
+                </span>
+                <span className="text-gray-600 dark:text-gray-200">
+                  Female: {donutData.datasets[0].data[1]}
+                </span>
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>
     </div>
-  )
+  );
 }

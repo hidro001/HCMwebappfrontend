@@ -1,5 +1,5 @@
-
-import React from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import { motion } from "framer-motion";
 import { Bar, Doughnut } from "react-chartjs-2";
 import {
@@ -9,81 +9,204 @@ import {
   FaDollarSign,
 } from "react-icons/fa";
 
-
 export default function AttendanceDashboard() {
-  // ----------------------
-  // Dummy Data & Icons
-  // ----------------------
+  // ---------------------------
+  // State for dynamic data
+  // ---------------------------
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  // For the 4 top squares
+  const [newUsers, setNewUsers] = useState(0);
+  const [totalDeposit, setTotalDeposit] = useState(0);
+  const [totalExpense, setTotalExpense] = useState(0);
+  const [totalEarning, setTotalEarning] = useState(0);
+
+  // For the Absenteeism bar chart
+  const [absenteeBarData, setAbsenteeBarData] = useState({
+    labels: [],
+    datasets: [],
+  });
+
+  // For Attendance Today doughnut
+  const [attendanceData, setAttendanceData] = useState({
+    labels: ["Attendance", "Remaining"],
+    datasets: [
+      {
+        data: [0, 0],
+        backgroundColor: ["#22c55e", "#e5e7eb"],
+        borderWidth: 0,
+      },
+    ],
+  });
+  // We'll store additional meta in a separate state if we want
+  const [attendanceMeta, setAttendanceMeta] = useState({});
+
+  // For Employee Overview doughnut
+  const [employeeOverviewData, setEmployeeOverviewData] = useState({
+    labels: ["Active", "Inactive"],
+    datasets: [
+      {
+        data: [0, 0],
+        backgroundColor: ["#3b82f6", "#f97316"],
+        borderWidth: 0,
+      },
+    ],
+  });
+  const [employeeOverviewMeta, setEmployeeOverviewMeta] = useState({});
+
+  // For Late In Today table
+  const [lateInToday, setLateInToday] = useState([]);
+
+  // The base URL for your backend. Adjust as needed:
+  const BASE_URL = "https://apiv2.humanmaximizer.com/api/v1/admin";
+  const token = localStorage.getItem("accessToken") || "";
+
+  useEffect(() => {
+    loadDashboardData();
+    // eslint-disable-next-line
+  }, []);
+
+  // Master loader
+  async function loadDashboardData() {
+    setLoading(true);
+    setError("");
+
+    try {
+      await Promise.all([
+        fetchOverview(),
+        fetchAbsenteeismChart(),
+        fetchAttendanceToday(),
+        fetchEmployeeOverview(),
+        fetchLateInToday(),
+      ]);
+    } catch (err) {
+      console.error("Error loading attendance dashboard data:", err);
+      setError(err.response?.data?.message || "Failed to load data");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // 1) Top squares
+  function fetchOverview() {
+    return axios
+      .get(`${BASE_URL}/attendance-dashboard/overview`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (res.data?.data) {
+          const { newUsers, totalDeposit, totalExpense, totalEarning } =
+            res.data.data;
+          setNewUsers(newUsers);
+          setTotalDeposit(totalDeposit);
+          setTotalExpense(totalExpense);
+          setTotalEarning(totalEarning);
+        }
+      });
+  }
+
+  // 2) Absenteeism chart
+  function fetchAbsenteeismChart() {
+    return axios
+      .get(`${BASE_URL}/attendance-dashboard/absenteeism`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (res.data?.data) {
+          setAbsenteeBarData(res.data.data);
+        }
+      });
+  }
+
+  // 3) Attendance Today (doughnut)
+  function fetchAttendanceToday() {
+    return axios
+      .get(`${BASE_URL}/attendance-dashboard/attendance-today`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (res.data?.data) {
+          setAttendanceData({
+            labels: res.data.data.labels,
+            datasets: res.data.data.datasets,
+          });
+          if (res.data.data.meta) {
+            setAttendanceMeta(res.data.data.meta);
+          }
+        }
+      });
+  }
+
+  // 4) Employee Overview (doughnut)
+  function fetchEmployeeOverview() {
+    return axios
+      .get(`${BASE_URL}/attendance-dashboard/employee-overview`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (res.data?.data) {
+          setEmployeeOverviewData({
+            labels: res.data.data.labels,
+            datasets: res.data.data.datasets,
+          });
+          if (res.data.data.meta) {
+            setEmployeeOverviewMeta(res.data.data.meta);
+          }
+        }
+      });
+  }
+
+  // 5) Late In Today (table)
+  function fetchLateInToday() {
+    return axios
+      .get(`${BASE_URL}/attendance-dashboard/late-in-today`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (res.data?.data) {
+          setLateInToday(res.data.data);
+        }
+      });
+  }
+
+  // statsData for the top row
   const statsData = [
     {
       title: "New Users",
-      amount: 500,
-      diff: "+200 this week",
+      amount: newUsers,
+      diff: "+200 this week", // or compute real difference
       iconColor: "bg-blue-500",
       icon: <FaUserFriends className="text-white" size={20} />,
     },
     {
       title: "Total Deposit",
-      amount: 15000,
+      amount: totalDeposit,
       diff: "+200 this week",
       iconColor: "bg-purple-500",
       icon: <FaMoneyBillAlt className="text-white" size={20} />,
     },
     {
       title: "Total Expense",
-      amount: 15000,
+      amount: totalExpense,
       diff: "+200 this week",
       iconColor: "bg-red-500",
       icon: <FaMoneyCheckAlt className="text-white" size={20} />,
     },
     {
       title: "Total Earning",
-      amount: 15000,
+      amount: totalEarning,
       diff: "+200 this week",
       iconColor: "bg-green-500",
       icon: <FaDollarSign className="text-white" size={20} />,
     },
   ];
 
-  // -----------------------------
-  // Example: Handling dark mode in Chart.js
-  // (Assuming you have some "theme" variable or context in real usage)
-  // -----------------------------
-  const isDarkMode = true; // replace with your actual logic/context
+  // If dark mode is needed in chart
+  const isDarkMode = false; // or read from context
   const gridColor = isDarkMode ? "#374151" : "#e5e7eb";
-  
 
-  // Bar chart (Absenteeism) data & config
-  const barData = {
-    labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-    datasets: [
-      {
-        label: "Finance",
-        data: [5, 6, 4, 8, 6, 10, 12, 7, 6, 9, 8, 6],
-        backgroundColor: "#FBBF24", 
-        stack: "combined",
-      },
-      {
-        label: "Sales",
-        data: [10, 8, 12, 6, 7, 5, 15, 10, 12, 6, 9, 8],
-        backgroundColor: "#3B82F6",
-        stack: "combined",
-      },
-      {
-        label: "Marketing",
-        data: [4, 3, 5, 7, 3, 6, 5, 3, 2, 5, 4, 6],
-        backgroundColor: "#A78BFA",
-        stack: "combined",
-      },
-      {
-        label: "IT",
-        data: [3, 4, 2, 3, 5, 2, 10, 5, 3, 4, 5, 3],
-        backgroundColor: "#14B8A6",
-        stack: "combined",
-      },
-    ],
-  };
-
+  // Bar chart options
   const barOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -100,61 +223,10 @@ export default function AttendanceDashboard() {
       y: {
         stacked: true,
         grid: { color: gridColor },
-        ticks: { stepSize: 5,  },
+        ticks: { stepSize: 5 },
       },
     },
   };
-
-  // Doughnut chart: Attendance Today
-  const attendanceData = {
-    labels: ["Attendance", "Remaining"],
-    datasets: [
-      {
-        data: [85, 15],
-        backgroundColor: ["#22c55e", "#e5e7eb"],
-        hoverBackgroundColor: ["#16a34a", "#d1d5db"],
-        borderWidth: 0,
-      },
-    ],
-  };
-
-  // Doughnut chart: Employee Overview
-  const employeeOverviewData = {
-    labels: ["Active", "Inactive"],
-    datasets: [
-      {
-        data: [500, 300],
-        backgroundColor: ["#3b82f6", "#f97316"],
-        hoverBackgroundColor: ["#2563eb", "#ea580c"],
-        borderWidth: 0,
-      },
-    ],
-  };
-
-  // Table data
-  const lateInToday = [
-    {
-      empId: "Ri0001",
-      department: "IT-Development",
-      date: "27 Mar 2024",
-      time: "11:35:45",
-      manager: "Nikunj",
-    },
-    {
-      empId: "Ri0002",
-      department: "Marketing",
-      date: "27 Mar 2024",
-      time: "1:30:50",
-      manager: "Amit",
-    },
-    {
-      empId: "Ri0003",
-      department: "Sales",
-      date: "27 Mar 2024",
-      time: "10:30:34",
-      manager: "Akhilesh",
-    },
-  ];
 
   // Simple Framer Motion fade-in for cards
   const cardVariants = {
@@ -167,9 +239,12 @@ export default function AttendanceDashboard() {
   };
 
   return (
-
     <div className="min-h-screen w-full bg-[#F8FBFF] dark:bg-gray-900 text-gray-800 dark:text-gray-100 py-8">
       <div className="mx-auto max-w-7xl px-4">
+        {/* Loading / Error messages */}
+        {loading && <p className="text-blue-500 mb-4">Loading...</p>}
+        {error && <p className="text-red-500 mb-4">Error: {error}</p>}
+
         {/* Top stats row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
           {statsData.map((stat, idx) => (
@@ -211,39 +286,8 @@ export default function AttendanceDashboard() {
             <h2 className="text-base font-semibold mb-3 text-gray-700 dark:text-gray-100">
               Absenteeism
             </h2>
-            {/* Legend */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-4">
-              <span className="flex items-center gap-1">
-                <span
-                  className="block w-3 h-3 rounded-full"
-                  style={{ backgroundColor: "#FBBF24" }}
-                ></span>
-                Finance
-              </span>
-              <span className="flex items-center gap-1">
-                <span
-                  className="block w-3 h-3 rounded-full"
-                  style={{ backgroundColor: "#3B82F6" }}
-                ></span>
-                Sales
-              </span>
-              <span className="flex items-center gap-1">
-                <span
-                  className="block w-3 h-3 rounded-full"
-                  style={{ backgroundColor: "#A78BFA" }}
-                ></span>
-                Marketing
-              </span>
-              <span className="flex items-center gap-1">
-                <span
-                  className="block w-3 h-3 rounded-full"
-                  style={{ backgroundColor: "#14B8A6" }}
-                ></span>
-                IT
-              </span>
-            </div>
             <div className="h-[480px] dark:text-white">
-              <Bar data={barData} options={barOptions} />
+              <Bar data={absenteeBarData} options={barOptions} />
             </div>
           </div>
 
@@ -259,12 +303,11 @@ export default function AttendanceDashboard() {
               </div>
               <div className="mt-3 text-center">
                 <div className="text-xl font-bold text-gray-700 dark:text-gray-100 mb-1">
-                  85% Attendance
+                  {attendanceData.datasets[0].data[0]}% Attendance
                 </div>
                 <div className="text-sm text-gray-400 dark:text-gray-400 leading-5">
-                  Reported Employers: 230 <br />
-                  On Leave: 12 <br />
-                  Not yet Reported: 5
+                  Reported Employers: {attendanceMeta.presentCount || 0} <br />
+                  Total Active: {attendanceMeta.totalActive || 0}
                 </div>
               </div>
             </div>
@@ -286,14 +329,14 @@ export default function AttendanceDashboard() {
                 <div className="mt-3 text-center">
                   <div className="text-sm text-gray-400 dark:text-gray-300 leading-5">
                     <span className="font-semibold text-gray-700 dark:text-gray-100">
-                      Active:{" "}
-                    </span>
-                    500
+                      Active:
+                    </span>{" "}
+                    {employeeOverviewMeta.activeCount || 0}
                     <br />
                     <span className="font-semibold text-gray-700 dark:text-gray-100">
-                      Inactive:{" "}
-                    </span>
-                    300
+                      Inactive:
+                    </span>{" "}
+                    {employeeOverviewMeta.inactiveCount || 0}
                   </div>
                 </div>
               </div>
@@ -319,7 +362,10 @@ export default function AttendanceDashboard() {
               </thead>
               <tbody className="text-sm text-gray-600 dark:text-gray-200">
                 {lateInToday.map((item, i) => (
-                  <tr key={i} className="border-b last:border-none border-gray-100 dark:border-gray-700">
+                  <tr
+                    key={i}
+                    className="border-b last:border-none border-gray-100 dark:border-gray-700"
+                  >
                     <td className="py-3 px-3">{item.empId}</td>
                     <td className="py-3 px-3">{item.department}</td>
                     <td className="py-3 px-3">{item.date}</td>
@@ -331,6 +377,13 @@ export default function AttendanceDashboard() {
                     <td className="py-3 px-3">{item.manager}</td>
                   </tr>
                 ))}
+                {lateInToday.length === 0 && (
+                  <tr>
+                    <td colSpan="5" className="text-center text-gray-500 py-3">
+                      No late arrivals found today.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
