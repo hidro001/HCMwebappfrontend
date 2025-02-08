@@ -30,7 +30,7 @@ ChartJS.register(
 );
 
 export default function PerformanceManagementDashboard() {
-  const BASE_URL = "http://localhost:6060/api/v1/kpi";
+  const BASE_URL = "https://apiv2.humanmaximizer.com/api/v1/kpi";
   const token = localStorage.getItem("accessToken") || "";
 
   const [selectedRange, setSelectedRange] = useState("Monthly");
@@ -272,7 +272,10 @@ export default function PerformanceManagementDashboard() {
           className="flex flex-col rounded-lg p-4 shadow bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-100"
         >
           <div className="flex items-center gap-2">
-            <FaChartLine className="text-purple-600 dark:text-purple-200" size={24} />
+            <FaChartLine
+              className="text-purple-600 dark:text-purple-200"
+              size={24}
+            />
             <h2 className="text-md font-semibold">Average Performer</h2>
           </div>
           <p className="text-2xl font-bold my-3">{avgPerformerCount}</p>

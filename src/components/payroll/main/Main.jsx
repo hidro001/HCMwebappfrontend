@@ -27,7 +27,7 @@ ChartJS.register(
 );
 
 export default function Main() {
-  const BASE_URL = "http://localhost:6060/api/v1/payroll-dashboard";
+  const BASE_URL = "https://apiv2.humanmaximizer.com/api/v1/payroll-dashboard";
   const token = localStorage.getItem("accessToken") || "";
 
   // State for line chart

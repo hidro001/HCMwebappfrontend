@@ -59,7 +59,7 @@ export default function AttendanceDashboard() {
   const [lateInToday, setLateInToday] = useState([]);
 
   // The base URL for your backend. Adjust as needed:
-  const BASE_URL = "http://localhost:6060/api/v1/admin";
+  const BASE_URL = "https://apiv2.humanmaximizer.com/api/v1/admin";
   const token = localStorage.getItem("accessToken") || "";
 
   useEffect(() => {

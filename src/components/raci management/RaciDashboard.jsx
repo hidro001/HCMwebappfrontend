@@ -28,7 +28,7 @@ ChartJS.register(
 
 export default function RaciDashboard() {
   // Adjust to your actual base route
-  const BASE_URL = "http://localhost:6060/api/v1/raci-dashboard";
+  const BASE_URL = "https://apiv2.humanmaximizer.com/api/v1/raci-dashboard";
   const token = localStorage.getItem("accessToken") || "";
 
   // Date states
