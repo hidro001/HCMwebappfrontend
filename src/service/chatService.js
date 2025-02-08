@@ -2,7 +2,7 @@ import axiosInstance from "./axiosInstance";
 
 import axios from 'axios';
 
-const BASE_URL = 'https://hmback.onrender.com/api/v1/admin';
+const BASE_URL = 'https://apiv2.humanmaximizer.com/api/v1/admin';
 
 
 export const fetchSubordinates = (accessToken) => {

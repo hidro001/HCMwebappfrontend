@@ -36,7 +36,7 @@ export default function TaskList({ tasks = [], loading }) {
             ) : (
               safeTasks.map((task, index) => (
                 <tr key={index} className="border-b border-gray-300 dark:border-gray-700">
-                  <td className="px-4 py-3">{task.name || "N/A"}</td>
+                  <td className="px-4 py-3">{task.assignedToName || "N/A"}</td>
                   <td className="px-4">{task.assignedToEmployeeId || "N/A"}</td>
                 
                   <td className="px-4">  {new Date(task.dueDate || "N/A").toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}</td>
