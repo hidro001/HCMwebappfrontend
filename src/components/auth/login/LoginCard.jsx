@@ -224,6 +224,7 @@ const LoginCard = () => {
       departmentAlocated,
       teams,
       user_Avatar,
+      permission, 
     } = user;
 
     // Parse departmentAlocated and teams
@@ -288,6 +289,8 @@ const LoginCard = () => {
       departmentAlocated: departmentsArray,
       teams: teamsArray,
       userAvatar: user_Avatar, // Add user avatar
+      permissions: permission || [], // We'll store this in Zustand
+      engagement_permission: user.engagement_permission,
     });
 
     toast.success("Login Successful!");
