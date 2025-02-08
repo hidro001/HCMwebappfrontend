@@ -128,14 +128,7 @@ export default function AllVacancies() {
       <div className="mx-auto px-4 py-4 max-w-full">
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between py-4 border-b dark:border-gray-700 gap-2">
           <h1 className="text-xl sm:text-2xl font-semibold">Vacancies</h1>
-          <div className="flex items-center flex-wrap gap-2">
-            <button className="px-4 py-2 bg-white dark:bg-gray-800 border rounded hover:bg-gray-100 dark:hover:bg-gray-700">
-              Import
-            </button>
-            <button className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
-              + Add Vacancy
-            </button>
-          </div>
+       
         </div>
         <div className="flex items-center justify-between p-4 border-b dark:border-gray-700">
           <div className="flex space-x-2 overflow-x-auto">

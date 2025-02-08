@@ -25,6 +25,9 @@ import { LuFileCheck2 } from "react-icons/lu";
 import { ChatBubble } from "@mui/icons-material";
 
 export const menuItems = [
+
+
+  // dashboard
   {
     name: "Dashboard",
     icon: <FaHome />,
@@ -34,7 +37,7 @@ export const menuItems = [
       {
         name: "Dashboard",
         link: "/dashboard",
-        permission: "employeeDashboard",
+        permission: "SuperDashboard",
       },
    
       {
@@ -45,6 +48,7 @@ export const menuItems = [
     ],
   },
 
+  //Announcements
   {
     name: "Announcements",
     icon: <FaBullhorn />,
@@ -59,10 +63,13 @@ export const menuItems = [
       {
         name: "View Announcement",
         link: "/dashboard/view-announcement",
-        permission: "AddAnnouncement",
+        permission: "ViewAnnouncement",
       },
     ],
   },
+
+
+//Engagement
   {
     name: "Engagement",
     icon: <TiSocialTwitter />,
@@ -72,57 +79,18 @@ export const menuItems = [
       {
         name: "Engagement Feed",
         link: "/dashboard/engagement-feed",
-        permission: "AddAnnouncement",
+        permission: "engagement",
       },
       {
         name: "permission dashboard",
         link: "/dashboard/engagement-permission-dashboard",
-        permission: "AddAnnouncement",
+        permission: "engagementManager",
       },
     ],
   },
-  // {
-  //   name: " Company Policies",
-  //   icon: <FaClipboard />,
-  //   color: "text-green-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "View Policies",
-  //       link: "/dashboard/policies",
-  //       permission: "viewPolicies",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Update Policies",
-  //       link: "/dashboard/update-policies",
-  //       permission: "PolicySystem",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: "Company Orientations",
-  //   icon: <FaBook />,
-  //   color: "text-red-400",
-  //   iconAnimation: { rotate: 360 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Update Induction",
-  //       link: "/dashboard/post-induction",
-  //       permission: "postInduction",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "View Induction",
-  //       link: "/dashboard/induction",
-  //       permission: "viewInduction",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+
+
+//Manage Employees
   {
     name: "Manage Employees",
     icon: <FaUsers />,
@@ -133,7 +101,7 @@ export const menuItems = [
       {
         name: "Main",
         link: "/dashboard/employees/management",
-        permission: "addEmployeeAdmin",
+        permission: "mainmanageemployees",
         textAnimation: { x: 10 },
       },
       {
@@ -154,11 +122,7 @@ export const menuItems = [
         permission: "updateEmployeeAdmin",
         textAnimation: { x: 10 },
       },
-      {
-        name: "Asset Management",
-        link: "/dashboard/assign-assets",
-        permission: "assignAssets",
-      },
+
       // {
       //   name: "Update Employee",
       //   link: "/dashboard/update-employeev2",
@@ -189,6 +153,11 @@ export const menuItems = [
         permission: "updateEmployeeSuperAdmin",
         textAnimation: { x: 10 },
       },
+      {
+        name: "Asset Management",
+        link: "/dashboard/assign-assets",
+        permission: "assignAssets",
+      },
       // {
       //   name: "Asset",
       //   link: "/dashboard/asset",
@@ -197,6 +166,10 @@ export const menuItems = [
       // },
     ],
   },
+
+
+//Task Management
+
   {
     name: "Task Management ",
     icon: <FaTasks />,
@@ -225,121 +198,8 @@ export const menuItems = [
     ],
   },
 
-  // {
-  //   name: " Company Policies",
-  //   icon: <FaClipboard />,
-  //   color: "text-green-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "View Policies",
-  //       link: "/dashboard/policies",
-  //       permission: "viewPolicies",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Update Policies",
-  //       link: "/dashboard/update-policies",
-  //       permission: "PolicySystem",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: "Company Orientations",
-  //   icon: <FaBook />,
-  //   color: "text-red-400",
-  //   iconAnimation: { rotate: 360 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Update Induction",
-  //       link: "/dashboard/post-induction",
-  //       permission: "postInduction",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "View Induction",
-  //       link: "/dashboard/induction",
-  //       permission: "viewInduction",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
 
-  // {
-  //   name: "Task Management Manager",
-  //   icon: <FaTasks />,
-  //   color: "text-blue-400",
-  //   iconAnimation: { rotate: 360 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "View Daily Tasks",
-  //       link: "/dashboard/view-task-hr",
-  //       permission: "ViewTaskManager",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Update Daily Tasks",
-  //       link: "/dashboard/update-task",
-  //       permission: "updateTask",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Assign Task",
-  //       link: "/dashboard/manager-action-tracker",
-  //       permission: "ActionTrackerManager",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Assigned Tasks",
-  //       link: "/dashboard/action-tracker",
-  //       permission: "actionTracker",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: "Outsourcing & Recruit Management",
-  //   icon: <FaFileAlt />,
-  //   color: "text-yellow-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Job Posting",
-  //       link: "/dashboard/job-posting",
-  //       permission: "jobPostingAdmin",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Vacancies Management",
-  //       link: "/dashboard/job-fetching",
-  //       permission: "jobVacancyAdmin",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "HR Referral Dashboard",
-  //       link: "/dashboard/hr-referral-dashboard",
-  //       permission: "HRreferralDashboard",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Vacancies",
-  //       link: "/dashboard/employee-pending-jobs",
-  //       permission: "viewVacancies",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Employee Referral Tracker",
-  //       link: "/dashboard/my-referral-dashboard",
-  //       permission: "employeeReferralDashboard",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+  // Ticket Management
   {
     name: "Ticket Management",
     icon: <FaBug />,
@@ -368,38 +228,21 @@ export const menuItems = [
       {
         name: "Posh Manage",
         link: "/dashboard/posh-manage",
-        permission: "IssueManagementSuperAdmin",
+        permission: "poshManager",
         textAnimation: { x: 10 },
       },
       {
         name: "File Posh",
         link: "/dashboard/file-posh",
-        permission: "IssueManagementSuperAdmin",
+        permission: "poshEmployee",
         textAnimation: { x: 10 },
       },
     ],
   },
-  // {
-  //   name: "RACI",
-  //   icon: <FaGlobe />,
-  //   color: "text-red-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "RACI Business",
-  //       link: "/dashboard/raci2",
-  //       permission: "Raci2",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "RACI OPS",
-  //       link: "/dashboard/raci",
-  //       permission: "superAdminRaci",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+
+
+
+  // Payroll
   {
     name: "Payroll",
     icon: <FaMoneyCheckAlt />,
@@ -427,6 +270,8 @@ export const menuItems = [
       },
     ],
   },
+
+
   // {
   //   name: "Leaves Management",
   //   icon: <FaListAlt />,
@@ -454,6 +299,8 @@ export const menuItems = [
   //     },
   //   ],
   // },
+
+
   // {
   //   name: "Review Performance",
   //   icon: <FaFileSignature />,
@@ -644,6 +491,9 @@ export const menuItems = [
   //   ],
   // },
 
+
+//RACI
+
   {
     name: "RACI",
     icon: <FaGlobe />,
@@ -654,7 +504,7 @@ export const menuItems = [
       {
         name: "Main",
         link: "/dashboard/raci-dashboard",
-        permission: "Raci2",
+        permission: "RaciMain",
         textAnimation: { x: 10 },
       },
       {
@@ -671,33 +521,9 @@ export const menuItems = [
       },
     ],
   },
-  // {
-  //   name: "Payroll & Attendence",
-  //   icon: <FaMoneyCheckAlt />,
-  //   color: "text-orange-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Manage Payroll",
-  //       link: "/dashboard/payroll",
-  //       permission: "payroll",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Attendance & Payroll",
-  //       link: "/dashboard/my-attendance",
-  //       permission: "myAttendance",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "View Attendance",
-  //       link: "/dashboard/subordinateslist",
-  //       permission: "viewAttendance",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+
+//Attendence
+
   {
     name: "Attendence",
     icon: <FaBookReader />,
@@ -708,7 +534,7 @@ export const menuItems = [
       {
         name: "Main",
         link: "/dashboard/attendance-dashboard",
-        permission: "myAttendance",
+        permission: "MainAttendance",
         textAnimation: { x: 10 },
       },
       {
@@ -720,18 +546,20 @@ export const menuItems = [
       {
         name: "View Attendance",
         link: "/dashboard/view-attendance",
-        permission: "viewAttendance",
+        permission: "myAttendance",
         textAnimation: { x: 10 },
       },
       {
         name: "All Employee Attendance",
         link: "/dashboard/all-employee-attendance",
-        permission: "viewAttendance",
+        permission: "viewallAttendance",
         textAnimation: { x: 10 },
       },
     ],
   },
 
+
+//Recruit Management
   {
     name: "Recruit Management",
     icon: <FaFileAlt />,
@@ -742,19 +570,19 @@ export const menuItems = [
       {
         name: "Main",
         link: "/dashboard/recruitment-main",
-        permission: "jobPostingAdmin",
+        permission: "MainRecruitManagement",
         textAnimation: { x: 10 },
       },
       {
         name: "All Vacancies",
         link: "/dashboard/all-vacancies",
-        permission: "jobPostingAdmin",
+        permission: "viewVacancies",
         textAnimation: { x: 10 },
       },
       {
         name: "Create Vacancy",
         link: "/dashboard/create-vacancies",
-        permission: "jobVacancyAdmin",
+        permission: "jobPostingAdmin",
         textAnimation: { x: 10 },
       },
       {
@@ -766,7 +594,7 @@ export const menuItems = [
       {
         name: "Vacancies List",
         link: "/dashboard/vancancies-list",
-        permission: "viewVacancies",
+        permission: "HRreferralDashboard",
         textAnimation: { x: 10 },
       },
       {
@@ -783,6 +611,8 @@ export const menuItems = [
       // },
     ],
   },
+
+
   // {
   //   name: "Leaves Management",
   //   icon: <FaListAlt />,
@@ -810,34 +640,10 @@ export const menuItems = [
   //     },
   //   ],
   // },
-  // {
-  //   name: "Review Performance",
-  //   icon: <FaFileSignature />,
-  //   color: "text-yellow-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Rate Subordinate",
-  //       link: "/dashboard/kpi-rating",
-  //       permission: "rateSubordinate",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "View Subordinate Ratings",
-  //       link: "/dashboard/subordinate-rating",
-  //       permission: "viewSubordinateRatings",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "All Employes Rating",
-  //       link: "/dashboard/all/employee/ratings",
-  //       permission: "viewAllEmployeeRatings",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
 
+
+  
+//Performance management
   {
     name: "Performance management",
     icon: <GrDocumentPerformance />,
@@ -848,12 +654,12 @@ export const menuItems = [
       {
         name: "Main",
         link: "/dashboard/performance-dashboard",
-        permission: "postTopPerformer",
+        permission: "MainPerformanceManagement",
       },
       {
         name: "Top Performers",
         link: "/dashboard/top-performers",
-        permission: "viewTopPerformers",
+        permission: "postTopPerformer",
       },
       {
         name: "Set KPIs",
@@ -875,6 +681,8 @@ export const menuItems = [
     ],
   },
 
+  //Company Settings
+
   {
     name: "Company Settings",
     icon: <FaCog />,
@@ -882,12 +690,7 @@ export const menuItems = [
     iconAnimation: { scale: 1.3 },
     textAnimation: { x: 10 },
     options: [
-      // {
-      //   name: "Add Department",
-      //   link: "/dashboard/departdesig",
-      //   permission: "superAdminDepartmentDesignation",
-      //   textAnimation: { x: 10 },
-      // },
+ 
       {
         name: "Company Info",
         link: "/dashboard/company-info",
@@ -921,11 +724,13 @@ export const menuItems = [
       {
         name: "Break Settings",
         link: "/dashboard/break-settings",
-        permission: "addDesignation",
+        permission: "addBreak",
         textAnimation: { x: 10 },
       },
     ],
   },
+
+
   // {
   //   name: "User Profile",
   //   icon: <FaUserCircle />,
@@ -941,6 +746,8 @@ export const menuItems = [
   //     },
   //   ],
   // },
+
+
   // {
   //   name: "Training Material",
   //   icon: <MdModelTraining />,
@@ -956,60 +763,66 @@ export const menuItems = [
   //     },
   //   ],
   // },
-  // {
-  //   name: "Organization Chart",
-  //   icon: <RiOrganizationChart />,
-  //   color: "text-yellow-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Organization Chart",
-  //       link: "/dashboard/training-material",
-  //       permission: "trainingMaterial",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
-  // {
-  //   name: "Resignation & FNF Dashboard",
-  //   icon: <LuFileCheck2 />,
-  //   color: "text-green-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Submit Resignation",
-  //       link: "/dashboard/ResignationForm",
-  //       permission: "submitResignation",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Resignation Dashboard",
-  //       link: "/dashboard/resignation-dashboard",
-  //       permission: "employeeResignationDashboard",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Resignation Approvals",
-  //       link: "/dashboard/manage-resignation",
-  //       permission: "hrResignationDashboard",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "HR FNF Approvals",
-  //       link: "/dashboard/fnf-request-hr",
-  //       permission: "FNFAprroval",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "All Resignation History",
-  //       link: "/dashboard/resignationhistory",
-  //       permission: "viewAllResignation",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+
+  {
+    name: "Organization Chart",
+    icon: <RiOrganizationChart />,
+    color: "text-yellow-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Organization Chart",
+        link: "/dashboard/training-material",
+        permission: "trainingMaterial",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
+
+
+  {
+    name: "Resignation & FNF Dashboard",
+    icon: <LuFileCheck2 />,
+    color: "text-green-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Submit Resignation",
+        link: "/dashboard/ResignationForm",
+        permission: "submitResignation",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Resignation Dashboard",
+        link: "/dashboard/resignation-dashboard",
+        permission: "employeeResignationDashboard",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Resignation Approvals",
+        link: "/dashboard/manage-resignation",
+        permission: "hrResignationDashboard",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "HR FNF Approvals",
+        link: "/dashboard/fnf-request-hr",
+        permission: "FNFAprroval",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "All Resignation History",
+        link: "/dashboard/resignationhistory",
+        permission: "viewAllResignation",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
+
+  
+
   {
     name: "Chats",
     icon: <ChatBubble />,
