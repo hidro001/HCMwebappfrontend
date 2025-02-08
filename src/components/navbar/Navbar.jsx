@@ -685,14 +685,18 @@ const Navbar = () => {
                   <p className="text-xs text-gray-300">{userEmail}</p>
                 </div>
                 <ul className="py-2">
-                  <li>
+
+
+                  {/* <li>
                     <a
                       href="/dashboard"
                       className="flex items-center px-4 py-2 text-sm hover:bg-gray-600"
                     >
                       <FaHome className="mr-2 text-blue-400" /> Dashboard
                     </a>
-                  </li>
+                  </li> */}
+
+{/*                   
                   <li>
                     <a
                       href="/settings"
@@ -700,7 +704,9 @@ const Navbar = () => {
                     >
                       <FaCog className="mr-2 text-green-400" /> Settings
                     </a>
-                  </li>
+                  </li> */}
+
+
                   <li>
                     <button
                       onClick={handleSignOut}
