@@ -162,6 +162,15 @@ export default function Sliderbox() {
     {
       url: "/mouse2.gif",
     },
+    {
+      url: "/mouse3.gif",
+    },
+    {
+      url: "/mouse4.gif",
+    },
+    {
+      url: "/mouse5.gif",
+    },
   ];
 
   // Slider settings

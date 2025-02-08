@@ -33,6 +33,8 @@ const useAuthStore = create(
           _id, // Extract _id
           userRole,
           permissionRole,
+          first_Name,
+          last_Name,
           userName,
           employeeId,
           department,
@@ -52,6 +54,8 @@ const useAuthStore = create(
           isAuthenticated: true,
           userRole,
           permissionRole,
+          first_Name,
+          last_Name,
           userName,
           employeeId,
           department,
