@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -13,6 +14,7 @@ import {
 import { Bar, Line } from "react-chartjs-2";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
+/* ---------------- REGISTER CHART.JS MODULES ---------------- */
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -24,6 +26,7 @@ ChartJS.register(
   Legend
 );
 
+/* ---------------- STYLES FOR DEPARTMENTS ---------------- */
 const departmentStyles = {
   Development: {
     bg: "bg-purple-50 dark:bg-purple-900",
@@ -62,6 +65,7 @@ const departmentStyles = {
   },
 };
 
+/* ---------------- MINISPARKLINE COMPONENT ---------------- */
 function MiniSparkline({ data }) {
   const sparkData = {
     labels: data.map((_, i) => i),
@@ -80,8 +84,14 @@ function MiniSparkline({ data }) {
   const sparkOptions = {
     responsive: true,
     maintainAspectRatio: false,
-    scales: { x: { display: false }, y: { display: false } },
-    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+    scales: {
+      x: { display: false },
+      y: { display: false },
+    },
+    plugins: {
+      legend: { display: false },
+      tooltip: { enabled: false },
+    },
   };
 
   return (
@@ -91,18 +101,121 @@ function MiniSparkline({ data }) {
   );
 }
 
+/* ---------------- MAIN COMPONENT ---------------- */
 export default function RecruitDashboard() {
   const [darkMode, setDarkMode] = useState(false);
 
-  const topHiringData = {
-    labels: ["01/09", "02/09", "03/09", "04/09", "05/09", "06/09", "07/09"],
-    datasets: [
-      { label: "Referral", data: [25, 60, 15, 40, 30, 55, 10], backgroundColor: "#8B5CF6" },
-      { label: "Indeed", data: [10, 20, 50, 25, 45, 20, 15], backgroundColor: "#22C55E" },
-      { label: "LinkedIn", data: [40, 30, 35, 55, 70, 65, 35], backgroundColor: "#F59E0B" },
-    ],
-  };
+  /* 
+     We'll store the top squares in state:
+     openPositions, applicants, outstandingOffers, onboarding 
+  */
+  const [openPositions, setOpenPositions] = useState(0);
+  const [applicants, setApplicants] = useState(0);
+  const [outstandingOffers, setOutstandingOffers] = useState(0);
+  const [onboarding, setOnboarding] = useState(0);
 
+  /* For "Top Hiring Sources" chart data */
+  const [topHiringData, setTopHiringData] = useState({
+    labels: [],
+    datasets: [],
+  });
+
+  /* For "Recent Vacancies" table */
+  const [vacancies, setVacancies] = useState([]);
+
+  /* For "Departments" data */
+  const [departments, setDepartments] = useState([]);
+
+  /* For error/loading states */
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  /* 
+     Adjust the base URL depending on your environment 
+     e.g. "http://localhost:6060/api/v1/admin" if that's your route mount
+  */
+  const BASE_URL = "http://localhost:6060/api/v1/admin";
+  const token = localStorage.getItem("accessToken") || "";
+
+  useEffect(() => {
+    loadAllData();
+  }, []);
+
+  async function loadAllData() {
+    setLoading(true);
+    setError("");
+
+    try {
+      await fetchOverview();
+      await fetchHiringSources();
+      await fetchVacancies();
+      await fetchDepartments();
+    } catch (err) {
+      console.error("Error loading Recruit Dashboard data:", err);
+      setError(err.response?.data?.message || "Failed to load data");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  /* 1) OVERVIEW STATS (top squares) */
+  function fetchOverview() {
+    return axios
+      .get(`${BASE_URL}/recruit-dashboard/overview`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (res.data?.data) {
+          const { openPositions, applicants, outstandingOffers, onboarding } =
+            res.data.data;
+          setOpenPositions(openPositions);
+          setApplicants(applicants);
+          setOutstandingOffers(outstandingOffers);
+          setOnboarding(onboarding);
+        }
+      });
+  }
+
+  /* 2) TOP HIRING SOURCES (stacked bar) */
+  function fetchHiringSources() {
+    return axios
+      .get(`${BASE_URL}/recruit-dashboard/hiring-sources`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (res.data?.data) {
+          setTopHiringData(res.data.data);
+        }
+      });
+  }
+
+  /* 3) RECENT VACANCIES (table) */
+  function fetchVacancies() {
+    return axios
+      .get(`${BASE_URL}/recruit-dashboard/vacancies`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (res.data?.data) {
+          setVacancies(res.data.data);
+        }
+      });
+  }
+
+  /* 4) DEPARTMENTS */
+  function fetchDepartments() {
+    return axios
+      .get(`${BASE_URL}/recruit-dashboard/departments`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      .then((res) => {
+        if (res.data?.data) {
+          setDepartments(res.data.data);
+        }
+      });
+  }
+
+  /* Chart Options for the top hiring chart */
   const topHiringOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -113,59 +226,6 @@ export default function RecruitDashboard() {
     plugins: { legend: { position: "bottom" } },
   };
 
-  const vacancies = [
-    {
-      title: "UX Designer",
-      location: "Dayton",
-      applicants: 122,
-      newApplicants: 33,
-      sparkData: [2, 6, 4, 10, 8],
-    },
-    {
-      title: "iOS App Developer",
-      location: "Remote",
-      applicants: 34,
-      newApplicants: 5,
-      sparkData: [1, 3, 7, 6, 9],
-    },
-    {
-      title: "Network Administrator",
-      location: "Phoenix",
-      applicants: 45,
-      newApplicants: 13,
-      sparkData: [5, 9, 4, 10, 5],
-    },
-    {
-      title: "JavaScript Developer",
-      location: "Remote",
-      applicants: 57,
-      newApplicants: 5,
-      sparkData: [2, 2, 5, 7, 3],
-    },
-    {
-      title: "Graphic Designer",
-      location: "Gothenburg",
-      applicants: 74,
-      newApplicants: 22,
-      sparkData: [3, 4, 10, 6, 8],
-    },
-    {
-      title: "Python Django Developer",
-      location: "Remote",
-      applicants: 44,
-      newApplicants: 12,
-      sparkData: [2, 7, 8, 4, 5],
-    },
-  ];
-
-  const departments = [
-    { name: "Development", newCount: 2, active: true },
-    { name: "Sales & Marketing", newCount: 2, active: true },
-    { name: "Project Management", newCount: 2, active: true },
-    { name: "Analytics & Data", newCount: 0, active: false },
-    { name: "Finance", newCount: 0, active: false },
-  ];
-
   return (
     <div>
       <div className="min-h-screen bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 p-6 transition-colors">
@@ -173,38 +233,68 @@ export default function RecruitDashboard() {
           <div className="flex items-center justify-between mb-6">
             <h1 className="text-3xl font-bold">Recruitment Dashboard</h1>
           </div>
+
+          {loading && <p className="text-blue-500">Loading...</p>}
+          {error && <p className="text-red-500">Error: {error}</p>}
+
+          {/* ------------- TOP ROW: 4 big squares + Bar Chart ------------- */}
           <div className="grid grid-cols-1 xl:grid-cols-[2fr,1fr] gap-6 mb-6">
+            {/* Left: 4 squares */}
             <div className="grid grid-cols-2 grid-rows-2 gap-6">
+              {/* 1) Open Positions */}
               <div className="rounded-lg p-4 bg-green-50 dark:bg-green-900 shadow flex flex-col justify-center">
-                <div className="text-3xl font-bold mb-1">79</div>
-                <div className="text-gray-600 dark:text-gray-300">Open Positions</div>
+                <div className="text-3xl font-bold mb-1">{openPositions}</div>
+                <div className="text-gray-600 dark:text-gray-300">
+                  Open Positions
+                </div>
               </div>
+
+              {/* 2) Applicants */}
               <div className="rounded-lg p-4 bg-orange-50 dark:bg-orange-900 shadow flex flex-col justify-center">
-                <div className="text-3xl font-bold mb-1">160</div>
-                <div className="text-gray-600 dark:text-gray-300">Applicants</div>
+                <div className="text-3xl font-bold mb-1">{applicants}</div>
+                <div className="text-gray-600 dark:text-gray-300">
+                  Applicants
+                </div>
               </div>
+
+              {/* 3) Outstanding Offers */}
               <div className="rounded-lg p-4 bg-blue-50 dark:bg-blue-900 shadow flex flex-col justify-center">
-                <div className="text-3xl font-bold mb-1">7</div>
-                <div className="text-gray-600 dark:text-gray-300">Outstanding Offers</div>
+                <div className="text-3xl font-bold mb-1">
+                  {outstandingOffers}
+                </div>
+                <div className="text-gray-600 dark:text-gray-300">
+                  Outstanding Offers
+                </div>
               </div>
+
+              {/* 4) Onboarding */}
               <div className="rounded-lg p-4 bg-purple-50 dark:bg-purple-900 shadow flex flex-col justify-center">
-                <div className="text-3xl font-bold mb-1">18</div>
-                <div className="text-gray-600 dark:text-gray-300">Onboarding</div>
+                <div className="text-3xl font-bold mb-1">{onboarding}</div>
+                <div className="text-gray-600 dark:text-gray-300">
+                  Onboarding
+                </div>
               </div>
             </div>
+
+            {/* Right: Top Hiring Sources (Bar Chart) */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
               <div className="flex items-center justify-between mb-2">
                 <h2 className="font-semibold text-gray-800 dark:text-gray-100">
                   Top Hiring Sources
                 </h2>
-                <span className="text-sm text-gray-500 dark:text-gray-400">Nov. 01 – 07</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  Nov. 01 – 07
+                </span>
               </div>
               <div className="flex-grow relative h-56">
                 <Bar data={topHiringData} options={topHiringOptions} />
               </div>
             </div>
           </div>
+
+          {/* ------------- BOTTOM ROW: Vacancies Table + Departments ------------- */}
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            {/* Recent Vacancies Table */}
             <div className="col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
@@ -221,7 +311,7 @@ export default function RecruitDashboard() {
                       <th className="py-2 font-semibold">Job Title</th>
                       <th className="py-2 font-semibold">Location</th>
                       <th className="py-2 font-semibold">Applicants</th>
-                      <th className="py-2 font-semibold">Applicants</th>
+                      <th className="py-2 font-semibold">Trend</th>
                       <th className="py-2 w-10" />
                     </tr>
                   </thead>
@@ -242,7 +332,7 @@ export default function RecruitDashboard() {
                           )}
                         </td>
                         <td className="py-3">
-                          <MiniSparkline data={vac.sparkData} />
+                          <MiniSparkline data={vac.sparkData || []} />
                         </td>
                         <td className="py-3 text-right">
                           <button
@@ -254,14 +344,27 @@ export default function RecruitDashboard() {
                         </td>
                       </tr>
                     ))}
+                    {vacancies.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="text-center py-3">
+                          No vacancies found.
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
             </div>
+
+            {/* Departments List */}
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="font-semibold text-gray-800 dark:text-gray-100">Departments</h2>
-                <span className="text-sm text-gray-500 dark:text-gray-400">Sep. 01 – 07</span>
+                <h2 className="font-semibold text-gray-800 dark:text-gray-100">
+                  Departments
+                </h2>
+                <span className="text-sm text-gray-500 dark:text-gray-400">
+                  Sep. 01 – 07
+                </span>
               </div>
               <div className="space-y-3">
                 {departments.map((dept, i) => {
@@ -277,7 +380,9 @@ export default function RecruitDashboard() {
                       key={i}
                       className={`flex items-center justify-between p-4 rounded-xl ${styles.bg}`}
                     >
-                      <span className={`font-medium ${styles.text}`}>{dept.name}</span>
+                      <span className={`font-medium ${styles.text}`}>
+                        {dept.name}
+                      </span>
                       <div className="flex items-center space-x-2">
                         <div className="relative w-10 h-7">
                           <div

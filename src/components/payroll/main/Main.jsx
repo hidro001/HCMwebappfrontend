@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import React, { useState, useEffect } from "react";
 
 // For Chart.js
 import {
@@ -10,11 +10,11 @@ import {
   Title,
   Tooltip,
   Legend,
-  ArcElement
-} from 'chart.js';
-import { Line, Doughnut } from 'react-chartjs-2';
+  ArcElement,
+} from "chart.js";
+import { Line, Doughnut } from "react-chartjs-2";
+import axios from "axios";
 
-// Register Chart.js components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -27,97 +27,124 @@ ChartJS.register(
 );
 
 export default function Main() {
-  // Dummy data for the payroll list
-  const [payrollList] = useState([
-    {
-      name: 'Dianne Russell',
-      email: 'redaniel@gmail.com',
-      joinDate: '27 Mar 2024',
-      empId: 'RI0456',
-      department: 'IT',
-      status: 'Paid',
-      avatarColor: '#f87171',
-    },
-    {
-      name: 'Wade Warren',
-      email: 'xterris@gmail.com',
-      joinDate: '27 Mar 2024',
-      empId: 'RI0456',
-      department: 'Sales',
-      status: 'Paid',
-      avatarColor: '#fb923c',
-    },
-    {
-      name: 'Albert Flores',
-      email: 'seannand@mail.ru',
-      joinDate: '27 Mar 2024',
-      empId: 'RI0456',
-      department: 'Finance',
-      status: 'Paid',
-      avatarColor: '#fbbf24',
-    },
-    {
-      name: 'Bessie Cooper',
-      email: 'igerrin@gmail.com',
-      joinDate: '27 Mar 2024',
-      empId: 'RI0456',
-      department: 'Marketing',
-      status: 'Paid',
-      avatarColor: '#34d399',
-    },
-    {
-      name: 'Arlene McCoy',
-      email: 'fellora@mail.ru',
-      joinDate: '27 Mar 2024',
-      empId: 'RI0456',
-      department: 'Designing',
-      status: 'Paid',
-      avatarColor: '#60a5fa',
-    },
-  ]);
+  const BASE_URL = "http://localhost:6060/api/v1/payroll-dashboard";
+  const token = localStorage.getItem("accessToken") || "";
 
-  // -- Line chart (Total Payout) data --
-  const lineChartData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+  // State for line chart
+  const [lineChartData, setLineChartData] = useState({
+    labels: [],
     datasets: [
       {
-        label: 'Payout',
-        data: [5000, 12000, 30000, 18000, 27000, 75000, 45000, 60000, 20000, 40000, 25000, 50000],
-        borderColor: '#3b82f6', // Tailwind blue-500
-        backgroundColor: 'rgba(59,130,246,0.1)',
+        label: "Payout",
+        data: [],
+        borderColor: "#3b82f6",
+        backgroundColor: "rgba(59,130,246,0.1)",
         fill: true,
         tension: 0.3,
       },
     ],
-  };
+  });
 
+  // State for doughnut chart
+  const [doughnutData, setDoughnutData] = useState({
+    labels: [],
+    datasets: [
+      {
+        data: [],
+        backgroundColor: ["#3b82f6", "#f97316"],
+        hoverBackgroundColor: ["#2563eb", "#ea580c"],
+      },
+    ],
+  });
+
+  // Payroll list
+  const [payrollList, setPayrollList] = useState([]);
+
+  // On mount, fetch everything
+  useEffect(() => {
+    fetchLineChart();
+    fetchDoughnutChart();
+    fetchPayrollList();
+  }, []);
+
+  async function fetchLineChart() {
+    try {
+      // e.g. pass ?year=2025 or do no param => current year
+      const res = await axios.get(`${BASE_URL}/linechart?year=2025`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.data?.data) {
+        const { labels, payouts } = res.data.data;
+        setLineChartData((prev) => ({
+          ...prev,
+          labels,
+          datasets: [
+            {
+              ...prev.datasets[0],
+              data: payouts,
+            },
+          ],
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching line chart data:", error);
+    }
+  }
+
+  async function fetchDoughnutChart() {
+    try {
+      const res = await axios.get(`${BASE_URL}/doughnut`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.data?.data) {
+        const { labels, values } = res.data.data;
+        setDoughnutData((prev) => ({
+          ...prev,
+          labels,
+          datasets: [
+            {
+              ...prev.datasets[0],
+              data: values,
+            },
+          ],
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching doughnut data:", error);
+    }
+  }
+
+  async function fetchPayrollList() {
+    try {
+      const res = await axios.get(`${BASE_URL}/list`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.data?.data) {
+        setPayrollList(res.data.data);
+      }
+    } catch (error) {
+      console.error("Error fetching payroll list:", error);
+    }
+  }
+
+  // Chart options
   const lineChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
       legend: { display: false },
-      tooltip: { mode: 'index', intersect: false },
+      tooltip: { mode: "index", intersect: false },
     },
     scales: {
       y: {
         beginAtZero: true,
         ticks: {
-          callback: (val) => '$' + val.toLocaleString(),
+          // callback is not directly recognized with chart.js 3+ in this manner,
+          // you might do parseInt or Intl formatting. Example:
+          callback: (val) => "₹" + val,
         },
       },
     },
-  };
-
-  // -- Doughnut chart (Employee Overview) data --
-  const doughnutData = {
-    labels: ['Paid', 'Pending'],
-    datasets: [
-      {
-        data: [500, 300],
-        backgroundColor: ['#3b82f6', '#f97316'], // blue-500, orange-500
-        hoverBackgroundColor: ['#2563eb', '#ea580c'],
-      },
-    ],
   };
 
   const doughnutOptions = {
@@ -140,9 +167,10 @@ export default function Main() {
         "
       >
         <p>
-          Stay on top of your department's progress with Department Statistics! Gain insights
-          into department-wise tasks, track delayed and assigned tasks, and highlight important
-          dates on the calendar. Keep your team organized, efficient, and always a step ahead!
+          Stay on top of your department's progress with Department Statistics!
+          Gain insights into department-wise tasks, track delayed and assigned
+          tasks, and highlight important dates on the calendar. Keep your team
+          organized, efficient, and always a step ahead!
         </p>
         <div className="mt-2 md:mt-0 flex items-center gap-4">
           <a href="#" className="underline text-green-800 dark:text-green-200">
@@ -163,10 +191,16 @@ export default function Main() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-bold">Total Payout</h2>
+                {/* Possibly sum the data from lineChartData to show total */}
                 <p className="text-2xl font-bold mt-1 text-black dark:text-white">
-                  ₹ 304,999.61
+                  ₹{" "}
+                  {lineChartData.datasets[0].data
+                    .reduce((a, b) => a + b, 0)
+                    .toLocaleString()}
                 </p>
-                <p className="text-sm text-green-600 dark:text-green-400">+10% Total This Month</p>
+                <p className="text-sm text-green-600 dark:text-green-400">
+                  +10% Total This Month
+                </p>
               </div>
               {/* Dropdown for monthly/yearly */}
               <div>
@@ -192,12 +226,14 @@ export default function Main() {
           </div>
 
           {/* Right Card: Donut Chart "Employee Overview" */}
-          <div className="
+          <div
+            className="
             w-full md:w-1/3
             bg-white dark:bg-gray-800
             rounded-lg border border-gray-200 dark:border-gray-700
             p-4 flex flex-col
-          ">
+          "
+          >
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold">Employee Overview</h2>
               <select
@@ -221,11 +257,17 @@ export default function Main() {
             <div className="flex gap-4 mt-3 text-sm justify-center">
               <div className="flex items-center gap-1">
                 <span className="w-3 h-3 rounded-full bg-blue-500 inline-block" />
-                <span>Paid: 500</span>
+                <span>
+                  {doughnutData.labels[0]}:{" "}
+                  {doughnutData.datasets[0].data[0] || 0}
+                </span>
               </div>
               <div className="flex items-center gap-1">
                 <span className="w-3 h-3 rounded-full bg-orange-500 inline-block" />
-                <span>Pending: 300</span>
+                <span>
+                  {doughnutData.labels[1]}:{" "}
+                  {doughnutData.datasets[0].data[1] || 0}
+                </span>
               </div>
             </div>
           </div>
@@ -235,7 +277,10 @@ export default function Main() {
         <div className="mt-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
             <h2 className="text-lg font-bold">Payroll list</h2>
-            <a href="#" className="flex items-center text-blue-600 dark:text-blue-300">
+            <a
+              href="#"
+              className="flex items-center text-blue-600 dark:text-blue-300"
+            >
               View All
             </a>
           </div>
@@ -246,9 +291,13 @@ export default function Main() {
               <thead>
                 <tr className="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
                   <th className="px-4 py-2 text-left font-semibold">Users</th>
-                  <th className="px-4 py-2 text-left font-semibold">Join Date</th>
+                  <th className="px-4 py-2 text-left font-semibold">
+                    Join Date
+                  </th>
                   <th className="px-4 py-2 text-left font-semibold">Emp ID</th>
-                  <th className="px-4 py-2 text-left font-semibold">Department</th>
+                  <th className="px-4 py-2 text-left font-semibold">
+                    Department
+                  </th>
                   <th className="px-4 py-2 text-left font-semibold">Status</th>
                 </tr>
               </thead>
@@ -290,7 +339,10 @@ export default function Main() {
                 ))}
                 {payrollList.length === 0 && (
                   <tr>
-                    <td colSpan={5} className="px-4 py-4 text-center text-gray-500">
+                    <td
+                      colSpan={5}
+                      className="px-4 py-4 text-center text-gray-500"
+                    >
                       No payroll records found.
                     </td>
                   </tr>
