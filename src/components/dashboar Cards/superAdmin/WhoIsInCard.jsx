@@ -190,79 +190,262 @@
 
 // export default WhoIsInCard;
 
-import * as React from "react";
+// import * as React from "react";
 
-function WhoIsInCard() {
-  const sections = [
-    {
-      title: "Who is in?",
-      users: [
-        {
-          img: "https://cdn.builder.io/api/v1/image/assets/TEMP/623b5596307421c64414cfcb645814950533aa3c06fb08e7c06d258a28bbe3ba",
-          initials: "AL",
-          type: "red",
-        },
-        {
-          img: "https://cdn.builder.io/api/v1/image/assets/TEMP/be437db4c7e1165117af9825a0bc283bf4dd2b7c4c3c80d03dc7ba49ee8b6d88",
-        },
-        {
-          img: "https://cdn.builder.io/api/v1/image/assets/TEMP/28c4276f30b2dee4acf1179c91f84ed75b6efd5825c0020f720bb449b1208094",
-        },
-        {
-          img: "https://cdn.builder.io/api/v1/image/assets/TEMP/67520629da36392b8e888a9c80903a478ffadf6129cef4590f4388b44aad52ae",
-        },
-      ],
-      more: 255,
-    },
-    {
-      title: "Late Arrival",
-      users: [
-        {
-          img: "https://cdn.builder.io/api/v1/image/assets/TEMP/623b5596307421c64414cfcb645814950533aa3c06fb08e7c06d258a28bbe3ba",
-        },
-        {
-          img: "https://cdn.builder.io/api/v1/image/assets/TEMP/84e01eb6bc6b66f6b8b79267b14168a0c17fd6ff48d799bf2754ace62420baf8",
-        },
-        {
-          img: "https://cdn.builder.io/api/v1/image/assets/TEMP/be437db4c7e1165117af9825a0bc283bf4dd2b7c4c3c80d03dc7ba49ee8b6d88",
-        },
-        { initials: "OL", type: "teal" },
-        { initials: "ZK", type: "orange" },
-      ],
-      more: 15,
-    },
-    {
-      title: "On Time",
-      users: [
-        {
-          img: "https://cdn.builder.io/api/v1/image/assets/TEMP/623b5596307421c64414cfcb645814950533aa3c06fb08e7c06d258a28bbe3ba",
-        },
-        {
-          img: "https://cdn.builder.io/api/v1/image/assets/TEMP/84e01eb6bc6b66f6b8b79267b14168a0c17fd6ff48d799bf2754ace62420baf8",
-        },
-        { initials: "AA", type: "teal" },
-        {
-          img: "https://cdn.builder.io/api/v1/image/assets/TEMP/28c4276f30b2dee4acf1179c91f84ed75b6efd5825c0020f720bb449b1208094",
-        },
-        {
-          img: "https://cdn.builder.io/api/v1/image/assets/TEMP/67520629da36392b8e888a9c80903a478ffadf6129cef4590f4388b44aad52ae",
-        },
-      ],
-      more: 205,
-    },
-  ];
+// function WhoIsInCard() {
+//   const sections = [
+//     {
+//       title: "Who is in?",
+//       users: [
+//         {
+//           img: "https://cdn.builder.io/api/v1/image/assets/TEMP/623b5596307421c64414cfcb645814950533aa3c06fb08e7c06d258a28bbe3ba",
+//           initials: "AL",
+//           type: "red",
+//         },
+//         {
+//           img: "https://cdn.builder.io/api/v1/image/assets/TEMP/be437db4c7e1165117af9825a0bc283bf4dd2b7c4c3c80d03dc7ba49ee8b6d88",
+//         },
+//         {
+//           img: "https://cdn.builder.io/api/v1/image/assets/TEMP/28c4276f30b2dee4acf1179c91f84ed75b6efd5825c0020f720bb449b1208094",
+//         },
+//         {
+//           img: "https://cdn.builder.io/api/v1/image/assets/TEMP/67520629da36392b8e888a9c80903a478ffadf6129cef4590f4388b44aad52ae",
+//         },
+//       ],
+//       more: 255,
+//     },
+//     {
+//       title: "Late Arrival",
+//       users: [
+//         {
+//           img: "https://cdn.builder.io/api/v1/image/assets/TEMP/623b5596307421c64414cfcb645814950533aa3c06fb08e7c06d258a28bbe3ba",
+//         },
+//         {
+//           img: "https://cdn.builder.io/api/v1/image/assets/TEMP/84e01eb6bc6b66f6b8b79267b14168a0c17fd6ff48d799bf2754ace62420baf8",
+//         },
+//         {
+//           img: "https://cdn.builder.io/api/v1/image/assets/TEMP/be437db4c7e1165117af9825a0bc283bf4dd2b7c4c3c80d03dc7ba49ee8b6d88",
+//         },
+//         { initials: "OL", type: "teal" },
+//         { initials: "ZK", type: "orange" },
+//       ],
+//       more: 15,
+//     },
+//     {
+//       title: "On Time",
+//       users: [
+//         {
+//           img: "https://cdn.builder.io/api/v1/image/assets/TEMP/623b5596307421c64414cfcb645814950533aa3c06fb08e7c06d258a28bbe3ba",
+//         },
+//         {
+//           img: "https://cdn.builder.io/api/v1/image/assets/TEMP/84e01eb6bc6b66f6b8b79267b14168a0c17fd6ff48d799bf2754ace62420baf8",
+//         },
+//         { initials: "AA", type: "teal" },
+//         {
+//           img: "https://cdn.builder.io/api/v1/image/assets/TEMP/28c4276f30b2dee4acf1179c91f84ed75b6efd5825c0020f720bb449b1208094",
+//         },
+//         {
+//           img: "https://cdn.builder.io/api/v1/image/assets/TEMP/67520629da36392b8e888a9c80903a478ffadf6129cef4590f4388b44aad52ae",
+//         },
+//       ],
+//       more: 205,
+//     },
+//   ];
 
+//   return (
+//     <div
+//       className="
+//         w-full md:w-1/2
+//         bg-white dark:bg-gray-800
+//         text-gray-800 dark:text-gray-100
+//         rounded-xl
+//         shadow-2xl
+//         p-4
+//       "
+//     >
+//       {sections.map((section, index) => (
+//         <div key={index} className="mt-4 first:mt-0">
+//           <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+//             {section.title}
+//           </div>
+//           <div className="flex flex-wrap items-center gap-3 mt-2">
+//             {section.users.map((user, userIndex) => {
+//               if (user.img) {
+//                 // User with a photo
+//                 return (
+//                   <img
+//                     key={userIndex}
+//                     loading="lazy"
+//                     src={user.img}
+//                     alt="User"
+//                     className="w-9 h-9 rounded-full object-cover"
+//                   />
+//                 );
+//               }
+//               // User with initials
+//               return (
+//                 <div
+//                   key={userIndex}
+//                   className={`
+//                     flex items-center justify-center
+//                     w-9 h-9
+//                     rounded-full
+//                     text-sm font-medium
+//                     bg-white dark:bg-gray-700
+//                     text-gray-600 dark:text-gray-100
+//                     border
+//                     border-${user.type}-300 dark:border-${user.type}-600
+//                   `}
+//                 >
+//                   {user.initials}
+//                 </div>
+//               );
+//             })}
+
+//             {/* "+X More" */}
+//             <div className="text-lime-600 dark:text-lime-400 text-sm font-semibold">
+//               +{section.more} More
+//             </div>
+//           </div>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// }
+
+// export default WhoIsInCard;
+
+import React, { useEffect, useState } from "react";
+import { getAttendanceData } from "../../../service/dashboardService";
+
+/**
+ * Returns today's date as a string in YYYY-MM-DD format.
+ */
+function getTodayString() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function AttendanceSummary() {
+  const [sections, setSections] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  // Use today's date by default (self-contained component)
+  const today = getTodayString();
+
+  useEffect(() => {
+    setLoading(true);
+    setErrorMsg("");
+
+    getAttendanceData(today)
+      .then((res) => {
+        if (res.success) {
+          const { whoIsIn, lateArrival, onTime } = res.data || {};
+
+          // Build your sections array
+          const sectionsData = [
+            {
+              title: "Who is in?",
+              users: whoIsIn?.users?.map(mapUserToSection) || [],
+              more: whoIsIn?.more || 0,
+            },
+            {
+              title: "Late Arrival",
+              users: lateArrival?.users?.map(mapUserToSection) || [],
+              more: lateArrival?.more || 0,
+            },
+            {
+              title: "On Time",
+              users: onTime?.users?.map(mapUserToSection) || [],
+              more: onTime?.more || 0,
+            },
+          ];
+
+          setSections(sectionsData);
+        } else {
+          setErrorMsg(res.message || "Failed to fetch attendance");
+        }
+      })
+      .catch((err) => {
+        setErrorMsg(err.message || "Network error");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [today]);
+
+  /**
+   * Converts a single attendance document into an object
+   * that matches the structure your UI code expects.
+   */
+  const mapUserToSection = (attendanceDoc) => {
+    const avatar = attendanceDoc?.userData?.avatar || "";
+    const fullName = attendanceDoc?.userData?.name || "Unknown User";
+
+    if (avatar) {
+      return { img: avatar };
+    }
+
+    const initials = fullName
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase();
+
+    return {
+      initials,
+      type: "red", // or any logic for color if desired
+    };
+  };
+
+  // Check if ALL sections are empty (no user data)
+  const hasNoData = sections.every((section) => section.users.length === 0);
+
+  // We'll wrap *all* states in the same container so the UI is consistent
+  const containerClasses = `
+    w-full md:w-1/2
+    bg-white dark:bg-gray-800
+    text-gray-800 dark:text-gray-100
+    rounded-xl
+    shadow-2xl
+    p-4
+  `;
+
+  if (loading) {
+    return (
+      <div className={containerClasses}>
+        <div className="text-gray-700 dark:text-gray-300">
+          Loading attendance data for {today}...
+        </div>
+      </div>
+    );
+  }
+
+  if (errorMsg) {
+    return (
+      <div className={containerClasses}>
+        <div className="text-red-500">Error: {errorMsg}</div>
+      </div>
+    );
+  }
+
+  if (hasNoData) {
+    return (
+      <div className={containerClasses}>
+        <div className="text-gray-500 dark:text-gray-300">
+          No attendance records for Today.
+        </div>
+      </div>
+    );
+  }
+
+  // Render the normal UI if there's data
   return (
-    <div
-      className="
-        w-full md:w-1/2
-        bg-white dark:bg-gray-800
-        text-gray-800 dark:text-gray-100
-        rounded-xl
-        shadow-2xl
-        p-4
-      "
-    >
+    <div className={containerClasses}>
       {sections.map((section, index) => (
         <div key={index} className="mt-4 first:mt-0">
           <div className="text-sm font-semibold text-gray-700 dark:text-gray-300">
@@ -270,8 +453,8 @@ function WhoIsInCard() {
           </div>
           <div className="flex flex-wrap items-center gap-3 mt-2">
             {section.users.map((user, userIndex) => {
+              // Case 1: user has an avatar
               if (user.img) {
-                // User with a photo
                 return (
                   <img
                     key={userIndex}
@@ -282,7 +465,7 @@ function WhoIsInCard() {
                   />
                 );
               }
-              // User with initials
+              // Case 2: user has initials
               return (
                 <div
                   key={userIndex}
@@ -302,10 +485,11 @@ function WhoIsInCard() {
               );
             })}
 
-            {/* "+X More" */}
-            <div className="text-lime-600 dark:text-lime-400 text-sm font-semibold">
-              +{section.more} More
-            </div>
+            {section.more > 0 && (
+              <div className="text-lime-600 dark:text-lime-400 text-sm font-semibold">
+                +{section.more} More
+              </div>
+            )}
           </div>
         </div>
       ))}
@@ -313,5 +497,4 @@ function WhoIsInCard() {
   );
 }
 
-export default WhoIsInCard;
-
+export default AttendanceSummary;
