@@ -283,7 +283,7 @@ const MainLayout = () => {
   const [darkMode, setDarkMode] = useState(false);
 
   const currentPath = location.pathname;
-  const userPermissions = useAuthStore((state) => state.permissions);
+  const userPermissions = useAuthStore((state) => state.permissions) ;
 
   // Scroll to top whenever the route changes
   useEffect(() => {

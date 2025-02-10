@@ -1,5 +1,5 @@
+// src/RaciDashboard.js
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Line } from "react-chartjs-2";
 import { motion } from "framer-motion";
 import { toast, Toaster } from "react-hot-toast";
@@ -26,16 +26,21 @@ ChartJS.register(
   Legend
 );
 
-export default function RaciDashboard() {
-  // Adjust to your actual base route
-  const BASE_URL = "https://apiv2.humanmaximizer.com/api/v1/raci-dashboard";
-  const token = localStorage.getItem("accessToken") || "";
+// Import service functions from the API file
+import {
+  fetchOperationsScore,
+  fetchBusinessScore,
+  fetchOperationsTable,
+  fetchBusinessTable,
+} from "../../service/reciService";
 
-  // Date states
+export default function RaciDashboard() {
+
+  // Date states for the two dashboards.
   const [operationsDate, setOperationsDate] = useState("");
   const [businessDate, setBusinessDate] = useState("");
 
-  // Chart data states
+  // Chart data states for Operations.
   const [operationsChartData, setOperationsChartData] = useState({
     labels: [],
     datasets: [
@@ -49,6 +54,7 @@ export default function RaciDashboard() {
   });
   const [operationsOverall, setOperationsOverall] = useState(0);
 
+  // Chart data states for Business.
   const [businessChartData, setBusinessChartData] = useState({
     labels: [],
     datasets: [
@@ -62,23 +68,40 @@ export default function RaciDashboard() {
   });
   const [businessOverall, setBusinessOverall] = useState(0);
 
-  // Table data
+  // Table data states.
   const [operationsTable, setOperationsTable] = useState([]);
   const [businessTable, setBusinessTable] = useState([]);
 
-  // On mount, load the table data
+  // On mount, load both tables.
   useEffect(() => {
-    fetchOperationsTable();
-    fetchBusinessTable();
+    loadTables();
   }, []);
 
-  // Handler: user selects date for "Operations" (RACI1)
+  const loadTables = async () => {
+    try {
+      const opTableData = await fetchOperationsTable();
+      setOperationsTable(opTableData);
+    } catch (err) {
+      console.error("Error fetching operations table:", err);
+      toast.error("Failed to fetch operations table");
+    }
+
+    try {
+      const busTableData = await fetchBusinessTable();
+      setBusinessTable(busTableData);
+    } catch (err) {
+      console.error("Error fetching business table:", err);
+      toast.error("Failed to fetch business table");
+    }
+  };
+
+  // Handler: When user selects a date for Operations (RACI1).
   const handleOperationsDateChange = async (e) => {
     const newDate = e.target.value;
     setOperationsDate(newDate);
 
     if (!newDate) {
-      // clear chart
+      // Clear chart if no date is selected.
       setOperationsChartData({
         labels: [],
         datasets: [{ label: "Operations Score", data: [] }],
@@ -87,17 +110,10 @@ export default function RaciDashboard() {
       return;
     }
     try {
-      // GET /operations/score?date=YYYY-MM-DD
-      const res = await axios.get(
-        `${BASE_URL}/operations/score?date=${newDate}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (res.data?.data) {
-        const doc = res.data.data;
-        // doc.metrics => [ { name, score }, ... ]
-        // doc.overallScore => e.g. 80
+      const doc = await fetchOperationsScore(newDate);
+      if (doc) {
+        // Assume doc.metrics is an array like [{ name, score }, ...]
+        // and doc.overallScore is the overall score (e.g., 80).
         const labels = doc.metrics.map((m) => m.name);
         const scores = doc.metrics.map((m) => m.score);
 
@@ -127,13 +143,13 @@ export default function RaciDashboard() {
     }
   };
 
-  // Handler: user selects date for "Business" (RACI2)
+  // Handler: When user selects a date for Business (RACI2).
   const handleBusinessDateChange = async (e) => {
     const newDate = e.target.value;
     setBusinessDate(newDate);
 
     if (!newDate) {
-      // clear chart
+      // Clear chart if no date is selected.
       setBusinessChartData({
         labels: [],
         datasets: [{ label: "Business Score", data: [] }],
@@ -142,15 +158,8 @@ export default function RaciDashboard() {
       return;
     }
     try {
-      // GET /business/score?date=YYYY-MM-DD
-      const res = await axios.get(
-        `${BASE_URL}/business/score?date=${newDate}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-      if (res.data?.data) {
-        const doc = res.data.data;
+      const doc = await fetchBusinessScore(newDate);
+      if (doc) {
         const labels = doc.metrics.map((m) => m.name);
         const scores = doc.metrics.map((m) => m.score);
 
@@ -180,34 +189,7 @@ export default function RaciDashboard() {
     }
   };
 
-  // Table data fetchers
-  const fetchOperationsTable = async () => {
-    try {
-      // GET /operations/scores?limit=5
-      const res = await axios.get(`${BASE_URL}/operations/scores?limit=5`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setOperationsTable(res.data?.data || []);
-    } catch (err) {
-      console.error("Error fetching operations table:", err);
-      toast.error("Failed to fetch operations table");
-    }
-  };
-
-  const fetchBusinessTable = async () => {
-    try {
-      // GET /business/scores?limit=5
-      const res = await axios.get(`${BASE_URL}/business/scores?limit=5`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setBusinessTable(res.data?.data || []);
-    } catch (err) {
-      console.error("Error fetching business table:", err);
-      toast.error("Failed to fetch business table");
-    }
-  };
-
-  // Chart config
+  // Chart configuration options.
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -258,7 +240,6 @@ export default function RaciDashboard() {
               Overall Score: {operationsOverall}%
             </span>
           </div>
-
           <div className="w-full h-60">
             <Line data={operationsChartData} options={chartOptions} />
           </div>
@@ -288,7 +269,6 @@ export default function RaciDashboard() {
               Overall Score: {businessOverall}%
             </span>
           </div>
-
           <div className="w-full h-60">
             <Line data={businessChartData} options={chartOptions} />
           </div>
@@ -306,7 +286,6 @@ export default function RaciDashboard() {
           viewport={{ once: true }}
         >
           <h3 className="text-lg font-semibold mb-4">RACI Operations</h3>
-
           <div className="overflow-x-auto">
             <table className="w-full table-auto border border-gray-300 dark:border-gray-700 border-collapse">
               <thead>
@@ -362,7 +341,6 @@ export default function RaciDashboard() {
               </tbody>
             </table>
           </div>
-
           <div className="mt-2 text-right">
             <button className="text-blue-600 dark:text-blue-400 hover:underline">
               See All
@@ -379,7 +357,6 @@ export default function RaciDashboard() {
           viewport={{ once: true }}
         >
           <h3 className="text-lg font-semibold mb-4">RACI Business</h3>
-
           <div className="overflow-x-auto">
             <table className="w-full table-auto border border-gray-300 dark:border-gray-700 border-collapse">
               <thead>
@@ -414,7 +391,6 @@ export default function RaciDashboard() {
                         year: "numeric",
                       })}
                     </td>
-
                     <td className="px-3 py-2 border border-gray-300 dark:border-gray-700">
                       {row.overallScore}%
                     </td>
@@ -436,7 +412,6 @@ export default function RaciDashboard() {
               </tbody>
             </table>
           </div>
-
           <div className="mt-2 text-right">
             <button className="text-blue-600 dark:text-blue-400 hover:underline">
               See All

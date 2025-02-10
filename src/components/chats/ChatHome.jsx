@@ -3,19 +3,22 @@ import React, {
   useEffect,
   useRef,
   useCallback,
-  useMemo,
 } from "react";
-import io from "socket.io-client";
-import axios from "axios";
-import { toast } from "react-hot-toast"; // or 'react-toastify'
-import { FaUserCircle, FaPhone, FaVideo, FaPaperclip, FaCommentDots } from "react-icons/fa";
-import { IoSend } from "react-icons/io5";
-import { PuffLoader } from "react-spinners";
+import { toast } from "react-hot-toast";
+import { FaCommentDots } from "react-icons/fa";
 import ChatMember from "./ChatMember";
 import ChatList from "./ChatList";
+import { fetchSubordinates, fetchBoth,fetchChatHistory } from "../../service/chatService";
+import {
+  initSocket,
+  joinRoom,
+  sendPrivateMessage,
+  sendFileMessage,
+  subscribeToMessages,
+  disconnectSocket,
+} from "../../service/socketService";
 
 
-// ------------- ChatHome (Main) -------------
 export default function ChatHome() {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
@@ -26,11 +29,11 @@ export default function ChatHome() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [error, setError] = useState(null);
 
-  const socketRef = useRef();
+  const socketRef = useRef(null);
   const selectedUserIdRef = useRef(selectedUserId);
   const employeeIdRef = useRef(employeeId);
 
-  const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL 
+  const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL;
 
   // --- Load stored user info ---
   useEffect(() => {
@@ -46,108 +49,22 @@ export default function ChatHome() {
     employeeIdRef.current = employeeId;
   }, [employeeId]);
 
-  // --- Socket Setup ---
+  // --- Initialize Socket ---
   useEffect(() => {
-    socketRef.current = io(SOCKET_SERVER_URL, {
-      transports: ["websocket", "polling"],
-      reconnectionAttempts: 5,
-      timeout: 10000,
-    });
-
-    socketRef.current.on("connect", () => {
-      // console.log("✅ Connected to:", SOCKET_SERVER_URL);
-      if (employeeId) {
-        socketRef.current.emit("joinRoom", {
-          sender: employeeId,
-          receiver: employeeId,
-        });
-      }
-    });
-
-    socketRef.current.on("connect_error", (err) => {
-      console.error("Connection Error:", err);
-      toast.error("Unable to connect to chat server.");
-    });
-
-    socketRef.current.on("disconnect", (reason) => {
-      // console.warn("❌ Disconnected:", reason);s
-      if (reason === "io server disconnect") {
-        socketRef.current.connect();
-      }
-    });
-
-    // Incoming message handler
-    socketRef.current.on("receiveMessage", (data) => {
-      const isRelevant =
-        (data.sender === selectedUserIdRef.current &&
-          data.receiver === employeeIdRef.current) ||
-        (data.sender === employeeIdRef.current &&
-          data.receiver === selectedUserIdRef.current);
-
-      if (!isRelevant) return;
-
-      // For file messages from the current user, update the “uploading” message
-      if (data.type === "file" && data.sender === employeeIdRef.current) {
-        setMessages((prev) =>
-          prev.map((msg) => {
-            if (
-              msg.type === "file" &&
-              msg.fileName === data.fileName &&
-              msg.uploading &&
-              msg.sender === data.sender
-            ) {
-              return {
-                ...msg,
-                fileUrl: data.fileUrl,
-                uploading: false,
-                time: new Date(data.time).toLocaleTimeString(),
-              };
-            }
-            return msg;
-          })
-        );
-      } else {
-        // Normal text message or file from the other user
-        setMessages((prev) => [
-          ...prev,
-          {
-            sender: data.sender,
-            type: data.type || "text",
-            message: data.message || "",
-            fileUrl: data.fileUrl || "",
-            fileName: data.fileName || "",
-            fileType: data.fileType || "",
-            time: new Date(data.time).toLocaleTimeString(),
-          },
-        ]);
-      }
-    });
-
-    socketRef.current.on("error", (data) => {
-      console.error("Server Error:", data.message);
-      toast.error(data.message);
-    });
+    socketRef.current = initSocket(SOCKET_SERVER_URL, employeeId);
+    subscribeToMessages(socketRef.current, selectedUserIdRef, employeeIdRef, setMessages);
 
     return () => {
-      socketRef.current.disconnect();
+      disconnectSocket();
     };
   }, [employeeId, SOCKET_SERVER_URL]);
 
   // --- Fetch Employees ---
   const fetchEmployees = useCallback(async () => {
-    const accessToken = localStorage.getItem("accessToken");
-    if (!accessToken) {
-      setError("Access token not found. Please log in.");
-      return;
-    }
     try {
       const [subsResponse, managersResponse] = await Promise.all([
-        axios.get("https://apiv2.humanmaximizer.com/api/v1/admin/subordinates", {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }),
-        axios.get("https://apiv2.humanmaximizer.com/api/v1/admin/both", {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }),
+        fetchSubordinates(),
+        fetchBoth(),
       ]);
 
       const subs = subsResponse.data?.data || [];
@@ -171,10 +88,7 @@ export default function ChatHome() {
       }
       setSelectedUser(name);
       setSelectedUserId(id);
-      socketRef.current.emit("joinRoom", {
-        sender: employeeId,
-        receiver: id,
-      });
+      joinRoom(socketRef.current, employeeId, id);
     },
     [employeeId, selectedUserId]
   );
@@ -191,13 +105,13 @@ export default function ChatHome() {
         message: message,
         time: new Date().toISOString(),
       };
-      socketRef.current.emit("privateMessage", msgData);
+      sendPrivateMessage(socketRef.current, msgData);
       setMessage("");
     },
     [employeeId, message, selectedUserId]
   );
 
-  // --- Convert file to base64 & send ---
+  // --- Helper: Convert file to base64 & send ---
   const fileToBase64 = (file) =>
     new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -222,7 +136,7 @@ export default function ChatHome() {
           fileType: file.type,
         };
 
-        socketRef.current.emit("sendFile", fileData);
+        sendFileMessage(socketRef.current, fileData);
 
         // Optimistic UI update: show a 'sending' file bubble
         const uniqueId = `${file.name}-${Date.now()}`;
@@ -239,9 +153,8 @@ export default function ChatHome() {
             uploading: true,
           },
         ]);
-       
       } catch (error) {
-        console.error("❌ Error sending file:", error);
+        console.error("Error sending file:", error);
         toast.error("Failed to send file.");
       }
     },
@@ -257,35 +170,29 @@ export default function ChatHome() {
       return;
     }
     try {
-      const response = await axios.get(
-        `${SOCKET_SERVER_URL}/api/v1/chats/messages`,
-        {
-          params: { user1: employeeId, user2: selectedUserId },
-          headers: { Authorization: `Bearer ${accessToken}` },
-        }
-      );
-      if (response.data?.success) {
+      const data = await fetchChatHistory(employeeId, selectedUserId, accessToken);
+      if (data?.success) {
         setMessages(
-          response.data.data.map((m) => ({
+          data.data.map((m) => ({
             ...m,
             time: new Date(m.time).toLocaleTimeString(),
           }))
         );
       } else {
-        setError(response.data.message || "Failed to fetch chat history.");
+        setError(data.message || "Failed to fetch chat history.");
       }
     } catch (err) {
       console.error(err);
       setError("Error fetching chat history. Please try again later.");
     }
-  }, [employeeId, selectedUserId, SOCKET_SERVER_URL]);
+  }, [employeeId, selectedUserId]);
 
   useEffect(() => {
     fetchMessages();
   }, [fetchMessages]);
 
   return (
-    <div className="flex w-full bg-gray-100 dark:bg-gray-900 h-screen" style={{height:"70vh"}}>
+    <div className="flex w-full bg-gray-100 dark:bg-gray-900 h-screen" style={{ height: "70vh" }}>
       {/* Left side: Team Member List */}
       <ChatMember
         employees={employees}

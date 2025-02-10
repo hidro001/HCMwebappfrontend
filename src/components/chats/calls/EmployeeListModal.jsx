@@ -1,6 +1,7 @@
 // src/components/EmployeeListModal.jsx
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import  { useEffect, useState } from "react";
+
+import { fetchBoth, fetchSubordinates } from "../../../service/chatService";
 
 const EmployeeListModal = ({ onClose, onSelectEmployee }) => {
   const [employees, setEmployees] = useState([]);
@@ -8,21 +9,13 @@ const EmployeeListModal = ({ onClose, onSelectEmployee }) => {
 
   useEffect(() => {
     const fetchEmployees = async () => {
-      const accessToken = localStorage.getItem("accessToken");
-      if (!accessToken) {
-        setError("Access token not found. Please log in.");
-        return;
-      }
+   
       try {
         // Fetch subordinates & managers in parallel
-        const [subsResponse, managersResponse] = await Promise.all([
-          axios.get("https://apiv2.humanmaximizer.com/api/v1/admin/subordinates", {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          }),
-          axios.get("https://apiv2.humanmaximizer.com/api/v1/admin/both", {
-            headers: { Authorization: `Bearer ${accessToken}` },
-          }),
-        ]);
+         const [subsResponse, managersResponse] = await Promise.all([
+            fetchSubordinates(),
+            fetchBoth(),
+          ]);
         const subs = subsResponse.data?.data || [];
         const managers = managersResponse.data?.data || [];
         setEmployees([...subs, ...managers]);

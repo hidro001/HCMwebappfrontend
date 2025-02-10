@@ -30,7 +30,7 @@ ChartJS.register(
 );
 
 export default function PerformanceManagementDashboard() {
-  const BASE_URL = "https://apiv2.humanmaximizer.com/api/v1/kpi";
+  const BASE_URL = "http://localhost:6060/api/v1/kpi";
   const token = localStorage.getItem("accessToken") || "";
 
   const [selectedRange, setSelectedRange] = useState("Monthly");

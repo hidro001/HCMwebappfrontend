@@ -132,9 +132,9 @@ export default function RecruitDashboard() {
 
   /* 
      Adjust the base URL depending on your environment 
-     e.g. "https://apiv2.humanmaximizer.com/api/v1/admin" if that's your route mount
+     e.g. "http://localhost:6060/api/v1/admin" if that's your route mount
   */
-  const BASE_URL = "https://apiv2.humanmaximizer.com/api/v1/admin";
+  const BASE_URL = "http://localhost:6060/api/v1/admin";
   const token = localStorage.getItem("accessToken") || "";
 
   useEffect(() => {

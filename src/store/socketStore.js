@@ -22,7 +22,7 @@ const useSocketStore = create((set, get) => ({
       return;
     }
 
-    const socket = io("https://apiv2.humanmaximizer.com", {
+    const socket = io("http://localhost:6060", {
       transports: ["websocket"],
       auth: {
         token: token,
