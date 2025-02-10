@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import { Bar, Doughnut } from "react-chartjs-2";
 import {
@@ -8,6 +7,13 @@ import {
   FaMoneyCheckAlt,
   FaDollarSign,
 } from "react-icons/fa";
+import {
+  fetchOverview,
+  fetchAbsenteeismChart,
+  fetchAttendanceToday,
+  fetchEmployeeOverview,
+  fetchLateInToday,
+} from "../../service/attendanceService";
 
 export default function AttendanceDashboard() {
   // ---------------------------
@@ -39,7 +45,6 @@ export default function AttendanceDashboard() {
       },
     ],
   });
-  // We'll store additional meta in a separate state if we want
   const [attendanceMeta, setAttendanceMeta] = useState({});
 
   // For Employee Overview doughnut
@@ -58,27 +63,26 @@ export default function AttendanceDashboard() {
   // For Late In Today table
   const [lateInToday, setLateInToday] = useState([]);
 
-  // The base URL for your backend. Adjust as needed:
-  const BASE_URL = "http://localhost:6060/api/v1/admin";
-  const token = localStorage.getItem("accessToken") || "";
-
+  // ----------------------------------------------------------------
+  // useEffect to load all data on mount
+  // ----------------------------------------------------------------
   useEffect(() => {
     loadDashboardData();
     // eslint-disable-next-line
   }, []);
 
-  // Master loader
+  // Master loader with a single try/catch
   async function loadDashboardData() {
     setLoading(true);
     setError("");
 
     try {
       await Promise.all([
-        fetchOverview(),
-        fetchAbsenteeismChart(),
-        fetchAttendanceToday(),
-        fetchEmployeeOverview(),
-        fetchLateInToday(),
+        fetchOverviewData(),
+        fetchAbsenteeismChartData(),
+        fetchAttendanceTodayData(),
+        fetchEmployeeOverviewData(),
+        fetchLateInTodayData(),
       ]);
     } catch (err) {
       console.error("Error loading attendance dashboard data:", err);
@@ -89,85 +93,60 @@ export default function AttendanceDashboard() {
   }
 
   // 1) Top squares
-  function fetchOverview() {
-    return axios
-      .get(`${BASE_URL}/attendance-dashboard/overview`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (res.data?.data) {
-          const { newUsers, totalDeposit, totalExpense, totalEarning } =
-            res.data.data;
-          setNewUsers(newUsers);
-          setTotalDeposit(totalDeposit);
-          setTotalExpense(totalExpense);
-          setTotalEarning(totalEarning);
-        }
-      });
+  async function fetchOverviewData() {
+    // No `try/catch`; let errors propagate
+    const result = await fetchOverview();
+    if (result?.data) {
+      const { newUsers, totalDeposit, totalExpense, totalEarning } = result.data;
+      setNewUsers(newUsers);
+      setTotalDeposit(totalDeposit);
+      setTotalExpense(totalExpense);
+      setTotalEarning(totalEarning);
+    }
   }
 
   // 2) Absenteeism chart
-  function fetchAbsenteeismChart() {
-    return axios
-      .get(`${BASE_URL}/attendance-dashboard/absenteeism`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (res.data?.data) {
-          setAbsenteeBarData(res.data.data);
-        }
-      });
+  async function fetchAbsenteeismChartData() {
+    const result = await fetchAbsenteeismChart();
+    if (result?.data) {
+      setAbsenteeBarData(result.data);
+    }
   }
 
-  // 3) Attendance Today (doughnut)
-  function fetchAttendanceToday() {
-    return axios
-      .get(`${BASE_URL}/attendance-dashboard/attendance-today`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (res.data?.data) {
-          setAttendanceData({
-            labels: res.data.data.labels,
-            datasets: res.data.data.datasets,
-          });
-          if (res.data.data.meta) {
-            setAttendanceMeta(res.data.data.meta);
-          }
-        }
+  // 3) Attendance Today
+  async function fetchAttendanceTodayData() {
+    const result = await fetchAttendanceToday();
+    if (result?.data) {
+      setAttendanceData({
+        labels: result.data.labels,
+        datasets: result.data.datasets,
       });
+      if (result.data.meta) {
+        setAttendanceMeta(result.data.meta);
+      }
+    }
   }
 
-  // 4) Employee Overview (doughnut)
-  function fetchEmployeeOverview() {
-    return axios
-      .get(`${BASE_URL}/attendance-dashboard/employee-overview`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (res.data?.data) {
-          setEmployeeOverviewData({
-            labels: res.data.data.labels,
-            datasets: res.data.data.datasets,
-          });
-          if (res.data.data.meta) {
-            setEmployeeOverviewMeta(res.data.data.meta);
-          }
-        }
+  // 4) Employee Overview
+  async function fetchEmployeeOverviewData() {
+    const result = await fetchEmployeeOverview();
+    if (result?.data) {
+      setEmployeeOverviewData({
+        labels: result.data.labels,
+        datasets: result.data.datasets,
       });
+      if (result.data.meta) {
+        setEmployeeOverviewMeta(result.data.meta);
+      }
+    }
   }
 
-  // 5) Late In Today (table)
-  function fetchLateInToday() {
-    return axios
-      .get(`${BASE_URL}/attendance-dashboard/late-in-today`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (res.data?.data) {
-          setLateInToday(res.data.data);
-        }
-      });
+  // 5) Late In Today
+  async function fetchLateInTodayData() {
+    const result = await fetchLateInToday();
+    if (result?.data) {
+      setLateInToday(result.data);
+    }
   }
 
   // statsData for the top row
@@ -175,7 +154,7 @@ export default function AttendanceDashboard() {
     {
       title: "New Users",
       amount: newUsers,
-      diff: "+200 this week", // or compute real difference
+      diff: "+200 this week",
       iconColor: "bg-blue-500",
       icon: <FaUserFriends className="text-white" size={20} />,
     },
@@ -202,11 +181,9 @@ export default function AttendanceDashboard() {
     },
   ];
 
-  // If dark mode is needed in chart
-  const isDarkMode = false; // or read from context
+  // Example chart options
+  const isDarkMode = false;
   const gridColor = isDarkMode ? "#374151" : "#e5e7eb";
-
-  // Bar chart options
   const barOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -228,7 +205,7 @@ export default function AttendanceDashboard() {
     },
   };
 
-  // Simple Framer Motion fade-in for cards
+  // Simple Framer Motion fade-in
   const cardVariants = {
     offscreen: { opacity: 0, y: 30 },
     onscreen: {
@@ -258,9 +235,7 @@ export default function AttendanceDashboard() {
             >
               {/* Icon + title */}
               <div className="flex items-center gap-3 mb-4">
-                <div
-                  className={`p-2 rounded-lg ${stat.iconColor} flex items-center justify-center`}
-                >
+                <div className={`p-2 rounded-lg ${stat.iconColor} flex items-center justify-center`}>
                   {stat.icon}
                 </div>
                 <h4 className="text-sm font-medium text-gray-400 dark:text-gray-300">
@@ -280,7 +255,7 @@ export default function AttendanceDashboard() {
         </div>
 
         {/* Main content row */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 ">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Absenteeism chart */}
           <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm">
             <h2 className="text-base font-semibold mb-3 text-gray-700 dark:text-gray-100">

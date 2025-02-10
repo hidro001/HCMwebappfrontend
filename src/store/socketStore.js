@@ -6,7 +6,7 @@ import { io } from "socket.io-client";
 import useFeedStore from "./feedStore";
 import useAuthStore from "./store"; 
 import { toast } from "react-toastify";
-
+const SOCKET_SERVER_URL = import.meta.env.VITE_API_BASE_URL;
 const useSocketStore = create((set, get) => ({
   socket: null,
 
@@ -22,7 +22,7 @@ const useSocketStore = create((set, get) => ({
       return;
     }
 
-    const socket = io("http://localhost:6060", {
+    const socket = io(SOCKET_SERVER_URL, {
       transports: ["websocket"],
       auth: {
         token: token,
