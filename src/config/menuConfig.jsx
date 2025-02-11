@@ -542,6 +542,12 @@ export const menuItems = [
         permission: "acceptandrejectleave",
         textAnimation: { x: 10 },
       },
+      {
+        name: " All Leaves ",
+        link: "/dashboard/all-leave-history",
+        permission: "viewLeaves",
+        textAnimation: { x: 10 },
+      },
     ],
   },
 

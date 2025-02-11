@@ -56,6 +56,8 @@ import SuperAdminDashboardPage from "./dashboard/SuperAdminDashboardPage";
 import EmployeeDashboardPage from "./dashboard/EmployeeDashboardPage";
 import EmployeeLeaveHistoryPage from "./leave management/EmployeeLeaveHistoryPage";
 import ManageLeavesPage from "./leave management/ManageLeavesPage";
+import AllLeavePage from "./leave management/AllLeavePage";
+
 
 
 
@@ -114,5 +116,6 @@ export {
   SuperAdminDashboardPage,
   EmployeeDashboardPage,
   EmployeeLeaveHistoryPage,
-  ManageLeavesPage
+  ManageLeavesPage,
+  AllLeavePage
 };

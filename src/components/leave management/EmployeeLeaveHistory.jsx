@@ -192,7 +192,7 @@ export default function EmployeeLeaveHistory() {
             setCurrentPage(1);
           }}
         >
-          <option value="">Status</option>
+          
           <option value="all">All</option>
           <option value="approved">Approved</option>
           <option value="pending">Pending</option>

@@ -12,8 +12,8 @@ import {
   FaEdit,
 } from "react-icons/fa";
 import LeaveDetailsModal from "./model/LeaveDetailsModal";
-import LeaveEdit from "./model/LeaveEdit"; // Import the LeaveEdit component
-import useLeaveStore from "../../store/leaveStore.js";
+import LeaveEdit from "./model/LeaveEdit";
+import useLeaveStore from "../../store/useLeaveStore";
 
 const tableContainerVariants = {
   hidden: { opacity: 0 },
@@ -29,17 +29,9 @@ const tableRowVariants = {
 };
 
 export default function ManageLeaves() {
-  const {
-    leaves,
-    isLoading,
-    fetchLeaves,
-    activeStatus,
-    setActiveStatus,
-    initializeData,
-    userProfile,
-  } = useLeaveStore();
-
-  // Local states for search text, month filter, pagination, etc.
+  const { leaves, isLoading, fetchAssignedLeaves, userProfile } =
+    useLeaveStore();
+  const [activeStatus, setActiveStatus] = useState("all");
   const [searchText, setSearchText] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
   const [pageSize, setPageSize] = useState(10);
@@ -47,14 +39,12 @@ export default function ManageLeaves() {
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  // On mount (and whenever activeStatus changes) initialize and fetch data.
+  // Fetch leaves whenever the activeStatus changes (or on mount)
   useEffect(() => {
-    initializeData();
-    fetchLeaves(activeStatus);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeStatus]);
+    fetchAssignedLeaves(activeStatus);
+  }, [activeStatus, fetchAssignedLeaves]);
 
-  // Client-side filtering logic.
+  // Client‐side filtering
   const filteredData = useMemo(() => {
     return leaves.filter((item) => {
       const matchSearch =
@@ -67,13 +57,10 @@ export default function ManageLeaves() {
           .toLocaleDateString()
           .toLowerCase()
           .includes(searchText.toLowerCase());
-
-      // When activeStatus is "all", include all items.
       const matchStatus =
         activeStatus.toLowerCase() === "all"
           ? true
           : item.leave_Status.toLowerCase() === activeStatus.toLowerCase();
-
       let matchMonth = true;
       if (selectedMonth) {
         const entryDate = new Date(item.leave_From);
@@ -82,7 +69,6 @@ export default function ManageLeaves() {
           entryDate.getFullYear() === parseInt(year, 10) &&
           entryDate.getMonth() + 1 === parseInt(month, 10);
       }
-
       return matchSearch && matchStatus && matchMonth;
     });
   }, [leaves, searchText, activeStatus, selectedMonth]);
@@ -94,7 +80,6 @@ export default function ManageLeaves() {
 
   const totalPages = Math.ceil(filteredData.length / pageSize);
 
-  // Function to close any open modal and reset the selected leave.
   const handleCloseModal = () => {
     setSelectedLeave(null);
     setShowEditModal(false);
@@ -138,7 +123,9 @@ export default function ManageLeaves() {
         </div>
       </div>
 
-      <h2 className="text-2xl font-bold mb-4">Leave History</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Leave History</h2>
+      </div>
 
       {/* Controls */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-4 p-4 bg-white dark:bg-gray-800 rounded-md shadow">
@@ -197,7 +184,6 @@ export default function ManageLeaves() {
             setCurrentPage(1);
           }}
         >
-          <option value="">Status</option>
           <option value="all">All</option>
           <option value="approved">Approved</option>
           <option value="pending">Pending</option>
@@ -234,7 +220,10 @@ export default function ManageLeaves() {
 
       {/* Table */}
       {isLoading ? (
-        <div className="flex justify-center items-center" style={{ height: "200px" }}>
+        <div
+          className="flex justify-center items-center"
+          style={{ height: "200px" }}
+        >
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
@@ -252,6 +241,9 @@ export default function ManageLeaves() {
                 <th className="p-3 text-sm font-semibold">S.L</th>
                 <th className="p-3 text-sm font-semibold">Emp ID</th>
                 <th className="p-3 text-sm font-semibold">Emp Name</th>
+                <th className="p-3 text-sm font-semibold">
+                  Paid Leave Balance
+                </th>
                 <th className="p-3 text-sm font-semibold">Leave Type</th>
                 <th className="p-3 text-sm font-semibold">From</th>
                 <th className="p-3 text-sm font-semibold">To</th>
@@ -259,7 +251,7 @@ export default function ManageLeaves() {
                 <th className="p-3 text-sm font-semibold">Reason for Leave</th>
                 <th className="p-3 text-sm font-semibold">Leave Category</th>
                 <th className="p-3 text-sm font-semibold">Processed By</th>
-                <th className="p-3 text-sm font-semibold">Reason For Reject</th>
+
                 <th className="p-3 text-sm font-semibold">Status</th>
                 <th className="p-3 text-sm font-semibold">Action</th>
               </tr>
@@ -267,7 +259,7 @@ export default function ManageLeaves() {
             <tbody>
               {paginatedData.map((entry, index) => (
                 <motion.tr
-                  key={entry._id || entry.id}
+                  key={entry._id}
                   variants={tableRowVariants}
                   onClick={() => {
                     if (!showEditModal) {
@@ -279,35 +271,57 @@ export default function ManageLeaves() {
                   <td className="p-3 text-sm">
                     {(currentPage - 1) * pageSize + index + 1}
                   </td>
-                  <td className="p-3 text-sm">{"RI0526"}</td>
-                  <td className="p-3 text-sm">{"Roman"}</td>
+                  <td className="p-3 text-sm">
+                    {entry.employee.employee_Id || "N/A"}
+                  </td>
+
+                  <td className="p-3 text-sm">
+                    {" "}
+                    {entry.employee
+                      ? `${entry.employee.first_Name} ${entry.employee.last_Name}`
+                      : "Unknown"}
+                  </td>
+
+                  <td className="p-3 text-sm">
+                    {entry.employee.no_of_Paid_Leave || "N/A"}
+                  </td>
+
                   <td className="p-3 text-sm">{entry.leave_Type}</td>
                   <td className="p-3 text-sm">
                     {new Date(entry.leave_From).toLocaleDateString()}
                   </td>
+
                   <td className="p-3 text-sm">
-                    {new Date(entry.leave_To).toLocaleDateString()}
+                    {entry.leave_To
+                      ? new Date(entry.leave_To).toLocaleDateString()
+                      : "N/A"}
                   </td>
+
                   <td className="p-3 text-sm">{entry.no_Of_Days}</td>
                   <td className="p-3 text-sm">
                     {entry.reason_For_Leave &&
                     entry.reason_For_Leave.split(" ").length > 3
-                      ? entry.reason_For_Leave.split(" ").slice(0, 3).join(" ") + "..."
+                      ? entry.reason_For_Leave
+                          .split(" ")
+                          .slice(0, 3)
+                          .join(" ") + "..."
                       : entry.reason_For_Leave}
                   </td>
                   <td className="p-3 text-sm">
-                    {entry.is_Paid === null ? "Pending" : entry.is_Paid ? "Paid" : "Unpaid"}
+                    {entry.is_Paid === null
+                      ? "Pending"
+                      : entry.is_Paid
+                      ? "Paid"
+                      : "Unpaid"}
                   </td>
                   <td className="p-3 text-sm">
                     {entry.leave_Status === "approved" && entry.approved_By
-                      ? `Approved by ${entry.approved_By.first_Name} ${entry.approved_By.last_Name}`
+                      ? `${entry.approved_By.first_Name} ${entry.approved_By.last_Name}`
                       : entry.leave_Status === "rejected" && entry.rejected_By
                       ? `Rejected by ${entry.rejected_By.first_Name} ${entry.rejected_By.last_Name}`
                       : "Pending"}
                   </td>
-                  <td className="p-3 text-sm">
-                    {entry.reason_For_Reject || "N/A"}
-                  </td>
+
                   <td className="p-3 text-sm">
                     <span
                       className={`px-2 py-1 text-xs font-semibold rounded ${
@@ -318,7 +332,8 @@ export default function ManageLeaves() {
                           : "bg-red-50 text-red-700"
                       }`}
                     >
-                      {entry.leave_Status.charAt(0).toUpperCase() + entry.leave_Status.slice(1)}
+                      {entry.leave_Status.charAt(0).toUpperCase() +
+                        entry.leave_Status.slice(1)}
                     </span>
                   </td>
                   <td className="p-3">
@@ -387,4 +402,3 @@ export default function ManageLeaves() {
     </div>
   );
 }
-
