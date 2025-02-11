@@ -55,7 +55,12 @@ import {
   EmployeeDashboardPage,
   ChatPage,
   EmployeeLeaveHistoryPage,
+<<<<<<< HEAD
   AssignedTaskEmployeePage
+=======
+  ManageLeavesPage,
+  AllLeavePage
+>>>>>>> 79c63461d5f779e0778e2fae7203a392f932237e
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -298,7 +303,7 @@ const router = createBrowserRouter([
       {
         path: "raci-operations",
         element: <RaciOperationsPage />,
-      // chat
+        // chat
       },
       {
         path: "chats",
@@ -307,6 +312,14 @@ const router = createBrowserRouter([
       {
         path: "leave-history",
         element: <EmployeeLeaveHistoryPage />,
+      },
+      {
+        path: "manage-leave-history",
+        element: <ManageLeavesPage />,
+      },
+      {
+        path: "all-leave-history",
+        element: <AllLeavePage />,
       },
     ],
   },

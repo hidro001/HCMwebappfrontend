@@ -11,9 +11,9 @@ import {
   FaEye,
   FaEdit,
 } from "react-icons/fa";
-import ApplyLeaveModal from "./model/ApplyLeaveModal";
 import LeaveDetailsModal from "./model/LeaveDetailsModal";
-import useLeaveStore from "../../store/leaveStore.js";
+import LeaveEdit from "./model/LeaveEdit";
+import useLeaveStore from "../../store/useLeaveStore";
 
 const tableContainerVariants = {
   hidden: { opacity: 0 },
@@ -28,33 +28,23 @@ const tableRowVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-export default function EmployeeLeaveHistory() {
-  const {
-    leaves,
-    isLoading,
-    fetchLeaves,
-    activeStatus,
-    setActiveStatus,
-    initializeData,
-    userProfile,
-  } = useLeaveStore();
-
-  // Local states for search text, month filter, pagination, etc.
+export default function ManageLeaves() {
+  const { leaves, isLoading, fetchAssignedLeaves, userProfile } =
+    useLeaveStore();
+  const [activeStatus, setActiveStatus] = useState("all");
   const [searchText, setSearchText] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedLeave, setSelectedLeave] = useState(null);
-  const [showApplyModal, setShowApplyModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
-  // On mount (and whenever activeStatus changes) initialize and fetch data.
+  // Fetch leaves whenever the activeStatus changes (or on mount)
   useEffect(() => {
-    initializeData();
-    fetchLeaves(activeStatus);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeStatus]);
+    fetchAssignedLeaves(activeStatus);
+  }, [activeStatus, fetchAssignedLeaves]);
 
-  // Updated client-side filtering logic to correctly handle "all" status
+  // Client‐side filtering
   const filteredData = useMemo(() => {
     return leaves.filter((item) => {
       const matchSearch =
@@ -67,13 +57,10 @@ export default function EmployeeLeaveHistory() {
           .toLocaleDateString()
           .toLowerCase()
           .includes(searchText.toLowerCase());
-
-      // When activeStatus is "all", we want to include all items.
       const matchStatus =
         activeStatus.toLowerCase() === "all"
           ? true
           : item.leave_Status.toLowerCase() === activeStatus.toLowerCase();
-
       let matchMonth = true;
       if (selectedMonth) {
         const entryDate = new Date(item.leave_From);
@@ -82,7 +69,6 @@ export default function EmployeeLeaveHistory() {
           entryDate.getFullYear() === parseInt(year, 10) &&
           entryDate.getMonth() + 1 === parseInt(month, 10);
       }
-
       return matchSearch && matchStatus && matchMonth;
     });
   }, [leaves, searchText, activeStatus, selectedMonth]);
@@ -94,13 +80,18 @@ export default function EmployeeLeaveHistory() {
 
   const totalPages = Math.ceil(filteredData.length / pageSize);
 
+  const handleCloseModal = () => {
+    setSelectedLeave(null);
+    setShowEditModal(false);
+  };
+
   return (
     <div className="mx-auto p-4 bg-bg-primary text-text-primary transition-colors">
       {/* Top Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow relative overflow-hidden">
           <div className="flex flex-col">
-            <span className="text-xl font-bold">Remaining Paid Leaves</span>
+            <span className="text-xl font-bold">Pending Request</span>
             <span className="text-3xl font-extrabold mt-2">
               {userProfile ? userProfile.no_of_Paid_Leave : 0}
             </span>
@@ -112,7 +103,7 @@ export default function EmployeeLeaveHistory() {
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow relative overflow-hidden">
           <div className="flex flex-col">
-            <span className="text-xl font-bold">Total Leaves Taken</span>
+            <span className="text-xl font-bold">Approved this month</span>
             <span className="text-3xl font-extrabold mt-2">89</span>
             <span className="text-sm text-red-600 mt-1">
               -800 Last 30 days Active
@@ -122,7 +113,7 @@ export default function EmployeeLeaveHistory() {
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow relative overflow-hidden">
           <div className="flex flex-col">
-            <span className="text-xl font-bold">Approved Leaves</span>
+            <span className="text-xl font-bold">Reject this month</span>
             <span className="text-3xl font-extrabold mt-2">212</span>
             <span className="text-sm text-green-600 mt-1">
               +200 Last 30 days Inactive
@@ -132,7 +123,9 @@ export default function EmployeeLeaveHistory() {
         </div>
       </div>
 
-      <h2 className="text-2xl font-bold mb-4">My Leave History</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Leave History</h2>
+      </div>
 
       {/* Controls */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-4 p-4 bg-white dark:bg-gray-800 rounded-md shadow">
@@ -183,7 +176,6 @@ export default function EmployeeLeaveHistory() {
           </div>
         </div>
 
-        {/* Status filter now uses the store’s activeStatus */}
         <select
           className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700"
           value={activeStatus}
@@ -192,7 +184,6 @@ export default function EmployeeLeaveHistory() {
             setCurrentPage(1);
           }}
         >
-          
           <option value="all">All</option>
           <option value="approved">Approved</option>
           <option value="pending">Pending</option>
@@ -225,13 +216,6 @@ export default function EmployeeLeaveHistory() {
             <FaFileExcel size={18} />
           </button>
         </div>
-
-        <button
-          onClick={() => setShowApplyModal(true)}
-          className="bg-blue-600 text-white text-sm px-4 py-2 rounded hover:bg-blue-500 transition-colors"
-        >
-          Apply Leaves
-        </button>
       </div>
 
       {/* Table */}
@@ -255,6 +239,11 @@ export default function EmployeeLeaveHistory() {
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
                 <th className="p-3 text-sm font-semibold">S.L</th>
+                <th className="p-3 text-sm font-semibold">Emp ID</th>
+                <th className="p-3 text-sm font-semibold">Emp Name</th>
+                <th className="p-3 text-sm font-semibold">
+                  Paid Leave Balance
+                </th>
                 <th className="p-3 text-sm font-semibold">Leave Type</th>
                 <th className="p-3 text-sm font-semibold">From</th>
                 <th className="p-3 text-sm font-semibold">To</th>
@@ -262,28 +251,52 @@ export default function EmployeeLeaveHistory() {
                 <th className="p-3 text-sm font-semibold">Reason for Leave</th>
                 <th className="p-3 text-sm font-semibold">Leave Category</th>
                 <th className="p-3 text-sm font-semibold">Processed By</th>
-                <th className="p-3 text-sm font-semibold">Reason For Reject</th>
+
                 <th className="p-3 text-sm font-semibold">Status</th>
+                <th className="p-3 text-sm font-semibold">Action</th>
               </tr>
             </thead>
             <tbody>
               {paginatedData.map((entry, index) => (
                 <motion.tr
-                  key={entry._id || entry.id}
+                  key={entry._id}
                   variants={tableRowVariants}
-                  onClick={() => setSelectedLeave(entry)}
+                  onClick={() => {
+                    if (!showEditModal) {
+                      setSelectedLeave(entry);
+                    }
+                  }}
                   className="cursor-pointer border-b last:border-b-0 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                 >
                   <td className="p-3 text-sm">
                     {(currentPage - 1) * pageSize + index + 1}
                   </td>
+                  <td className="p-3 text-sm">
+                    {entry.employee.employee_Id || "N/A"}
+                  </td>
+
+                  <td className="p-3 text-sm">
+                    {" "}
+                    {entry.employee
+                      ? `${entry.employee.first_Name} ${entry.employee.last_Name}`
+                      : "Unknown"}
+                  </td>
+
+                  <td className="p-3 text-sm">
+                    {entry.employee.no_of_Paid_Leave || "N/A"}
+                  </td>
+
                   <td className="p-3 text-sm">{entry.leave_Type}</td>
                   <td className="p-3 text-sm">
                     {new Date(entry.leave_From).toLocaleDateString()}
                   </td>
+
                   <td className="p-3 text-sm">
-                    {new Date(entry.leave_To).toLocaleDateString()}
+                    {entry.leave_To
+                      ? new Date(entry.leave_To).toLocaleDateString()
+                      : "N/A"}
                   </td>
+
                   <td className="p-3 text-sm">{entry.no_Of_Days}</td>
                   <td className="p-3 text-sm">
                     {entry.reason_For_Leave &&
@@ -303,14 +316,12 @@ export default function EmployeeLeaveHistory() {
                   </td>
                   <td className="p-3 text-sm">
                     {entry.leave_Status === "approved" && entry.approved_By
-                      ? `Approved by ${entry.approved_By.first_Name} ${entry.approved_By.last_Name}`
+                      ? `${entry.approved_By.first_Name} ${entry.approved_By.last_Name}`
                       : entry.leave_Status === "rejected" && entry.rejected_By
                       ? `Rejected by ${entry.rejected_By.first_Name} ${entry.rejected_By.last_Name}`
                       : "Pending"}
                   </td>
-                  <td className="p-3 text-sm">
-                    {entry.reason_For_Reject || "N/A"}
-                  </td>
+
                   <td className="p-3 text-sm">
                     <span
                       className={`px-2 py-1 text-xs font-semibold rounded ${
@@ -324,6 +335,25 @@ export default function EmployeeLeaveHistory() {
                       {entry.leave_Status.charAt(0).toUpperCase() +
                         entry.leave_Status.slice(1)}
                     </span>
+                  </td>
+                  <td className="p-3">
+                    <div className="flex gap-2">
+                      <FaEye
+                        className="text-blue-400 cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedLeave(entry);
+                        }}
+                      />
+                      <FaEdit
+                        className="text-yellow-400 cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedLeave(entry);
+                          setShowEditModal(true);
+                        }}
+                      />
+                    </div>
                   </td>
                 </motion.tr>
               ))}
@@ -357,14 +387,18 @@ export default function EmployeeLeaveHistory() {
         </div>
       )}
 
-      <LeaveDetailsModal
-        leave={selectedLeave}
-        onClose={() => setSelectedLeave(null)}
-      />
-      <ApplyLeaveModal
-        show={showApplyModal}
-        onClose={() => setShowApplyModal(false)}
-      />
+      {/* Conditionally render the modals */}
+      {selectedLeave && !showEditModal && (
+        <LeaveDetailsModal leave={selectedLeave} onClose={handleCloseModal} />
+      )}
+
+      {selectedLeave && showEditModal && (
+        <LeaveEdit
+          isOpen={showEditModal}
+          selectedLeave={selectedLeave}
+          onClose={handleCloseModal}
+        />
+      )}
     </div>
   );
 }

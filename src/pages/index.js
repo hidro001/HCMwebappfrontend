@@ -55,7 +55,14 @@ import RaciOperationsPage from "./raci management/RaciOperationsPage";
 import SuperAdminDashboardPage from "./dashboard/SuperAdminDashboardPage";
 import EmployeeDashboardPage from "./dashboard/EmployeeDashboardPage";
 import EmployeeLeaveHistoryPage from "./leave management/EmployeeLeaveHistoryPage";
+<<<<<<< HEAD
 import AssignedTaskEmployeePage from "./task/AssignedTaskEmployeePage";
+=======
+import ManageLeavesPage from "./leave management/ManageLeavesPage";
+import AllLeavePage from "./leave management/AllLeavePage";
+
+
+>>>>>>> 79c63461d5f779e0778e2fae7203a392f932237e
 
 
 
@@ -113,5 +120,10 @@ export {
   SuperAdminDashboardPage,
   EmployeeDashboardPage,
   EmployeeLeaveHistoryPage,
+<<<<<<< HEAD
   AssignedTaskEmployeePage
+=======
+  ManageLeavesPage,
+  AllLeavePage
+>>>>>>> 79c63461d5f779e0778e2fae7203a392f932237e
 };

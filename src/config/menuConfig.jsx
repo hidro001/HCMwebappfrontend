@@ -550,8 +550,14 @@ export const menuItems = [
       },
       {
         name: " Manage Leaves ",
-        link: "/dashboard/leavemanager",
+        link: "/dashboard/manage-leave-history",
         permission: "acceptandrejectleave",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: " All Leaves ",
+        link: "/dashboard/all-leave-history",
+        permission: "viewLeaves",
         textAnimation: { x: 10 },
       },
     ],

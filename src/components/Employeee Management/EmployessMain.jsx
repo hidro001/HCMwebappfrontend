@@ -1,5 +1,3 @@
-
-
 // import React, { useState } from "react";
 // import { motion } from "framer-motion";
 // import { Line, Doughnut } from "react-chartjs-2";
@@ -41,7 +39,7 @@
 
 //   // Separate label sets for each range
 //   const lineChartLabels = {
-//     Monthly: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
+//     Monthly: ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
 //               "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
 //     Weekly:  ["W1", "W2", "W3", "W4", "W5", "W6",
 //               "W7", "W8", "W9", "W10", "W11", "W12"],
@@ -218,7 +216,7 @@
 //               <select
 //                 value={chartRange}
 //                 onChange={(e) => setChartRange(e.target.value)}
-//                 className="border text-sm rounded px-2 py-1 bg-gray-50 
+//                 className="border text-sm rounded px-2 py-1 bg-gray-50
 //                            dark:bg-gray-700 dark:text-gray-200"
 //               >
 //                 <option>Monthly</option>
@@ -250,7 +248,7 @@
 //             <select
 //               value={overviewRange}
 //               onChange={(e) => setOverviewRange(e.target.value)}
-//               className="border text-sm rounded px-2 py-1 bg-gray-50 
+//               className="border text-sm rounded px-2 py-1 bg-gray-50
 //                          dark:bg-gray-700 dark:text-gray-200"
 //             >
 //               <option>Today</option>
@@ -298,7 +296,7 @@
 //         transition={{ duration: 0.5, delay: 0.2 }}
 //       >
 //         {/* Tabs header */}
-//         <div className="flex items-center justify-between border-b 
+//         <div className="flex items-center justify-between border-b
 //                         border-gray-200 dark:border-gray-700 pb-2 mb-4"
 //         >
 //           <div className="space-x-6">
@@ -338,7 +336,7 @@
 //           transition={{ duration: 0.6 }}
 //         >
 //           <thead>
-//             <tr className="bg-gray-100 dark:bg-gray-700 text-sm uppercase 
+//             <tr className="bg-gray-100 dark:bg-gray-700 text-sm uppercase
 //                            text-gray-600 dark:text-gray-200"
 //             >
 //               <th className="px-4 py-2">Users</th>
@@ -353,13 +351,13 @@
 //               (emp, index) => (
 //                 <tr
 //                   key={index}
-//                   className="border-b last:border-0 border-gray-200 
+//                   className="border-b last:border-0 border-gray-200
 //                              dark:border-gray-700"
 //                 >
 //                   <td className="px-4 py-3">
 //                     <div className="flex items-center space-x-2">
 //                       {/* Placeholder avatar */}
-//                       <div className="w-8 h-8 rounded-full bg-gray-300 
+//                       <div className="w-8 h-8 rounded-full bg-gray-300
 //                                      dark:bg-gray-600 flex-shrink-0"
 //                       />
 //                       <div>
@@ -404,7 +402,6 @@
 
 // export default EmployeesMain;
 
-
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Line, Doughnut } from "react-chartjs-2";
@@ -437,13 +434,13 @@ ChartJS.register(
 const EmployeesMain = () => {
   // 1) Read from the Zustand store
   const {
-    lineChartData,      // { monthly, weekly, yearly: { labels, counts } }
-    overviewData,       // { Today, "This Week", "This Month" }
-    activeEmployees,    // array
-    inactiveEmployees,  // array
+    lineChartData, // { monthly, weekly, yearly: { labels, counts } }
+    overviewData, // { Today, "This Week", "This Month" }
+    activeEmployees, // array
+    inactiveEmployees, // array
     loading,
     error,
-    fetchDashboardData
+    fetchDashboardData,
   } = useDashboardStore();
 
   // 2) Local UI state
@@ -477,13 +474,37 @@ const EmployeesMain = () => {
 
   if (chartRange === "Monthly") {
     // The API gives an array of 12 numbers in lineChartData.monthly
-    chartLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-                   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    chartLabels = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
     chartCounts = lineChartData.monthly || [];
   } else if (chartRange === "Weekly") {
     // The API gives an array of 12 numbers in lineChartData.weekly
-    chartLabels = ["W1", "W2", "W3", "W4", "W5", "W6", 
-                   "W7", "W8", "W9", "W10", "W11", "W12"];
+    chartLabels = [
+      "W1",
+      "W2",
+      "W3",
+      "W4",
+      "W5",
+      "W6",
+      "W7",
+      "W8",
+      "W9",
+      "W10",
+      "W11",
+      "W12",
+    ];
     chartCounts = lineChartData.weekly || [];
   } else {
     // Yearly
@@ -555,9 +576,8 @@ const EmployeesMain = () => {
   // We already have two arrays from the API:
   // - activeEmployees
   // - inactiveEmployees
-  const displayedEmployees = activeTab === "active" 
-    ? activeEmployees 
-    : inactiveEmployees;
+  const displayedEmployees =
+    activeTab === "active" ? activeEmployees : inactiveEmployees;
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6">
@@ -570,7 +590,6 @@ const EmployeesMain = () => {
 
       {/* Top Row: LEFT (Line Chart) + RIGHT (Doughnut) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-        
         {/* LEFT Card: New Employee Added + Chart */}
         <motion.div
           className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-5"
@@ -741,10 +760,14 @@ const EmployeesMain = () => {
                 <td className="px-4 py-3">
                   <div className="flex items-center space-x-2">
                     {/* Placeholder avatar */}
-                    <div
-                      className="w-8 h-8 rounded-full bg-gray-300 
-                                 dark:bg-gray-600 flex-shrink-0"
-                    />
+                    <div className=" flex-shrink-0">
+                      <img
+                        src={emp.userAvatar}
+                        alt=""
+                        className="w-8 h-8 rounded-full bg-gray-300 "
+                      />
+                    </div>
+
                     <div>
                       <p className="font-medium text-gray-800 dark:text-gray-100">
                         {emp.name}
@@ -785,4 +808,3 @@ const EmployeesMain = () => {
 };
 
 export default EmployeesMain;
-
