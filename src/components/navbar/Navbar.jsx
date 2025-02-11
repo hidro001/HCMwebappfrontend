@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState } from "react";
 import {
   FaBell,
@@ -37,7 +35,7 @@ function formatHMS(totalSeconds) {
 const Navbar = () => {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
-  const [showChatDropdown, setShowChatDropdown] = useState(false);
+  // const [showChatDropdown, setShowChatDropdown] = useState(false);
   const [showBreakCard, setShowBreakCard] = useState(false);
   const [currentDate, setCurrentDate] = useState("");
 
@@ -211,20 +209,8 @@ const Navbar = () => {
         <div className="relative">
           <FaComments
             className="text-blue-500 w-6 h-6 cursor-pointer"
-            onClick={() => setShowChatDropdown((prev) => !prev)}
+            onClick={() => navigate("/dashboard/chats")} // <-- Add navigation to chat
           />
-          <AnimatePresence>
-            {showChatDropdown && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="absolute right-0 mt-2 w-48 bg-gray-700 dark:bg-gray-800 text-white rounded-md shadow-lg z-10 p-4"
-              >
-                <p className="text-sm">Chat Panel (Coming soon)</p>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
 
         {/* Theme Toggle */}
