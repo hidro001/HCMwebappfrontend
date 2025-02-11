@@ -319,7 +319,7 @@ export const menuItems = [
       {
         name: "Assigned Task",
         link: "/dashboard/assigned-task/employee",
-        permission: "ActionTrackerManager",
+        permission: "ViewTaskManager",
         textAnimation: { x: 10 },
       },
       {
