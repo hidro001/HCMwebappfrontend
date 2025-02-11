@@ -55,12 +55,9 @@ import {
   EmployeeDashboardPage,
   ChatPage,
   EmployeeLeaveHistoryPage,
-<<<<<<< HEAD
-  AssignedTaskEmployeePage
-=======
+  AssignedTaskEmployeePage,
   ManageLeavesPage,
   AllLeavePage
->>>>>>> 79c63461d5f779e0778e2fae7203a392f932237e
 } from "../pages";
 import MainLayout from "./MainLayout";
 
