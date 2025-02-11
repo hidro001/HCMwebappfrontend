@@ -1,10 +1,10 @@
 import { useMemo, useState } from "react";
 import { FaUserCircle } from "react-icons/fa";
 
-export default function ChatMember({ employees, currentUser, onSelectUser }) {
+export default function ChatMember({ employees, currentUser, onSelectUser, unreadCounts }) {
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Filter out the current user and remove duplicates
+  // Remove the current user and duplicates
   const uniqueEmployees = useMemo(() => {
     return Array.from(
       new Map(
@@ -15,7 +15,7 @@ export default function ChatMember({ employees, currentUser, onSelectUser }) {
     );
   }, [employees, currentUser]);
 
-  // Filtered employees based on search input
+  // Filter based on search input
   const filteredEmployees = useMemo(() => {
     return uniqueEmployees.filter((member) =>
       `${member.first_Name} ${member.last_Name}`
@@ -23,6 +23,15 @@ export default function ChatMember({ employees, currentUser, onSelectUser }) {
         .includes(searchTerm.toLowerCase())
     );
   }, [uniqueEmployees, searchTerm]);
+
+  // Sort so that employees with unread messages are shown on top
+  const sortedEmployees = useMemo(() => {
+    return [...filteredEmployees].sort((a, b) => {
+      const aUnread = unreadCounts[a.employee_Id] || 0;
+      const bUnread = unreadCounts[b.employee_Id] || 0;
+      return bUnread - aUnread;
+    });
+  }, [filteredEmployees, unreadCounts]);
 
   return (
     <div
@@ -44,10 +53,10 @@ export default function ChatMember({ employees, currentUser, onSelectUser }) {
         />
       </div>
 
-      {/* List of Employees */}
+      {/* Employee List */}
       <div className="flex-grow overflow-y-auto">
         <ul>
-          {filteredEmployees.map((member) => (
+          {sortedEmployees.map((member) => (
             <li
               key={member.employee_Id}
               className="flex items-center justify-between p-3 border-b dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -83,12 +92,17 @@ export default function ChatMember({ employees, currentUser, onSelectUser }) {
                   </p>
                 </div>
               </div>
+              {/* Unread Badge */}
+              {unreadCounts[member.employee_Id] > 0 && (
+                <span className="bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-0.5">
+                  {unreadCounts[member.employee_Id]}
+                </span>
+              )}
             </li>
           ))}
         </ul>
 
-        {/* Show message if no users match the search */}
-        {filteredEmployees.length === 0 && (
+        {sortedEmployees.length === 0 && (
           <p className="text-center text-gray-500 dark:text-gray-400 p-4">
             No matching members found.
           </p>

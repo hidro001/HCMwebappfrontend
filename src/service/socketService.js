@@ -51,7 +51,18 @@ export const sendFileMessage = (socket, fileData) => {
   }
 };
 
-export const subscribeToMessages = (socket, selectedUserIdRef, employeeIdRef, setMessages) => {
+/**
+ * Subscribe to incoming messages.
+ * If the message belongs to the currently open conversation, it will be appended to the message list.
+ * Otherwise, for incoming messages, we call updateUnread (if provided) to update the unread count.
+ */
+export const subscribeToMessages = (
+  socket,
+  selectedUserIdRef,
+  employeeIdRef,
+  setMessages,
+  updateUnread
+) => {
   if (!socket) return;
   
   socket.on("receiveMessage", (data) => {
@@ -60,42 +71,48 @@ export const subscribeToMessages = (socket, selectedUserIdRef, employeeIdRef, se
         data.receiver === employeeIdRef.current) ||
       (data.sender === employeeIdRef.current &&
         data.receiver === selectedUserIdRef.current);
-    if (!isRelevant) return;
 
-    // For file messages from the current user, update the “uploading” message
-    if (data.type === "file" && data.sender === employeeIdRef.current) {
-      setMessages((prev) =>
-        prev.map((msg) => {
-          if (
-            msg.type === "file" &&
-            msg.fileName === data.fileName &&
-            msg.uploading &&
-            msg.sender === data.sender
-          ) {
-            return {
-              ...msg,
-              fileUrl: data.fileUrl,
-              uploading: false,
-              time: new Date(data.time).toLocaleTimeString(),
-            };
-          }
-          return msg;
-        })
-      );
+    if (isRelevant) {
+      // For file messages from the current user, update the “uploading” message
+      if (data.type === "file" && data.sender === employeeIdRef.current) {
+        setMessages((prev) =>
+          prev.map((msg) => {
+            if (
+              msg.type === "file" &&
+              msg.fileName === data.fileName &&
+              msg.uploading &&
+              msg.sender === data.sender
+            ) {
+              return {
+                ...msg,
+                fileUrl: data.fileUrl,
+                uploading: false,
+                time: new Date(data.time).toLocaleTimeString(),
+              };
+            }
+            return msg;
+          })
+        );
+      } else {
+        // Normal text message or file from the other user
+        setMessages((prev) => [
+          ...prev,
+          {
+            sender: data.sender,
+            type: data.type || "text",
+            message: data.message || "",
+            fileUrl: data.fileUrl || "",
+            fileName: data.fileName || "",
+            fileType: data.fileType || "",
+            time: new Date(data.time).toLocaleTimeString(),
+          },
+        ]);
+      }
     } else {
-      // Normal text message or file from the other user
-      setMessages((prev) => [
-        ...prev,
-        {
-          sender: data.sender,
-          type: data.type || "text",
-          message: data.message || "",
-          fileUrl: data.fileUrl || "",
-          fileName: data.fileName || "",
-          fileType: data.fileType || "",
-          time: new Date(data.time).toLocaleTimeString(),
-        },
-      ]);
+      // If the message is not for the current open chat and it is incoming, update unread count
+      if (data.receiver === employeeIdRef.current && updateUnread) {
+        updateUnread(data.sender);
+      }
     }
   });
 

@@ -8,7 +8,7 @@ import { toast } from "react-hot-toast";
 import { FaCommentDots } from "react-icons/fa";
 import ChatMember from "./ChatMember";
 import ChatList from "./ChatList";
-import { fetchSubordinates, fetchBoth,fetchChatHistory } from "../../service/chatService";
+import { fetchSubordinates, fetchBoth, fetchChatHistory } from "../../service/chatService";
 import {
   initSocket,
   joinRoom,
@@ -17,7 +17,6 @@ import {
   subscribeToMessages,
   disconnectSocket,
 } from "../../service/socketService";
-
 
 export default function ChatHome() {
   const [messages, setMessages] = useState([]);
@@ -28,6 +27,7 @@ export default function ChatHome() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [error, setError] = useState(null);
+  const [unreadCounts, setUnreadCounts] = useState({});
 
   const socketRef = useRef(null);
   const selectedUserIdRef = useRef(selectedUserId);
@@ -52,7 +52,19 @@ export default function ChatHome() {
   // --- Initialize Socket ---
   useEffect(() => {
     socketRef.current = initSocket(SOCKET_SERVER_URL, employeeId);
-    subscribeToMessages(socketRef.current, selectedUserIdRef, employeeIdRef, setMessages);
+    subscribeToMessages(
+      socketRef.current,
+      selectedUserIdRef,
+      employeeIdRef,
+      setMessages,
+      (senderId) => {
+        // Update unread count for incoming messages not in the current conversation
+        setUnreadCounts((prev) => ({
+          ...prev,
+          [senderId]: (prev[senderId] || 0) + 1,
+        }));
+      }
+    );
 
     return () => {
       disconnectSocket();
@@ -88,6 +100,12 @@ export default function ChatHome() {
       }
       setSelectedUser(name);
       setSelectedUserId(id);
+      // Reset unread count for the selected user
+      setUnreadCounts((prev) => {
+        const newState = { ...prev };
+        delete newState[id];
+        return newState;
+      });
       joinRoom(socketRef.current, employeeId, id);
     },
     [employeeId, selectedUserId]
@@ -198,6 +216,7 @@ export default function ChatHome() {
         employees={employees}
         currentUser={employeeId}
         onSelectUser={handleSelectUser}
+        unreadCounts={unreadCounts}
       />
       {/* Right side: Chat */}
       {selectedUser ? (
