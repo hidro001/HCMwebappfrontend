@@ -54,7 +54,8 @@ import {
   SuperAdminDashboardPage,
   EmployeeDashboardPage,
   ChatPage,
-  EmployeeLeaveHistoryPage
+  EmployeeLeaveHistoryPage,
+  ManageLeavesPage
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -302,6 +303,10 @@ const router = createBrowserRouter([
       {
         path: "leave-history",
         element: <EmployeeLeaveHistoryPage />,
+      },
+      {
+        path: "manage-leave-history",
+        element: <ManageLeavesPage />,
       },
     ],
   },

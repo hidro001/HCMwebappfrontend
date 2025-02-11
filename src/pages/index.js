@@ -55,6 +55,8 @@ import RaciOperationsPage from "./raci management/RaciOperationsPage";
 import SuperAdminDashboardPage from "./dashboard/SuperAdminDashboardPage";
 import EmployeeDashboardPage from "./dashboard/EmployeeDashboardPage";
 import EmployeeLeaveHistoryPage from "./leave management/EmployeeLeaveHistoryPage";
+import ManageLeavesPage from "./leave management/ManageLeavesPage";
+
 
 
 
@@ -111,5 +113,6 @@ export {
   RaciOperationsPage,
   SuperAdminDashboardPage,
   EmployeeDashboardPage,
-  EmployeeLeaveHistoryPage
+  EmployeeLeaveHistoryPage,
+  ManageLeavesPage
 };
