@@ -517,33 +517,33 @@ export const menuItems = [
 
 
 
-  // {
-  //   name: "Leaves Management",
-  //   icon: <FaListAlt />,
-  //   color: "text-blue-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Apply Leaves ",
-  //       link: "/dashboard/leavemanage",
-  //       permission: "applyLeaves",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: " Manage Leaves ",
-  //       link: "/dashboard/leavemanager",
-  //       permission: "acceptandrejectleave",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Leaves History",
-  //       link: "/dashboard/employeeleavehistory",
-  //       permission: "viewLeaves",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+  {
+    name: "Leaves Management",
+    icon: <FaListAlt />,
+    color: "text-blue-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      // {
+      //   name: "Apply Leaves ",
+      //   link: "/dashboard/leavemanage",
+      //   permission: "applyLeaves",
+      //   textAnimation: { x: 10 },
+      // },
+      {
+        name: "Leaves History",
+        link: "/dashboard/leave-history",
+        permission: "viewLeaves",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: " Manage Leaves ",
+        link: "/dashboard/leavemanager",
+        permission: "acceptandrejectleave",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
 
 
   // {

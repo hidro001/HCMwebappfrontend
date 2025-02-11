@@ -53,7 +53,8 @@ import {
   RaciOperationsPage,
   SuperAdminDashboardPage,
   EmployeeDashboardPage,
-  ChatPage
+  ChatPage,
+  EmployeeLeaveHistoryPage
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -297,6 +298,10 @@ const router = createBrowserRouter([
       {
         path: "chats",
         element: <ChatPage />,
+      },
+      {
+        path: "leave-history",
+        element: <EmployeeLeaveHistoryPage />,
       },
     ],
   },
