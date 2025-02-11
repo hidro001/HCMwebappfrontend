@@ -271,6 +271,9 @@ const MainLayout = () => {
 
 export default MainLayout;
 
+
+
+
 // import { useState, useEffect } from "react";
 // import { Sidebar, Breadcrumb, Navbar } from "../components";
 // import { Outlet, useNavigate, useLocation } from "react-router-dom";
@@ -283,7 +286,7 @@ export default MainLayout;
 //   const [darkMode, setDarkMode] = useState(false);
 
 //   const currentPath = location.pathname;
-//   const userPermissions = useAuthStore((state) => state.permissions) ;
+//   const userPermissions = useAuthStore((state) => state.permissions);
 
 //   // Scroll to top whenever the route changes
 //   useEffect(() => {
