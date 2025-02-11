@@ -1,5 +1,3 @@
-// dashboardService.js
-
 import axiosInstance from "./axiosInstance";
 
 export async function getAttendanceData(date) {

@@ -116,3 +116,18 @@ export const fetchAllTasks = async (empId) => {
 
 
 
+// EMPLOYEE TASKS
+
+
+
+export const fetchTasksEmp = async () => {
+  try {
+    const response = await axiosInstance.get("/employee/assign");
+    if (response.data.success) {
+      return response.data.data; 
+    }
+  } catch (error) {
+    console.error("Error fetching subordinates:", error);
+    return [];
+  }
+};

@@ -54,7 +54,8 @@ import {
   SuperAdminDashboardPage,
   EmployeeDashboardPage,
   ChatPage,
-  EmployeeLeaveHistoryPage
+  EmployeeLeaveHistoryPage,
+  AssignedTaskEmployeePage
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -237,6 +238,10 @@ const router = createBrowserRouter([
       {
         path: "assigned-task",
         element: <AssignedTaskPage />,
+      },
+      {
+        path: "assigned-task/employee",
+        element: <AssignedTaskEmployeePage />,
       },
       {
         path: "daily-task",
