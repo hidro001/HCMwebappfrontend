@@ -1,6 +1,7 @@
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import React from "react";
+import PerformanceChart from "./PerformanceChart";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -11,7 +12,14 @@ const ChartStatistics = () => {
     datasets: [
       {
         data: [12, 22, 12, 12, 7, 7], // Task counts
-        backgroundColor: ["#16a34a", "#3b82f6", "#6366f1", "#ec4899", "#f59e0b", "#facc15"],
+        backgroundColor: [
+          "#16a34a",
+          "#3b82f6",
+          "#6366f1",
+          "#ec4899",
+          "#f59e0b",
+          "#facc15",
+        ],
         borderWidth: 0,
       },
     ],
@@ -27,7 +35,9 @@ const ChartStatistics = () => {
     <div className="flex flex-col md:flex-row gap-6 p-6 justify-center items-start">
       {/* Department Tasks */}
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full md:w-2/3">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">Department Tasks</h2>
+        <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+          Department Tasks
+        </h2>
         <div className="flex flex-col md:flex-row items-center gap-6">
           <div className="relative w-full max-w-xs">
             <Doughnut data={departmentData} options={doughnutOptions} />
@@ -50,16 +60,49 @@ const ChartStatistics = () => {
               </thead>
               <tbody>
                 {[
-                  { name: "IT", emp: 12, percent: "28.6%", color: "bg-green-500" },
-                  { name: "HR", emp: 22, percent: "42.9%", color: "bg-blue-500" },
-                  { name: "Sales", emp: 12, percent: "28.6%", color: "bg-purple-500" },
-                  { name: "Operations", emp: 12, percent: "28.6%", color: "bg-pink-500" },
-                  { name: "Finance", emp: 7, percent: "14.3%", color: "bg-yellow-500" },
-                  { name: "Marketing", emp: 7, percent: "14.3%", color: "bg-orange-500" },
+                  {
+                    name: "IT",
+                    emp: 12,
+                    percent: "28.6%",
+                    color: "bg-green-500",
+                  },
+                  {
+                    name: "HR",
+                    emp: 22,
+                    percent: "42.9%",
+                    color: "bg-blue-500",
+                  },
+                  {
+                    name: "Sales",
+                    emp: 12,
+                    percent: "28.6%",
+                    color: "bg-purple-500",
+                  },
+                  {
+                    name: "Operations",
+                    emp: 12,
+                    percent: "28.6%",
+                    color: "bg-pink-500",
+                  },
+                  {
+                    name: "Finance",
+                    emp: 7,
+                    percent: "14.3%",
+                    color: "bg-yellow-500",
+                  },
+                  {
+                    name: "Marketing",
+                    emp: 7,
+                    percent: "14.3%",
+                    color: "bg-orange-500",
+                  },
                 ].map((dept, index) => (
                   <tr key={index}>
                     <td className="py-1 flex items-center gap-2">
-                      <span className={`w-3 h-3 rounded-full ${dept.color}`}></span> {dept.name}
+                      <span
+                        className={`w-3 h-3 rounded-full ${dept.color}`}
+                      ></span>{" "}
+                      {dept.name}
                     </td>
                     <td>{dept.emp}</td>
                     <td>{dept.percent}</td>
@@ -73,26 +116,10 @@ const ChartStatistics = () => {
 
       {/* Performance Statistics */}
       <div className="bg-green-50 dark:bg-gray-800 p-6 rounded-lg shadow-lg w-full md:w-1/3">
-  <h2 className="text-xl font-semibold mb-4 text-green-800 dark:text-green-300">Performance Statistics</h2>
-  {[
-    { name: "IT Team", value: 65, color: "bg-orange-500" },
-    { name: "Sales Team", value: 84, color: "bg-blue-500" },
-    { name: "HR Team", value: 84, color: "bg-green-500" },
-    { name: "Operation Team", value: 84, color: "bg-yellow-500" },
-  ].map((team, index) => (
-    <div key={index} className="mb-4">
-      <div className="flex justify-between text-gray-700 dark:text-gray-300">
-        <span>{team.name}</span>
-        <span>{team.value}%</span>
+        <div className=" ">
+          <PerformanceChart />
+        </div>
       </div>
-      <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full">
-        {/* Increased height and dark mode color adjustments */}
-        <div className={`h-3 rounded-full ${team.color}`} style={{ width: `${team.value}%` }}></div>
-      </div>
-    </div>
-  ))}
-</div>
-
     </div>
   );
 };
