@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { addTask, fetchAllTasks } from '../../../service/taskService'; // Adjust the import path as needed
 import { toast } from 'react-hot-toast';
 
@@ -7,46 +7,73 @@ export default function UpdateTask() {
   const [taskList, setTaskList] = useState(['']);
   // This state will hold the tasks fetched from the GET API
   const [fetchedTasks, setFetchedTasks] = useState([]);
-  
+  // Loading state for fetch and submission operations
+  const [loading, setLoading] = useState(false);
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const tasksPerPage = 5; // Number of tasks to display per page
+
   // Hardcoded employee ID; in a real app, you might pass this as a prop or derive it from context.
   const empId = "RI0526";
 
-  // Add a new text area
+  // Add a new empty task field
   const handleAddTask = () => {
     setTaskList((prev) => [...prev, '']);
   };
 
-  // Delete a specific row
+  // Delete a specific task field
   const handleDeleteTask = (index) => {
     setTaskList((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Update the user’s text
+  // Update the value for a specific task
   const handleChange = (index, value) => {
     setTaskList((prev) =>
       prev.map((task, i) => (i === index ? value : task))
     );
   };
 
-  // Function to fetch tasks from the API
+  // Fetch tasks from the API with loading indicator and error handling
   const fetchTasks = async () => {
+    setLoading(true);
     try {
       const res = await fetchAllTasks(empId);
       if (res && res.success) {
         setFetchedTasks(res.data);
+      } else {
+        toast.error("Failed to fetch tasks.");
       }
     } catch (error) {
       console.error("Error fetching tasks:", error);
       toast.error("Error fetching tasks.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Fetch tasks when the component mounts
+  // Fetch tasks on component mount and when the employee ID changes
   useEffect(() => {
     fetchTasks();
   }, [empId]);
 
-  // Handle form submission
+  // Pagination calculations
+  const indexOfLastTask = currentPage * tasksPerPage;
+  const indexOfFirstTask = indexOfLastTask - tasksPerPage;
+  const currentTasks = fetchedTasks.slice(indexOfFirstTask, indexOfLastTask);
+  const totalPages = Math.ceil(fetchedTasks.length / tasksPerPage);
+
+  // Additional pagination variables
+  const totalItems = fetchedTasks.length;
+  const startIndex = indexOfFirstTask;
+  const endIndex = indexOfLastTask;
+
+  // Function to handle page navigation
+  const goToPage = (pageNum) => {
+    if (pageNum < 1 || pageNum > totalPages) return;
+    setCurrentPage(pageNum);
+  };
+
+  // Handle form submission to add new tasks
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Filter out empty tasks (trim whitespace)
@@ -58,38 +85,26 @@ export default function UpdateTask() {
     // Build the payload; adjust the key ("task") as required by your backend.
     const payload = { task: nonEmptyTasks };
 
+    setLoading(true);
     try {
       const result = await addTask(payload);
       console.log('Submitted tasks:', result);
       toast.success("Tasks submitted successfully!");
-      // Clear the fields after submission by resetting the state.
+      // Reset the task list input fields after submission
       setTaskList(['']);
-      // Optionally refetch tasks to update the table with the new submission.
+      // Refetch tasks to update the table with the new submission
       fetchTasks();
     } catch (error) {
       console.error('Submission failed:', error);
       toast.error("Submission failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen p-6 bg-white text-gray-800 dark:bg-gray-900 dark:text-gray-100">
-      {/* Top banner with "Hide Help" */}
-      <div className="relative mb-6 rounded-md border border-green-300 bg-green-50 p-4 dark:border-green-700 dark:bg-gray-800">
-        <button
-          type="button"
-          className="absolute top-4 right-4 text-sm font-medium text-gray-700 hover:underline dark:text-gray-200"
-        >
-          Hide Help
-        </button>
-        <p className="leading-snug">
-          Stay on top of your department's progress with Department Statistics! Gain insights into 
-          department-wise tasks, track delayed and assigned tasks, and highlight important dates on 
-          the calendar. Keep your team organized, efficient, and always a step ahead!
-        </p>
-      </div>
-
-      {/* Update Task card */}
+      {/* Update Task Card */}
       <div className="rounded-md border border-green-300 p-6 dark:border-green-700 dark:bg-gray-800">
         <h2 className="mb-6 text-2xl font-semibold text-blue-700 dark:text-blue-400">
           Update Task
@@ -114,7 +129,6 @@ export default function UpdateTask() {
                            text-gray-700 focus:outline-none dark:border-gray-600 
                            dark:bg-gray-700 dark:text-gray-200"
               />
-              {/* “X” button in top-right corner if more than 1 task */}
               {taskList.length > 1 && (
                 <button
                   type="button"
@@ -129,7 +143,7 @@ export default function UpdateTask() {
             </div>
           ))}
 
-          {/* Buttons row aligned to the right */}
+          {/* Action Buttons */}
           <div className="flex items-center gap-4 justify-end">
             <button
               type="button"
@@ -141,8 +155,9 @@ export default function UpdateTask() {
             </button>
             <button
               type="submit"
+              disabled={loading}
               className="rounded border border-orange-500 px-6 py-1 font-medium
-                         text-orange-500 transition-colors hover:bg-orange-500 hover:text-white"
+                         text-orange-500 transition-colors hover:bg-orange-500 hover:text-white disabled:opacity-50"
             >
               Submit
             </button>
@@ -150,40 +165,84 @@ export default function UpdateTask() {
         </form>
       </div>
 
-      {/* Table Section: Display fetched tasks */}
+      {/* Fetched Tasks Table */}
       <div className="mt-8 overflow-x-auto">
-        <table className="min-w-full text-left text-sm">
-          <thead>
-            <tr className="bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
-              <th className="px-4 py-2">S.L</th>
-              <th className="px-4 py-2">Task</th>
-              <th className="px-4 py-2">Date</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white dark:bg-gray-800">
-            {fetchedTasks.length > 0 ? (
-              fetchedTasks.map((item, index) => (
-                <tr key={item._id}>
-                  <td className="px-4 py-2">{index + 1}</td>
-                  <td className="px-4 py-2">
-                    {item.task && item.task.map((t, idx) => (
-                      <div key={idx}>
-                        {idx + 1}. {t}
-                      </div>
-                    ))}
-                  </td>
-                  <td className="px-4 py-2">{item.task_Date}</td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td className="px-4 py-2" colSpan="3">
-                  No tasks available.
-                </td>
+        {loading ? (
+          <div className="text-center py-8">
+            <p>Loading tasks...</p>
+          </div>
+        ) : (
+          <table className="min-w-full text-left text-sm">
+            <thead>
+              <tr className="bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
+                <th className="px-4 py-2">S.L</th>
+                <th className="px-4 py-2">Task</th>
+                <th className="px-4 py-2">Date</th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white dark:bg-gray-800">
+              {currentTasks.length > 0 ? (
+                currentTasks.map((item, index) => (
+                  <tr key={item._id}>
+                    <td className="px-4 py-2">{index + 1 + indexOfFirstTask}</td>
+                    <td className="px-4 py-2">
+                      {item.task && item.task.map((t, idx) => (
+                        <div key={idx}>
+                          {idx + 1}. {t}
+                        </div>
+                      ))}
+                    </td>
+                    <td className="px-4 py-2">{item.task_Date}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td className="px-4 py-2" colSpan="3">
+                    No tasks available.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        )}
+      </div>
+
+      {/* Pagination Controls */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4">
+        <span className="text-sm mb-2 sm:mb-0">
+          Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} entries
+        </span>
+        <div className="flex items-center gap-2">
+          <button
+            className="px-3 py-1 border rounded"
+            disabled={currentPage === 1}
+            onClick={() => goToPage(currentPage - 1)}
+          >
+            Prev
+          </button>
+          {Array.from({ length: totalPages }).map((_, i) => {
+            const pageNum = i + 1;
+            return (
+              <button
+                key={pageNum}
+                onClick={() => goToPage(pageNum)}
+                className={`
+                  px-3 py-1 border rounded
+                  ${currentPage === pageNum ? 'bg-blue-500 text-white' : ''}
+                `}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
+          <button
+            className="px-3 py-1 border rounded"
+            disabled={currentPage === totalPages}
+            onClick={() => goToPage(currentPage + 1)}
+          >
+            Next
+          </button>
+        </div>
       </div>
     </div>
   );
