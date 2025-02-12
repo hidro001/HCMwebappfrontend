@@ -206,7 +206,7 @@ export default function AllVacancies() {
                               }
                             `}
                           >
-                            {vacancy.status}
+                            {vacancy.vacancyStatus}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">{vacancy.publication}</td>

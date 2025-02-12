@@ -19,7 +19,7 @@ export default function BaseModal({ isOpen, onClose, children }) {
         overlay: {
           backdropFilter: "blur(5px)",
           backgroundColor: "rgba(0, 0, 0, 0.5)",
-          zIndex: 9999,
+          zIndex: 10000,
         },
         content: {
           inset: 0,
