@@ -210,6 +210,7 @@ const AddNewPolicyModal = ({
         </form>
       </div>
     </BaseModal>
+    
   );
 };
 
