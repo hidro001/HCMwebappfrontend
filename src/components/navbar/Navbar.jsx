@@ -8,7 +8,7 @@ import {
 } from "react-icons/fa";
 import { MdOutlineDarkMode, MdLightMode } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import useAuthStore from "../../store/store";
@@ -143,7 +143,9 @@ const Navbar = () => {
       {/* Left Section: Company Branding */}
       <div className="flex items-center space-x-4">
         <div className="text-2xl font-bold text-white">
-          <img className="w-24" src={companyLogo} alt="Company Logo" />
+        <Link to="/dashboard">
+  <img className="w-24" src={companyLogo} alt="Company Logo" />
+</Link>
         </div>
       </div>
 
