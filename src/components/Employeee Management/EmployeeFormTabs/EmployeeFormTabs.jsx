@@ -404,13 +404,15 @@
 //   );
 // }
 
-
 import React, { useEffect, useState } from "react";
 import { useForm, FormProvider, useFieldArray } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import useEmployeeStore from "../../../store/useEmployeeStore.js";
-import { createEmployee, updateEmployee } from "../../../service/employeeService.js";
+import {
+  createEmployee,
+  updateEmployee,
+} from "../../../service/employeeService.js";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import TabButton from "../common/TabButton";
 import FullScreenLoader from "../../common/FullScreenLoader.jsx";
@@ -542,14 +544,23 @@ export default function EmployeeFormTabs({
 
   const { handleSubmit, getValues, control, reset } = methods;
 
-  const { fields: qualificationFields, append: appendQualification, remove: removeQualification } =
-    useFieldArray({ control, name: "qualifications" });
+  const {
+    fields: qualificationFields,
+    append: appendQualification,
+    remove: removeQualification,
+  } = useFieldArray({ control, name: "qualifications" });
 
-  const { fields: experienceFields, append: appendExperience, remove: removeExperience } =
-    useFieldArray({ control, name: "experiences" });
+  const {
+    fields: experienceFields,
+    append: appendExperience,
+    remove: removeExperience,
+  } = useFieldArray({ control, name: "experiences" });
 
-  const { fields: documentFields, append: appendDocument, remove: removeDocument } =
-    useFieldArray({ control, name: "documents" });
+  const {
+    fields: documentFields,
+    append: appendDocument,
+    remove: removeDocument,
+  } = useFieldArray({ control, name: "documents" });
 
   const onSubmitStep = () => {
     if (activeTab < 3) {
@@ -616,19 +627,66 @@ export default function EmployeeFormTabs({
       });
       // Append qualifications:
       formValues.qualifications.forEach((qual, index) => {
-        formData.append(`qualifications[${index}][qualificationName]`, qual.qualificationName || "");
-        formData.append(`qualifications[${index}][universityBoard]`, qual.universityBoard || "");
-        formData.append(`qualifications[${index}][totalMarks]`, qual.totalMarks || "");
-        formData.append(`qualifications[${index}][year]`, qual.passingYear || "");
-        formData.append(`qualifications[${index}][percentageCgpa]`, qual.percentageCgpa || "");
+        formData.append(
+          `qualifications[${index}][qualificationName]`,
+          qual.qualificationName || ""
+        );
+        formData.append(
+          `qualifications[${index}][universityBoard]`,
+          qual.universityBoard || ""
+        );
+        formData.append(
+          `qualifications[${index}][certifications]`,
+          qual.certifications || ""
+        );
+        formData.append(
+          `qualifications[${index}][specialization]`,
+          qual.specialization || ""
+        );
+        formData.append(
+          `qualifications[${index}][totalMarks]`,
+          qual.totalMarks || ""
+        );
+        formData.append(
+          `qualifications[${index}][year]`,
+          qual.passingYear || ""
+        );
+        formData.append(
+          `qualifications[${index}][percentageCgpa]`,
+          qual.percentageCgpa || ""
+        );
       });
       // Append experiences:
       formValues.experiences.forEach((exp, index) => {
-        formData.append(`experiences[${index}][companyName]`, exp.companyName || "");
-        formData.append(`experiences[${index}][designation]`, exp.designation || "");
-        formData.append(`experiences[${index}][startDate]`, exp.startDate || "");
+        formData.append(
+          `experiences[${index}][companyName]`,
+          exp.companyName || ""
+        );
+        formData.append(
+          `experiences[${index}][designation]`,
+          exp.designation || ""
+        );
+        formData.append(
+          `experiences[${index}][totalExperience]`,
+          exp.totalExperience || ""
+        );
+        formData.append(
+          `experiences[${index}][grade_Band_Level]`,
+          exp.grade_Band_Level || ""
+        );
+        formData.append(
+          `experiences[${index}][previous_Positions]`,
+          exp.previous_Positions || ""
+        );
+        formData.append(
+          `experiences[${index}][startDate]`,
+          exp.startDate || ""
+        );
         formData.append(`experiences[${index}][endDate]`, exp.endDate || "");
-        formData.append(`experiences[${index}][totalExperience]`, exp.totalExperience || "");
+        formData.append(
+          `experiences[${index}][totalExperience]`,
+          exp.totalExperience || ""
+        );
       });
 
       let response;
@@ -665,9 +723,7 @@ export default function EmployeeFormTabs({
         );
       } else {
         toast.error(
-          (employeeId ? "Update" : "Registration") +
-            " failed: " +
-            error.message
+          (employeeId ? "Update" : "Registration") + " failed: " + error.message
         );
       }
     } finally {
@@ -687,10 +743,26 @@ export default function EmployeeFormTabs({
           <h1 className="text-2xl font-bold text-center mb-6">{formTitle}</h1>
           {/* Tabs */}
           <div className="flex flex-wrap border-b border-gray-200 dark:border-gray-700">
-            <TabButton label="Employee Details" isActive={activeTab === 0} onClick={() => setActiveTab(0)} />
-            <TabButton label="Qualifications & Experience" isActive={activeTab === 1} onClick={() => setActiveTab(1)} />
-            <TabButton label="Personal Details" isActive={activeTab === 2} onClick={() => setActiveTab(2)} />
-            <TabButton label="Additional Info" isActive={activeTab === 3} onClick={() => setActiveTab(3)} />
+            <TabButton
+              label="Employee Details"
+              isActive={activeTab === 0}
+              onClick={() => setActiveTab(0)}
+            />
+            <TabButton
+              label="Qualifications & Experience"
+              isActive={activeTab === 1}
+              onClick={() => setActiveTab(1)}
+            />
+            <TabButton
+              label="Personal Details"
+              isActive={activeTab === 2}
+              onClick={() => setActiveTab(2)}
+            />
+            <TabButton
+              label="Additional Info"
+              isActive={activeTab === 3}
+              onClick={() => setActiveTab(3)}
+            />
           </div>
           <div className="mt-4">
             <AnimatePresence mode="wait">
@@ -702,7 +774,10 @@ export default function EmployeeFormTabs({
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                 >
-                  <Step1EmployeeDetails onSubmitStep={onSubmitStep} submitting={submitting} />
+                  <Step1EmployeeDetails
+                    onSubmitStep={onSubmitStep}
+                    submitting={submitting}
+                  />
                 </motion.div>
               )}
               {activeTab === 1 && (
@@ -750,7 +825,10 @@ export default function EmployeeFormTabs({
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                 >
-                  <Step4AdditionalInfo onSubmitStep={onSubmitStep} submitting={submitting} />
+                  <Step4AdditionalInfo
+                    onSubmitStep={onSubmitStep}
+                    submitting={submitting}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>

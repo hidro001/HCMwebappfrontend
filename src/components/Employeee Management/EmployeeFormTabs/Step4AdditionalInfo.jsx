@@ -339,7 +339,7 @@ export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
         <button
           type="submit"
           disabled={submitting}
-          className="px-6 py-3 bg-blue-600 text-white rounded"
+          className="px-4 py-2 bg-blue-600 text-white rounded"
         >
           {submitting ? "Saving..." : "Save"}
         </button>

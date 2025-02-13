@@ -405,6 +405,9 @@ export default function Step2QualificationsExperience({
                     appendQualification({
                       qualificationName: "",
                       universityBoard: "",
+                      certifications: "",
+                      specialization: "",
+
                       totalMarks: "",
                       passingYear: "",
                       percentageCgpa: "",
@@ -464,12 +467,12 @@ export default function Step2QualificationsExperience({
             />
             <FormField
               label="Grade / Band / Level"
-              name={`grade_Band_Level.${index}.grade_Band_Level`}
+              name={`experiences.${index}.grade_Band_Level`}
               placeholder="Enter Grade/Band/Level"
             />
             <FormField
               label="Positions in the Company"
-              name={`previous_Positions.${index}.previous_Positions`}
+              name={`experiences.${index}.previous_Positions`}
               placeholder="Enter details"
             />
             <FormField
@@ -502,6 +505,8 @@ export default function Step2QualificationsExperience({
                       companyName: "",
                       designation: "",
                       totalExperience: "",
+                      grade_Band_Level: "",
+                      previous_Positions: "",
                       startDate: "",
                       endDate: "",
                     })

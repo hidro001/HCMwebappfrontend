@@ -388,8 +388,15 @@ export default function Step3PersonalDetails({ onSubmitStep, submitting, documen
       )}
       <div className="flex items-center space-x-3 mt-6">
         <button type="button" className="px-4 py-2 bg-gray-200 rounded">Cancel</button>
-        <button type="submit" disabled={submitting} className="px-4 py-2 bg-blue-600 text-white rounded">
+        {/* <button type="submit" disabled={submitting} className="px-4 py-2 bg-blue-600 text-white rounded">
           {submitting ? "Saving..." : "Save"}
+        </button> */}
+                <button
+          type="submit"
+          disabled={submitting}
+          className="px-4 py-2 bg-blue-600 text-white rounded"
+        >
+          {submitting ? "Submitting..." : "Next"}
         </button>
       </div>
     </form>
