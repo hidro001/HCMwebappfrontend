@@ -342,7 +342,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
         <FormField
           label="Base Salary at Joining"
-          name="Base Salary at Joining"
+          name="Base_Salary_at_Joining"
           placeholder="Base Salary at Joining"
           type="number"
           registerOptions={{
@@ -352,7 +352,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
         <FormField
           label="Current Base Salary"
-          name="Current Base Salary"
+          name="Current_Base_Salary"
           placeholder="Current Base Salary"
           type="number"
           registerOptions={{
