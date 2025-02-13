@@ -32,7 +32,7 @@ export default function PayrollDetailModal({ isOpen, onClose, payrollData }) {
           <h1 className="text-xl md:text-2xl font-bold">
             Payroll Of {payrollData.employeeName} ({payrollData.employeeId})
           </h1>
-          <div className="mt-2 flex justify-end space-x-3">
+          {/* <div className="mt-2 flex justify-end space-x-3">
             <button
               className="px-4 py-2 text-blue-600 border border-blue-600 rounded hover:bg-blue-100 dark:hover:bg-gray-700"
               onClick={onClose}
@@ -45,7 +45,7 @@ export default function PayrollDetailModal({ isOpen, onClose, payrollData }) {
             >
               Edit
             </button>
-          </div>
+          </div> */}
         </div>
 
         {/* Scrollable Content */}
