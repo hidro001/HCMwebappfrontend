@@ -140,30 +140,7 @@ export default function Main() {
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 min-h-screen text-gray-800 dark:text-gray-100 flex flex-col">
-      {/* Top Info Banner */}
-      <div
-        className="
-          bg-green-100 border border-green-200
-          text-green-700 p-4 text-sm md:text-base
-          flex flex-col md:flex-row items-center justify-between
-          dark:bg-green-900 dark:border-green-800 dark:text-green-100
-        "
-      >
-        <p>
-          Stay on top of your department's progress with Department Statistics!
-          Gain insights into department-wise tasks, track delayed and assigned
-          tasks, and highlight important dates on the calendar. Keep your team
-          organized, efficient, and always a step ahead!
-        </p>
-        <div className="mt-2 md:mt-0 flex items-center gap-4">
-          <a href="#" className="underline text-green-800 dark:text-green-200">
-            Hide Help
-          </a>
-          <a href="#" className="underline text-blue-600 dark:text-blue-300">
-            Task
-          </a>
-        </div>
-      </div>
+     
 
       {/* Main Content Container */}
       <div className="p-4 max-w-7xl mx-auto w-full flex-grow">

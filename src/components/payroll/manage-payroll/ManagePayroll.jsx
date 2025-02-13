@@ -202,31 +202,7 @@ export default function ManagePayroll() {
   return (
     <div className="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col">
       {/* Top Banner */}
-      <div
-        className="
-          bg-green-100
-          border
-          border-green-200
-          text-green-700
-          p-4
-          text-sm md:text-base
-          flex flex-col md:flex-row
-          items-center justify-between
-          dark:bg-green-900
-          dark:border-green-800
-          dark:text-green-100
-        "
-      >
-        <p>Stay on top of your department's progress with Department Statistics!</p>
-        <div className="mt-2 md:mt-0 flex items-center gap-4">
-          <a href="#" className="text-green-800 underline dark:text-green-200">
-            Hide Help
-          </a>
-          <a href="#" className="text-blue-600 underline dark:text-blue-300">
-            Task
-          </a>
-        </div>
-      </div>
+    
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4">

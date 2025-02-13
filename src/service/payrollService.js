@@ -110,4 +110,15 @@ export async function getDepartment() {
     throw new Error('Failed to delete the request.');
   }
 }
+export async function getPayrollCount() {
+  try {
+    const response = await axiosInstance.get(
+      `/superadmin/departments`
+    );
+    return response.data?.data || [];
+  } catch (error) {
+    console.error('Error deleting request:', error);
+    throw new Error('Failed to delete the request.');
+  }
+}
 
