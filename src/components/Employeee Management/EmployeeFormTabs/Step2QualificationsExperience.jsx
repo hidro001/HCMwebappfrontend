@@ -1,7 +1,8 @@
-import  { useEffect } from "react";
+import { useEffect } from "react";
 import { useAnimate } from "framer-motion";
 import { useFormContext, useFieldArray } from "react-hook-form";
 import FormField from "../common/FormField";
+import FormMultiSelect from "../common/FormMultiSelect";
 // import { lettersOnlyRegex } from "../../utils/regex"; // or define inline
 const lettersOnlyRegex = /^[A-Za-z\s]+$/;
 export default function Step2QualificationsExperience({
@@ -29,7 +30,15 @@ export default function Step2QualificationsExperience({
   }, [animate]);
 
   return (
-    <form ref={scope} onSubmit={handleSubmit(onSubmitStep)}>
+    <form
+      ref={scope}
+      onSubmit={handleSubmit(onSubmitStep)}
+      className=" mx-auto p-8 bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-colors duration-300"
+    >
+      <h2 className="text-3xl font-bold mb-6 border-b border-gray-300 dark:border-gray-700 pb-4">
+        Qualifications & Experience
+      </h2>
+
       <h2 className="text-xl font-semibold mb-4">Qualifications</h2>
       {qualificationFields.map((item, index) => (
         <div
@@ -46,6 +55,16 @@ export default function Step2QualificationsExperience({
               label="University/Board"
               name={`qualifications.${index}.universityBoard`}
               placeholder="Enter University/Board"
+            />
+            <FormField
+              label="Certifications & Licenses"
+              name={`certifications.${index}.certifications`}
+              placeholder="e.g., PMP, CCNA, Six Sigma"
+            />
+            <FormField
+              label="Specialization"
+              name={`specialization.${index}.specialization`}
+              placeholder="e.g., Computer Science, Accounting"
             />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -112,6 +131,58 @@ export default function Step2QualificationsExperience({
         </div>
       ))}
 
+      <div className=" border rounded-md p-4 mb-6 dark:border-gray-700">
+        <h2 className="text-xl font-semibold mb-4">Additional info</h2>
+        <FormMultiSelect
+          label="Languages Known"
+          name="languages_Known"
+          options={[
+            { value: "English", label: "English" },
+            { value: "Spanish", label: "Spanish" },
+            { value: "French", label: "French" },
+            { value: "German", label: "German" },
+            { value: "Chinese", label: "Chinese" },
+            { value: "Hindi", label: "Hindi" },
+            { value: "Arabic", label: "Arabic" },
+            { value: "Portuguese", label: "Portuguese" },
+            { value: "Bengali", label: "Bengali" },
+            { value: "Russian", label: "Russian" },
+            { value: "Japanese", label: "Japanese" },
+            { value: "Punjabi", label: "Punjabi" },
+            { value: "Italian", label: "Italian" },
+            { value: "Korean", label: "Korean" },
+            { value: "Turkish", label: "Turkish" },
+            { value: "Dutch", label: "Dutch" },
+            { value: "Swedish", label: "Swedish" },
+            { value: "Greek", label: "Greek" },
+            { value: "Hebrew", label: "Hebrew" },
+            { value: "Thai", label: "Thai" },
+            { value: "Polish", label: "Polish" },
+            { value: "Vietnamese", label: "Vietnamese" },
+            { value: "Persian", label: "Persian" },
+            { value: "Romanian", label: "Romanian" },
+            { value: "Czech", label: "Czech" },
+            { value: "Hungarian", label: "Hungarian" },
+            { value: "Finnish", label: "Finnish" },
+            { value: "Danish", label: "Danish" },
+            { value: "Norwegian", label: "Norwegian" },
+            { value: "Malay", label: "Malay" },
+            { value: "Indonesian", label: "Indonesian" },
+            { value: "Ukrainian", label: "Ukrainian" },
+            { value: "Tagalog", label: "Tagalog" },
+            { value: "Tamil", label: "Tamil" },
+            { value: "Telugu", label: "Telugu" },
+            { value: "Marathi", label: "Marathi" },
+            { value: "Urdu", label: "Urdu" },
+            { value: "Gujarati", label: "Gujarati" },
+            { value: "Burmese", label: "Burmese" },
+            { value: "Swahili", label: "Swahili" },
+            { value: "Afrikaans", label: "Afrikaans" },
+          ]}
+          requiredMessage="Please select at least one language"
+        />
+      </div>
+
       <h2 className="text-xl font-semibold mb-4">Experience</h2>
       {experienceFields.map((item, index) => (
         <div
@@ -146,6 +217,17 @@ export default function Step2QualificationsExperience({
                 min: { value: 0, message: "Cannot be negative" },
               }}
             />
+            <FormField
+              label="Grade / Band / Level"
+              name={`grade_Band_Level.${index}.grade_Band_Level`}
+              placeholder="Enter Grade/Band/Level"
+            />
+            <FormField
+              label=" Positions in the Company"
+              name={`previous_Positions.${index}.previous_Positions`}
+              placeholder="Enter details (promotions, transfers, etc.)"
+            />
+
             <FormField
               label="Start Date"
               name={`experiences.${index}.startDate`}

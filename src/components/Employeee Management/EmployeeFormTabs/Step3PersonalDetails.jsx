@@ -1,8 +1,10 @@
-import  { useEffect } from "react";
+import { useEffect } from "react";
 import { useAnimate } from "framer-motion";
 import { useFormContext } from "react-hook-form";
 import FormField from "../common/FormField";
 import DocumentUploader from "../common/DocumentUploader";
+import FormSelect from "../common/FormSelect";
+import FormTextArea from "../common/FormTextArea";
 
 const lettersOnlyRegex = /^[A-Za-z\s]+$/;
 
@@ -28,8 +30,14 @@ export default function Step3PersonalDetails({
   }, [animate]);
 
   return (
-    <form ref={scope} onSubmit={handleSubmit(onSubmitStep)}>
-      {/* PAN / Aadhaar */}
+    <form
+      ref={scope}
+      onSubmit={handleSubmit(onSubmitStep)}
+      className=" mx-auto p-8 bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-colors duration-300"
+    >
+        <h2 className="text-3xl font-bold mb-6 border-b border-gray-300 dark:border-gray-700 pb-4">
+       Personal Details
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <FormField
           label="PAN Number"
@@ -55,9 +63,67 @@ export default function Step3PersonalDetails({
             },
           }}
         />
+
+        <FormField
+          label="PF Details"
+          name="pf_Details"
+          placeholder="Enter PF details"
+        />
+
+        <FormField
+          label="ESI Details"
+          name="esi_Details"
+          placeholder="Enter ESI details (if applicable)"
+        />
+
+        <FormField
+          label="Passport Number"
+          name="passport_Number"
+          placeholder="Enter Passport Number"
+        />
+
+        <FormField
+          label="LinkedIn Profile URL"
+          name="linkedin_Profile_URL"
+          placeholder="https://linkedin.com/in/yourprofile"
+          type="url"
+        />
+        <FormField
+          label="GitHub/Portfolio URL"
+          name="github_Portfolio_URL"
+          placeholder="https://github.com/yourprofile or portfolio URL"
+          type="url"
+        />
+        <FormSelect
+          label="Disability Status"
+          name="disability_Status"
+          options={[
+            { value: "", label: "Select" },
+            { value: "Yes", label: "Yes" },
+            { value: "No", label: "No" },
+            { value: "Prefer not to say", label: "Prefer not to say" },
+          ]}
+        />
+        <FormSelect
+          label="Marital Status"
+          name="marital_Status"
+          options={[
+            { value: "", label: "Select Marital Status" },
+            { value: "Single", label: "Single" },
+            { value: "Married", label: "Married" },
+            { value: "Divorced", label: "Divorced" },
+          ]}
+          registerOptions={{ required: "Marital Status is required" }}
+        />
+
+        <FormField
+          label="Nationality"
+          name="nationality"
+          placeholder="Enter Nationality"
+          registerOptions={{ required: "Nationality is required" }}
+        />
       </div>
 
-      {/* Bank Details */}
       <h2 className="text-xl font-semibold mt-8 mb-4">Bank Details</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <FormField
@@ -122,9 +188,45 @@ export default function Step3PersonalDetails({
             },
           }}
         />
+      </div>
+      <h2 className="text-xl font-semibold mt-8 mb-4">Emergency Contact</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <FormField
+          label="Emergency Contact Number"
+          name="emergency_Contact_Number"
+          placeholder="Enter Phone Number"
+          registerOptions={{
+            required: "Emergency contact number is required",
+            pattern: {
+              value: /^\d{10}$/,
+              message: "Must be exactly 10 digits",
+            },
+          }}
+        />
 
-        {/* Documents */}
-        {/* We can put the entire doc section in a separate row if we want */}
+        <FormField
+          label="Emergency Contact Person"
+          name="emergency_Contact_Person"
+          placeholder="Enter Name"
+          registerOptions={{ required: "Emergency Contact Person is required" }}
+        />
+
+        <FormSelect
+          label="Emergency Contact Blood Group"
+          name="emergency_Contact_Blood_Group"
+          options={[
+            { value: "", label: "Select Blood Group" },
+            { value: "A+", label: "A+" },
+            { value: "A-", label: "A-" },
+            { value: "B+", label: "B+" },
+            { value: "B-", label: "B-" },
+            { value: "AB+", label: "AB+" },
+            { value: "AB-", label: "AB-" },
+            { value: "O+", label: "O+" },
+            { value: "O-", label: "O-" },
+          ]}
+          registerOptions={{ required: "Blood Group is required" }}
+        />
       </div>
 
       <label className="block font-medium mt-6 mb-1">
@@ -156,7 +258,6 @@ export default function Step3PersonalDetails({
         </button>
       )}
 
-      {/* Action Buttons */}
       <div className="flex items-center space-x-3 mt-6">
         <button
           type="button"

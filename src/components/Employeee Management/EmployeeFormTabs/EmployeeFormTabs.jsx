@@ -1,16 +1,10 @@
-
-
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm, FormProvider, useFieldArray } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 
 import useEmployeeStore from "../../../store/useEmployeeStore.js";
-import {
-  createEmployee,
-  updateEmployee, 
-} from "../../../service/employeeService.js";
-
+import { createEmployee, updateEmployee } from "../../../service/employeeService.js";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import TabButton from "../common/TabButton";
 import FullScreenLoader from "../../common/FullScreenLoader.jsx";
@@ -18,6 +12,7 @@ import FullScreenLoader from "../../common/FullScreenLoader.jsx";
 import Step1EmployeeDetails from "./Step1EmployeeDetails";
 import Step2QualificationsExperience from "./Step2QualificationsExperience";
 import Step3PersonalDetails from "./Step3PersonalDetails";
+import Step4AdditionalInfo from "./Step4AdditionalInfo"; // New tab component
 
 const lettersOnlyRegex = /^[A-Za-z\s]+$/;
 
@@ -25,7 +20,7 @@ export default function EmployeeFormTabs({
   formTitle = "Employee Form",
   defaultValues = {},
   onComplete = () => {},
-  employeeId, // (IMPORTANT) Receive employeeId as a prop for update
+  employeeId,
 }) {
   const {
     loadShiftTimings,
@@ -35,7 +30,6 @@ export default function EmployeeFormTabs({
     loadPermissionRoles,
     loadCompanyAddresses,
     loadDesignations,
-
     loadingShiftTimings,
     loadingEmploymentTypes,
     loadingDepartments,
@@ -47,7 +41,7 @@ export default function EmployeeFormTabs({
 
   const [activeTab, setActiveTab] = useState(0);
   const [confirmationOpen, setConfirmationOpen] = useState(false);
-  const [submitting, setSubmitting] = useState(false); // For showing loader
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     loadShiftTimings();
@@ -57,10 +51,8 @@ export default function EmployeeFormTabs({
     loadPermissionRoles();
     loadCompanyAddresses();
     loadDesignations();
-    // eslint-disable-next-line
   }, []);
 
-  // React Hook Form setup
   const methods = useForm({
     mode: "onBlur",
     defaultValues: {
@@ -92,6 +84,8 @@ export default function EmployeeFormTabs({
         {
           qualificationName: "",
           universityBoard: "",
+          specialization: "",
+          certifications: "",
           totalMarks: "",
           passingYear: "",
           percentageCgpa: "",
@@ -101,6 +95,8 @@ export default function EmployeeFormTabs({
         {
           companyName: "",
           designation: "",
+          grade_Band_Level: "",
+          previous_Positions: "",
           totalExperience: "",
           startDate: "",
           endDate: "",
@@ -114,13 +110,44 @@ export default function EmployeeFormTabs({
       confirmBankAccountNo: "",
       ifsc_Code: "",
       documents: [{ name: "", file: null }],
-      ...defaultValues, // Merge in any existing employee data for update
+      // Extra fields – Additional Info
+      marital_Status: "",
+      nationality: "",
+      passport_Number: "",
+      residential_Address: "",
+      emergency_Contact_Person: "",
+      emergency_Contact_Number: "",
+      emergency_Contact_Blood_Group: "",
+      languages_Known: [],
+      grade_Band_Level: "",
+      current_Base_Salary: "",
+      pf_Details: "",
+      esi_Details: "",
+      gratuity_Details: "",
+      medical_Insurance: "",
+      other_Benefits: "",
+      overtime_allowed: "",
+      background_Verification_Status: "",
+      police_Verification: "",
+      legal_Certifications: "",
+      org_Specific_IDs: "",
+      work_Arrangement: "",
+      date_of_Resignation: "",
+      reason_for_Leaving: "",
+      notice_Period_Served: "",
+      exit_Interview_Feedback: "",
+      full_Final_Settlement: "",
+      relieving_Certificate_Date: "",
+      // New networking/sensitivity fields:
+      linkedin_Profile_URL: "",
+      github_Portfolio_URL: "",
+      disability_Status: "",
+      ...defaultValues,
     },
   });
 
   const { handleSubmit, getValues, control, reset } = methods;
 
-  // Setup FieldArrays
   const {
     fields: qualificationFields,
     append: appendQualification,
@@ -139,25 +166,21 @@ export default function EmployeeFormTabs({
     remove: removeDocument,
   } = useFieldArray({ control, name: "documents" });
 
-  // Step to next tab or confirm final
   const onSubmitStep = () => {
-    if (activeTab < 2) {
+    if (activeTab < 3) {
       setActiveTab((prev) => prev + 1);
     } else {
       setConfirmationOpen(true);
     }
   };
 
-  // (IMPORTANT) The final submit logic: decide create vs. update
   const handleConfirmSubmit = async () => {
     setConfirmationOpen(false);
-    setSubmitting(true); // Show loading overlay
+    setSubmitting(true);
 
     try {
       const formValues = getValues();
       const formData = new FormData();
-
-      // Omit certain keys from direct appending
       const omitKeys = [
         "permission",
         "assigned_to",
@@ -168,7 +191,6 @@ export default function EmployeeFormTabs({
         "user_Avatar",
       ];
 
-      // Append normal fields
       Object.keys(formValues).forEach((key) => {
         if (!omitKeys.includes(key)) {
           const val = formValues[key];
@@ -178,7 +200,6 @@ export default function EmployeeFormTabs({
         }
       });
 
-      // Arrays & Files
       formValues.permission.forEach((perm, i) =>
         formData.append(`permission[${i}]`, perm)
       );
@@ -236,17 +257,13 @@ export default function EmployeeFormTabs({
         );
       });
 
-      // Actual API call:
       let response;
       if (employeeId) {
-        // (IMPORTANT) call updateEmployee if we have an employeeId
         response = await updateEmployee(employeeId, formData);
       } else {
-        // otherwise, create a new employee
         response = await createEmployee(formData);
       }
 
-      // Check response
       if (response.success) {
         toast.success(
           employeeId
@@ -254,8 +271,6 @@ export default function EmployeeFormTabs({
             : "Employee created successfully!"
         );
         onComplete(response);
-
-        // Optionally reset the form ONLY on success
         reset();
       } else {
         toast.error(
@@ -283,7 +298,7 @@ export default function EmployeeFormTabs({
         );
       }
     } finally {
-      setSubmitting(false); // Hide loader
+      setSubmitting(false);
     }
   };
 
@@ -295,27 +310,16 @@ export default function EmployeeFormTabs({
     <FormProvider {...methods}>
       {submitting && <FullScreenLoader />}
 
-      <div className="employee-form bg-bg-primary text-text-primary py-2">
-        <div className="bg-bg-secondary rounded-md shadow p-6">
+      <div className="employee-form bg-bg-primary text-text-primary  ">
+        <div className="bg-bg-secondary rounded-md shadow p-2">
           <h1 className="text-2xl font-bold text-center mb-6">{formTitle}</h1>
 
           {/* Tabs */}
           <div className="flex flex-wrap border-b border-gray-200 dark:border-gray-700">
-            <TabButton
-              label="Employee Details"
-              isActive={activeTab === 0}
-              onClick={() => setActiveTab(0)}
-            />
-            <TabButton
-              label="Qualifications & Experience"
-              isActive={activeTab === 1}
-              onClick={() => setActiveTab(1)}
-            />
-            <TabButton
-              label="Personal Details"
-              isActive={activeTab === 2}
-              onClick={() => setActiveTab(2)}
-            />
+            <TabButton label="Employee Details" isActive={activeTab === 0} onClick={() => setActiveTab(0)} />
+            <TabButton label="Qualifications & Experience" isActive={activeTab === 1} onClick={() => setActiveTab(1)} />
+            <TabButton label="Personal Details" isActive={activeTab === 2} onClick={() => setActiveTab(2)} />
+            <TabButton label="Additional Info" isActive={activeTab === 3} onClick={() => setActiveTab(3)} />
           </div>
 
           <div className="mt-4">
@@ -328,10 +332,7 @@ export default function EmployeeFormTabs({
                   exit={{ opacity: 0, x: -20 }}
                   transition={{ duration: 0.4, ease: "easeOut" }}
                 >
-                  <Step1EmployeeDetails
-                    onSubmitStep={onSubmitStep}
-                    submitting={submitting}
-                  />
+                  <Step1EmployeeDetails onSubmitStep={onSubmitStep} submitting={submitting} />
                 </motion.div>
               )}
 
@@ -373,12 +374,23 @@ export default function EmployeeFormTabs({
                   />
                 </motion.div>
               )}
+
+              {activeTab === 3 && (
+                <motion.div
+                  key="tab-additional"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.4, ease: "easeOut" }}
+                >
+                  <Step4AdditionalInfo onSubmitStep={onSubmitStep} submitting={submitting} />
+                </motion.div>
+              )}
             </AnimatePresence>
           </div>
         </div>
       </div>
 
-      {/* Confirmation Dialog */}
       <ConfirmationDialog
         open={confirmationOpen}
         title="Are you sure?"
