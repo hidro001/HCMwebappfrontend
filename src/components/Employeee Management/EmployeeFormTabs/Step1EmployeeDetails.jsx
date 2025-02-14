@@ -81,6 +81,8 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
     }
   }, [watchOfficeLocation, addressOptions, setValue]);
 
+  const overtimeAllowed = useWatch({ name: "overtime_allowed" });
+
   const watchRole = watch("permission_role");
   useEffect(() => {
     const foundRole = permissionRoles?.find((r) => r.role_name === watchRole);
@@ -240,7 +242,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <FormField
           label="Personal Email"
           name="personal_Email_Id"
@@ -275,15 +277,24 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
             },
           }}
         />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <FormTextArea
           label="Permanent Address"
           name="permanent_Address"
           placeholder="Write Address..."
           registerOptions={{ required: "Permanent Address is required" }}
         />
+        <FormTextArea
+          label="Current Address"
+          name="current_Address"
+          placeholder="Write Address..."
+          registerOptions={{ required: "Current Address is required" }}
+        />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
         <FormField
           label="Work Email"
           name="working_Email_Id"
@@ -295,10 +306,16 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           }}
         />
         <FormField
-          label="DOJ"
+          label="Date Of Joining"
           name="date_of_Joining"
           type="date"
           registerOptions={{ required: "Date of Joining is required" }}
+        />
+        <FormField
+          label="Date Of Conformation"
+          name="date_of_Conformation"
+          type="date"
+          registerOptions={{ required: "Date of Conformation is required" }}
         />
         <FormSelect
           label="Department"
@@ -379,15 +396,33 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           ]}
           registerOptions={{ required: "OTP selection is required" }}
         />
+
         <FormSelect
           label="Overtime Allowed"
-          name="Overtime Allowed"
+          name="overtime_allowed" // Ensure the name matches your defaultValues
           options={[
-            { value: "True", label: "Yes" },
-            { value: "False", label: "No" },
+            { value: "true", label: "Yes" },
+            { value: "false", label: "No" },
           ]}
-          requiredMessage="Please select at least one"
+          registerOptions={{
+            required: "Please select at least one",
+          }}
         />
+        {/* Conditionally render the overtime hours input if overtime is allowed */}
+        {overtimeAllowed === "true" && (
+          <div>
+            <FormField
+              label="Overtime Hours Allowed"
+              name="overtime_hours"
+              placeholder="Enter number of overtime hours"
+              type="number"
+              registerOptions={{
+                required: "Please specify overtime hours",
+                min: { value: 0, message: "Cannot be negative" },
+              }}
+            />
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
@@ -424,7 +459,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
-      <div className="mt-6 flex justify-between max-w-xl">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
         <FormSelect
           label="Shift Timing"
           name="shift_Timing"
@@ -436,26 +471,35 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           registerOptions={{ required: "Shift Timing is required" }}
         />
 
-        {/* 
-          <FormSelect
-          label="Select Break Type"
-          name="select_break_type"
-          options={[
-            { value: "", label: "Select Break Type" },
-            { value: "IT Saket", label: "It Saket" },
-            { value: "HR", label: "Hr " },
-            { value: "Noida", label: "Noida BPO" },
-          ]}
-          registerOptions={{ required: "Gender is required" }}
-
-        /> */}
-
         <FormSelect
           label="Select Break Type"
           name="break_Type"
           loading={loadingBreakRecords}
           options={[{ value: "", label: "Select Break Type" }, ...breakRecords]}
           registerOptions={{ required: "Break Type is required" }}
+        />
+        <FormMultiSelect
+          label="Allowances Provided"
+          name="allowances_Provided"
+          options={[
+            { value: "hra", label: "House Rent Allowance (HRA)" },
+            { value: "da", label: "Dearness Allowance (DA)" },
+            { value: "conveyance", label: "Conveyance Allowance" },
+            { value: "medical", label: "Medical Allowance" },
+            { value: "lta", label: "Leave Travel Allowance (LTA)" },
+            { value: "special", label: "Special Allowance" },
+            { value: "performance", label: "Performance Bonus/Incentives" },
+            { value: "mobile", label: "Mobile/Internet Allowance" },
+            { value: "education", label: "Education Allowance" },
+            { value: "uniform", label: "Uniform/Clothing Allowance" },
+            { value: "travel", label: "Travel Allowance" },
+            { value: "reimbursement", label: "Internet/Phone Reimbursement" },
+            { value: "meal", label: "Meal Vouchers/Subsidies" },
+            { value: "wellness", label: "Wellness Allowance" },
+            { value: "relocation", label: "Relocation Allowance" },
+            { value: "childcare", label: "Childcare Allowance" },
+            { value: "training", label: "Education/Training Allowance" },
+          ]}
         />
       </div>
 

@@ -180,11 +180,9 @@
 //   );
 // }
 
-
-
 import React, { useEffect } from "react";
 import { useAnimate } from "framer-motion";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 import FormField from "../common/FormField";
 import FormSelect from "../common/FormSelect";
 import FormTextArea from "../common/FormTextArea";
@@ -192,6 +190,8 @@ import FormTextArea from "../common/FormTextArea";
 export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
   const [scope, animate] = useAnimate();
   const { handleSubmit } = useFormContext();
+
+  const healthBenefits = useWatch({ name: "health_benefits" });
 
   useEffect(() => {
     animate([
@@ -222,12 +222,30 @@ export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
             placeholder="Enter gratuity details"
             className="animatable-input"
           />
-          <FormTextArea
+          <FormSelect
             label="Medical Insurance / Health Benefits"
-            name="medical_Insurance"
-            placeholder="Enter medical/health benefits"
-            className="animatable-input"
+            name="health_benefits" // Ensure the name matches your defaultValues
+            options={[
+            
+              { value: "", label: "Please Select " },
+              { value: "true", label: "Yes" },
+              { value: "false", label: "No" },
+            ]}
+            registerOptions={{
+              required: "Please select at least one",
+            }}
           />
+          {healthBenefits === "true" && (
+            <div>
+              <FormTextArea
+                label="Medical Insurance / Health Benefits"
+                name="medical_Insurance"
+                placeholder="Enter medical/health benefits"
+                className="animatable-input"
+              />
+            </div>
+          )}
+
           <FormTextArea
             label="Other Company-Specific Benefits"
             name="other_Benefits"
