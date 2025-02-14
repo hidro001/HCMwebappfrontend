@@ -1,0 +1,15 @@
+<div className="dark:bg-gray-900 bg-gray-100 text-gray-900 dark:text-gray-100 p-6 min-h-screen">
+      {/* Header */}
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-semibold">Resignation Dashboard</h1>
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 dark:bg-blue-700 dark:hover:bg-blue-800"
+        >
+          Submit Resignation
+        </button>
+      </div>
+
+      {/* Include Modal */}
+      <SubmitResignationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    </div>

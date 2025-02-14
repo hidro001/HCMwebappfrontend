@@ -376,6 +376,24 @@ export const menuItems = [
         permission: "employeeReferralDashboard",
         textAnimation: { x: 10 },
       },
+      {
+        name: "Resignation Dashboard",
+        link: "/dashboard/resignation-dashboard",
+        permission: "employeeReferralDashboard",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Resignation Approval",
+        link: "/dashboard/resignation-approval",
+        permission: "employeeReferralDashboard",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "FNF Approval",
+        link: "/dashboard/fnf-approval",
+        permission: "employeeReferralDashboard",
+        textAnimation: { x: 10 },
+      },
       // {
       //   name: "Employee Referral Tracker",
       //   link: "/dashboard/my-referral-dashboard",

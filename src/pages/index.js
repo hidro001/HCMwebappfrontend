@@ -58,6 +58,10 @@ import EmployeeLeaveHistoryPage from "./leave management/EmployeeLeaveHistoryPag
 import AssignedTaskEmployeePage from "./task/AssignedTaskEmployeePage";
 import ManageLeavesPage from "./leave management/ManageLeavesPage";
 import AllLeavePage from "./leave management/AllLeavePage";
+// ResignationDashboardPage
+import ResignationDashboardPage from '../pages/recruit management/ResignationDashboardPage'
+import ResignationApprovalPage from '../pages/recruit management/ResignationApprovalPage'
+import FNFApprovalPage from '../pages/recruit management/FNFApprovalPage'
 
 
 
@@ -119,5 +123,8 @@ export {
   EmployeeLeaveHistoryPage,
   AssignedTaskEmployeePage,
   ManageLeavesPage,
-  AllLeavePage
+  AllLeavePage,
+  ResignationDashboardPage,
+  ResignationApprovalPage,
+  FNFApprovalPage
 };

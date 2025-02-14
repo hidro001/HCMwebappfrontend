@@ -57,7 +57,10 @@ import {
   EmployeeLeaveHistoryPage,
   AssignedTaskEmployeePage,
   ManageLeavesPage,
-  AllLeavePage
+  AllLeavePage,
+  ResignationDashboardPage,
+  ResignationApprovalPage,
+  FNFApprovalPage
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -222,6 +225,20 @@ const router = createBrowserRouter([
         path: "employee-fnf",
         element: <EmployeeFnfPage />,
       },
+      // asdasfsfdsdsf
+      {
+        path: "resignation-dashboard",
+        element: <ResignationDashboardPage />,
+      },
+      {
+        path: "resignation-approval",
+        element: <ResignationApprovalPage />,
+      },
+      {
+        path: "fnf-approval",
+        element: <FNFApprovalPage />,
+      },
+      // sdgdfgdfgdfhdfhdh
       {
         path: "company-info",
         element: <CompanyInfoPage />,

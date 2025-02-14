@@ -49,3 +49,51 @@ export async function fetchDepartments() {
     throw error;
   }
 }
+
+
+
+// ###############################################################
+
+
+export const getResignationHistory = async () => {
+  try {
+    const response = await axiosInstance.get(`/resignation/history/employee`, 
+    );
+    return response.data.resignations;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Error fetching resignation history."
+    );
+  }
+};
+
+
+export const submitResignation = async ({ resignationDate, lastWorkingDay, comments }) => {
+  try {
+    const response = await axiosInstance.post(
+      "/resignation/submit",
+      { resignationDate, lastWorkingDay, comments },
+     
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Error submitting resignation.");
+  }
+};
+
+
+
+
+// Withdraw resignation
+export const withdrawResignation = async () => {
+  try {
+    const response = await axiosInstance.delete(
+      "/resignation/withdraw",
+      
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Error withdrawing resignation.");
+  }
+};
+
