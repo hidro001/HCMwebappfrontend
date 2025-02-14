@@ -31,6 +31,11 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
   const designations = useEmployeeStore((state) => state.designations);
   const allEmployees = useEmployeeStore((state) => state.allEmployees);
 
+  const breakRecords = useEmployeeStore((state) => state.breakRecords);
+  const loadingBreakRecords = useEmployeeStore(
+    (state) => state.loadingBreakRecords
+  );
+
   const loadingAddresses = useEmployeeStore((state) => state.loadingAddresses);
   const loadingDepartments = useEmployeeStore(
     (state) => state.loadingDepartments
@@ -118,8 +123,12 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
   };
 
   return (
-    <form ref={scope} onSubmit={handleSubmit(onSubmitStep)}  className=" mx-auto p-8 bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-colors duration-300">
-        <h2 className="text-3xl font-bold mb-6 border-b border-gray-300 dark:border-gray-700 pb-4">
+    <form
+      ref={scope}
+      onSubmit={handleSubmit(onSubmitStep)}
+      className=" mx-auto p-8 bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-colors duration-300"
+    >
+      <h2 className="text-3xl font-bold mb-6 border-b border-gray-300 dark:border-gray-700 pb-4">
         Employee Details
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -426,7 +435,9 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           ]}
           registerOptions={{ required: "Shift Timing is required" }}
         />
-             <FormSelect
+
+        {/* 
+          <FormSelect
           label="Select Break Type"
           name="select_break_type"
           options={[
@@ -436,6 +447,15 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
             { value: "Noida", label: "Noida BPO" },
           ]}
           registerOptions={{ required: "Gender is required" }}
+
+        /> */}
+
+        <FormSelect
+          label="Select Break Type"
+          name="break_Type"
+          loading={loadingBreakRecords}
+          options={[{ value: "", label: "Select Break Type" }, ...breakRecords]}
+          registerOptions={{ required: "Break Type is required" }}
         />
       </div>
 

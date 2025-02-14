@@ -436,6 +436,7 @@ export default function EmployeeFormTabs({
     loadPermissionRoles,
     loadCompanyAddresses,
     loadDesignations,
+    loadBreakRecords, 
   } = useEmployeeStore();
 
   const [activeTab, setActiveTab] = useState(0);
@@ -450,6 +451,7 @@ export default function EmployeeFormTabs({
     loadPermissionRoles();
     loadCompanyAddresses();
     loadDesignations();
+    loadBreakRecords(); 
   }, []);
 
   const methods = useForm({
@@ -474,6 +476,7 @@ export default function EmployeeFormTabs({
       latitude: "",
       longitude: "",
       shift_Timing: "",
+      break_Type: "",
       salary: "",
       otp: "no",
       no_of_Paid_Leave: 0,
@@ -587,10 +590,29 @@ export default function EmployeeFormTabs({
         "user_Avatar",
       ];
       // Loop and remap keys if needed:
+      // Object.keys(formValues).forEach((key) => {
+      //   if (omitKeys.includes(key)) return;
+
+      //   // Remap keys:
+      //   if (key === "officeLocation") {
+      //     if (formValues[key] !== null && formValues[key] !== "") {
+      //       formData.append("office_address", formValues[key]);
+      //     }
+      //   } else if (key === "permanent_Address") {
+      //     if (formValues[key] !== null && formValues[key] !== "") {
+      //       formData.append("user_Address", formValues[key]);
+      //     }
+
+      //   } else {
+      //     if (formValues[key] !== null && formValues[key] !== "") {
+      //       formData.append(key, formValues[key]);
+      //     }
+      //   }
+      // });
+
       Object.keys(formValues).forEach((key) => {
         if (omitKeys.includes(key)) return;
-
-        // Remap keys:
+      
         if (key === "officeLocation") {
           if (formValues[key] !== null && formValues[key] !== "") {
             formData.append("office_address", formValues[key]);
@@ -599,12 +621,21 @@ export default function EmployeeFormTabs({
           if (formValues[key] !== null && formValues[key] !== "") {
             formData.append("user_Address", formValues[key]);
           }
+        } else if (key === "break_Type") {
+          // Check if break_Type is an object; if so, stringify it.
+          if (formValues[key] && typeof formValues[key] === "object") {
+            formData.append("break_Type", JSON.stringify(formValues[key]));
+          } else {
+            formData.append("break_Type", formValues[key] || "");
+          }
         } else {
           if (formValues[key] !== null && formValues[key] !== "") {
             formData.append(key, formValues[key]);
           }
         }
       });
+
+
       // Append arrays:
       formValues.permission.forEach((perm, i) =>
         formData.append(`permission[${i}]`, perm)

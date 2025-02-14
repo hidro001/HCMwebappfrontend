@@ -11,6 +11,7 @@ import {
   fetchEmployeeById,
   updateEmployee,
 } from "../service/employeeService";
+import axiosInstance from "../service/axiosInstance";
 
 const useEmployeeStore = create((set, get) => ({
   // Data States
@@ -21,8 +22,10 @@ const useEmployeeStore = create((set, get) => ({
   permissionRoles: [],
   addressOptions: [],
   designations: [],
+  breakRecords: [],
 
   // Loading States
+  loadingBreakRecords: false,
   loadingShiftTimings: false,
   loadingEmploymentTypes: false,
   loadingDepartments: false,
@@ -30,6 +33,31 @@ const useEmployeeStore = create((set, get) => ({
   loadingPermissionRoles: false,
   loadingAddresses: false,
   loadingDesignations: false,
+
+
+  loadBreakRecords: async () => {
+    try {
+      set({ loadingBreakRecords: true });
+      const response = await axiosInstance.get("/break/get");
+      if (response.data.success) {
+        // Map the break data into { label, value } format
+        const breakOptions = response.data.data.map((b) => ({
+          label: `${b.breakType} (${b.detectionType})`,
+          // value: b, // storing the full object if needed later
+          value: JSON.stringify(b), // <-- Change here to store a JSON string
+        }));
+        set({ breakRecords: breakOptions });
+      } else {
+        set({ breakRecords: [] });
+        console.error(response.data.message || "Failed to fetch break data.");
+      }
+    } catch (error) {
+      console.error("Error fetching break records:", error);
+      set({ breakRecords: [] });
+    } finally {
+      set({ loadingBreakRecords: false });
+    }
+  },
 
   // Actions
   loadShiftTimings: async () => {

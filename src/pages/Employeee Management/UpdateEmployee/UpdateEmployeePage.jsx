@@ -167,6 +167,10 @@
 //     disability_Status: employeeData.disability_Status || "",
 //   };
 // }
+
+
+
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useEmployeeStore from "../../../store/useEmployeeStore.js";
@@ -230,6 +234,7 @@ function mapEmployeeToFormDefaults(employeeData) {
     latitude: employeeData.latitude || "",
     longitude: employeeData.longitude || "",
     shift_Timing: employeeData.shift_Timing || "",
+    break_Type: employeeData.break_Type || "",
     // Notice: The frontend field permanent_Address maps to backend's user_Address
     permanent_Address: employeeData.user_Address || "",
     // And officeLocation maps to backend field office_address:
