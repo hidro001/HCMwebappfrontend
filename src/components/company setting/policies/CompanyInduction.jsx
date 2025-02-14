@@ -1,92 +1,64 @@
-
-
-// import React, { useState } from "react";
+// import React, { useState, useEffect } from "react";
 // import { motion, AnimatePresence } from "framer-motion";
 // import toast, { Toaster } from "react-hot-toast";
-// import { FiPlus, FiDownload, FiX } from "react-icons/fi";
+// import { FiPlus, FiDownload, FiTrash } from "react-icons/fi";
+// import useInductionPPTStore from "../../../store/useInductionPPTStore";
+// import InductionPPTModal from "./model/InductionPPTModal";
 
 // export default function CompanyInduction() {
-//   // Track whether modal is open
+//   // Local state for the modal form
 //   const [isModalOpen, setIsModalOpen] = useState(false);
-
-//   // Simple form states
 //   const [pptName, setPptName] = useState("");
 //   const [department, setDepartment] = useState("");
 //   const [file, setFile] = useState(null);
+//   const [coverImage, setCoverImage] = useState(null);
 
-//   // Dummy data for the PPT cards
-//   const cardData = [
-//     {
-//       id: 1,
-//       title: "Induction PPT for IT",
-//       category: "IT",
-//       image: "https://images.unsplash.com/photo-1621089667522-272aa4b5b71b?fm=jpg",
-//     },
-//     {
-//       id: 2,
-//       title: "Induction PPT for Sales",
-//       category: "Sales",
-//       image: "https://images.unsplash.com/photo-1621089667522-272aa4b5b71b?fm=jpg",
-//     },
-//     {
-//       id: 3,
-//       title: "Induction PPT for HR",
-//       category: "HR",
-//       image: "https://images.unsplash.com/photo-1621089667522-272aa4b5b71b?fm=jpg",
-//     },
-//     {
-//       id: 4,
-//       title: "Attendance & Discipline Policy",
-//       category: "Policy",
-//       image: "https://images.unsplash.com/photo-1621089667522-272aa4b5b71b?fm=jpg",
-//     },
-//     {
-//       id: 5,
-//       title: "Livekeeping Sales Process Framework",
-//       category: "Sales",
-//       image: "https://images.unsplash.com/photo-1621089667522-272aa4b5b71b?fm=jpg",
-//     },
-//     {
-//       id: 6,
-//       title: "Disciplinary Procedures Policy",
-//       category: "Policy",
-//       image: "https://images.unsplash.com/photo-1621089667522-272aa4b5b71b?fm=jpg",
-//     },
-//   ];
+//   // Use the induction PPT store
+//   const { pptList, fetchPPTs, createPPT, deletePPT } = useInductionPPTStore();
 
-//   // Handle card button click for View/Download
-//   const handleDownload = (pptTitle) => {
-//     toast.success(`Downloading ${pptTitle}...`);
-//   };
+//   useEffect(() => {
+//     fetchPPTs();
+//   }, []);
 
 //   // Submit handler for the modal form
-//   const handleSubmit = (e) => {
+//   const handleSubmit = async (e) => {
 //     e.preventDefault();
-//     // Validate or process form data here...
-//     toast.success("PPT uploaded successfully!");
-//     // Close modal & reset fields
+//     if (!pptName || !department || !file) {
+//       toast.error("Please fill in all fields");
+//       return;
+//     }
+//     const pptData = {
+//       pptName,
+//       department,
+//       pptFile: file,
+//       coverImage, // optional cover image
+//     };
+//     await createPPT(pptData);
 //     setIsModalOpen(false);
+//     // Clear form fields
 //     setPptName("");
 //     setDepartment("");
 //     setFile(null);
+//     setCoverImage(null);
+//   };
+
+//   // Delete handler: using window.confirm for now
+//   const handleDelete = async (id) => {
+//     if (window.confirm("Are you sure you want to delete this PPT?")) {
+//       await deletePPT(id);
+//     }
 //   };
 
 //   return (
 //     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
-//       {/* React Hot Toast container */}
-//       <Toaster position="top-right" />
-
 //       {/* Header row */}
 //       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
 //         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
 //           All Induction PPT&apos;s
 //         </h1>
-
-//         {/* Add Induction PPT button */}
 //         <motion.button
 //           whileHover={{ scale: 1.05 }}
-//           className="mt-4 sm:mt-0 inline-flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 
-//                      dark:hover:bg-blue-400 dark:text-gray-900 transition-all"
+//           className="mt-4 sm:mt-0 inline-flex items-center bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 dark:hover:bg-blue-400 dark:text-gray-900 transition-all"
 //           onClick={() => setIsModalOpen(true)}
 //         >
 //           <FiPlus className="mr-2" />
@@ -96,197 +68,97 @@
 
 //       {/* Grid of PPT cards */}
 //       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-//         {cardData.map((item) => (
+//         {pptList.map((item) => (
 //           <motion.div
-//             key={item.id}
+//             key={item._id}
 //             whileHover={{ scale: 1.02 }}
 //             className="bg-white dark:bg-gray-800 shadow rounded overflow-hidden"
 //           >
 //             <img
-//               src={item.image}
-//               alt={item.title}
+//               src={item.coverImage}
+//               alt={item.pptName}
 //               className="h-40 w-full object-cover"
 //             />
 //             <div className="p-4">
 //               <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-//                 {item.title}
+//                 {item.pptName}
 //               </h2>
 //               <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
-//                 {item.category}
+//                 {item.department}
 //               </p>
-//               <motion.button
-//                 whileHover={{ scale: 1.05 }}
-//                 className="inline-flex items-center bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 
-//                            dark:hover:bg-blue-400 dark:text-gray-900 transition-all"
-//                 onClick={() => handleDownload(item.title)}
-//               >
-//                 <FiDownload className="mr-2" />
-//                 View/Download PPT
-//               </motion.button>
+//               <div className="flex justify-between">
+//                 <motion.button
+//                   whileHover={{ scale: 1.05 }}
+//                   className="inline-flex items-center bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 dark:hover:bg-blue-400 dark:text-gray-900 transition-all"
+//                 >
+//                   <FiDownload className="mr-2" />
+//                   <a
+//                     href={item.fileUrl}
+//                     target="_blank"
+//                     rel="noopener noreferrer"
+//                   >
+//                     View PPT
+//                   </a>
+//                 </motion.button>
+//                 <motion.button
+//                   whileHover={{ scale: 1.05 }}
+//                   className="inline-flex items-center bg-red-500 text-white px-3 py-2 rounded hover:bg-red-600 transition-all"
+//                   onClick={() => handleDelete(item._id)}
+//                 >
+//                   <FiTrash className="mr-1" />
+//                   Delete
+//                 </motion.button>
+//               </div>
 //             </div>
 //           </motion.div>
 //         ))}
 //       </div>
 
-//       {/* Modal (uses AnimatePresence for transition) */}
-//       <AnimatePresence>
-//         {isModalOpen && (
-//           <>
-//             {/* Modal Backdrop */}
-//             <motion.div
-//               className="fixed inset-0 bg-black bg-opacity-50 z-40"
-//               initial={{ opacity: 0 }}
-//               animate={{ opacity: 1 }}
-//               exit={{ opacity: 0 }}
-//             />
-
-//             {/* Modal Content */}
-//             <motion.div
-//               className="fixed inset-0 z-50 flex items-center justify-center p-4"
-//               initial={{ opacity: 0, scale: 0.95 }}
-//               animate={{ opacity: 1, scale: 1 }}
-//               exit={{ opacity: 0, scale: 0.95 }}
-//             >
-//               <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md p-6 relative">
-//                 {/* Close Icon in top-right */}
-//                 <button
-//                   className="absolute top-4 right-4 text-gray-600 dark:text-gray-300 hover:text-gray-900"
-//                   onClick={() => setIsModalOpen(false)}
-//                 >
-//                   <FiX size={20} />
-//                 </button>
-
-//                 <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
-//                   Add Induction PPT
-//                 </h2>
-//                 <form onSubmit={handleSubmit}>
-//                   {/* PPT Name */}
-//                   <div className="mb-4">
-//                     <label
-//                       htmlFor="pptName"
-//                       className="block text-gray-700 dark:text-gray-200 mb-1"
-//                     >
-//                       Induction PPT Name
-//                     </label>
-//                     <input
-//                       id="pptName"
-//                       type="text"
-//                       className="w-full px-3 py-2 border border-gray-300 
-//                                  rounded focus:outline-none focus:border-blue-500
-//                                  dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-//                       placeholder="Enter Induction PPT Name"
-//                       value={pptName}
-//                       onChange={(e) => setPptName(e.target.value)}
-//                       required
-//                     />
-//                   </div>
-
-//                   {/* Select Department */}
-//                   <div className="mb-4">
-//                     <label
-//                       htmlFor="department"
-//                       className="block text-gray-700 dark:text-gray-200 mb-1"
-//                     >
-//                       Select Department
-//                     </label>
-//                     <select
-//                       id="department"
-//                       className="w-full px-3 py-2 border border-gray-300
-//                                  rounded focus:outline-none focus:border-blue-500 
-//                                  dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-//                       value={department}
-//                       onChange={(e) => setDepartment(e.target.value)}
-//                       required
-//                     >
-//                       <option value="">Select Option</option>
-//                       <option value="IT">IT</option>
-//                       <option value="HR">HR</option>
-//                       <option value="Sales">Sales</option>
-//                       <option value="Policy">Policy</option>
-//                     </select>
-//                   </div>
-
-//                   {/* File Upload */}
-//                   <div className="mb-4">
-//                     <label
-//                       htmlFor="pptFile"
-//                       className="block text-gray-700 dark:text-gray-200 mb-1"
-//                     >
-//                       Choose File
-//                     </label>
-//                     <input
-//                       id="pptFile"
-//                       type="file"
-//                       className="block w-full text-sm text-gray-500
-//                                  file:mr-4 file:py-2 file:px-4
-//                                  file:border-0 file:text-sm file:font-semibold
-//                                  file:bg-blue-50 file:text-blue-700
-//                                  hover:file:bg-blue-100
-//                                  dark:text-gray-200 dark:bg-gray-700 
-//                                  dark:file:bg-gray-600 dark:file:text-gray-100"
-//                       onChange={(e) => setFile(e.target.files[0])}
-//                       required
-//                     />
-//                   </div>
-
-//                   <div className="flex justify-end mt-6">
-//                     <button
-//                       type="button"
-//                       className="mr-3 px-4 py-2 border border-red-500 text-red-500 
-//                                  rounded hover:bg-red-50 dark:hover:bg-gray-700"
-//                       onClick={() => setIsModalOpen(false)}
-//                     >
-//                       Cancel
-//                     </button>
-//                     <button
-//                       type="submit"
-//                       className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600
-//                                  dark:hover:bg-blue-400 dark:text-gray-900"
-//                     >
-//                       Upload
-//                     </button>
-//                   </div>
-//                 </form>
-//               </div>
-//             </motion.div>
-//           </>
-//         )}
-//       </AnimatePresence>
+//       {/* Modal for Adding Induction PPT */}
+//       <InductionPPTModal
+//         isOpen={isModalOpen}
+//         onClose={() => setIsModalOpen(false)}
+//         pptName={pptName}
+//         setPptName={setPptName}
+//         department={department}
+//         setDepartment={setDepartment}
+//         file={file}
+//         setFile={setFile}
+//         coverImage={coverImage}
+//         setCoverImage={setCoverImage}
+//         handleSubmit={handleSubmit}
+//       />
 //     </div>
 //   );
 // }
 
-
 // CompanyInduction.js
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import toast, { Toaster } from "react-hot-toast";
-import { FiPlus, FiDownload, FiX, FiTrash } from "react-icons/fi";
+import { motion } from "framer-motion";
+import toast from "react-hot-toast";
+import { FiPlus, FiDownload, FiTrash } from "react-icons/fi";
 import useInductionPPTStore from "../../../store/useInductionPPTStore";
+import InductionPPTModal from "./model/InductionPPTModal";
+import ConfirmationDialog from "../../common/ConfirmationDialog"; // Adjust the path as needed
 
 export default function CompanyInduction() {
-  // Modal and form states
+  // Local state for the PPT modal
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pptName, setPptName] = useState("");
   const [department, setDepartment] = useState("");
   const [file, setFile] = useState(null);
-  const [coverImage, setCoverImage] = useState(null); // New: Cover image state
+  const [coverImage, setCoverImage] = useState(null);
+
+  // Local state for the delete confirmation dialog
+  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
+  const [pptToDelete, setPptToDelete] = useState(null);
 
   // Use the induction PPT store
-  const { pptList, fetchPPTs, createPPT, deletePPT, loading } = useInductionPPTStore();
-
-  // For delete confirmation
-  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
-  const [pptToDelete, setPptToDelete] = useState(null);
+  const { pptList, fetchPPTs, createPPT, deletePPT } = useInductionPPTStore();
 
   useEffect(() => {
     fetchPPTs();
   }, []);
-
-  const handleDownload = (pptTitle) => {
-    toast.success(`Downloading ${pptTitle}...`);
-    // Optionally, implement actual download logic.
-  };
 
   // Submit handler for the modal form
   const handleSubmit = async (e) => {
@@ -310,18 +182,30 @@ export default function CompanyInduction() {
     setCoverImage(null);
   };
 
-  // Delete handler: open confirmation dialog (simple window.confirm for now)
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to delete this PPT?")) {
-      await deletePPT(id);
+  // Instead of using window.confirm, we set the PPT ID to delete and open the confirmation dialog
+  const handleDelete = (id) => {
+    setPptToDelete(id);
+    setIsConfirmDialogOpen(true);
+  };
+
+  // Called when the user confirms deletion in the confirmation dialog
+  const handleConfirmDelete = async () => {
+    if (pptToDelete) {
+      await deletePPT(pptToDelete);
+      setPptToDelete(null);
+      setIsConfirmDialogOpen(false);
     }
+  };
+
+  // Called when the user cancels deletion
+  const handleCancelDelete = () => {
+    setPptToDelete(null);
+    setIsConfirmDialogOpen(false);
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
-      <Toaster position="top-right" />
-
-      {/* Header row */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
           All Induction PPT&apos;s
@@ -344,7 +228,6 @@ export default function CompanyInduction() {
             whileHover={{ scale: 1.02 }}
             className="bg-white dark:bg-gray-800 shadow rounded overflow-hidden"
           >
-            {/* Use the stored cover image */}
             <img
               src={item.coverImage}
               alt={item.pptName}
@@ -361,10 +244,15 @@ export default function CompanyInduction() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   className="inline-flex items-center bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 dark:hover:bg-blue-400 dark:text-gray-900 transition-all"
-                  onClick={() => handleDownload(item.pptName)}
                 >
                   <FiDownload className="mr-2" />
-                  View/Download PPT
+                  <a
+                    href={item.fileUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    View PPT
+                  </a>
                 </motion.button>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -381,133 +269,30 @@ export default function CompanyInduction() {
       </div>
 
       {/* Modal for Adding Induction PPT */}
-      <AnimatePresence>
-        {isModalOpen && (
-          <>
-            {/* Modal Backdrop */}
-            <motion.div
-              className="fixed inset-0 bg-black bg-opacity-50 z-40"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-            />
+      <InductionPPTModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        pptName={pptName}
+        setPptName={setPptName}
+        department={department}
+        setDepartment={setDepartment}
+        file={file}
+        setFile={setFile}
+        coverImage={coverImage}
+        setCoverImage={setCoverImage}
+        handleSubmit={handleSubmit}
+      />
 
-            {/* Modal Content */}
-            <motion.div
-              className="fixed inset-0 z-50 flex items-center justify-center p-4"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-            >
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-md p-6 relative">
-                {/* Close Icon */}
-                <button
-                  className="absolute top-4 right-4 text-gray-600 dark:text-gray-300 hover:text-gray-900"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  <FiX size={20} />
-                </button>
-                <h2 className="text-xl font-bold mb-4 text-gray-800 dark:text-white">
-                  Add Induction PPT
-                </h2>
-                <form onSubmit={handleSubmit}>
-                  {/* PPT Name */}
-                  <div className="mb-4">
-                    <label
-                      htmlFor="pptName"
-                      className="block text-gray-700 dark:text-gray-200 mb-1"
-                    >
-                      Induction PPT Name
-                    </label>
-                    <input
-                      id="pptName"
-                      type="text"
-                      className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      placeholder="Enter Induction PPT Name"
-                      value={pptName}
-                      onChange={(e) => setPptName(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  {/* Select Department */}
-                  <div className="mb-4">
-                    <label
-                      htmlFor="department"
-                      className="block text-gray-700 dark:text-gray-200 mb-1"
-                    >
-                      Select Department
-                    </label>
-                    <select
-                      id="department"
-                      className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white"
-                      value={department}
-                      onChange={(e) => setDepartment(e.target.value)}
-                      required
-                    >
-                      <option value="">Select Option</option>
-                      <option value="IT">IT</option>
-                      <option value="HR">HR</option>
-                      <option value="Sales">Sales</option>
-                      <option value="Policy">Policy</option>
-                    </select>
-                  </div>
-
-                  {/* File Upload for PPT */}
-                  <div className="mb-4">
-                    <label
-                      htmlFor="pptFile"
-                      className="block text-gray-700 dark:text-gray-200 mb-1"
-                    >
-                      Choose PPT File
-                    </label>
-                    <input
-                      id="pptFile"
-                      type="file"
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:text-gray-200 dark:bg-gray-700 dark:file:bg-gray-600 dark:file:text-gray-100"
-                      onChange={(e) => setFile(e.target.files[0])}
-                      required
-                    />
-                  </div>
-
-                  {/* File Upload for Cover Image */}
-                  <div className="mb-4">
-                    <label
-                      htmlFor="coverImage"
-                      className="block text-gray-700 dark:text-gray-200 mb-1"
-                    >
-                      Choose Cover Image (optional)
-                    </label>
-                    <input
-                      id="coverImage"
-                      type="file"
-                      accept="image/*"
-                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:text-gray-200 dark:bg-gray-700 dark:file:bg-gray-600 dark:file:text-gray-100"
-                      onChange={(e) => setCoverImage(e.target.files[0])}
-                    />
-                  </div>
-
-                  <div className="flex justify-end mt-6">
-                    <button
-                      type="button"
-                      className="mr-3 px-4 py-2 border border-red-500 text-red-500 rounded hover:bg-red-50 dark:hover:bg-gray-700"
-                      onClick={() => setIsModalOpen(false)}
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      type="submit"
-                      className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 dark:hover:bg-blue-400 dark:text-gray-900"
-                    >
-                      Upload
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+      {/* Confirmation Dialog for Deletion */}
+      <ConfirmationDialog
+        open={isConfirmDialogOpen}
+        title="Confirm Delete"
+        message="Are you sure you want to delete this PPT?"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
     </div>
   );
 }

@@ -1,5 +1,4 @@
-
-import  { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAnimate } from "framer-motion";
 import { useFormContext, useWatch } from "react-hook-form";
 import FormField from "../common/FormField";
@@ -7,7 +6,7 @@ import FormSelect from "../common/FormSelect";
 import FormTextArea from "../common/FormTextArea";
 import FormMultiSelect from "../common/FormMultiSelect";
 import useEmployeeStore from "../../../store/useEmployeeStore.js";
-import PermissionModal from "../common/PermissionModal"; // <-- new import
+import PermissionModal from "../common/PermissionModal";
 import { availablePermission } from "../../../service/availablePermissions";
 
 const FILE_SIZE_LIMIT = 5 * 1024 * 1024;
@@ -24,7 +23,6 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
     formState: { errors },
   } = useFormContext();
 
-  // Store data
   const addressOptions = useEmployeeStore((state) => state.addressOptions);
   const departments = useEmployeeStore((state) => state.departments);
   const shiftTimings = useEmployeeStore((state) => state.shiftTimings);
@@ -33,7 +31,6 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
   const designations = useEmployeeStore((state) => state.designations);
   const allEmployees = useEmployeeStore((state) => state.allEmployees);
 
-  // Loading states
   const loadingAddresses = useEmployeeStore((state) => state.loadingAddresses);
   const loadingDepartments = useEmployeeStore(
     (state) => state.loadingDepartments
@@ -54,7 +51,6 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
     (state) => state.loadingAllEmployees
   );
 
-  // Animate on mount
   useEffect(() => {
     animate([
       [".animatable-input", { opacity: 0, x: 20 }, { duration: 0 }],
@@ -66,7 +62,6 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
     ]);
   }, [animate]);
 
-  // Watch changes for office location to auto-fill lat/long
   const watchOfficeLocation = watch("officeLocation");
   useEffect(() => {
     const selected = addressOptions?.find(
@@ -81,7 +76,6 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
     }
   }, [watchOfficeLocation, addressOptions, setValue]);
 
-  // If role changes, auto-fill role’s permissions
   const watchRole = watch("permission_role");
   useEffect(() => {
     const foundRole = permissionRoles?.find((r) => r.role_name === watchRole);
@@ -93,7 +87,6 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
     }
   }, [watchRole, permissionRoles, setValue]);
 
-  // Handle profile image
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -113,24 +106,22 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
     }
   };
 
-  // ====== MODAL for Permissions ======
-  // We'll remove FormMultiSelect for "permission" and replace it with a modal approach.
   const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false);
-  const currentPermissions = useWatch({ name: "permission" }); // array from the form
+  const currentPermissions = useWatch({ name: "permission" });
 
   const openPermissionModal = () => setIsPermissionModalOpen(true);
   const closePermissionModal = () => setIsPermissionModalOpen(false);
 
   const handlePermissionSave = (selected) => {
-    // 'selected' is an array of permission strings from the modal
     setValue("permission", selected);
     setIsPermissionModalOpen(false);
   };
-  // ============================
 
   return (
-    <form ref={scope} onSubmit={handleSubmit(onSubmitStep)}>
-      {/* Profile Image + First/Last Name */}
+    <form ref={scope} onSubmit={handleSubmit(onSubmitStep)}  className=" mx-auto p-8 bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-colors duration-300">
+        <h2 className="text-3xl font-bold mb-6 border-b border-gray-300 dark:border-gray-700 pb-4">
+        Employee Details
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="flex flex-col items-center">
           <label className="block font-medium mb-2">Profile Image</label>
@@ -191,7 +182,6 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         </div>
       </div>
 
-      {/* Paid leaves / Employee Type */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <FormField
           label="No. of Paid Leaves"
@@ -215,7 +205,6 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
-      {/* Phone / Gender */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <FormField
           label="Phone"
@@ -242,7 +231,6 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
-      {/* Personal Email / DOB / Permanent Address */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
         <FormField
           label="Personal Email"
@@ -251,10 +239,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           type="email"
           registerOptions={{
             required: "Personal Email is required",
-            pattern: {
-              value: /\S+@\S+\.\S+/,
-              message: "Invalid Email",
-            },
+            pattern: { value: /\S+@\S+\.\S+/, message: "Invalid Email" },
           }}
         />
         <FormField
@@ -289,7 +274,6 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
-      {/* Work Email / DOJ / Department */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
         <FormField
           label="Work Email"
@@ -298,19 +282,14 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           type="email"
           registerOptions={{
             required: "Work Email is required",
-            pattern: {
-              value: /\S+@\S+\.\S+/,
-              message: "Invalid Work Email",
-            },
+            pattern: { value: /\S+@\S+\.\S+/, message: "Invalid Work Email" },
           }}
         />
         <FormField
           label="DOJ"
           name="date_of_Joining"
           type="date"
-          registerOptions={{
-            required: "Date of Joining is required",
-          }}
+          registerOptions={{ required: "Date of Joining is required" }}
         />
         <FormSelect
           label="Department"
@@ -321,7 +300,6 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
-      {/* Role / Manager / Designation */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
         <FormSelect
           label="Role"
@@ -336,14 +314,6 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           ]}
           registerOptions={{ required: "Role is required" }}
         />
-        {/* Manager assignment (unchanged) */}
-        {/* <FormSelect
-          label="Assign Manager"
-          name="assigned_to"
-          loading={loadingAllEmployees}
-          options={allEmployees}
-          registerOptions={{ required: "Manager is required" }}
-        /> */}
         <FormMultiSelect
           label="Assign Manager"
           name="assigned_to"
@@ -363,20 +333,27 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
-      {/* Employee ID / Salary / OTP */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
         <FormField
           label="Employee ID"
           name="employee_Id"
           placeholder="R10004"
+          registerOptions={{ required: "Employee ID is required" }}
+        />
+        <FormField
+          label="Base Salary at Joining"
+          name="Base_Salary_at_Joining"
+          placeholder="Base Salary at Joining"
+          type="number"
           registerOptions={{
-            required: "Employee ID is required",
+            required: "Salary is required",
+            min: { value: 0, message: "Salary cannot be negative" },
           }}
         />
         <FormField
-          label="Salary"
-          name="salary"
-          placeholder="Salary"
+          label="Current Base Salary"
+          name="Current_Base_Salary"
+          placeholder="Current Base Salary"
           type="number"
           registerOptions={{
             required: "Salary is required",
@@ -393,9 +370,17 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           ]}
           registerOptions={{ required: "OTP selection is required" }}
         />
+        <FormSelect
+          label="Overtime Allowed"
+          name="Overtime Allowed"
+          options={[
+            { value: "True", label: "Yes" },
+            { value: "False", label: "No" },
+          ]}
+          requiredMessage="Please select at least one"
+        />
       </div>
 
-      {/* Office Location / Latitude / Longitude */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
         <FormSelect
           label="Office Location"
@@ -430,8 +415,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
-      {/* Shift Timing */}
-      <div className="mt-6">
+      <div className="mt-6 flex justify-between max-w-xl">
         <FormSelect
           label="Shift Timing"
           name="shift_Timing"
@@ -442,17 +426,24 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           ]}
           registerOptions={{ required: "Shift Timing is required" }}
         />
+             <FormSelect
+          label="Select Break Type"
+          name="select_break_type"
+          options={[
+            { value: "", label: "Select Break Type" },
+            { value: "IT Saket", label: "It Saket" },
+            { value: "HR", label: "Hr " },
+            { value: "Noida", label: "Noida BPO" },
+          ]}
+          registerOptions={{ required: "Gender is required" }}
+        />
       </div>
 
-      {/* PERMISSIONS (MODAL version) */}
       <div className="mt-6">
         <label className="block font-medium mb-1">Permissions</label>
-
-        {/* Show current picks, if any */}
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
           Selected: {currentPermissions.join(", ") || "None"}
         </p>
-
         <button
           type="button"
           onClick={openPermissionModal}
@@ -460,18 +451,15 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         >
           Select Permissions
         </button>
-
-        {/* The actual modal */}
         <PermissionModal
           isOpen={isPermissionModalOpen}
           onClose={closePermissionModal}
-          availablePermissions={availablePermission} // your full list
-          defaultSelected={currentPermissions} // from form
+          availablePermissions={availablePermission}
+          defaultSelected={currentPermissions}
           onSave={handlePermissionSave}
         />
       </div>
 
-      {/* Navigation Buttons */}
       <div className="flex items-center space-x-3 mt-6">
         <button
           type="button"
