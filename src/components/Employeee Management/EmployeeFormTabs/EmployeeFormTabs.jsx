@@ -436,6 +436,7 @@ export default function EmployeeFormTabs({
     loadPermissionRoles,
     loadCompanyAddresses,
     loadDesignations,
+    loadBreakRecords, 
   } = useEmployeeStore();
 
   const [activeTab, setActiveTab] = useState(0);
@@ -450,6 +451,7 @@ export default function EmployeeFormTabs({
     loadPermissionRoles();
     loadCompanyAddresses();
     loadDesignations();
+    loadBreakRecords(); 
   }, []);
 
   const methods = useForm({
@@ -462,8 +464,10 @@ export default function EmployeeFormTabs({
       personal_Email_Id: "",
       dob: "",
       permanent_Address: "",
+      current_Address: "",
       working_Email_Id: "",
       date_of_Joining: "",
+      date_of_Conformation: "",
       departmentAllocated: "",
       permission_role: "",
       permission: [],
@@ -474,6 +478,7 @@ export default function EmployeeFormTabs({
       latitude: "",
       longitude: "",
       shift_Timing: "",
+      break_Type: "",
       salary: "",
       otp: "no",
       no_of_Paid_Leave: 0,
@@ -517,13 +522,16 @@ export default function EmployeeFormTabs({
       emergency_Contact_Number: "",
       emergency_Contact_Blood_Group: "",
       languages_Known: [],
+      allowances_Provided: [],
       current_Base_Salary: "",
       pf_Details: "",
       esi_Details: "",
       gratuity_Details: "",
       medical_Insurance: "",
+      health_benefits: "",
       other_Benefits: "",
       overtime_allowed: "",
+      overtime_hours: "",
       background_Verification_Status: "",
       police_Verification: "",
       legal_Certifications: "",
@@ -587,10 +595,29 @@ export default function EmployeeFormTabs({
         "user_Avatar",
       ];
       // Loop and remap keys if needed:
+      // Object.keys(formValues).forEach((key) => {
+      //   if (omitKeys.includes(key)) return;
+
+      //   // Remap keys:
+      //   if (key === "officeLocation") {
+      //     if (formValues[key] !== null && formValues[key] !== "") {
+      //       formData.append("office_address", formValues[key]);
+      //     }
+      //   } else if (key === "permanent_Address") {
+      //     if (formValues[key] !== null && formValues[key] !== "") {
+      //       formData.append("user_Address", formValues[key]);
+      //     }
+
+      //   } else {
+      //     if (formValues[key] !== null && formValues[key] !== "") {
+      //       formData.append(key, formValues[key]);
+      //     }
+      //   }
+      // });
+
       Object.keys(formValues).forEach((key) => {
         if (omitKeys.includes(key)) return;
-
-        // Remap keys:
+      
         if (key === "officeLocation") {
           if (formValues[key] !== null && formValues[key] !== "") {
             formData.append("office_address", formValues[key]);
@@ -599,12 +626,21 @@ export default function EmployeeFormTabs({
           if (formValues[key] !== null && formValues[key] !== "") {
             formData.append("user_Address", formValues[key]);
           }
+        } else if (key === "break_Type") {
+          // Check if break_Type is an object; if so, stringify it.
+          if (formValues[key] && typeof formValues[key] === "object") {
+            formData.append("break_Type", JSON.stringify(formValues[key]));
+          } else {
+            formData.append("break_Type", formValues[key] || "");
+          }
         } else {
           if (formValues[key] !== null && formValues[key] !== "") {
             formData.append(key, formValues[key]);
           }
         }
       });
+
+
       // Append arrays:
       formValues.permission.forEach((perm, i) =>
         formData.append(`permission[${i}]`, perm)

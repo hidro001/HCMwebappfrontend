@@ -425,13 +425,73 @@ export default function Step2QualificationsExperience({
         <h2 className="text-xl font-semibold mb-4">Additional info</h2>
         <div className="flex justify-between w-full">
           <div className="w-1/2 pr-4">
-            <FormMultiSelect
+            {/* <FormMultiSelect
               label="Languages Known"
               name="languages_Known"
               options={[
                 { value: "English", label: "English" },
                 { value: "Spanish", label: "Spanish" },
                 // … add more languages as needed
+              ]}
+              requiredMessage="Please select at least one language"
+            /> */}
+
+            <FormMultiSelect
+              label="Languages Known"
+              name="languages_Known"
+              options={[
+                { value: "English", label: "English" },
+                { value: "Spanish", label: "Spanish" },
+                { value: "Mandarin", label: "Mandarin" },
+                { value: "Hindi", label: "Hindi" },
+                { value: "Arabic", label: "Arabic" },
+                { value: "Portuguese", label: "Portuguese" },
+                { value: "Bengali", label: "Bengali" },
+                { value: "Russian", label: "Russian" },
+                { value: "Japanese", label: "Japanese" },
+                { value: "German", label: "German" },
+                { value: "French", label: "French" },
+                { value: "Italian", label: "Italian" },
+                { value: "Korean", label: "Korean" },
+                { value: "Vietnamese", label: "Vietnamese" },
+                { value: "Turkish", label: "Turkish" },
+                { value: "Persian", label: "Persian" },
+                { value: "Swahili", label: "Swahili" },
+                { value: "Dutch", label: "Dutch" },
+                { value: "Polish", label: "Polish" },
+                { value: "Urdu", label: "Urdu" },
+                { value: "Indonesian", label: "Indonesian" },
+                { value: "Thai", label: "Thai" },
+                { value: "Romanian", label: "Romanian" },
+                { value: "Greek", label: "Greek" },
+                { value: "Czech", label: "Czech" },
+                { value: "Hungarian", label: "Hungarian" },
+                { value: "Swedish", label: "Swedish" },
+                { value: "Norwegian", label: "Norwegian" },
+                { value: "Finnish", label: "Finnish" },
+                { value: "Danish", label: "Danish" },
+                { value: "Hebrew", label: "Hebrew" },
+                { value: "Malay", label: "Malay" },
+                { value: "Tamil", label: "Tamil" },
+                { value: "Telugu", label: "Telugu" },
+                { value: "Marathi", label: "Marathi" },
+                { value: "Gujarati", label: "Gujarati" },
+                { value: "Kannada", label: "Kannada" },
+                { value: "Malayalam", label: "Malayalam" },
+                { value: "Punjabi", label: "Punjabi" },
+                { value: "Burmese", label: "Burmese" },
+                { value: "Bulgarian", label: "Bulgarian" },
+                { value: "Slovak", label: "Slovak" },
+                { value: "Croatian", label: "Croatian" },
+                { value: "Serbian", label: "Serbian" },
+                { value: "Ukrainian", label: "Ukrainian" },
+                { value: "Lithuanian", label: "Lithuanian" },
+                { value: "Latvian", label: "Latvian" },
+                { value: "Estonian", label: "Estonian" },
+                { value: "Slovenian", label: "Slovenian" },
+                { value: "Icelandic", label: "Icelandic" },
+                { value: "Irish", label: "Irish" },
+                { value: "Scots Gaelic", label: "Scots Gaelic" },
               ]}
               requiredMessage="Please select at least one language"
             />
