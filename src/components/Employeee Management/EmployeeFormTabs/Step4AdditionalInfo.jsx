@@ -282,17 +282,7 @@ export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
             ]}
             className="animatable-input"
           />
-          <FormSelect
-            label="Work Mode"
-            name="work_Mode"
-            options={[
-              { value: "", label: "Select Work Mode" },
-              { value: "work-from-office", label: "Work From Office" },
-              { value: "work-from-home", label: "Work From Home" },
-              { value: "hybrid", label: "Hybrid" },
-            ]}
-            className="animatable-input"
-          />
+      
         </div>
         <div className="space-y-6">
           <FormTextArea

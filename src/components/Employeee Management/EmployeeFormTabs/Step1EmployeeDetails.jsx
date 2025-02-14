@@ -423,6 +423,17 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
             />
           </div>
         )}
+            <FormSelect
+                    label="Work Mode"
+                    name="work_Mode"
+                    options={[
+                      { value: "", label: "Select Work Mode" },
+                      { value: "work-from-office", label: "Work From Office" },
+                      { value: "work-from-home", label: "Work From Home" },
+                      { value: "hybrid", label: "Hybrid" },
+                    ]}
+                    className="animatable-input"
+                  />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
