@@ -496,11 +496,11 @@ export default function EmployeeFormTabs({
           designation: "",
           grade_Band_Level: "",
           previous_Positions: "",
-          totalExperience: "",
           startDate: "",
           endDate: "",
         },
       ],
+      total_Experience: "",
       pan_No: "",
       adhaar_Number: "",
       bank_Holder_Name: "",
@@ -666,10 +666,10 @@ export default function EmployeeFormTabs({
           `experiences[${index}][designation]`,
           exp.designation || ""
         );
-        formData.append(
-          `experiences[${index}][totalExperience]`,
-          exp.totalExperience || ""
-        );
+        // formData.append(
+        //   `experiences[${index}][totalExperience]`,
+        //   exp.totalExperience || ""
+        // );
         formData.append(
           `experiences[${index}][grade_Band_Level]`,
           exp.grade_Band_Level || ""
@@ -683,10 +683,6 @@ export default function EmployeeFormTabs({
           exp.startDate || ""
         );
         formData.append(`experiences[${index}][endDate]`, exp.endDate || "");
-        formData.append(
-          `experiences[${index}][totalExperience]`,
-          exp.totalExperience || ""
-        );
       });
 
       let response;

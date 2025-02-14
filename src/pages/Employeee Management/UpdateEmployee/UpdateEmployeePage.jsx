@@ -277,7 +277,6 @@ function mapEmployeeToFormDefaults(employeeData) {
           designation: exp.designation || "",
           grade_Band_Level: exp.grade_Band_Level || "",
           previous_Positions: exp.previous_Positions || "",
-          totalExperience: exp.totalExperience || "",
           startDate: exp.startDate ? exp.startDate.substring(0, 10) : "",
           endDate: exp.endDate ? exp.endDate.substring(0, 10) : "",
         }))
@@ -286,11 +285,12 @@ function mapEmployeeToFormDefaults(employeeData) {
           designation: "",
           grade_Band_Level: "",
           previous_Positions: "",
-          totalExperience: "",
+        
           startDate: "",
           endDate: "",
         }],
     // Additional fields
+    total_Experience:employeeData.total_Experience || "",
     marital_Status: employeeData.marital_Status || "",
     nationality: employeeData.nationality || "",
     passport_Number: employeeData.passport_Number || "",

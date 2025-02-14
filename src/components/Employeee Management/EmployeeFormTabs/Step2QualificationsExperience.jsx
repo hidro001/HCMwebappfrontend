@@ -423,16 +423,30 @@ export default function Step2QualificationsExperience({
       ))}
       <div className="border rounded-md p-4 mb-6">
         <h2 className="text-xl font-semibold mb-4">Additional info</h2>
-        <FormMultiSelect
-          label="Languages Known"
-          name="languages_Known"
-          options={[
-            { value: "English", label: "English" },
-            { value: "Spanish", label: "Spanish" },
-            // … add more languages as needed
-          ]}
-          requiredMessage="Please select at least one language"
-        />
+        <div className="flex justify-between w-full">
+          <div className="w-1/2 pr-4">
+            <FormMultiSelect
+              label="Languages Known"
+              name="languages_Known"
+              options={[
+                { value: "English", label: "English" },
+                { value: "Spanish", label: "Spanish" },
+                // … add more languages as needed
+              ]}
+              requiredMessage="Please select at least one language"
+            />
+          </div>
+
+          <FormField
+            label="Total Years of Experience"
+            name={"total_Experience"}
+            placeholder="e.g., 3"
+            type="number"
+            registerOptions={{
+              min: { value: 0, message: "Cannot be negative" },
+            }}
+          />
+        </div>
       </div>
       <h2 className="text-xl font-semibold mb-4">Experience</h2>
       {experienceFields.map((item, index) => (
@@ -456,15 +470,6 @@ export default function Step2QualificationsExperience({
             />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <FormField
-              label="Total Years of Experience"
-              name={`experiences.${index}.totalExperience`}
-              placeholder="e.g., 3"
-              type="number"
-              registerOptions={{
-                min: { value: 0, message: "Cannot be negative" },
-              }}
-            />
             <FormField
               label="Grade / Band / Level"
               name={`experiences.${index}.grade_Band_Level`}
@@ -504,7 +509,6 @@ export default function Step2QualificationsExperience({
                     appendExperience({
                       companyName: "",
                       designation: "",
-                      totalExperience: "",
                       grade_Band_Level: "",
                       previous_Positions: "",
                       startDate: "",
