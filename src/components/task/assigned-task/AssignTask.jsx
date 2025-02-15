@@ -328,7 +328,7 @@ const AssignTask = ({ onClose, onAddSuccess }) => {
       <BaseModal isOpen={true} onClose={onClose}>
         <motion.div
           ref={modalRef}
-          className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg shadow-lg w-full max-w-lg md:max-w-2xl overflow-hidden relative"
+          className="bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg shadow-lg w-full max-w-lg md:max-w-2xl overflow-auto relative h-3/4"
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           exit={{ scale: 0.9 }}
