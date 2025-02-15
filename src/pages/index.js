@@ -65,6 +65,12 @@ import FNFApprovalPage from '../pages/recruit management/FNFApprovalPage'
 
 
 
+// reci
+
+import AllDashletsPage from '../pages//raci management/AllDashletsPage'
+
+
+
 
 
 export {
@@ -126,5 +132,6 @@ export {
   AllLeavePage,
   ResignationDashboardPage,
   ResignationApprovalPage,
-  FNFApprovalPage
+  FNFApprovalPage,
+  AllDashletsPage
 };

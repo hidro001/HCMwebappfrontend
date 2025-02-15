@@ -473,6 +473,12 @@ export const menuItems = [
         permission: "superAdminRaci",
         textAnimation: { x: 10 },
       },
+      {
+        name: "All Dashlets",
+        link: "/dashboard/all-dashlets",
+        permission: "superAdminRaci",
+        textAnimation: { x: 10 },
+      },
     ],
   },
 

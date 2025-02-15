@@ -60,7 +60,8 @@ import {
   AllLeavePage,
   ResignationDashboardPage,
   ResignationApprovalPage,
-  FNFApprovalPage
+  FNFApprovalPage,
+  AllDashletsPage
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -334,6 +335,10 @@ const router = createBrowserRouter([
       {
         path: "all-leave-history",
         element: <AllLeavePage />,
+      },
+      {
+        path: "all-dashlets",
+        element: <AllDashletsPage />,
       },
     ],
   },
