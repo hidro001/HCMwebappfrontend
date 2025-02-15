@@ -370,30 +370,7 @@ export const menuItems = [
         permission: "HRreferralDashboard",
         textAnimation: { x: 10 },
       },
-      {
-        name: "Employee FNF",
-        link: "/dashboard/employee-fnf",
-        permission: "employeeReferralDashboard",
-        textAnimation: { x: 10 },
-      },
-      {
-        name: "Resignation Dashboard",
-        link: "/dashboard/resignation-dashboard",
-        permission: "employeeReferralDashboard",
-        textAnimation: { x: 10 },
-      },
-      {
-        name: "Resignation Approval",
-        link: "/dashboard/resignation-approval",
-        permission: "employeeReferralDashboard",
-        textAnimation: { x: 10 },
-      },
-      {
-        name: "FNF Approval",
-        link: "/dashboard/fnf-approval",
-        permission: "employeeReferralDashboard",
-        textAnimation: { x: 10 },
-      },
+ 
       // {
       //   name: "Employee Referral Tracker",
       //   link: "/dashboard/my-referral-dashboard",
@@ -581,6 +558,46 @@ export const menuItems = [
     ],
   },
 
+  {
+    name: "Resignation & FNF Dashboard",
+    icon: <LuFileCheck2 />,
+    color: "text-green-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Resignation Dashboard",
+        link: "/dashboard/employee-resignation-history",
+        permission: "viewAllResignation",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Submit Resignation",
+        link: "/dashboard/submit-resignation",
+        permission: "employeeResignationDashboard",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Resignation Approvals",
+        link: "/dashboard/manage-resignation",
+        permission: "hrResignationDashboard",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "HR FNF Approvals",
+        link: "/dashboard/fnf-request-hr",
+        permission: "FNFAprroval",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "All Resignation History",
+        link: "/dashboard/resignationhistory",
+        permission: "viewAllResignation",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
+
 
   // {
   //   name: "Review Performance",
@@ -717,45 +734,7 @@ export const menuItems = [
   //     },
   //   ],
   // },
-  // {
-  //   name: "Resignation & FNF Dashboard",
-  //   icon: <LuFileCheck2 />,
-  //   color: "text-green-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Submit Resignation",
-  //       link: "/dashboard/ResignationForm",
-  //       permission: "submitResignation",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Resignation Dashboard",
-  //       link: "/dashboard/resignation-dashboard",
-  //       permission: "employeeResignationDashboard",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Resignation Approvals",
-  //       link: "/dashboard/manage-resignation",
-  //       permission: "hrResignationDashboard",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "HR FNF Approvals",
-  //       link: "/dashboard/fnf-request-hr",
-  //       permission: "FNFAprroval",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "All Resignation History",
-  //       link: "/dashboard/resignationhistory",
-  //       permission: "viewAllResignation",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+ 
   // {
   //   name: "Chats",
   //   icon: <ChatBubble />,

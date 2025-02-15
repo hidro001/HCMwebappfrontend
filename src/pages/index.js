@@ -25,7 +25,7 @@ import AllVacanciesPage from "./recruit management/AllVacanciesPage";
 import CreateVacancyPage from "./recruit management/CreateVacancyPage";
 import ReferralListPage from "./recruit management/ReferralListPage";
 import VacanciesListPage from "./recruit management/VacanciesListPage";
-import EmployeeFnfPage from "./recruit management/EmployeeFnfPage";
+import EmployeeResignationHistoryPage from "./resignation management/EmployeeResignationHistoryPage";
 import CompanyInfoPage from "./company setting/CompanyInfoPage";
 import CompanySettingPage from "./company setting/CompanySettingPage";
 
@@ -59,9 +59,8 @@ import AssignedTaskEmployeePage from "./task/AssignedTaskEmployeePage";
 import ManageLeavesPage from "./leave management/ManageLeavesPage";
 import AllLeavePage from "./leave management/AllLeavePage";
 // ResignationDashboardPage
-import ResignationDashboardPage from '../pages/recruit management/ResignationDashboardPage'
-import ResignationApprovalPage from '../pages/recruit management/ResignationApprovalPage'
-import FNFApprovalPage from '../pages/recruit management/FNFApprovalPage'
+import SubmitResignationPage from './resignation management/SubmitResignationPage'
+
 
 
 
@@ -98,7 +97,7 @@ export {
   CreateVacancyPage,
   ReferralListPage,
   VacanciesListPage,
-  EmployeeFnfPage,
+  EmployeeResignationHistoryPage,
   CompanyInfoPage,
   AssignedTaskPage,
   ViewDailyTaskPage,
@@ -124,7 +123,5 @@ export {
   AssignedTaskEmployeePage,
   ManageLeavesPage,
   AllLeavePage,
-  ResignationDashboardPage,
-  ResignationApprovalPage,
-  FNFApprovalPage
+  SubmitResignationPage,
 };

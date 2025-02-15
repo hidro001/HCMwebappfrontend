@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
-import { getResignationHistory, withdrawResignation } from "../../../service/recruitService";
+import {
+  getResignationHistory,
+  withdrawResignation,
+} from "../../service/recruitService";
 import { toast } from "react-toastify";
-import SubmitResignationModal from "./SubmitResignationModal";
+import SubmitResignationModal from "./model/SubmitResignationModal";
 
-export default function ResignationDashboard() {
+export default function SubmitResignation() {
   const [resignations, setResignations] = useState([]);
   const [latestResignation, setLatestResignation] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -44,10 +47,9 @@ export default function ResignationDashboard() {
     }
   };
 
-
-  const handleRequestFNF=()=>{
-    alert("hello")
-  }
+  const handleRequestFNF = () => {
+    alert("hello");
+  };
 
   // Refresh resignation list after submission
   const handleResignationSubmit = async () => {
@@ -99,7 +101,8 @@ export default function ResignationDashboard() {
             <ul className="text-sm text-gray-600 dark:text-gray-400">
               {latestResignation.approvers.map((approver, index) => (
                 <li key={index}>
-                  {approver.manager.first_Name} {approver.manager.last_Name} ({approver.manager.employee_Id})
+                  {approver.manager.first_Name} {approver.manager.last_Name} (
+                  {approver.manager.employee_Id})
                 </li>
               ))}
             </ul>
@@ -118,8 +121,7 @@ export default function ResignationDashboard() {
           <p>No recent resignations found.</p>
         )}
 
-
-<div className="border border-green-500 p-5 rounded-lg bg-white dark:bg-gray-800 shadow">
+        <div className="border border-green-500 p-5 rounded-lg bg-white dark:bg-gray-800 shadow">
           <h2 className="text-xl font-bold text-blue-600 dark:text-blue-400">
             FNF Details
           </h2>
@@ -132,7 +134,10 @@ export default function ResignationDashboard() {
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
             FNF has been requested. Awaiting approval.
           </p>
-          <button onClick={(()=>handleRequestFNF())} className="mt-4 px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-800">
+          <button
+            onClick={() => handleRequestFNF()}
+            className="mt-4 px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-800"
+          >
             Request FNF
           </button>
         </div>
@@ -146,43 +151,53 @@ export default function ResignationDashboard() {
             <thead>
               <tr className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                 <th className="p-2 border dark:border-gray-600">S.L</th>
-                <th className="p-2 border dark:border-gray-600">Employee Name</th>
+                <th className="p-2 border dark:border-gray-600">
+                  Employee Name
+                </th>
                 <th className="p-2 border dark:border-gray-600">Employee ID</th>
-                <th className="p-2 border dark:border-gray-600">Resignation Date</th>
-                <th className="p-2 border dark:border-gray-600">Last Working Day</th>
+                <th className="p-2 border dark:border-gray-600">
+                  Resignation Date
+                </th>
+                <th className="p-2 border dark:border-gray-600">
+                  Last Working Day
+                </th>
+                <th className="p-2 border dark:border-gray-600">Comments</th>
                 <th className="p-2 border dark:border-gray-600">Status</th>
-                <th className="p-2 border dark:border-gray-600">Actions</th>
               </tr>
             </thead>
             <tbody>
               {resignations.length > 0 ? (
                 resignations.map((row, index) => (
                   <tr key={row._id} className="border dark:border-gray-600">
-                    <td className="p-2 border dark:border-gray-600">{index + 1}</td>
+                    <td className="p-2 border dark:border-gray-600">
+                      {index + 1}
+                    </td>
                     <td className="p-2 border dark:border-gray-600">
                       {row.employee?.first_Name} {row.employee?.last_Name}
                     </td>
-                    <td className="p-2 border dark:border-gray-600">{row.employee?.employee_Id}</td>
+                    <td className="p-2 border dark:border-gray-600">
+                      {row.employee?.employee_Id}
+                    </td>
                     <td className="p-2 border dark:border-gray-600">
                       {new Date(row.resignationDate).toLocaleDateString()}
                     </td>
                     <td className="p-2 border dark:border-gray-600">
                       {new Date(row.lastWorkingDay).toLocaleDateString()}
                     </td>
-                    <td className="p-2 border dark:border-gray-600">{row.status}</td>
                     <td className="p-2 border dark:border-gray-600">
-                      <button
-                        onClick={() => setSelectedResignation(row)}
-                        className="px-3 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
-                      >
-                        Update
-                      </button>
+                      {row.comments}
                     </td>
+                    <td className="p-2 border dark:border-gray-600">
+                      {row.status}
+                    </td>
+                 
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" className="text-center p-4">No resignation history found.</td>
+                  <td colSpan="7" className="text-center p-4">
+                    No resignation history found.
+                  </td>
                 </tr>
               )}
             </tbody>
@@ -191,7 +206,11 @@ export default function ResignationDashboard() {
       </div>
 
       {/* Submit & Update Modal */}
-      <SubmitResignationModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSubmit={handleResignationSubmit} />
+      <SubmitResignationModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleResignationSubmit}
+      />
     </div>
   );
 }
