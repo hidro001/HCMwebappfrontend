@@ -1,4 +1,4 @@
-import React from 'react';
+
 import {
   Chart as ChartJS,
   ArcElement,
@@ -7,11 +7,11 @@ import {
 } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 
+// Register Chart.js elements
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 export default function ValidPassport() {
-  // Two segments: Expired, Active
-  // For example, 20k vs 25k
+  // Example data: Expired=20,000 / Active=25,000
   const dataValues = [20000, 25000];
   const labels = ['Expired', 'Active'];
 
@@ -29,6 +29,7 @@ export default function ValidPassport() {
   // Chart total
   const total = dataValues.reduce((acc, val) => acc + val, 0); // 45000
 
+  // Full donut
   const chartOptions = {
     plugins: {
       legend: { display: false },
@@ -38,11 +39,8 @@ export default function ValidPassport() {
     maintainAspectRatio: false,
   };
 
-  // Example "growth" overlays in the screenshot: +25%, +30%
-  // We'll absolutely position them near each donut segment.
-  // Adjust 'top'/'right' as needed.
   return (
-    <div className="flex flex-col w-full rounded-xl">
+    <div className="w-full bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md">
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100">
@@ -60,20 +58,24 @@ export default function ValidPassport() {
         </button>
       </div>
 
-      {/* Donut chart */}
+      {/* Donut Chart */}
       <div className="relative h-36 flex justify-center items-center">
         <Doughnut data={chartData} options={chartOptions} />
 
-        {/* Overlay text for each segment's growth or difference */}
+        {/* Overlays for growth percentages (example) */}
         <div className="absolute flex items-center justify-center">
-          {/* Example: Position near orange slice */}
-          <div className="absolute text-white bg-orange-500 rounded-full text-xs px-2 py-1"
-               style={{ top: '15%', left: '60%' }}>
+          {/* Orange slice overlay */}
+          <div
+            className="absolute text-white bg-orange-500 rounded-full text-xs px-2 py-1"
+            style={{ top: '15%', left: '60%' }}
+          >
             +25%
           </div>
-          {/* Position near blue slice */}
-          <div className="absolute text-white bg-blue-500 rounded-full text-xs px-2 py-1"
-               style={{ bottom: '15%', right: '60%' }}>
+          {/* Blue slice overlay */}
+          <div
+            className="absolute text-white bg-blue-500 rounded-full text-xs px-2 py-1"
+            style={{ bottom: '15%', right: '60%' }}
+          >
             +30%
           </div>
         </div>
@@ -90,7 +92,7 @@ export default function ValidPassport() {
                 className="inline-block w-3 h-3 rounded-full"
                 style={{ backgroundColor: chartData.datasets[0].backgroundColor[i] }}
               />
-              <span className="text-gray-600 dark:text-gray-200">
+              <span className="text-gray-700 dark:text-gray-200">
                 {label}: {value.toLocaleString()}
               </span>
               <span className="text-gray-400">

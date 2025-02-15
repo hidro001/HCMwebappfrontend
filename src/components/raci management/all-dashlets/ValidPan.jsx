@@ -1,47 +1,58 @@
 import React from 'react';
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-import { Doughnut } from 'react-chartjs-2';
+import ReactApexChart from 'react-apexcharts';
 
-// Register Chart.js elements
-ChartJS.register(ArcElement, Tooltip, Legend);
-
-export default function ValidPanExact() {
-  // 1) CHART DATA
-  // The data array = [40, 50, 60] for left→middle→right arcs.
-  // The backgroundColor array matches purple→pink→green.
-  const chartData = {
-    labels: ['Complete', 'Pending', 'Invalid'],
-    datasets: [
-      {
-        data: [40, 50, 60],
-        backgroundColor: ['#9B51E0', '#FF00A8', '#C0DFA1'], // purple, pink, green
-        hoverOffset: 4,
+export default function ValidPanArc() {
+  // Chart configuration + data
+  const [chartConfig] = React.useState({
+    series: [40, 50, 60], // arcs: left=40 (purple), middle=50 (pink), right=60 (green)
+    options: {
+      chart: {
+        type: 'donut',
       },
-    ],
-  };
-
-  // 2) CHART OPTIONS (for a bottom half-donut)
-  const chartOptions = {
-    plugins: {
-      legend: { display: false }, // Hide default legend; we’ll make our own
+      labels: ['Complete', 'Pending', 'Invalid'],
+      // We'll draw a TOP half-donut (∩ shape) by setting startAngle=-90, endAngle=90
+      plotOptions: {
+        pie: {
+          startAngle: -90,
+          endAngle: 90,
+          offsetY: 0, // Adjust if needed to move the arc up/down
+          donut: {
+            size: '70%', // thickness of the donut hole
+          },
+        },
+      },
+      // Remove stroke so arcs appear seamlessly joined
+      stroke: {
+        show: true,
+        width: 0,
+      },
+      // Hide default legend (we'll build a custom one)
+      legend: {
+        show: false,
+      },
+      // Colors: purple, pink, green
+      colors: ['#9B51E0', '#FF00A8', '#C0DFA1'],
+      dataLabels: {
+        enabled: false, // Hide slice labels
+      },
+      // Slight negative bottom padding to snug the arc upward
+      grid: {
+        padding: {
+          bottom: -20,
+        },
+      },
+      responsive: [
+        {
+          breakpoint: 480,
+          options: {
+            chart: { width: 200 },
+          },
+        },
+      ],
     },
-    cutout: '70%',       // Donut hole thickness
-    rotation: 180,       // Start at 180° (left side)
-    circumference: 180,  // Only draw 180° (half circle)
-    responsive: true,
-    maintainAspectRatio: false,
-  };
+  });
 
-  // 3) LEGEND DATA
-  // The legend order (top to bottom) in the UI:
-  //   Invalid: 60% (green)
-  //   Pending: 50% (pink)
-  //   Complete: 40% (purple)
+  // Custom legend items (top to bottom)
   const legendItems = [
     { label: 'Invalid', value: 60, color: '#C0DFA1' },  // green
     { label: 'Pending', value: 50, color: '#FF00A8' },  // pink
@@ -49,8 +60,8 @@ export default function ValidPanExact() {
   ];
 
   return (
-    <div className="w-full bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md">
-      {/* Top row: Title + "Monthly" dropdown */}
+    <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-md w-full">
+      {/* Header: Title + "Monthly" dropdown */}
       <div className="flex items-center justify-between mb-2">
         <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-100">
           Valid PAN Card
@@ -67,7 +78,7 @@ export default function ValidPanExact() {
         </button>
       </div>
 
-      {/* Bottom row: Legend on the left, half-donut on the right */}
+      {/* Body: Custom legend on the left, top-half donut on the right */}
       <div className="flex">
         {/* Custom Legend */}
         <div className="flex flex-col justify-center text-sm space-y-2 mr-4">
@@ -84,11 +95,16 @@ export default function ValidPanExact() {
           ))}
         </div>
 
-        {/* Half-Donut Chart */}
-        <div className="relative flex-1 h-24">
-          <Doughnut data={chartData} options={chartOptions} />
+        {/* ApexCharts half-donut (∩ shape) */}
+        <div className="relative flex-1">
+          <ReactApexChart
+            options={chartConfig.options}
+            series={chartConfig.series}
+            type="donut"
+            height={200}
+          />
 
-          {/* Label below the arc */}
+          {/* Label under the arc */}
           <div className="absolute inset-x-0 bottom-0 text-center text-sm text-gray-700 dark:text-gray-200">
             PAN Card
           </div>

@@ -13,6 +13,7 @@ import RaciOperationsChart from "./RaciOperationsChart";
 import DemographicCard from "./DemographicCard";
 import AttendanceCard from "./AttendanceCard";
 import AnnouncementCard from "./AnnouncementCard";
+import ProductLense from "./ProductLense";
 
 function SuperAdminDashboard() {
   return (
@@ -41,6 +42,8 @@ function SuperAdminDashboard() {
           >
             {/* Row: Stat Cards */}
             <DashboardStatCards />
+            <ProductLense/>
+       
 
             {/* Row: Employee Status + Department */}
             <div className="flex flex-col md:flex-row gap-7">
