@@ -126,30 +126,6 @@ export const menuItems = [
         textAnimation: { x: 10 },
       },
 
-      // {
-      //   name: "Update Employee",
-      //   link: "/dashboard/update-employeev2",
-      //   permission: "updateEmployeeManager",
-      //   textAnimation: { x: 10 },
-      // },
-      // {
-      //   name: "Delete Employee",
-      //   link: "/dashboard/delete-employee",
-      //   permission: "deleteEmployeeAdmin",
-      //   textAnimation: { x: 10 },
-      // },
-      // {
-      //   name: "View Employee",
-      //   link: "/dashboard/all-employees",
-      //   permission: "viewEmployeeAdmin",
-      //   textAnimation: { x: 10 },
-      // },
-      // {
-      //   name: "Employee Status",
-      //   link: "/dashboard/active-inactive-employee",
-      //   permission: "active/InactiveEmployeeAdmin",
-      //   textAnimation: { x: 10 },
-      // },
       {
         name: "All Employees",
         link: "/dashboard/all-employess",
@@ -577,52 +553,52 @@ export const menuItems = [
     ],
   },
 
-  // {
-  //   name: "Training Material",
-  //   icon: <MdModelTraining />,
-  //   color: "text-blue-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Training Material",
-  //       link: "/dashboard/training-material",
-  //       permission: "trainingMaterial",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+  {
+    name: "Training Material",
+    icon: <MdModelTraining />,
+    color: "text-blue-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Training Material",
+        link: "/dashboard/training-material",
+        permission: "trainingMaterial",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
 
-  // {
-  //   name: "User Profile",
-  //   icon: <FaUserCircle />,
-  //   color: "text-orange-400",
-  //   iconAnimation: { scale: 1.3 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "My Profile",
-  //       link: "/dashboard/my-profile",
-  //       permission: "viewProfile",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+  {
+    name: "User Profile",
+    icon: <FaUserCircle />,
+    color: "text-orange-400",
+    iconAnimation: { scale: 1.3 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "My Profile",
+        link: "/dashboard/my-profile",
+        permission: "viewProfile",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
 
-  // {
-  //   name: "Organization Chart",
-  //   tooltip: "",
-  //   icon: <RiOrganizationChart />,
-  //   color: "text-yellow-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Organization Chart",
-  //       link: "/dashboard/training-material",
-  //       permission: "trainingMaterial",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+  {
+    name: "Organization Chart",
+    tooltip: "",
+    icon: <RiOrganizationChart />,
+    color: "text-yellow-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Organization Chart",
+        link: "/dashboard/training-material",
+        permission: "trainingMaterial",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
 ];
