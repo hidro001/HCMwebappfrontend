@@ -60,6 +60,8 @@ import ManageLeavesPage from "./leave management/ManageLeavesPage";
 import AllLeavePage from "./leave management/AllLeavePage";
 // ResignationDashboardPage
 import SubmitResignationPage from './resignation management/SubmitResignationPage'
+import FNFApprovalPage from "./resignation management/FNFApprovalPage";
+import ResignationApprovalPage from "./resignation management/ResignationApprovalPage";
 
 
 
@@ -124,4 +126,6 @@ export {
   ManageLeavesPage,
   AllLeavePage,
   SubmitResignationPage,
+  FNFApprovalPage,
+  ResignationApprovalPage
 };

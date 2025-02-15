@@ -579,7 +579,7 @@ export const menuItems = [
       },
       {
         name: "Resignation Approvals",
-        link: "/dashboard/manage-resignation",
+        link: "/dashboard/resignation-approvals",
         permission: "hrResignationDashboard",
         textAnimation: { x: 10 },
       },
