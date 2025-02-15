@@ -75,7 +75,7 @@ function DemographicCard() {
           </h2>
         </div>
         {/* Right side: View Report Button */}
-        <button
+        {/* <button
           className="
             bg-blue-50 dark:bg-blue-900
             text-blue-600 dark:text-blue-300
@@ -85,7 +85,7 @@ function DemographicCard() {
           "
         >
           View Report
-        </button>
+        </button> */}
       </div>
 
       {/* Donut Chart (placeholder image + center text) */}

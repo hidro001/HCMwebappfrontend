@@ -115,7 +115,7 @@ function PerformanceChart() {
           Top Rated Designations
         </h2>
         {/* Icon / Options Button */}
-        <button
+        {/* <button
           className="
             text-gray-400 hover:text-gray-600
             dark:text-gray-300 dark:hover:text-gray-100
@@ -134,7 +134,7 @@ function PerformanceChart() {
             <circle cx="12" cy="12" r="1"></circle>
             <circle cx="19" cy="12" r="1"></circle>
           </svg>
-        </button>
+        </button> */}
       </div>
 
       {/* Divider */}

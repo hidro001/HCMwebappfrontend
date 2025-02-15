@@ -102,7 +102,7 @@ const DailyTask = () => {
         </div>
 
         {/* Export Buttons */}
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <button
             title="Export CSV"
             className="w-10 h-10 flex items-center justify-center rounded-md bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-200"
@@ -131,7 +131,7 @@ const DailyTask = () => {
           >
             <FaPrint className="w-4 h-4" />
           </button>
-        </div>
+        </div> */}
       </div>
 
       {/* Task Table */}

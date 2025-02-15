@@ -84,7 +84,7 @@ function EmployeeStatusChart() {
             Employees By Locations
           </h2>
           {/* Ellipsis Icon */}
-          <button className="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100">
+          {/* <button className="text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               className="h-5 w-5 sm:h-6 sm:w-6"
@@ -97,7 +97,7 @@ function EmployeeStatusChart() {
               <circle cx="12" cy="12" r="1" />
               <circle cx="19" cy="12" r="1" />
             </svg>
-          </button>
+          </button> */}
         </div>
 
         {/* Divider */}
