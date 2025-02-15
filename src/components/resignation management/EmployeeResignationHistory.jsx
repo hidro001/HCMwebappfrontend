@@ -30,7 +30,7 @@
 //     totalResignations,
 //     currentPage,
 //     filters,
-//     fetchResignations,
+//     fetchSuperadminResignations,
 //     setFilters,
 //     setCurrentPage,
 //   } = useResignationStore();
@@ -64,8 +64,8 @@
 
 //   // Fetch data whenever filters or currentPage change.
 //   useEffect(() => {
-//     fetchResignations();
-//   }, [filters, currentPage, fetchResignations]);
+//     fetchSuperadminResignations();
+//   }, [filters, currentPage, fetchSuperadminResignations]);
 
 //   // Prepare chart data for Bar/Line chart.
 //   const preparedChartData = useMemo(() => {
@@ -380,7 +380,7 @@
 //     totalResignations,
 //     currentPage,
 //     filters,
-//     fetchResignations,
+//     fetchSuperadminResignations,
 //     setFilters,
 //     setCurrentPage,
 //   } = useResignationStore();
@@ -428,8 +428,8 @@
 
 //   // Fetch data whenever the store’s filters or currentPage change.
 //   useEffect(() => {
-//     fetchResignations();
-//   }, [filters, currentPage, fetchResignations]);
+//     fetchSuperadminResignations();
+//   }, [filters, currentPage, fetchSuperadminResignations]);
 
 //   // Prepare chart data for Bar/Line chart.
 //   const preparedChartData = useMemo(() => {
@@ -760,7 +760,7 @@ export default function EmployeeResignationHistory() {
     totalResignations,
     currentPage,
     filters,
-    fetchResignations,
+    fetchSuperadminResignations,
     setFilters,
     setCurrentPage,
   } = useResignationStore();
@@ -794,8 +794,8 @@ export default function EmployeeResignationHistory() {
 
   // Fetch data whenever filters or currentPage change.
   useEffect(() => {
-    fetchResignations();
-  }, [filters, currentPage, fetchResignations]);
+    fetchSuperadminResignations();
+  }, [filters, currentPage, fetchSuperadminResignations]);
 
   // Prepare chart data.
   const preparedChartData = useMemo(() => {
