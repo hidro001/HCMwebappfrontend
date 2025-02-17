@@ -25,9 +25,9 @@ export default function AllDashlets() {
         Dashboards
       </h1>
 
-      {/* 3-column layout (no extra gap) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 p-2">
-        {/* Column 1: Demographic (Age,Gender) */}
+      
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 p-2">
+        {/* Column 1 */}
         <div className="border p-1">
           <div className="mt-3">
             <DemographicAgeGender />
@@ -47,12 +47,7 @@ export default function AllDashlets() {
           <div className="mt-3">
             <TrainingEffectivenessCard/>
           </div>
-          
-        </div>
-
-        {/* Column 2: Demographic (Nationality,Marital) */}
-        <div className="border">
-          <div className="mt-3">
+               <div className="mt-3">
             {" "}
             <DemographicNationalMarital />
           </div>
@@ -70,7 +65,8 @@ export default function AllDashlets() {
           </div>
         </div>
 
-        {/* Column 3: Stacked smaller donut charts */}
+
+        {/* Column 2: Stacked smaller donut charts */}
         <div className="flex flex-col space-y-4 border">
           <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-md">
             <ValidPan />
