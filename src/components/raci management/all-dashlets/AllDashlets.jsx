@@ -1,10 +1,9 @@
-
-import DemographicAgeGender from './DemographicAgeGender';
-import DemographicNationalMarital from './DemographicNationalMarital';
-import ValidPan from './ValidPan';
-import ValidAdhaar from './ValidAdhaar';
-import ValidPassport from './ValidPassport';
-import TraingEffectiveness from './TraingEffectiveness';
+import DemographicAgeGender from "./DemographicAgeGender";
+import DemographicNationalMarital from "./DemographicNationalMarital";
+import ValidPan from "./ValidPan";
+import ValidAdhaar from "./ValidAdhaar";
+import ValidPassport from "./ValidPassport";
+import TraingEffectiveness from "./TraingEffectiveness";
 
 export default function AllDashlets() {
   return (
@@ -38,11 +37,9 @@ export default function AllDashlets() {
             <ValidPassport />
           </div>
 
-<div>
-<TraingEffectiveness/>
-</div>
-
-
+          <div>
+            <TraingEffectiveness />
+          </div>
         </div>
       </div>
     </div>
