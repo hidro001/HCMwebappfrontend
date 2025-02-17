@@ -87,7 +87,7 @@ const InternalMobilityTrendsCard = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className="
-        w-full max-w-md
+        w-full 
         bg-white 
         dark:bg-slate-800
         rounded-lg
@@ -95,6 +95,7 @@ const InternalMobilityTrendsCard = () => {
         shadow
         text-gray-800
         dark:text-gray-200
+        
       "
     >
       {/* Header */}

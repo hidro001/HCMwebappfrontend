@@ -321,7 +321,8 @@ const AddressDistributionCard = () => {
   return (
     <div
       className="
-        w-full max-w-sm
+        w-full 
+        max-w-xs
         p-4
         bg-white 
         dark:bg-slate-800
@@ -329,6 +330,7 @@ const AddressDistributionCard = () => {
         shadow
         text-gray-800 
         dark:text-gray-200
+        
       "
     >
       {/* Header Row */}

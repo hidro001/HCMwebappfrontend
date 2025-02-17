@@ -90,7 +90,7 @@ const PerformanceTrendsCard = () => {
     <motion.div
       className="
         w-full
-        max-w-2xl
+       
         bg-white
         dark:bg-slate-800
         rounded-lg
@@ -98,6 +98,7 @@ const PerformanceTrendsCard = () => {
         shadow
         text-gray-800
         dark:text-gray-200
+        
       "
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
@@ -109,7 +110,7 @@ const PerformanceTrendsCard = () => {
       </h2>
 
       {/* Chart Container */}
-      <div className="w-full h-64">
+      <div className="w-full  ">
         <Line data={data} options={options} />
       </div>
     </motion.div>

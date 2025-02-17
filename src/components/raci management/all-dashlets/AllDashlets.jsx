@@ -1,3 +1,115 @@
+// import DemographicAgeGender from "./DemographicAgeGender";
+// import DemographicNationalMarital from "./DemographicNationalMarital";
+// import ValidPan from "./ValidPan";
+// import ValidAdhaar from "./ValidAdhaar";
+// import ValidPassport from "./ValidPassport";
+// import TraingEffectiveness from "./TraingEffectiveness";
+// import TrainingNeedsCard from "./TrainingNeedsCard";
+// import PerformanceCard from "./PerformanceCard";
+// import SkillGapAnalysisCard from "./SkillGapAnalysisCard";
+// import AddressDistributionCard from "./AddressDistributionCard";
+// import InternalMobilityTrendsCard from "./InternalMobilityTrendsCard";
+// import CompensationBenchmarkingCard from "./CompensationBenchmarkingCard";
+// import ImpactOnPerformanceCard from "./ImpactOnPerformanceCard";
+// import CTCChartCard from "./CTCChartCard";
+// import HighPotentialEmployeesTrendsCard from "./HighPotentialEmployeesTrendsCard";
+// import PerformanceTrendsCard from "./PerformanceTrendsCard";
+// import CorrelationTrainingPerformanceCard from "./CorrelationTrainingPerformanceCard";
+// import TrainingEffectivenessCard from "./TrainingEffectivenessCard";
+
+// export default function AllDashlets() {
+//   return (
+//     <div className="bg-bg-primary p-2">
+//       {/* Page title */}
+//       <h1 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100 text-center">
+//         Analytics Dashboards
+//       </h1>
+
+//       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
+//         {/* Column 1 */}
+//         <div className=" ">
+
+
+
+//           <div className="mt-3">
+//             <DemographicAgeGender />
+//           </div>
+//           <div className="mt-3">
+        
+//             <DemographicNationalMarital />
+//           </div>
+
+//           <div className="mt-3">
+//             <SkillGapAnalysisCard />
+//           </div>
+
+//           <div className="mt-3">
+//             <CompensationBenchmarkingCard />
+//           </div>
+//           <div className="mt-3">
+//             <HighPotentialEmployeesTrendsCard />
+//           </div>
+//           <div className="mt-3">
+//             <TrainingEffectivenessCard />
+//           </div>
+
+//           <div className="mt-3">
+//             <InternalMobilityTrendsCard />
+//           </div>
+//           <div className="mt-3">
+//             <ImpactOnPerformanceCard />
+//           </div>
+//           <div className="mt-3">
+//             <CTCChartCard />
+//           </div>
+//           <div className="mt-3">
+//             <PerformanceTrendsCard />
+//           </div>
+//         </div>
+
+//         {/* Column 2: Stacked smaller donut charts */}
+//         <div className=" mt-3 border">
+//           <div className="flex gap-3">
+//             <div className="">
+//               <ValidPan />
+//             </div>
+
+//             <div className="">
+//               <ValidAdhaar />
+//             </div>
+//           </div>
+
+//           <div className="flex gap-1">
+//             <div className="mt-3">
+//               <ValidPassport />
+//             </div>
+//             <div className="mt-3">
+//               <TrainingNeedsCard />
+//             </div>
+//           </div>
+
+//           <div className="flex ">
+//             {" "}
+//             <div className="mt-3">
+//               <AddressDistributionCard />
+//             </div>
+//           </div>
+
+//           <div className="mt-3">
+//             <PerformanceCard />
+//           </div>
+//           <div className="mt-3">
+//             <CorrelationTrainingPerformanceCard />
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
+
+
+
+
 import DemographicAgeGender from "./DemographicAgeGender";
 import DemographicNationalMarital from "./DemographicNationalMarital";
 import ValidPan from "./ValidPan";
@@ -19,72 +131,95 @@ import TrainingEffectivenessCard from "./TrainingEffectivenessCard";
 
 export default function AllDashlets() {
   return (
-    <div className="border border-red-900 p-2">
-      {/* Page title */}
-      <h1 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100">
-        Dashboards
+    <div className="bg-bg-primary p-2">
+      {/* Page Title */}
+      <h1 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100 text-center">
+        Analytics Dashboards
       </h1>
 
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 p-2">
-        {/* Column 1 */}
-        <div className="border p-1">
+      {/* Main Grid Container: 1 column on small, 2 columns on medium/large */}
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4"> */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* COLUMN 1 */}
+        <div>
           <div className="mt-3">
             <DemographicAgeGender />
           </div>
+
           <div className="mt-3">
+            <DemographicNationalMarital />
+          </div>
+
+          <div className="mt-3">  
             <SkillGapAnalysisCard />
           </div>
-          <div className="mt-3">
-            <AddressDistributionCard />
-          </div>
+
           <div className="mt-3">
             <CompensationBenchmarkingCard />
           </div>
+
           <div className="mt-3">
             <HighPotentialEmployeesTrendsCard />
           </div>
+
           <div className="mt-3">
-            <TrainingEffectivenessCard/>
+            <TrainingEffectivenessCard />
           </div>
-               <div className="mt-3">
-            {" "}
-            <DemographicNationalMarital />
-          </div>
+
           <div className="mt-3">
             <InternalMobilityTrendsCard />
           </div>
+
           <div className="mt-3">
             <ImpactOnPerformanceCard />
           </div>
+
           <div className="mt-3">
-            <CTCChartCard/>
+            <CTCChartCard />
           </div>
+
           <div className="mt-3">
-            <PerformanceTrendsCard/>
+            <PerformanceTrendsCard />
           </div>
         </div>
 
+        {/* COLUMN 2 */}
+        <div className="mt-3 border p-2">
+          {/* Row 1: ValidPan & ValidAdhaar */}
+          <div className="flex flex-wrap gap-3">
+            <div>
+              <ValidPan />
+            </div>
+            <div>
+              <ValidAdhaar />
+            </div>
+          </div>
 
-        {/* Column 2: Stacked smaller donut charts */}
-        <div className="flex flex-col space-y-4 border">
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-md">
-            <ValidPan />
+          {/* Row 2: ValidPassport & TrainingNeedsCard */}
+          <div className="flex flex-wrap gap-3 mt-3">
+            <div>
+              <ValidPassport />
+            </div>
+            <div>
+              <TrainingNeedsCard />
+            </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-md">
-            <ValidAdhaar />
+
+          {/* Row 3: AddressDistributionCard */}
+          <div className="flex flex-wrap mt-3">
+            <div>
+              <AddressDistributionCard />
+            </div>
           </div>
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-2xl shadow-md">
-            <ValidPassport />
-          </div>
-          <div>
-            <TrainingNeedsCard />
-          </div>
-          <div>
+
+          {/* PerformanceCard */}
+          <div className="mt-3">
             <PerformanceCard />
           </div>
-          <div>
-            <CorrelationTrainingPerformanceCard/>
+
+          {/* CorrelationTrainingPerformanceCard */}
+          <div className="mt-3">
+            <CorrelationTrainingPerformanceCard />
           </div>
         </div>
       </div>

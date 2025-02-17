@@ -98,7 +98,7 @@ const CTCChartCard = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       // Light mode: white background; Dark mode: dark gray
-      className="max-w-xl mx-auto p-4 bg-white dark:bg-gray-800 shadow-md rounded-md"
+      className="w-full mx-auto p-4 bg-white dark:bg-gray-800 shadow-md rounded-md "
     >
       <div className="flex items-center mb-4">
         <FaChartBar className="text-blue-500 dark:text-blue-300 mr-2" size={24} />

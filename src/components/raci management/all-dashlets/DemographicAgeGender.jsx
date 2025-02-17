@@ -72,7 +72,7 @@ export default function DemographicAgeGender() {
   });
 
   return (
-    <div className="flex flex-col w-full max-w-sm rounded-xl bg-white dark:bg-gray-800 shadow-2xl p-4">
+    <div className="flex flex-col w-full  rounded-xl bg-white dark:bg-gray-800 shadow-2xl p-4 ">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">

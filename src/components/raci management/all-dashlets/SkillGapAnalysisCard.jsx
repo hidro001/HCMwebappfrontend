@@ -82,9 +82,9 @@ function SkillGapAnalysisCard() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       // Card container styles, supporting dark mode
-      className="max-w-lg mx-auto p-4 rounded-lg shadow-sm 
+      className="w-full mx-auto p-4 rounded-lg shadow-sm 
                  bg-white text-gray-900 
-                 dark:bg-gray-800 dark:text-gray-100"
+                 dark:bg-gray-800 dark:text-gray-100 "
     >
       {/* Card Header */}
       <div className="flex items-center justify-between mb-4">
