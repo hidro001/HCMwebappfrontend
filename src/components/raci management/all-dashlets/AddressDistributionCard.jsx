@@ -272,7 +272,6 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const AddressDistributionCard = () => {
   // For the time range dropdown (Monthly, Weekly, etc.)
-  const [timeRange, setTimeRange] = useState('Monthly');
   const [showDropdown, setShowDropdown] = useState(false);
 
   // Dummy data for the donut chart
@@ -336,60 +335,7 @@ const AddressDistributionCard = () => {
       {/* Header Row */}
       <div className="flex items-center justify-between mb-2">
         <h2 className="font-semibold text-lg">Address Distribution</h2>
-        {/* Time Range Dropdown */}
-        <div className="relative">
-          <button
-            onClick={handleDropdown}
-            className="
-              flex items-center 
-              px-2 py-1
-              bg-gray-100 dark:bg-slate-700
-              rounded
-              hover:bg-gray-200 dark:hover:bg-slate-600
-              transition
-            "
-          >
-            <span className="mr-1">{timeRange}</span>
-            <FaChevronDown className="w-3 h-3" />
-          </button>
-          <AnimatePresence>
-            {showDropdown && (
-              <motion.div
-                className="
-                  absolute
-                  right-0
-                  mt-2 
-                  w-28
-                  bg-white
-                  dark:bg-slate-700
-                  shadow
-                  rounded
-                  z-20
-                "
-                initial={{ opacity: 0, y: -5 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -5 }}
-              >
-                {['Monthly', 'Weekly', 'Yearly'].map((range) => (
-                  <button
-                    key={range}
-                    onClick={() => handleTimeRangeChange(range)}
-                    className="
-                      w-full
-                      text-left
-                      px-3 py-2 
-                      hover:bg-gray-100 
-                      dark:hover:bg-slate-600
-                      transition
-                    "
-                  >
-                    {range}
-                  </button>
-                ))}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+      
       </div>
 
       {/* Donut Chart */}

@@ -87,9 +87,7 @@ export default function DemographicAgeGender() {
             Demographic (Age, Gender)
           </h2>
         </div>
-        <button className="text-blue-600 text-sm hover:underline">
-          View Report
-        </button>
+        
       </div>
 
       {/* Donut Chart (Gender) */}

@@ -154,15 +154,7 @@ const PassportValidityCard = () => {
         <h2 className="font-semibold text-lg">Passport validity</h2>
         {/* Dropdown */}
         <div className="relative">
-          <button
-            className="inline-flex items-center px-2 py-1 text-sm font-medium 
-                       bg-gray-100 dark:bg-slate-700 rounded-md 
-                       hover:bg-gray-200 dark:hover:bg-slate-600
-                       transition-colors"
-          >
-            Monthly
-            <FiChevronDown className="ml-1" />
-          </button>
+        
           {/* A real dropdown menu can go here if needed */}
         </div>
       </div>

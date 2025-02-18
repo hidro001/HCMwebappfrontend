@@ -75,9 +75,7 @@ export default function DemographicNationalMarital() {
             Demographic (Nationality,Marital)
           </h2>
         </div>
-        <button className="text-blue-600 text-sm hover:underline">
-          View Report
-        </button>
+     
       </div>
 
       {/* Donut Chart */}

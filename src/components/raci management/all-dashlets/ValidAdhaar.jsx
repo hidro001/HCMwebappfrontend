@@ -9,11 +9,11 @@ const AadhaarCardChart = () => {
   // Dummy chart data: 60, 50, 40
   // Colors: blue, orange, green
   const data = {
-    labels: ["Invalid", "Pending", "Complete"],
+    labels: [ "Pending", "Complete"],
     datasets: [
       {
         label: "Aadhaar Card Status",
-        data: [60, 50, 40],
+        data: [ 50, 40],
         backgroundColor: ["#3B82F6", "#F59E0B", "#10B981"],
         hoverBackgroundColor: ["#2563EB", "#D97706", "#059669"],
         borderWidth: 0,
@@ -58,15 +58,7 @@ const AadhaarCardChart = () => {
         <h2 className="font-semibold text-lg">Valid Aadhaar Card</h2>
         {/* Example dropdown for “Monthly” */}
         <div className="relative">
-          <button
-            className="inline-flex items-center px-2 py-1 text-sm font-medium
-                       bg-gray-100 dark:bg-slate-700 rounded-md
-                       hover:bg-gray-200 dark:hover:bg-slate-600
-                       transition-colors"
-          >
-            Monthly
-            <FiChevronDown className="ml-1" />
-          </button>
+      
           {/* Real dropdown content (if needed) can go here */}
         </div>
       </div>
@@ -80,19 +72,7 @@ const AadhaarCardChart = () => {
 
       {/* Custom legend with color-coded labels */}
       <div className="mt-4 grid grid-cols-3 gap-2 text-sm">
-        {/* Invalid: Blue */}
-        <div className="flex flex-col items-center">
-          <div className="flex items-center space-x-1">
-            <span
-              className="inline-block w-3 h-3 rounded-full"
-              style={{ backgroundColor: "#3B82F6" }}
-            />
-            <span className="text-gray-500 dark:text-gray-400">
-              Invalid:
-            </span>
-          </div>
-          <span className="font-bold mt-1">60%</span>
-        </div>
+      
 
         {/* Pending: Orange */}
         <div className="flex flex-col items-center">
