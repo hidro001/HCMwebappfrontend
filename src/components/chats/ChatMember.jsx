@@ -99,7 +99,7 @@ export default function ChatMember({ employees, currentUser, onSelectUser, unrea
           </ul>
         ) : (
           <p className="text-center text-gray-500 dark:text-gray-400 p-4">
-            No matching members found.
+            No matching members found !
           </p>
         )}
       </div>
