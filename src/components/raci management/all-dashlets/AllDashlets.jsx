@@ -16,6 +16,11 @@ import HighPotentialEmployeesTrendsCard from "./HighPotentialEmployeesTrendsCard
 import PerformanceTrendsCard from "./PerformanceTrendsCard";
 import CorrelationTrainingPerformanceCard from "./CorrelationTrainingPerformanceCard";
 import TrainingEffectivenessCard from "./TrainingEffectivenessCard";
+import AbsenteeismPatternsCard from "./AbsenteeismPatternsCard";
+import OvertimeCostAnalysisCard from "./OvertimeCostAnalysisCard";
+import StaffingOptimizationCard from "./StaffingOptimizationCard";
+import PatternAnalysisCard from "./PatternAnalysisCard";
+import ComplianceTrainingCoverageCard from "./ComplianceTrainingCoverageCard";
 
 export default function AllDashlets() {
   return (
@@ -46,9 +51,7 @@ export default function AllDashlets() {
           <div className="mt-3">
             <CompensationBenchmarkingCard />
           </div>
-          <div className="mt-3">
-            <HighPotentialEmployeesTrendsCard />
-          </div>
+      
           <div className="mt-3">
             <TrainingEffectivenessCard />
           </div>
@@ -65,10 +68,25 @@ export default function AllDashlets() {
           <div className="mt-3">
             <PerformanceTrendsCard />
           </div>
+          <div className="mt-3">
+            <HighPotentialEmployeesTrendsCard />
+          </div>
+          <div className="mt-3">
+            <AbsenteeismPatternsCard />
+          </div>
+          <div className="mt-3">
+            <OvertimeCostAnalysisCard />
+          </div>
+          <div className="mt-3">
+            <StaffingOptimizationCard />
+          </div>
+          <div className="mt-3">
+            <PatternAnalysisCard />
+          </div>
         </div>
 
         {/* Column 2: Stacked smaller donut charts */}
-        <div className=" mt-3 border">
+        <div className=" mt-3 ">
           <div className="flex gap-3">
             <div className="">
               <ValidPan />
@@ -93,8 +111,11 @@ export default function AllDashlets() {
             <div className="mt-3">
               <AddressDistributionCard />
             </div>
+        
           </div>
-
+    <div className="mt-3">
+              <ComplianceTrainingCoverageCard />
+            </div>
           <div className="mt-3">
             <PerformanceCard />
           </div>

@@ -141,7 +141,7 @@ export default function DemographicNationalMarital() {
         </div>
 
         {/* Legend & Counts */}
-        <div className="flex flex-col md:flex-row justify-between gap-4">
+        <div className="flex  md:flex-row justify-between gap-4">
           {/* Legend with labels */}
           <div>
             {maritalDistributionWithPct.map((item, idx) => (

@@ -147,7 +147,7 @@ export default function DemographicAgeGender() {
         </div>
 
         {/* Legend & Counts */}
-        <div className="flex flex-col md:flex-row justify-between gap-4">
+        <div className="flex  md:flex-row justify-between gap-4 ">
           {/* Legend with labels */}
           <div>
             {ageDistributionWithPct.map((item, idx) => (
@@ -164,7 +164,7 @@ export default function DemographicAgeGender() {
           </div>
 
           {/* Counts & Percentages */}
-          <div className="flex gap-6">
+          <div className="flex gap-6 ">
             {/* Column of counts */}
             <div className="flex flex-col gap-3">
               {ageDistributionWithPct.map((item, idx) => (
