@@ -534,6 +534,8 @@ export default function EmployeeFormTabs({
       overtime_hours: "",
       background_Verification_Status: "",
       police_Verification: "",
+      trainingStatus: "",
+      complianceTrainingStatus: "",
       legal_Certifications: "",
       org_Specific_IDs: "",
       date_of_Resignation: "",
