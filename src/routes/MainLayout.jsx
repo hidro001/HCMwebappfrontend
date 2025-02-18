@@ -145,6 +145,7 @@ import { Sidebar, Breadcrumb, Navbar } from "../components";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { menuItems } from "../config/menuConfig";
 import useAuthStore from "../store/store"; // We'll read the user's permissions
+import ChatNotification from "../components/chats/ChatNotification";
 
 const MainLayout = () => {
   const navigate = useNavigate();
@@ -283,6 +284,7 @@ const MainLayout = () => {
           </div>
         </div>
       </div>
+      <ChatNotification />
     </div>
   );
 };

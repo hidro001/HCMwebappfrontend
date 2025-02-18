@@ -74,6 +74,7 @@ import {
 } from "../components";
 import DailyTaskPage from "../pages/task/DailyTaskPage";
 
+
 const router = createBrowserRouter([
   {
     path: "/reset-password/:resetToken",
@@ -88,6 +89,7 @@ const router = createBrowserRouter([
     element: (
       <MainLayout>
         <PrivateRoute />
+      
       </MainLayout>
     ),
     children: [

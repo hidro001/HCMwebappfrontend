@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
-import { FaUserCircle } from "react-icons/fa";
+// src/components/ChatMember.jsx
+import React, { useMemo, useState } from 'react';
+import { FaUserCircle } from 'react-icons/fa';
 
 export default function ChatMember({ employees, currentUser, onSelectUser, unreadCounts }) {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Remove the current user and duplicates
+  // Filter out the current user and remove duplicates
   const uniqueEmployees = useMemo(() => {
     return Array.from(
       new Map(
@@ -15,16 +16,14 @@ export default function ChatMember({ employees, currentUser, onSelectUser, unrea
     );
   }, [employees, currentUser]);
 
-  // Filter based on search input
+  // Filter by search term
   const filteredEmployees = useMemo(() => {
     return uniqueEmployees.filter((member) =>
-      `${member.first_Name} ${member.last_Name}`
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
+      `${member.first_Name} ${member.last_Name}`.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [uniqueEmployees, searchTerm]);
 
-  // Sort so that employees with unread messages are shown on top
+  // Sort so that those with unread messages appear first
   const sortedEmployees = useMemo(() => {
     return [...filteredEmployees].sort((a, b) => {
       const aUnread = unreadCounts[a.employee_Id] || 0;
@@ -34,15 +33,11 @@ export default function ChatMember({ employees, currentUser, onSelectUser, unrea
   }, [filteredEmployees, unreadCounts]);
 
   return (
-    <div
-      className="w-full md:w-1/4 bg-white dark:bg-gray-800 flex flex-col shadow-lg"
-      style={{ height: "80vh" }}
-    >
+    <div className="w-full md:w-1/4 bg-white dark:bg-gray-800 flex flex-col shadow-lg" style={{ height: '80vh' }}>
       <h2 className="text-xl font-bold text-purple-700 dark:text-purple-400 p-4">
         Your Team Members
       </h2>
 
-      {/* Search Input */}
       <div className="px-4 pb-2">
         <input
           type="text"
@@ -53,7 +48,6 @@ export default function ChatMember({ employees, currentUser, onSelectUser, unrea
         />
       </div>
 
-      {/* Employee List */}
       <div className="flex-grow overflow-y-auto">
         <ul>
           {sortedEmployees.map((member) => (
@@ -61,10 +55,7 @@ export default function ChatMember({ employees, currentUser, onSelectUser, unrea
               key={member.employee_Id}
               className="flex items-center justify-between p-3 border-b dark:border-gray-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700"
               onClick={() =>
-                onSelectUser(
-                  `${member.first_Name} ${member.last_Name}`,
-                  member.employee_Id
-                )
+                onSelectUser(`${member.first_Name} ${member.last_Name}`, member.employee_Id)
               }
             >
               <div className="flex items-center space-x-3">
@@ -81,18 +72,11 @@ export default function ChatMember({ employees, currentUser, onSelectUser, unrea
                   <p className="text-sm font-semibold text-gray-900 dark:text-gray-100 capitalize">
                     {member.first_Name} {member.last_Name}
                   </p>
-                  <p
-                    className={`text-xs ${
-                      member.status === "Online"
-                        ? "text-green-500"
-                        : "text-gray-400 dark:text-gray-500"
-                    }`}
-                  >
+                  <p className={`text-xs ${member.status === 'Online' ? 'text-green-500' : 'text-gray-400 dark:text-gray-500'}`}>
                     {member.status}
                   </p>
                 </div>
               </div>
-              {/* Unread Badge */}
               {unreadCounts[member.employee_Id] > 0 && (
                 <span className="bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-0.5">
                   {unreadCounts[member.employee_Id]}
