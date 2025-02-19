@@ -69,6 +69,8 @@ import ResignationApprovalPage from "./resignation management/ResignationApprova
 // reci
 
 import AllDashletsPage from '../pages//raci management/AllDashletsPage'
+import AllDisciplinaryActionsPage from "./Employeee Management/disciplinary/AllDisciplinaryActionsPage";
+import UsersListForDisciplinaryPage from "./Employeee Management/disciplinary/UsersListForDisciplinaryPage";
 
 
 
@@ -135,5 +137,7 @@ export {
   SubmitResignationPage,
   FNFApprovalPage,
   ResignationApprovalPage,
-  AllDashletsPage  
+  AllDashletsPage  ,
+  UsersListForDisciplinaryPage,
+  AllDisciplinaryActionsPage,
 };

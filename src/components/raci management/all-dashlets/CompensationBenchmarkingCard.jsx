@@ -276,7 +276,7 @@ const CompensationBenchmarkingCard = () => {
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <h2 className="font-semibold text-lg">Compensation Benchmarking</h2>
+        <h2 className="font-semibold text-lg">Compensation Benchmarking By Employee TYPE</h2>
         {/* You can keep your time range dropdown logic if needed */}
       </div>
 

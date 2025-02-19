@@ -61,7 +61,9 @@ import {
   SubmitResignationPage,
   FNFApprovalPage,
   ResignationApprovalPage,
-  AllDashletsPage
+  AllDashletsPage,
+  AllDisciplinaryActionsPage,
+  UsersListForDisciplinaryPage,
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -341,6 +343,15 @@ const router = createBrowserRouter([
         path: "all-dashlets",
         element: <AllDashletsPage />,
       },
+      {
+        path: "disciplinary-actions/all-users",
+        element: <UsersListForDisciplinaryPage />,
+      },
+      {
+        path: "disciplinary-actions",
+        element: <AllDisciplinaryActionsPage />,
+      },
+   
     ],
   },
   {
