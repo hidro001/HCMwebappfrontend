@@ -14,7 +14,7 @@ import HighPotentialEmployeesTrendsCard from "../HighPotentialEmployeesTrendsCar
 import AbsenteeismPatternsCard from "../AbsenteeismPatternsCard";
 import OvertimeCostAnalysisCard from "../OvertimeCostAnalysisCard";
 import StaffingOptimizationCard from "../StaffingOptimizationCard";
-import PatternAnalysisCard from "../PatternAnalysisCard";
+import PatternAnalysisCard from "../DisciplinaryAnalysisCard";
 import ValidPan from "../ValidPan";
 import ValidAdhaar from "../ValidAdhaar";
 import ValidPassport from "../ValidPassport";

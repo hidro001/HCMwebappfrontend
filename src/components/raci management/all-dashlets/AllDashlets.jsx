@@ -18,7 +18,7 @@
 // import AbsenteeismPatternsCard from "./AbsenteeismPatternsCard";
 // import OvertimeCostAnalysisCard from "./OvertimeCostAnalysisCard";
 // import StaffingOptimizationCard from "./StaffingOptimizationCard";
-// import PatternAnalysisCard from "./PatternAnalysisCard";
+// import DisciplinaryAnalysisCard from "./DisciplinaryAnalysisCard";
 // import ComplianceTrainingCoverageCard from "./ComplianceTrainingCoverageCard";
 
 // export default function AllDashlets() {
@@ -76,7 +76,7 @@
 //             <StaffingOptimizationCard />
 //           </div>
 //           <div className="mt-3">
-//             <PatternAnalysisCard />
+//             <DisciplinaryAnalysisCard />
 //           </div>
 //         </div>
 
@@ -140,7 +140,7 @@ import HighPotentialEmployeesTrendsCard from "./HighPotentialEmployeesTrendsCard
 import AbsenteeismPatternsCard from "./AbsenteeismPatternsCard";
 import OvertimeCostAnalysisCard from "./OvertimeCostAnalysisCard";
 import StaffingOptimizationCard from "./StaffingOptimizationCard";
-import PatternAnalysisCard from "./PatternAnalysisCard";
+import DisciplinaryAnalysisCard from "./DisciplinaryAnalysisCard";
 import ValidPan from "./ValidPan";
 import ValidAdhaar from "./ValidAdhaar";
 import ValidPassport from "./ValidPassport";
@@ -201,15 +201,25 @@ export default function AllDashlets() {
             </div>
           )}
 
-          {shouldShow("SkillGapAnalysisCard") && (
+          {shouldShow("DisciplinaryAnalysisCard") && (
             <div className="mt-3">
-              <SkillGapAnalysisCard />
+              <DisciplinaryAnalysisCard />
             </div>
           )}
 
+          {shouldShow("StaffingOptimizationCard") && (
+            <div className="mt-3">
+              <StaffingOptimizationCard />
+            </div>
+          )}
           {shouldShow("CompensationBenchmarkingCard") && (
             <div className="mt-3">
               <CompensationBenchmarkingCard />
+            </div>
+          )}
+          {shouldShow("SkillGapAnalysisCard") && (
+            <div className="mt-3">
+              <SkillGapAnalysisCard />
             </div>
           )}
 
@@ -258,18 +268,6 @@ export default function AllDashlets() {
           {shouldShow("OvertimeCostAnalysisCard") && (
             <div className="mt-3">
               <OvertimeCostAnalysisCard />
-            </div>
-          )}
-
-          {shouldShow("StaffingOptimizationCard") && (
-            <div className="mt-3">
-              <StaffingOptimizationCard />
-            </div>
-          )}
-
-          {shouldShow("PatternAnalysisCard") && (
-            <div className="mt-3">
-              <PatternAnalysisCard />
             </div>
           )}
         </div>
