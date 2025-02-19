@@ -69,6 +69,7 @@ import ResignationApprovalPage from "./resignation management/ResignationApprova
 // reci
 
 import AllDashletsPage from '../pages//raci management/AllDashletsPage'
+import ProductLensePage from '../pages/product-lense/ProductLensePage'
 
 
 
@@ -135,5 +136,6 @@ export {
   SubmitResignationPage,
   FNFApprovalPage,
   ResignationApprovalPage,
-  AllDashletsPage  
+  AllDashletsPage  ,
+  ProductLensePage
 };

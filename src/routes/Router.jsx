@@ -61,7 +61,8 @@ import {
   SubmitResignationPage,
   FNFApprovalPage,
   ResignationApprovalPage,
-  AllDashletsPage
+  AllDashletsPage,
+  ProductLensePage
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -342,6 +343,15 @@ const router = createBrowserRouter([
       {
         path: "all-dashlets",
         element: <AllDashletsPage />,
+      },
+      // product lense
+      {
+        path: "productivity-lense",
+        element: <ProductLensePage />,
+      },
+      {
+        path: "productivity-lense",
+        element: <ProductLensePage />,
       },
     ],
   },

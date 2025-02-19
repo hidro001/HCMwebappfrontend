@@ -19,6 +19,7 @@ import {
 } from "react-icons/fa";
 import { TiSocialTwitter } from "react-icons/ti";
 import { GrDocumentPerformance } from "react-icons/gr";
+import { MdTrackChanges } from "react-icons/md";
 import { MdModelTraining } from "react-icons/md";
 import { RiOrganizationChart } from "react-icons/ri";
 import { LuFileCheck2 } from "react-icons/lu";
@@ -480,6 +481,34 @@ export const menuItems = [
     ],
   },
 
+
+  // Productivity Lenses
+  {
+    name: "Productivity Lenses",
+    tooltip:
+      "Track, evaluate, and improve employee performance to drive team success",
+    icon: <MdTrackChanges />,
+    color: "text-yellow-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+     
+      {
+        name: "Main",
+        link: "/dashboard/productivity-lense",
+        permission: "postTopPerformer",
+      },
+      {
+        name: "Productivity Dashboard",
+        link: "/dashboard/productivity-lense",
+        permission: "postTopPerformer",
+      },
+     
+    ],
+  },
+
+    // Productivity Lenses Ended
+
   {
     name: "Chats",
     tooltip: "Chats With Team Mates",
@@ -558,6 +587,8 @@ export const menuItems = [
       },
     ],
   },
+
+
 
   // {
   //   name: "Training Material",
