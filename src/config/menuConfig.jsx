@@ -16,6 +16,7 @@ import {
   FaListAlt,
   FaCog,
   FaBookReader,
+  FaDiceD20,
 } from "react-icons/fa";
 import { TiSocialTwitter } from "react-icons/ti";
 import { GrDocumentPerformance } from "react-icons/gr";
@@ -24,10 +25,7 @@ import { RiOrganizationChart } from "react-icons/ri";
 import { LuFileCheck2 } from "react-icons/lu";
 import { ChatBubble } from "@mui/icons-material";
 
-
 export const menuItems = [
-
-
   // dashboard
   {
     name: "Dashboard",
@@ -41,7 +39,7 @@ export const menuItems = [
         link: "/dashboard",
         permission: "SuperDashboard",
       },
-   
+
       {
         name: "Dashboard",
         link: "/dashboard/employee",
@@ -53,14 +51,15 @@ export const menuItems = [
   //Announcements
   {
     name: "Announcements",
-    tooltip: "Stay up to date! Click here to view important news and announcements ",
+    tooltip:
+      "Stay up to date! Click here to view important news and announcements ",
     icon: <FaBullhorn />,
     color: "text-yellow-400",
     iconAnimation: { x: 7 },
     options: [
       {
         name: "Create Announcement",
-   
+
         link: "/dashboard/add-announcement",
         permission: "AddAnnouncement",
       },
@@ -72,12 +71,12 @@ export const menuItems = [
     ],
   },
 
-
-//Engagement
+  //Engagement
   {
     name: "Synergy",
-    tooltip: "Foster collaboration and synergy across teams with our Engage System",
-    icon: <TiSocialTwitter />,
+    tooltip:
+      "Foster collaboration and synergy across teams with our Engage System",
+    icon: <FaDiceD20 />,
     color: "text-blue-400",
     iconAnimation: { rotate: 360 },
     options: [
@@ -94,8 +93,7 @@ export const menuItems = [
     ],
   },
 
-
-//Manage Employees
+  //Manage Employees
   {
     name: "Manage Employees",
     tooltip: "Organize and oversee all employee details in one place",
@@ -173,10 +171,9 @@ export const menuItems = [
     ],
   },
 
-  
-//Attendence
+  //Attendence
 
-{
+  {
     name: "Attendence",
     tooltip: "Track and manage employee presence and punctuality with ease",
     icon: <FaBookReader />,
@@ -211,12 +208,11 @@ export const menuItems = [
     ],
   },
 
-
-  
   // Ticket Management
   {
     name: "Ticket Management",
-    tooltip: "Streamline your support process by creating, tracking, and resolving tickets efficiently",
+    tooltip:
+      "Streamline your support process by creating, tracking, and resolving tickets efficiently",
     icon: <FaBug />,
     color: "text-green-400",
     iconAnimation: { scale: 1.2 },
@@ -255,11 +251,11 @@ export const menuItems = [
     ],
   },
 
-
   // Payroll
   {
     name: "Payroll",
-    tooltip: "Ensure accurate and timely payouts with our secure payroll system",
+    tooltip:
+      "Ensure accurate and timely payouts with our secure payroll system",
     icon: <FaMoneyCheckAlt />,
     color: "text-orange-400",
     iconAnimation: { scale: 1.2 },
@@ -286,13 +282,12 @@ export const menuItems = [
     ],
   },
 
-
-
-//Task Management
+  //Task Management
 
   {
     name: "Task Management ",
-    tooltip: "Easily create, assign, and track tasks to keep your projects on schedule",
+    tooltip:
+      "Easily create, assign, and track tasks to keep your projects on schedule",
     icon: <FaTasks />,
     color: "text-blue-400",
     iconAnimation: { rotate: 360 },
@@ -322,7 +317,8 @@ export const menuItems = [
   //Recruit Management
   {
     name: "Recruit Management",
-    tooltip: "Efficiently manage your recruitment process, from job postings to candidate selection",
+    tooltip:
+      "Efficiently manage your recruitment process, from job postings to candidate selection",
     icon: <FaFileAlt />,
     color: "text-yellow-400",
     iconAnimation: { scale: 1.2 },
@@ -373,12 +369,11 @@ export const menuItems = [
     ],
   },
 
-
-    
-//Performance management
-{
+  //Performance management
+  {
     name: "Performance management",
-    tooltip: "Track, evaluate, and improve employee performance to drive team success",
+    tooltip:
+      "Track, evaluate, and improve employee performance to drive team success",
     icon: <GrDocumentPerformance />,
     color: "text-green-400",
     iconAnimation: { scale: 1.2 },
@@ -414,12 +409,12 @@ export const menuItems = [
     ],
   },
 
-
   //Analytics
 
   {
     name: "Analytics",
-    tooltip: "Analyze RACI roles, operations, and business metrics all in one place for data-driven decisions",
+    tooltip:
+      "Analyze RACI roles, operations, and business metrics all in one place for data-driven decisions",
     icon: <FaGlobe />,
     color: "text-red-400",
     iconAnimation: { scale: 1.2 },
@@ -446,58 +441,56 @@ export const menuItems = [
     ],
   },
 
-    //Company Settings
+  //Company Settings
 
-    {
-        name: "Company Settings",
-        tooltip: "Customize and manage your organization's settings in a centralized hub",
-        icon: <FaCog />,
-        color: "text-red-400",
-        iconAnimation: { scale: 1.3 },
+  {
+    name: "Company Settings",
+    tooltip:
+      "Customize and manage your organization's settings in a centralized hub",
+    icon: <FaCog />,
+    color: "text-red-400",
+    iconAnimation: { scale: 1.3 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Company Info",
+        link: "/dashboard/company-info",
+        permission: "companyInfo",
         textAnimation: { x: 10 },
-        options: [
-     
-          {
-            name: "Company Info",
-            link: "/dashboard/company-info",
-            permission: "companyInfo",
-            textAnimation: { x: 10 },
-          },
-          {
-            name: "Company Settings",
-            link: "/dashboard/company-settings",
-            permission: "CompanySettings",
-            textAnimation: { x: 10 },
-          },
-          {
-            name: "Add Hierarchy",
-            link: "/dashboard/add-hierarchy",
-            permission: "addRole",
-            textAnimation: { x: 10 },
-          },
-          {
-            name: "Update Policies",
-            link: "/dashboard/update-policies",
-            permission: "PolicySystem",
-            textAnimation: { x: 10 },
-          },
-          {
-            name: "Update Induction",
-            link: "/dashboard/post-induction",
-            permission: "postInduction",
-            textAnimation: { x: 10 },
-          },
-          {
-            name: "Break Settings",
-            link: "/dashboard/break-settings",
-            permission: "addBreak",
-            textAnimation: { x: 10 },
-          },
-        ],
       },
+      {
+        name: "Company Settings",
+        link: "/dashboard/company-settings",
+        permission: "CompanySettings",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Add Hierarchy",
+        link: "/dashboard/add-hierarchy",
+        permission: "addRole",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Update Policies",
+        link: "/dashboard/update-policies",
+        permission: "PolicySystem",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Update Induction",
+        link: "/dashboard/post-induction",
+        permission: "postInduction",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Break Settings",
+        link: "/dashboard/break-settings",
+        permission: "addBreak",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
 
-
-      
   {
     name: "Chats",
     tooltip: "Chats With Team Mates",
@@ -514,8 +507,6 @@ export const menuItems = [
       },
     ],
   },
-
-
 
   // {
   //   name: "Leaves Management",
@@ -544,7 +535,6 @@ export const menuItems = [
   //     },
   //   ],
   // },
-
 
   // {
   //   name: "Review Performance",
@@ -736,14 +726,6 @@ export const menuItems = [
   //   ],
   // },
 
-
-
-
-
-
-
-
-
   // {
   //   name: "Leaves Management",
   //   icon: <FaListAlt />,
@@ -772,12 +754,6 @@ export const menuItems = [
   //   ],
   // },
 
-
-
-
-
-
-
   // {
   //   name: "User Profile",
   //   icon: <FaUserCircle />,
@@ -793,7 +769,6 @@ export const menuItems = [
   //     },
   //   ],
   // },
-
 
   // {
   //   name: "Training Material",
@@ -827,7 +802,6 @@ export const menuItems = [
   //     },
   //   ],
   // },
-
 
   // {
   //   name: "Resignation & FNF Dashboard",
@@ -869,9 +843,4 @@ export const menuItems = [
   //     },
   //   ],
   // },
-
-  
-
-
-
 ];
