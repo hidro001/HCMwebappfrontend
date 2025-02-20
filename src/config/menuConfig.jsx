@@ -606,21 +606,21 @@ export const menuItems = [
   //   ],
   // },
 
-  // {
-  //   name: "User Profile",
-  //   icon: <FaUserCircle />,
-  //   color: "text-orange-400",
-  //   iconAnimation: { scale: 1.3 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "My Profile",
-  //       link: "/dashboard/my-profile",
-  //       permission: "viewProfile",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+  {
+    name: "User Profile",
+    icon: <FaUserCircle />,
+    color: "text-orange-400",
+    iconAnimation: { scale: 1.3 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "My Profile",
+        link: "/dashboard/my-profile",
+        permission: "viewProfile",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
 
   // {
   //   name: "Organization Chart",
