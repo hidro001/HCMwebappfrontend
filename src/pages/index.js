@@ -70,7 +70,11 @@ import ResignationApprovalPage from "./resignation management/ResignationApprova
 
 import AllDashletsPage from '../pages//raci management/AllDashletsPage'
 // product lense
-import ProductLensePage from '../pages/product-lense/ProductLensePage'
+import MainDashboardPage from '../pages/product-lense/MainDashboardPage'
+import ProductivityDashboardPage from '../pages/product-lense/ProductivityDashboardPage'
+import TeamProductivityPage from '../pages/product-lense/TeamProductivityPage'
+
+// my profile
 import MyProfilePage from '../pages/my-profile/MyProfilePage'
 
 
@@ -141,5 +145,9 @@ export {
   ResignationApprovalPage,
   AllDashletsPage  ,
   MyProfilePage,
-  ProductLensePage,
+
+  MainDashboardPage,
+ProductivityDashboardPage,
+TeamProductivityPage,
+
 };

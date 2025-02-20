@@ -62,8 +62,10 @@ import {
   FNFApprovalPage,
   ResignationApprovalPage,
   AllDashletsPage,
-  ProductLensePage,
-  MyProfilePage
+  MyProfilePage,
+  ProductivityDashboardPage,
+  MainDashboardPage,
+  TeamProductivityPage
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -347,12 +349,16 @@ const router = createBrowserRouter([
       },
       // product lense
       {
-        path: "productivity-lense",
-        element: <ProductLensePage />,
+        path: "main-dashboard",
+        element: <MainDashboardPage />,
       },
       {
-        path: "productivity-lense",
-        element: <ProductLensePage />,
+        path: "productivity-dashboard",
+        element: <ProductivityDashboardPage />,
+      },
+      {
+        path: "team-productivity",
+        element: <TeamProductivityPage />,
       },
       // myprofile
       {

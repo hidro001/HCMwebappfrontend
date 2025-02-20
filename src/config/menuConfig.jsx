@@ -496,12 +496,17 @@ export const menuItems = [
      
       {
         name: "Main",
-        link: "/dashboard/productivity-lense",
+        link: "/dashboard/main-dashboard",
         permission: "postTopPerformer",
       },
       {
         name: "Productivity Dashboard",
-        link: "/dashboard/productivity-lense",
+        link: "/dashboard/productivity-dashboard",
+        permission: "postTopPerformer",
+      },
+      {
+        name: "Team Productivity",
+        link: "/dashboard/team-productivity",
         permission: "postTopPerformer",
       },
      
