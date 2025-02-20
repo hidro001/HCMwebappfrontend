@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,7 +13,15 @@ import {
 import { Bar, Line } from "react-chartjs-2";
 import { BsThreeDotsVertical } from "react-icons/bs";
 
-/* ---------------- REGISTER CHART.JS MODULES ---------------- */
+// Import service functions
+import {
+  fetchOverview,
+  fetchHiringSources,
+  fetchVacancies,
+  fetchDepartments,
+} from "../../service/recruitService";
+
+// Register ChartJS modules
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -103,39 +110,21 @@ function MiniSparkline({ data }) {
 
 /* ---------------- MAIN COMPONENT ---------------- */
 export default function RecruitDashboard() {
-  const [darkMode, setDarkMode] = useState(false);
-
-  /* 
-     We'll store the top squares in state:
-     openPositions, applicants, outstandingOffers, onboarding 
-  */
   const [openPositions, setOpenPositions] = useState(0);
   const [applicants, setApplicants] = useState(0);
   const [outstandingOffers, setOutstandingOffers] = useState(0);
   const [onboarding, setOnboarding] = useState(0);
 
-  /* For "Top Hiring Sources" chart data */
   const [topHiringData, setTopHiringData] = useState({
     labels: [],
     datasets: [],
   });
 
-  /* For "Recent Vacancies" table */
   const [vacancies, setVacancies] = useState([]);
-
-  /* For "Departments" data */
   const [departments, setDepartments] = useState([]);
 
-  /* For error/loading states */
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  /* 
-     Adjust the base URL depending on your environment 
-     e.g. "https://apiv2.humanmaximizer.com/api/v1/admin" if that's your route mount
-  */
-  const BASE_URL = "https://apiv2.humanmaximizer.com/api/v1/admin";
-  const token = localStorage.getItem("accessToken") || "";
 
   useEffect(() => {
     loadAllData();
@@ -146,10 +135,34 @@ export default function RecruitDashboard() {
     setError("");
 
     try {
-      await fetchOverview();
-      await fetchHiringSources();
-      await fetchVacancies();
-      await fetchDepartments();
+      // 1) Overview
+      const overviewRes = await fetchOverview();
+      if (overviewRes?.data) {
+        const { openPositions, applicants, outstandingOffers, onboarding } =
+          overviewRes.data;
+        setOpenPositions(openPositions || 0);
+        setApplicants(applicants || 0);
+        setOutstandingOffers(outstandingOffers || 0);
+        setOnboarding(onboarding || 0);
+      }
+
+      // 2) Hiring Sources
+      const hiringRes = await fetchHiringSources();
+      if (hiringRes?.data) {
+        setTopHiringData(hiringRes.data);
+      }
+
+      // 3) Vacancies
+      const vacRes = await fetchVacancies();
+      if (vacRes?.data) {
+        setVacancies(vacRes.data);
+      }
+
+      // 4) Departments
+      const deptRes = await fetchDepartments();
+      if (deptRes?.data) {
+        setDepartments(deptRes.data);
+      }
     } catch (err) {
       console.error("Error loading Recruit Dashboard data:", err);
       setError(err.response?.data?.message || "Failed to load data");
@@ -158,64 +171,7 @@ export default function RecruitDashboard() {
     }
   }
 
-  /* 1) OVERVIEW STATS (top squares) */
-  function fetchOverview() {
-    return axios
-      .get(`${BASE_URL}/recruit-dashboard/overview`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (res.data?.data) {
-          const { openPositions, applicants, outstandingOffers, onboarding } =
-            res.data.data;
-          setOpenPositions(openPositions);
-          setApplicants(applicants);
-          setOutstandingOffers(outstandingOffers);
-          setOnboarding(onboarding);
-        }
-      });
-  }
-
-  /* 2) TOP HIRING SOURCES (stacked bar) */
-  function fetchHiringSources() {
-    return axios
-      .get(`${BASE_URL}/recruit-dashboard/hiring-sources`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (res.data?.data) {
-          setTopHiringData(res.data.data);
-        }
-      });
-  }
-
-  /* 3) RECENT VACANCIES (table) */
-  function fetchVacancies() {
-    return axios
-      .get(`${BASE_URL}/recruit-dashboard/vacancies`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (res.data?.data) {
-          setVacancies(res.data.data);
-        }
-      });
-  }
-
-  /* 4) DEPARTMENTS */
-  function fetchDepartments() {
-    return axios
-      .get(`${BASE_URL}/recruit-dashboard/departments`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (res.data?.data) {
-          setDepartments(res.data.data);
-        }
-      });
-  }
-
-  /* Chart Options for the top hiring chart */
+  // For the "Top Hiring Sources" bar chart
   const topHiringOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -226,20 +182,34 @@ export default function RecruitDashboard() {
     plugins: { legend: { position: "bottom" } },
   };
 
+  // ---------------
+  // NO DATA CHECKS
+  // ---------------
+  const hasOverviewData =
+    openPositions || applicants || outstandingOffers || onboarding;
+  const hasHiringData =
+    topHiringData.labels && topHiringData.labels.length > 0;
+  const hasVacanciesData = vacancies.length > 0;
+  const hasDepartmentsData = departments.length > 0;
+
   return (
-    <div>
-      <div className="min-h-screen bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 p-6 transition-colors">
-        <div className="max-w-screen-2xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold">Recruitment Dashboard</h1>
-          </div>
+    <div className="min-h-screen bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 p-6 transition-colors">
+      <div className="max-w-screen-2xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold">Recruitment Dashboard</h1>
+        </div>
 
-          {loading && <p className="text-blue-500">Loading...</p>}
-          {error && <p className="text-red-500">Error: {error}</p>}
+        {loading && <p className="text-blue-500">Loading...</p>}
+        {error && <p className="text-red-500">Error: {error}</p>}
 
-          {/* ------------- TOP ROW: 4 big squares + Bar Chart ------------- */}
-          <div className="grid grid-cols-1 xl:grid-cols-[2fr,1fr] gap-6 mb-6">
-            {/* Left: 4 squares */}
+        {/* ------------- TOP ROW: 4 big squares + Bar Chart ------------- */}
+        <div className="grid grid-cols-1 xl:grid-cols-[2fr,1fr] gap-6 mb-6">
+          {/* Left: 4 squares */}
+          {!hasOverviewData && !loading && !error ? (
+            <p className="col-span-2 text-gray-500">
+              No overview data available.
+            </p>
+          ) : (
             <div className="grid grid-cols-2 grid-rows-2 gap-6">
               {/* 1) Open Positions */}
               <div className="rounded-lg p-4 bg-green-50 dark:bg-green-900 shadow flex flex-col justify-center">
@@ -259,9 +229,7 @@ export default function RecruitDashboard() {
 
               {/* 3) Outstanding Offers */}
               <div className="rounded-lg p-4 bg-blue-50 dark:bg-blue-900 shadow flex flex-col justify-center">
-                <div className="text-3xl font-bold mb-1">
-                  {outstandingOffers}
-                </div>
+                <div className="text-3xl font-bold mb-1">{outstandingOffers}</div>
                 <div className="text-gray-600 dark:text-gray-300">
                   Outstanding Offers
                 </div>
@@ -275,48 +243,54 @@ export default function RecruitDashboard() {
                 </div>
               </div>
             </div>
+          )}
 
-            {/* Right: Top Hiring Sources (Bar Chart) */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
-              <div className="flex items-center justify-between mb-2">
-                <h2 className="font-semibold text-gray-800 dark:text-gray-100">
-                  Top Hiring Sources
-                </h2>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Nov. 01 – 07
-                </span>
-              </div>
-              <div className="flex-grow relative h-56">
+          {/* Right: Top Hiring Sources (Bar Chart) */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="font-semibold text-gray-800 dark:text-gray-100">
+                Top Hiring Sources
+              </h2>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                Nov. 01 – 07
+              </span>
+            </div>
+            <div className="flex-grow relative h-56 flex items-center justify-center">
+              {hasHiringData ? (
                 <Bar data={topHiringData} options={topHiringOptions} />
-              </div>
+              ) : (
+                <p className="text-gray-500">No hiring sources data.</p>
+              )}
             </div>
           </div>
+        </div>
 
-          {/* ------------- BOTTOM ROW: Vacancies Table + Departments ------------- */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-            {/* Recent Vacancies Table */}
-            <div className="col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                  Recent Vacancies
-                </h2>
-                <button className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
-                  All Vacancies
-                </button>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm text-gray-700 dark:text-gray-200">
-                  <thead>
-                    <tr className="text-left border-b border-gray-200 dark:border-gray-700">
-                      <th className="py-2 font-semibold">Job Title</th>
-                      <th className="py-2 font-semibold">Location</th>
-                      <th className="py-2 font-semibold">Applicants</th>
-                      <th className="py-2 font-semibold">Trend</th>
-                      <th className="py-2 w-10" />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {vacancies.map((vac, idx) => (
+        {/* ------------- BOTTOM ROW: Vacancies Table + Departments ------------- */}
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          {/* Recent Vacancies Table */}
+          <div className="col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                Recent Vacancies
+              </h2>
+              <button className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                All Vacancies
+              </button>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-gray-700 dark:text-gray-200">
+                <thead>
+                  <tr className="text-left border-b border-gray-200 dark:border-gray-700">
+                    <th className="py-2 font-semibold">Job Title</th>
+                    <th className="py-2 font-semibold">Location</th>
+                    <th className="py-2 font-semibold">Applicants</th>
+                    <th className="py-2 font-semibold">Trend</th>
+                    <th className="py-2 w-10" />
+                  </tr>
+                </thead>
+                <tbody>
+                  {hasVacanciesData ? (
+                    vacancies.map((vac, idx) => (
                       <tr
                         key={idx}
                         className="border-b border-gray-200 dark:border-gray-700 last:border-0 hover:bg-gray-50 dark:hover:bg-gray-700"
@@ -343,29 +317,30 @@ export default function RecruitDashboard() {
                           </button>
                         </td>
                       </tr>
-                    ))}
-                    {vacancies.length === 0 && (
-                      <tr>
-                        <td colSpan={5} className="text-center py-3">
-                          No vacancies found.
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="text-center py-3">
+                        No vacancies found.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
             </div>
+          </div>
 
-            {/* Departments List */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="font-semibold text-gray-800 dark:text-gray-100">
-                  Departments
-                </h2>
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Sep. 01 – 07
-                </span>
-              </div>
+          {/* Departments List */}
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-semibold text-gray-800 dark:text-gray-100">
+                Departments
+              </h2>
+              <span className="text-sm text-gray-500 dark:text-gray-400">
+                Sep. 01 – 07
+              </span>
+            </div>
+            {hasDepartmentsData ? (
               <div className="space-y-3">
                 {departments.map((dept, i) => {
                   const styles = departmentStyles[dept.name] || {
@@ -404,7 +379,9 @@ export default function RecruitDashboard() {
                   );
                 })}
               </div>
-            </div>
+            ) : (
+              <p className="text-gray-500">No departments data found.</p>
+            )}
           </div>
         </div>
       </div>

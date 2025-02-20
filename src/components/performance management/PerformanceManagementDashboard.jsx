@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -16,7 +15,15 @@ import { Line, Doughnut } from "react-chartjs-2";
 import { motion } from "framer-motion";
 import { FaMedal, FaChartLine, FaMeh } from "react-icons/fa";
 
-// Register ChartJS
+// Import the service functions
+import {
+  fetchStats,
+  fetchChart,
+  fetchDonut,
+  fetchTopPerformerList,
+} from "../../service/performanceService";
+
+// Register ChartJS components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -30,9 +37,6 @@ ChartJS.register(
 );
 
 export default function PerformanceManagementDashboard() {
-  const BASE_URL = "https://apiv2.humanmaximizer.com/api/v1/kpi";
-  const token = localStorage.getItem("accessToken") || "";
-
   const [selectedRange, setSelectedRange] = useState("Monthly");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -65,114 +69,77 @@ export default function PerformanceManagementDashboard() {
 
   useEffect(() => {
     loadAllData();
-    // eslint-disable-next-line
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRange]);
 
-  function loadAllData() {
+  async function loadAllData() {
     setLoading(true);
     setError("");
 
-    fetchStats()
-      .then(() => fetchChart())
-      .then(() => fetchDonut())
-      .then(() => fetchTopPerformerList())
-      .catch((err) => {
-        console.error("Error loading data:", err);
-        setError(err.response?.data?.message || "Failed to load dashboard");
-      })
-      .finally(() => setLoading(false));
-  }
+    try {
+      // 1) Fetch Stats
+      const statsRes = await fetchStats(selectedRange);
+      if (statsRes?.data) {
+        setTopPerformerCount(statsRes.data.top || 0);
+        setAvgPerformerCount(statsRes.data.average || 0);
+        setBelowAvgPerformerCount(statsRes.data.below || 0);
+      }
 
-  // 1) STATS
-  function fetchStats() {
-    return axios
-      .get(`${BASE_URL}/dashboard/stats?range=${selectedRange}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (res.data?.data) {
-          setTopPerformerCount(res.data.data.top || 0);
-          setAvgPerformerCount(res.data.data.average || 0);
-          setBelowAvgPerformerCount(res.data.data.below || 0);
-        }
-      });
-  }
+      // 2) Fetch Chart
+      const chartRes = await fetchChart(selectedRange);
+      if (chartRes?.data) {
+        const { labels, revenueData, performanceData } = chartRes.data;
 
-  // 2) CHART
-  function fetchChart() {
-    return axios
-      .get(`${BASE_URL}/dashboard/chart?range=${selectedRange}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (res.data?.data) {
-          const { labels, revenueData, performanceData } = res.data.data;
-          setChartData({
-            labels,
-            datasets: [
-              {
-                type: "bar",
-                label: "Revenue",
-                data: revenueData,
-                backgroundColor: "rgba(156,163,175,0.3)",
-                borderWidth: 0,
-                yAxisID: "y",
-              },
-              {
-                type: "line",
-                label: "Performance",
-                data: performanceData,
-                borderColor: "rgba(59,130,246,1)",
-                backgroundColor: "rgba(59,130,246,0.2)",
-                tension: 0.4,
-                yAxisID: "y2",
-              },
-            ],
-          });
-        }
-      });
-  }
+        setChartData({
+          labels: labels || [],
+          datasets: [
+            {
+              type: "bar",
+              label: "Revenue",
+              data: revenueData || [],
+              backgroundColor: "rgba(156,163,175,0.3)",
+              borderWidth: 0,
+              yAxisID: "y",
+            },
+            {
+              type: "line",
+              label: "Performance",
+              data: performanceData || [],
+              borderColor: "rgba(59,130,246,1)",
+              backgroundColor: "rgba(59,130,246,0.2)",
+              tension: 0.4,
+              yAxisID: "y2",
+            },
+          ],
+        });
+      }
 
-  // 3) DONUT
-  function fetchDonut() {
-    return axios
-      .get(`${BASE_URL}/dashboard/donut?range=${selectedRange}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (res.data?.data) {
-          const { maleCount, femaleCount } = res.data.data;
-          setDonutData({
-            labels: ["Male", "Female"],
-            datasets: [
-              {
-                data: [maleCount, femaleCount],
-                backgroundColor: ["rgb(59,130,246)", "rgb(245,158,11)"],
-                hoverOffset: 4,
-              },
-            ],
-          });
-        }
-      });
-  }
+      // 3) Fetch Donut
+      const donutRes = await fetchDonut(selectedRange);
+      if (donutRes?.data) {
+        const { maleCount, femaleCount } = donutRes.data;
 
-  // 4) TABLE (Top Performer List)
-  function fetchTopPerformerList() {
-    // We'll call your existing /ratings/top-rated?month=...&year=...&limit=4
-    // or you can do your own approach
-    const now = new Date();
-    const month = now.getMonth() + 1;
-    const year = now.getFullYear();
-    const limit = 4;
+        setDonutData({
+          labels: ["Male", "Female"],
+          datasets: [
+            {
+              data: [maleCount || 0, femaleCount || 0],
+              backgroundColor: ["rgb(59,130,246)", "rgb(245,158,11)"],
+              hoverOffset: 4,
+            },
+          ],
+        });
+      }
 
-    return axios
-      .get(
-        `${BASE_URL}/ratings/top-rated?month=${month}&year=${year}&limit=${limit}`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-      .then((res) => {
-        if (!res.data?.data) return;
-        const mapped = res.data.data.map((emp, idx) => ({
+      // 4) Fetch Top Performer List
+      const now = new Date();
+      const month = now.getMonth() + 1;
+      const year = now.getFullYear();
+      const limit = 4;
+
+      const topListRes = await fetchTopPerformerList(month, year, limit);
+      if (topListRes?.data) {
+        const mapped = topListRes.data.map((emp, idx) => ({
           empId: emp.employeeId || `EMP${idx + 1}`,
           name: `${emp.firstName || ""} ${emp.lastName || ""}`.trim(),
           department: emp.department || "N/A",
@@ -180,7 +147,13 @@ export default function PerformanceManagementDashboard() {
           designation: emp.designation || "N/A",
         }));
         setTopPerformerList(mapped);
-      });
+      }
+    } catch (err) {
+      console.error("Error loading data:", err);
+      setError(err.response?.data?.message || "Failed to load dashboard");
+    } finally {
+      setLoading(false);
+    }
   }
 
   // Chart Options
@@ -220,7 +193,7 @@ export default function PerformanceManagementDashboard() {
     },
   };
 
-  // For Framer Motion (optional)
+  // Framer Motion
   const cardVariants = {
     hidden: { opacity: 0, y: 25 },
     visible: (i) => ({
@@ -234,6 +207,25 @@ export default function PerformanceManagementDashboard() {
     }),
   };
 
+  // ------------------------------------
+  // Conditional Renders (No Data)
+  // ------------------------------------
+
+  // 1) Stats "no data" check:
+  //   If they are all zero, you might consider that "no data" 
+  //   or adjust logic as you need.
+  const hasStatsData = topPerformerCount || avgPerformerCount || belowAvgPerformerCount;
+
+  // 2) Chart "no data" check
+  const hasChartData = chartData.labels && chartData.labels.length > 0;
+
+  // 3) Donut "no data" check
+  const [maleCount, femaleCount] = donutData.datasets[0].data;
+  const hasDonutData = maleCount > 0 || femaleCount > 0;
+
+  // 4) Table "no data" check
+  const hasTopPerformerData = topPerformerList && topPerformerList.length > 0;
+
   return (
     <div className="space-y-6">
       {loading && <p className="text-blue-500">Loading...</p>}
@@ -244,64 +236,69 @@ export default function PerformanceManagementDashboard() {
       )}
 
       {/* --- Stats Cards (top row) --- */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {/* Top Performer */}
-        <motion.div
-          custom={0}
-          variants={cardVariants}
-          initial="hidden"
-          animate="visible"
-          className="flex flex-col rounded-lg p-4 shadow bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100"
-        >
-          <div className="flex items-center gap-2">
-            <FaMedal className="text-blue-600 dark:text-blue-200" size={24} />
-            <h2 className="text-md font-semibold">Top Performer</h2>
-          </div>
-          <p className="text-2xl font-bold my-3">{topPerformerCount}</p>
-          <p className="text-sm font-medium text-green-600 dark:text-green-300">
-            Increase by 200 this Month
-          </p>
-        </motion.div>
+      {!hasStatsData && !loading && !error && (
+        <p className="text-center text-gray-500">No stats data available.</p>
+      )}
+      {hasStatsData && (
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {/* Top Performer */}
+          <motion.div
+            custom={0}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex flex-col rounded-lg p-4 shadow bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100"
+          >
+            <div className="flex items-center gap-2">
+              <FaMedal className="text-blue-600 dark:text-blue-200" size={24} />
+              <h2 className="text-md font-semibold">Top Performer</h2>
+            </div>
+            <p className="text-2xl font-bold my-3">{topPerformerCount}</p>
+            <p className="text-sm font-medium text-green-600 dark:text-green-300">
+              Increase by 200 this Month
+            </p>
+          </motion.div>
 
-        {/* Average Performer */}
-        <motion.div
-          custom={1}
-          variants={cardVariants}
-          initial="hidden"
-          animate="visible"
-          className="flex flex-col rounded-lg p-4 shadow bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-100"
-        >
-          <div className="flex items-center gap-2">
-            <FaChartLine
-              className="text-purple-600 dark:text-purple-200"
-              size={24}
-            />
-            <h2 className="text-md font-semibold">Average Performer</h2>
-          </div>
-          <p className="text-2xl font-bold my-3">{avgPerformerCount}</p>
-          <p className="text-sm font-medium text-red-600 dark:text-red-300">
-            Decrease by 200 this Month
-          </p>
-        </motion.div>
+          {/* Average Performer */}
+          <motion.div
+            custom={1}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex flex-col rounded-lg p-4 shadow bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-100"
+          >
+            <div className="flex items-center gap-2">
+              <FaChartLine
+                className="text-purple-600 dark:text-purple-200"
+                size={24}
+              />
+              <h2 className="text-md font-semibold">Average Performer</h2>
+            </div>
+            <p className="text-2xl font-bold my-3">{avgPerformerCount}</p>
+            <p className="text-sm font-medium text-red-600 dark:text-red-300">
+              Decrease by 200 this Month
+            </p>
+          </motion.div>
 
-        {/* Below Average Performer */}
-        <motion.div
-          custom={2}
-          variants={cardVariants}
-          initial="hidden"
-          animate="visible"
-          className="flex flex-col rounded-lg p-4 shadow bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-100"
-        >
-          <div className="flex items-center gap-2">
-            <FaMeh className="text-red-600 dark:text-red-200" size={24} />
-            <h2 className="text-md font-semibold">Below Average Performer</h2>
-          </div>
-          <p className="text-2xl font-bold my-3">{belowAvgPerformerCount}</p>
-          <p className="text-sm font-medium text-green-600 dark:text-green-300">
-            Increase by 200 this Month
-          </p>
-        </motion.div>
-      </div>
+          {/* Below Average Performer */}
+          <motion.div
+            custom={2}
+            variants={cardVariants}
+            initial="hidden"
+            animate="visible"
+            className="flex flex-col rounded-lg p-4 shadow bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-100"
+          >
+            <div className="flex items-center gap-2">
+              <FaMeh className="text-red-600 dark:text-red-200" size={24} />
+              <h2 className="text-md font-semibold">Below Average Performer</h2>
+            </div>
+            <p className="text-2xl font-bold my-3">{belowAvgPerformerCount}</p>
+            <p className="text-sm font-medium text-green-600 dark:text-green-300">
+              Increase by 200 this Month
+            </p>
+          </motion.div>
+        </div>
+      )}
 
       {/* --- Chart Section (middle) --- */}
       <motion.div
@@ -337,8 +334,12 @@ export default function PerformanceManagementDashboard() {
           </div>
         </div>
 
-        <div className="w-full h-64">
-          <Line data={chartData} options={chartOptions} />
+        <div className="w-full h-64 flex items-center justify-center">
+          {hasChartData ? (
+            <Line data={chartData} options={chartOptions} />
+          ) : (
+            <p className="text-gray-500">No chart data available.</p>
+          )}
         </div>
       </motion.div>
 
@@ -364,18 +365,26 @@ export default function PerformanceManagementDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {topPerformerList.map((row) => (
-                  <tr
-                    key={row.empId}
-                    className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  >
-                    <td className="px-4 py-3">{row.empId}</td>
-                    <td className="px-4 py-3">{row.name}</td>
-                    <td className="px-4 py-3">{row.department}</td>
-                    <td className="px-4 py-3">{row.date}</td>
-                    <td className="px-4 py-3">{row.designation}</td>
+                {hasTopPerformerData ? (
+                  topPerformerList.map((row) => (
+                    <tr
+                      key={row.empId}
+                      className="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    >
+                      <td className="px-4 py-3">{row.empId}</td>
+                      <td className="px-4 py-3">{row.name}</td>
+                      <td className="px-4 py-3">{row.department}</td>
+                      <td className="px-4 py-3">{row.date}</td>
+                      <td className="px-4 py-3">{row.designation}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-3 text-center text-gray-500">
+                      No performer data available.
+                    </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
@@ -396,27 +405,33 @@ export default function PerformanceManagementDashboard() {
           </div>
 
           <div className="flex flex-col items-center justify-center">
-            <div className="w-40 h-40 mb-2">
-              <Doughnut data={donutData} />
+            <div className="w-40 h-40 mb-2 flex items-center justify-center">
+              {hasDonutData ? (
+                <Doughnut data={donutData} options={donutOptions} />
+              ) : (
+                <p className="text-gray-500">No donut data available.</p>
+              )}
             </div>
 
-            {/* placeholders for % changes */}
-            <div className="flex space-x-4 mt-2 text-sm font-medium">
-              <div className="flex flex-col items-center">
-                <span className="text-blue-500 dark:text-blue-400">+15%</span>
-                <span className="text-gray-600 dark:text-gray-200">
-                  Male: {donutData.datasets[0].data[0]}
-                </span>
+            {/* placeholders for % changes (optional) */}
+            {hasDonutData && (
+              <div className="flex space-x-4 mt-2 text-sm font-medium">
+                <div className="flex flex-col items-center">
+                  <span className="text-blue-500 dark:text-blue-400">+15%</span>
+                  <span className="text-gray-600 dark:text-gray-200">
+                    Male: {maleCount}
+                  </span>
+                </div>
+                <div className="flex flex-col items-center">
+                  <span className="text-orange-500 dark:text-orange-300">
+                    +20%
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-200">
+                    Female: {femaleCount}
+                  </span>
+                </div>
               </div>
-              <div className="flex flex-col items-center">
-                <span className="text-orange-500 dark:text-orange-300">
-                  +20%
-                </span>
-                <span className="text-gray-600 dark:text-gray-200">
-                  Female: {donutData.datasets[0].data[1]}
-                </span>
-              </div>
-            </div>
+            )}
           </div>
         </motion.div>
       </div>

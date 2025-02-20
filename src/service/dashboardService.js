@@ -1,5 +1,3 @@
-// dashboardService.js
-
 import axiosInstance from "./axiosInstance";
 
 export async function getAttendanceData(date) {
@@ -9,18 +7,11 @@ export async function getAttendanceData(date) {
   return response.data;
 }
 
-
-
-
 export async function getTeamPerformance() {
 
   const response = await axiosInstance.get("/superadmin/performance-stats"); 
   return response.data; 
 }
-
-
-
-
 
 
 export async function getRaciScores(startDate, endDate) {

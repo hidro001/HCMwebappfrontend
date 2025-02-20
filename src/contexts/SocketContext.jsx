@@ -16,7 +16,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (token) {
-      const newSocket = io(import.meta.env.REACT_APP_SOCKET_URL || 'https://chat.humanmaximizer.com', {
+      const newSocket = io(import.meta.env.VITE_SOCKET_URL , {
         auth: {
           token,
         },

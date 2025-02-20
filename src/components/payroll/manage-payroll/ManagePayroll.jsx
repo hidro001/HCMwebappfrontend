@@ -22,6 +22,7 @@ import {
   fetchAllPayroll,
   fetchAllocatedDepartments,
   addPayroll,
+  getPayrollSummary
 } from '../../../service/payrollService';
 
 // Utility: Converts numeric month (1-12) to text
@@ -35,6 +36,9 @@ function getMonthName(month) {
 
 export default function ManagePayroll() {
   // Defaults to current month/year
+
+
+  const [loading, setLoading] = useState(true);
   const today = new Date();
   const currentMonth = today.getMonth() + 1;
   const currentYear = today.getFullYear();
@@ -66,6 +70,37 @@ export default function ManagePayroll() {
 
   // Confirmation dialog (for Delete)
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+
+
+
+
+  // for count
+
+
+  const [summary, setSummary] = useState({
+    totalEmployees: 0,
+    totalPayout: 0,
+   
+  });
+
+
+
+  useEffect(() => {
+    async function fetchSummary() {
+      setLoading(true);
+      const response = await getPayrollSummary(currentMonth, currentYear);
+
+      if (response.success) {
+        setSummary(response.data);
+      } else {
+        console.error(response.message);
+      }
+      setLoading(false);
+    }
+
+    fetchSummary();
+  }, [currentMonth, currentYear]);
 
   // 1) Fetch Departments (once on mount)
   useEffect(() => {
@@ -202,103 +237,40 @@ export default function ManagePayroll() {
   return (
     <div className="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col">
       {/* Top Banner */}
-      <div
-        className="
-          bg-green-100
-          border
-          border-green-200
-          text-green-700
-          p-4
-          text-sm md:text-base
-          flex flex-col md:flex-row
-          items-center justify-between
-          dark:bg-green-900
-          dark:border-green-800
-          dark:text-green-100
-        "
-      >
-        <p>Stay on top of your department's progress with Department Statistics!</p>
-        <div className="mt-2 md:mt-0 flex items-center gap-4">
-          <a href="#" className="text-green-800 underline dark:text-green-200">
-            Hide Help
-          </a>
-          <a href="#" className="text-blue-600 underline dark:text-blue-300">
-            Task
-          </a>
-        </div>
-      </div>
+    
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4">
-        {/* Card 1: Total Employees */}
-        <div
-          className="
-            rounded-lg
-            bg-blue-50
-            dark:bg-blue-900
-            p-4
-            border
-            border-blue-100
-            dark:border-blue-800
-          "
-        >
-          <div className="text-sm text-blue-700 dark:text-blue-300 font-semibold">
-            Total Employee
-          </div>
-          <div className="text-2xl font-bold mt-1 text-black dark:text-white">
-            20,000
-          </div>
-          <div className="text-xs text-green-600 dark:text-green-400 mt-1">
-            +5000 Last 30 days
-          </div>
+      {/* Total Employees */}
+      <div className="rounded-lg bg-blue-50 dark:bg-blue-900 p-4 border border-blue-100 dark:border-blue-800">
+        <div className="text-sm text-blue-700 dark:text-blue-300 font-semibold">
+          Total Employee
         </div>
-
-        {/* Card 2: Total Payout */}
-        <div
-          className="
-            rounded-lg
-            bg-pink-50
-            dark:bg-pink-900
-            p-4
-            border
-            border-pink-100
-            dark:border-pink-800
-          "
-        >
-          <div className="text-sm text-pink-700 dark:text-pink-300 font-semibold">
-            Total Payout for {monthName}
-          </div>
-          <div className="text-2xl font-bold mt-1 text-black dark:text-white">
-            ₹ 304,999.61
-          </div>
-          <div className="text-xs text-red-600 dark:text-red-400 mt-1">
-            -800 Last 30 days
-          </div>
-        </div>
-
-        {/* Card 3: Unpaid Salary */}
-        <div
-          className="
-            rounded-lg
-            bg-purple-50
-            dark:bg-purple-900
-            p-4
-            border
-            border-purple-100
-            dark:border-purple-800
-          "
-        >
-          <div className="text-sm text-purple-700 dark:text-purple-300 font-semibold">
-            Total Unpaid Salary
-          </div>
-          <div className="text-2xl font-bold mt-1 text-black dark:text-white">
-            ₹ 104,999.61
-          </div>
-          <div className="text-xs text-green-600 dark:text-green-400 mt-1">
-            +200 Last 30 days
-          </div>
+        <div className="text-2xl font-bold mt-1 text-black dark:text-white">
+          {loading ? "Loading..." : summary.totalEmployees.toLocaleString()}
         </div>
       </div>
+
+      {/* Total Payout */}
+      <div className="rounded-lg bg-pink-50 dark:bg-pink-900 p-4 border border-pink-100 dark:border-pink-800">
+        <div className="text-sm text-pink-700 dark:text-pink-300 font-semibold">
+          Total Payout for {new Date(0, currentMonth - 1).toLocaleString("default", { month: "long" })}
+        </div>
+        <div className="text-2xl font-bold mt-1 text-black dark:text-white">
+          {loading ? "Loading..." : `₹ ${summary.totalPayout}`}
+        </div>
+      </div>
+
+      {/* Total Unpaid Salary */}
+      {/* <div className="rounded-lg bg-purple-50 dark:bg-purple-900 p-4 border border-purple-100 dark:border-purple-800">
+        <div className="text-sm text-purple-700 dark:text-purple-300 font-semibold">
+          Total Unpaid Salary
+        </div>
+        <div className="text-2xl font-bold mt-1 text-black dark:text-white">
+          {loading ? "Loading..." : `₹ ${summary.totalUnpaidSalary.toFixed(2)}`}
+        </div>
+      </div> */}
+    </div>
 
       {/* Main Heading */}
       <div className="px-4 mb-2">
@@ -516,13 +488,13 @@ export default function ManagePayroll() {
                     >
                       <FaPen />
                     </button>
-                    <button
+                    {/* <button
                       title="Delete"
                       onClick={() => handleDeleteClick(entry)}
                       className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
                     >
                       <FaTrash />
-                    </button>
+                    </button> */}
                   </div>
                 </td>
               </tr>
@@ -582,11 +554,13 @@ export default function ManagePayroll() {
         onClose={handleCloseViewModal}
         payrollData={selectedPayroll}
       />
-      <ManagePayrollEdit
-        isOpen={isEditModalOpen}
-        onClose={handleCloseEditModal}
-        payrollData={selectedPayroll}
-      />
+    <ManagePayrollEdit
+  isOpen={isEditModalOpen}
+  onClose={handleCloseEditModal}
+  payrollData={selectedPayroll}
+  onRefresh={() => fetchAllPayroll(month, year).then(setPayrollList)}
+/>
+
 
       {/* ConfirmationDialog for Processing Payroll */}
       <ConfirmationDialog

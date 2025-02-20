@@ -29,7 +29,7 @@ import {
   CreateVacancyPage,
   ReferralListPage,
   VacanciesListPage,
-  EmployeeFnfPage,
+  EmployeeResignationHistoryPage,
   CompanyInfoPage,
   CompanySettingPage,
   MainPage,
@@ -53,7 +53,17 @@ import {
   RaciOperationsPage,
   SuperAdminDashboardPage,
   EmployeeDashboardPage,
-  ChatPage
+  ChatPage,
+  EmployeeLeaveHistoryPage,
+  AssignedTaskEmployeePage,
+  ManageLeavesPage,
+  AllLeavePage,
+  SubmitResignationPage,
+  FNFApprovalPage,
+  ResignationApprovalPage,
+  AllDashletsPage,
+  ProductLensePage,
+  MyProfilePage
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -65,6 +75,7 @@ import {
   NotificationsPage,
 } from "../components";
 import DailyTaskPage from "../pages/task/DailyTaskPage";
+
 
 const router = createBrowserRouter([
   {
@@ -80,6 +91,7 @@ const router = createBrowserRouter([
     element: (
       <MainLayout>
         <PrivateRoute />
+      
       </MainLayout>
     ),
     children: [
@@ -215,9 +227,24 @@ const router = createBrowserRouter([
         element: <VacanciesListPage />,
       },
       {
-        path: "employee-fnf",
-        element: <EmployeeFnfPage />,
+        path: "employee-resignation-history",
+        element: <EmployeeResignationHistoryPage />,
       },
+      // asdasfsfdsdsf
+      {
+        path: "submit-resignation",
+        element: <SubmitResignationPage />,
+      },
+      {
+        path: "resignation-approvals",
+        element: <ResignationApprovalPage />,
+      },
+      {
+        path: "fnf-request-hr",
+        element: <FNFApprovalPage />,
+      },
+
+      // sdgdfgdfgdfhdfhdh
       {
         path: "company-info",
         element: <CompanyInfoPage />,
@@ -236,6 +263,10 @@ const router = createBrowserRouter([
       {
         path: "assigned-task",
         element: <AssignedTaskPage />,
+      },
+      {
+        path: "assigned-task/employee",
+        element: <AssignedTaskEmployeePage />,
       },
       {
         path: "daily-task",
@@ -292,11 +323,41 @@ const router = createBrowserRouter([
       {
         path: "raci-operations",
         element: <RaciOperationsPage />,
-      // chat
+        // chat
       },
       {
         path: "chats",
         element: <ChatPage />,
+      },
+      {
+        path: "leave-history",
+        element: <EmployeeLeaveHistoryPage />,
+      },
+      {
+        path: "manage-leave-history",
+        element: <ManageLeavesPage />,
+      },
+      {
+        path: "all-leave-history",
+        element: <AllLeavePage />,
+      },
+      {
+        path: "all-dashlets",
+        element: <AllDashletsPage />,
+      },
+      // product lense
+      {
+        path: "productivity-lense",
+        element: <ProductLensePage />,
+      },
+      {
+        path: "productivity-lense",
+        element: <ProductLensePage />,
+      },
+      // myprofile
+      {
+        path: "my-profile",
+        element: <MyProfilePage />,
       },
     ],
   },

@@ -116,3 +116,34 @@ export const fetchAllTasks = async (empId) => {
 
 
 
+// EMPLOYEE TASKS
+
+
+
+export const fetchTasksEmp = async () => {
+  try {
+    const response = await axiosInstance.get("/employee/assign");
+    if (response.data.success) {
+      return response.data.data; 
+    }
+  } catch (error) {
+    console.error("Error fetching subordinates:", error);
+    return [];
+  }
+};
+
+//  task count main
+
+
+
+export const getTaskStatusSummary = async (employeeId) => {
+  try {
+    const response = await axiosInstance.get(`/task/task-status`, {
+      params: { employee_Id: employeeId },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching task status summary:", error);
+    throw error;
+  }
+};

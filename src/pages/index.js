@@ -25,7 +25,7 @@ import AllVacanciesPage from "./recruit management/AllVacanciesPage";
 import CreateVacancyPage from "./recruit management/CreateVacancyPage";
 import ReferralListPage from "./recruit management/ReferralListPage";
 import VacanciesListPage from "./recruit management/VacanciesListPage";
-import EmployeeFnfPage from "./recruit management/EmployeeFnfPage";
+import EmployeeResignationHistoryPage from "./resignation management/EmployeeResignationHistoryPage";
 import CompanyInfoPage from "./company setting/CompanyInfoPage";
 import CompanySettingPage from "./company setting/CompanySettingPage";
 
@@ -54,6 +54,28 @@ import RaciBusinessPage from "./raci management/RaciBusinessPage";
 import RaciOperationsPage from "./raci management/RaciOperationsPage";
 import SuperAdminDashboardPage from "./dashboard/SuperAdminDashboardPage";
 import EmployeeDashboardPage from "./dashboard/EmployeeDashboardPage";
+import EmployeeLeaveHistoryPage from "./leave management/EmployeeLeaveHistoryPage";
+import AssignedTaskEmployeePage from "./task/AssignedTaskEmployeePage";
+import ManageLeavesPage from "./leave management/ManageLeavesPage";
+import AllLeavePage from "./leave management/AllLeavePage";
+// ResignationDashboardPage
+import SubmitResignationPage from './resignation management/SubmitResignationPage'
+import FNFApprovalPage from "./resignation management/FNFApprovalPage";
+import ResignationApprovalPage from "./resignation management/ResignationApprovalPage";
+
+
+
+
+// reci
+
+import AllDashletsPage from '../pages//raci management/AllDashletsPage'
+// product lense
+import ProductLensePage from '../pages/product-lense/ProductLensePage'
+import MyProfilePage from '../pages/my-profile/MyProfilePage'
+
+
+
+
 
 
 export {
@@ -87,7 +109,7 @@ export {
   CreateVacancyPage,
   ReferralListPage,
   VacanciesListPage,
-  EmployeeFnfPage,
+  EmployeeResignationHistoryPage,
   CompanyInfoPage,
   AssignedTaskPage,
   ViewDailyTaskPage,
@@ -108,5 +130,16 @@ export {
   RaciBusinessPage,
   RaciOperationsPage,
   SuperAdminDashboardPage,
-  EmployeeDashboardPage
+  EmployeeDashboardPage,
+  EmployeeLeaveHistoryPage,
+  AssignedTaskEmployeePage,
+  ManageLeavesPage,
+  AllLeavePage,
+
+  SubmitResignationPage,
+  FNFApprovalPage,
+  ResignationApprovalPage,
+  AllDashletsPage  ,
+  MyProfilePage,
+  ProductLensePage,
 };

@@ -16,7 +16,7 @@ import AssignedTaskModal from "./AssignedTaskModal"; // View Task
 import AssignedTaskEdit from "./AssignedTaskEdit"; // Edit Task
 import ConfirmationDialog from "../../../components/common/ConfirmationDialog";
 import { deleteTasks, fetchTasks } from "../../../service/taskService";
-import { Toaster, toast } from "react-hot-toast";
+import {  toast } from "react-hot-toast";
 
 const AssignedTask = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,8 +78,7 @@ const AssignedTask = () => {
 
   return (
     <div className="p-6 w-full max-w-6xl mx-auto bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
-      {/* Global Toaster for notifications */}
-      <Toaster />
+      
 
       {/* Header */}
       <div className="flex justify-between items-center mb-4">

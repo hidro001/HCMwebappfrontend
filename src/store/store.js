@@ -44,6 +44,7 @@ const useAuthStore = create(
           departmentAlocated,
           teams,
           userAvatar,
+          permissions,          
           notifications, // Extract notifications from userData
           engagement_permission, // Extract engagement_permission from userData
         } = userData;
@@ -65,6 +66,7 @@ const useAuthStore = create(
           departmentAlocated,
           teams,
           userAvatar,
+          permissions, 
         });
 
         // Persist to localStorage

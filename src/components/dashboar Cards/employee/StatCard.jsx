@@ -111,7 +111,7 @@ function StatCard({
       "
     >
       {/* Top Right Button */}
-      <div className="flex justify-end mb-2">
+      {/* <div className="flex justify-end mb-2">
         <button
           className="
             flex items-center gap-1
@@ -137,7 +137,7 @@ function StatCard({
             />
           </svg>
         </button>
-      </div>
+      </div> */}
 
       {/* Icon + Stats */}
       <div className="flex flex-col gap-2">

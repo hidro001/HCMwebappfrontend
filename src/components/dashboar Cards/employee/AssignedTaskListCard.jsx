@@ -1,303 +1,211 @@
-// import React, { useState } from 'react';
-// import { motion } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { FiTrash2, FiEdit, FiPlus, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { getTasks, createTask, updateTask, deleteTask, updateTaskStatus } from "../../../service/todoService";
+import toast from "react-hot-toast";
 
-
-// const initialTasks = [
-//   {
-//     id: 1,
-//     number: '01',
-//     numberBg: 'bg-blue-400',
-//     title: 'UI Elements and Widgets',
-//     activityStatus: { text: 'Active', color: 'text-green-500 bg-green-50 border-green-500' },
-//     progressStatus: { text: 'Progress', color: 'text-yellow-500' },
-//     isComplete: false,
-//   },
-//   {
-//     id: 2,
-//     number: '02',
-//     numberBg: 'bg-yellow-400',
-//     title: 'Styleguide and Elements',
-//     activityStatus: { text: 'Inactive', color: 'text-red-500 bg-red-50 border-red-500' },
-//     progressStatus: { text: 'On Hold', color: 'text-red-500' },
-//     isComplete: false,
-//   },
-//   {
-//     id: 3,
-//     number: '03',
-//     numberBg: 'bg-pink-400',
-//     title: 'Webdesigner Mockups',
-//     activityStatus: { text: 'Active', color: 'text-green-500 bg-green-50 border-green-500' },
-//     progressStatus: { text: 'Done', color: 'text-green-500' },
-//     isComplete: true,
-//   },
-//   {
-//     id: 4,
-//     number: '04',
-//     numberBg: 'bg-purple-400',
-//     title: 'User Interface Styles',
-//     activityStatus: { text: 'Active', color: 'text-green-500 bg-green-50 border-green-500' },
-//     progressStatus: { text: 'Progress', color: 'text-yellow-500' },
-//     isComplete: false,
-//   },
-// ];
-
-// const AssignedTaskListCard = () => {
-//   // Local state for tasks, so checkbox toggling can work.
-//   const [tasks, setTasks] = useState(initialTasks);
-
-//   // Toggle the “isComplete” field
-//   const handleCheckboxChange = (id) => {
-//     setTasks((prevTasks) =>
-//       prevTasks.map((task) =>
-//         task.id === id ? { ...task, isComplete: !task.isComplete } : task
-//       )
-//     );
-//   };
-
-//   return (
-//     <motion.div
-//       initial={{ opacity: 0, y: 10 }}
-//       animate={{ opacity: 1, y: 0 }}
-//       transition={{ duration: 0.5 }}
-//       className="w-full p-5 rounded-lg shadow bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100"
-//     >
-//       {/* Card Header */}
-//       <div className="flex items-center justify-between mb-4">
-//         <h2 className="text-lg font-bold">Assigned Task List</h2>
-//         <button className="text-gray-400 dark:text-gray-500 hover:text-gray-600">
-//           <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-//             <circle cx="10" cy="4" r="2" />
-//             <circle cx="10" cy="10" r="2" />
-//             <circle cx="10" cy="16" r="2" />
-//           </svg>
-//         </button>
-//       </div>
-
-//       {/* Table-like Task Rows */}
-//       <div className="divide-y divide-gray-200 dark:divide-slate-600 ">
-//         {tasks.map((task) => (
-//           <div
-//             key={task.id}
-//             className="flex items-center justify-between py-3  w-full m-auto "
-//           >
-//             {/* Left side: Number circle + Title */}
-//             <div className="flex items-center space-x-3  w-80">
-//               <div
-//                 className={`w-9 h-9 flex items-center justify-center rounded-full text-white font-semibold  ${task.numberBg}`}
-//               >
-//                 {task.number}
-//               </div>
-//               <span className="font-semibold ">{task.title}</span>
-//             </div>
-
-//             {/* Middle area: Activity + Progress */}
-//             <div className="flex items-center justify-between space-x-6  w-44">
-//               {/* Activity status pill with tiny color circle */}
-//               <div
-//                 className={`
-//                   flex items-center space-x-2 
-//                   border 
-//                   rounded-full 
-//                   px-3 py-1 
-//                   text-sm 
-//                   font-medium
-//                   ${task.activityStatus.color}
-//                 `}
-//               >
-//                 <span
-//                   className="inline-block w-2 h-2 rounded-full"
-//                   style={{
-//                     backgroundColor: task.activityStatus.color.includes('green')
-//                       ? '#10B981'
-//                       : '#EF4444',
-//                   }}
-//                 />
-//                 <span>{task.activityStatus.text}</span>
-//               </div>
-
-//               {/* Progress status text */}
-//               <span className={`text-sm font-semibold ${task.progressStatus.color}`}>
-//                 {task.progressStatus.text}
-//               </span>
-//             </div>
-
-//             {/* Right side: Checkbox */}
-//             <div>
-//               <label className="inline-flex items-center cursor-pointer">
-//                 <input
-//                   type="checkbox"
-//                   checked={task.isComplete}
-//                   onChange={() => handleCheckboxChange(task.id)}
-//                   className="form-checkbox h-5 w-5 text-blue-500 rounded"
-//                 />
-//               </label>
-//             </div>
-//           </div>
-//         ))}
-//       </div>
-//     </motion.div>
-//   );
-// };
-
-// export default AssignedTaskListCard;
-
-
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-
-const initialTasks = [
-  {
-    id: 1,
-    number: '01',
-    numberBg: 'bg-blue-400',
-    title: 'UI Elements and Widgets',
-    activityStatus: {
-      text: 'Active',
-      color: 'text-green-500 bg-green-50 border-green-500',
-    },
-    progressStatus: { text: 'Progress', color: 'text-yellow-500' },
-    isComplete: false,
-  },
-  {
-    id: 2,
-    number: '02',
-    numberBg: 'bg-yellow-400',
-    title: 'Styleguide and Elements',
-    activityStatus: {
-      text: 'Inactive',
-      color: 'text-red-500 bg-red-50 border-red-500',
-    },
-    progressStatus: { text: 'On Hold', color: 'text-red-500' },
-    isComplete: false,
-  },
-  {
-    id: 3,
-    number: '03',
-    numberBg: 'bg-pink-400',
-    title: 'Webdesigner Mockups',
-    activityStatus: {
-      text: 'Active',
-      color: 'text-green-500 bg-green-50 border-green-500',
-    },
-    progressStatus: { text: 'Done', color: 'text-green-500' },
-    isComplete: true,
-  },
-  {
-    id: 4,
-    number: '04',
-    numberBg: 'bg-purple-400',
-    title: 'User Interface Styles',
-    activityStatus: {
-      text: 'Active',
-      color: 'text-green-500 bg-green-50 border-green-500',
-    },
-    progressStatus: { text: 'Progress', color: 'text-yellow-500' },
-    isComplete: false,
-  },
-];
+const priorityColors = {
+  High: "bg-red-500",
+  Medium: "bg-yellow-500",
+  Low: "bg-green-500",
+};
 
 const AssignedTaskListCard = () => {
-  const [tasks, setTasks] = useState(initialTasks);
+  const [tasks, setTasks] = useState([]);
+  const [newTask, setNewTask] = useState("");
+  const [newTime, setNewTime] = useState("");
+  const [newPriority, setNewPriority] = useState("Medium");
+  const [editId, setEditId] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [filterDate, setFilterDate] = useState("");
+  const itemsPerPage = 5;
 
-  const handleCheckboxChange = (id) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) => {
-        if (task.id === id) {
-          const newIsComplete = !task.isComplete;
-          return {
-            ...task,
-            isComplete: newIsComplete,
-            // Update progress status dynamically:
-            progressStatus: newIsComplete
-              ? { text: 'Done', color: 'text-green-500' }
-              : { text: 'Progress', color: 'text-yellow-500' },
-          };
-        }
-        return task;
-      })
-    );
+  useEffect(() => {
+    fetchTasks();
+  }, [filterDate]);
+
+  const fetchTasks = async () => {
+    try {
+      const response = await getTasks(filterDate);
+      setTasks(response.data);
+    } catch (error) {
+      toast.error("Failed to fetch tasks");
+    }
   };
+
+  const handleAddTask = async () => {
+    if (!newTask.trim() || !newTime.trim()) return;
+
+    const taskData = { title: newTask, dueTime: newTime, priority: newPriority };
+    try {
+      const response = await createTask(taskData);
+      if (!response.success) {
+        toast.error(response.message);
+      } else {
+        toast.success("Task added successfully!");
+        fetchTasks();
+        resetForm();
+      }
+    } catch (error) {
+      toast.error("Error creating task.");
+    }
+  };
+
+  const handleEditTask = (id, title, dueTime, priority) => {
+    setEditId(id);
+    setNewTask(title);
+    setNewTime(dueTime);
+    setNewPriority(priority);
+  };
+
+  const handleUpdateTask = async () => {
+    if (!editId || !newTask.trim() || !newTime.trim()) return;
+
+    try {
+      await updateTask(editId, { title: newTask, dueTime: newTime, priority: newPriority });
+      toast.success("Task updated successfully!");
+      fetchTasks();
+      resetForm();
+    } catch (error) {
+      toast.error("Failed to update task.");
+    }
+  };
+
+  const handleDeleteTask = async (id) => {
+    try {
+      await deleteTask(id);
+      toast.success("Task deleted successfully!");
+      fetchTasks();
+    } catch (error) {
+      toast.error("Failed to delete task.");
+    }
+  };
+
+  const handleCheckboxChange = async (id, currentStatus) => {
+    try {
+      await updateTaskStatus(id, { isComplete: !currentStatus });
+      toast.success("Task status updated!");
+      fetchTasks();
+    } catch (error) {
+      toast.error("Failed to update task status.");
+    }
+  };
+
+  const resetForm = () => {
+    setEditId(null);
+    setNewTask("");
+    setNewTime("");
+    setNewPriority("Medium");
+  };
+
+  const isDisabled = !newTask.trim() || !newTime.trim();
+
+  // Pagination logic
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentTasks = tasks.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(tasks.length / itemsPerPage);
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full p-5 rounded-lg shadow bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100"
+      className="w-full max-w-2xl mx-auto p-6 rounded-lg shadow-lg bg-white dark:bg-gray-800"
     >
-      {/* Card Header */}
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold">Assigned Task List</h2>
-        <button className="text-gray-400 dark:text-gray-500 hover:text-gray-600">
-          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-            <circle cx="10" cy="4" r="2" />
-            <circle cx="10" cy="10" r="2" />
-            <circle cx="10" cy="16" r="2" />
-          </svg>
+      {/* Title & Date Filter Side by Side */}
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-lg font-bold">📌 Daily To-Do List</h2>
+        <input
+          type="date"
+          value={filterDate}
+          onChange={(e) => setFilterDate(e.target.value)}
+          className="p-2 rounded-md border dark:border-gray-600 bg-gray-50 dark:bg-gray-700"
+        />
+      </div>
+
+      {/* Input Section */}
+      <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-4">
+        <input
+          type="text"
+          placeholder="Task title..."
+          value={newTask}
+          onChange={(e) => setNewTask(e.target.value)}
+          className="p-2 rounded-md border dark:border-gray-600 bg-gray-50 dark:bg-gray-700 w-full"
+        />
+        <input
+          type="time"
+          value={newTime}
+          onChange={(e) => setNewTime(e.target.value)}
+          className="p-2 rounded-md border dark:border-gray-600 bg-gray-50 dark:bg-gray-700 w-full"
+        />
+        <select
+          value={newPriority}
+          onChange={(e) => setNewPriority(e.target.value)}
+          className="p-2 rounded-md border dark:border-gray-600 bg-gray-50 dark:bg-gray-700 w-full"
+        >
+          <option value="High">🔥 High</option>
+          <option value="Medium">⚡ Medium</option>
+          <option value="Low">✅ Low</option>
+        </select>
+        <button
+          onClick={editId ? handleUpdateTask : handleAddTask}
+          disabled={isDisabled}
+          className={`p-2 rounded-md text-white transition w-full flex items-center justify-center ${
+            isDisabled ? "bg-gray-400 cursor-not-allowed" : editId ? "bg-green-500 hover:bg-green-600" : "bg-blue-500 hover:bg-blue-600"
+          }`}
+        >
+          {editId ? "Update" : <FiPlus size={20} />}
         </button>
       </div>
 
-      {/* Table-like Task Rows */}
-      <div className="divide-y divide-gray-200 dark:divide-slate-600">
-        {tasks.map((task) => (
-          <div
-            key={task.id}
-            className="flex items-center justify-between py-3 w-full m-auto"
-          >
-            {/* Left side: Number circle + Title */}
-            <div className="flex items-center space-x-3 w-80">
-              <div
-                className={`w-9 h-9 flex items-center justify-center rounded-full text-white font-semibold ${task.numberBg}`}
-              >
-                {task.number}
-              </div>
-              <span className="font-semibold">{task.title}</span>
-            </div>
-
-            {/* Middle area: Activity + Progress */}
-            <div className="flex items-center justify-between space-x-6 w-44">
-              {/* Activity status pill */}
-              <div
-                className={`
-                  flex items-center space-x-2
-                  border
-                  rounded-full
-                  px-3 py-1
-                  text-sm
-                  font-medium
-                  ${task.activityStatus.color}
-                `}
-              >
-                <span
-                  className="inline-block w-2 h-2 rounded-full"
-                  style={{
-                    backgroundColor: task.activityStatus.color.includes('green')
-                      ? '#10B981'
-                      : '#EF4444',
-                  }}
-                />
-                <span>{task.activityStatus.text}</span>
-              </div>
-              {/* Progress status text */}
-              <span className={`text-sm font-semibold ${task.progressStatus.color}`}>
-                {task.progressStatus.text}
+      {/* Task List */}
+      <div className="divide-y divide-gray-200 dark:divide-gray-600">
+        {currentTasks.length === 0 ? (
+          <p className="text-center text-gray-500 dark:text-gray-400 py-4">🎉 No tasks for this date!</p>
+        ) : (
+          currentTasks.map((task, index) => (
+            <motion.div key={task._id} className="flex items-center py-3 space-x-3">
+              <input
+                type="checkbox"
+                checked={task.isComplete}
+                onChange={() => handleCheckboxChange(task._id, task.isComplete)}
+                className="cursor-pointer"
+              />
+              <span className="text-gray-500 dark:text-gray-400 w-6">{index + 1 + indexOfFirstItem}.</span>
+              <span className={`text-lg flex-1 break-words ${task.isComplete ? "line-through text-gray-400" : ""}`}>
+                {task.title}
               </span>
-            </div>
-
-            {/* Right side: Checkbox */}
-            <div>
-              <label className="inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={task.isComplete}
-                  onChange={() => handleCheckboxChange(task.id)}
-                  className="form-checkbox h-5 w-5 text-blue-500 rounded"
-                />
-              </label>
-            </div>
-          </div>
-        ))}
+              <span className={`px-2 py-1 text-xs font-semibold text-white rounded-full ${priorityColors[task.priority]}`}>
+                {task.priority}
+              </span>
+              <span className="text-sm text-gray-500 dark:text-gray-400">{task.dueTime}</span>
+              {/* Edit & Delete Buttons */}
+              <div className="flex items-center space-x-2">
+                <button onClick={() => handleEditTask(task._id, task.title, task.dueTime, task.priority)} className="text-blue-500 hover:text-blue-700 transition">
+                  <FiEdit size={18} />
+                </button>
+                <button onClick={() => handleDeleteTask(task._id)} className="text-red-500 hover:text-red-700 transition">
+                  <FiTrash2 size={18} />
+                </button>
+              </div>
+            </motion.div>
+          ))
+        )}
       </div>
+
+      {/* Pagination Controls (Hide when no tasks) */}
+      {tasks.length > itemsPerPage && (
+        <div className="flex justify-center mt-4 space-x-4">
+          <button onClick={() => setCurrentPage(currentPage - 1)} disabled={currentPage === 1} className="p-2 bg-gray-300 rounded disabled:opacity-50">
+            <FiChevronLeft />
+          </button>
+          <span>{currentPage} / {totalPages}</span>
+          <button onClick={() => setCurrentPage(currentPage + 1)} disabled={currentPage === totalPages} className="p-2 bg-gray-300 rounded disabled:opacity-50">
+            <FiChevronRight />
+          </button>
+        </div>
+      )}
     </motion.div>
   );
 };

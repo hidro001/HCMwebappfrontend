@@ -1,0 +1,152 @@
+
+import { create } from "zustand";
+import axiosInstance from "../service/axiosInstance";
+import toast from "react-hot-toast";
+
+const useLeaveStore = create((set, get) => ({
+  // State variables
+  leaves: [],
+  isLoading: false,
+  error: null,
+  activeStatus: "all", 
+  userProfile: null,
+  companySettings: null,
+  leaveSystem: null,
+  monthlyPaidLeaves: 0,
+  leaveTypes: [],
+
+  // Update the active status (this now becomes our single source of truth)
+  setActiveStatus: (status) => set({ activeStatus: status }),
+
+  // Fetch leaves by status
+  fetchLeaves: async (status) => {
+    set({ isLoading: true });
+    try {
+      const response = await axiosInstance.get(
+        `/leave/employee/leaves?status=${status}`
+      );
+      // Assume the leaves array is in response.data or response.data.data
+      set({ leaves: response.data || [] });
+    } catch (error) {
+      console.error("Error fetching leaves:", error);
+      toast.error("Failed to fetch leaves.");
+      set({ error: error.message });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  // Fetch user profile
+  fetchUserProfile: async () => {
+    try {
+      const response = await axiosInstance.get("/user/user-profile");
+      if (response.data.success) {
+        set({ userProfile: response.data.response });
+        return response.data.response;
+      } else {
+        throw new Error(response.data.message || "Failed to fetch user profile.");
+      }
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+      toast.error("Failed to fetch user profile.");
+      throw error;
+    }
+  },
+
+  // Fetch company settings
+  fetchCompanySettings: async () => {
+    try {
+      const response = await axiosInstance.get(
+        "/superadmin/companysettings/settings"
+      );
+      if (response.data.success) {
+        set({ companySettings: response.data.data });
+        return response.data.data;
+      } else {
+        throw new Error(
+          response.data.message || "Failed to fetch company settings."
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching company settings:", error);
+      toast.error("Failed to fetch company settings.");
+      throw error;
+    }
+  },
+
+  // Initialize the store (user profile, company settings, leave system, etc.)
+  initializeData: async () => {
+    try {
+      const userProfile = await get().fetchUserProfile();
+      const companySettings = await get().fetchCompanySettings();
+
+      // Match leave system based on employee type
+      const employmentTypes = companySettings.employmentTypes || [];
+      const leaveSystems = companySettings.leaveSystems || [];
+      const employmentType = employmentTypes.find(
+        (et) =>
+          et.name.toLowerCase() === userProfile.employee_Type.toLowerCase()
+      );
+
+      if (employmentType) {
+        const matchedLeaveSystem = leaveSystems.find(
+          (ls) => ls.id === employmentType.leaveSystemId
+        );
+        if (matchedLeaveSystem) {
+          set({
+            leaveSystem: matchedLeaveSystem,
+            monthlyPaidLeaves: matchedLeaveSystem.monthlyPaidLeaves || 0,
+          });
+        } else {
+          set({
+            error:
+              "Your employment type does not have an associated leave system.",
+          });
+        }
+      } else {
+        set({
+          error: `Your employment type "${userProfile.employee_Type}" is not configured in the system. Please contact your administrator.`,
+        });
+      }
+      // Optionally, set default leave types if not provided by company settings.
+      set({
+        leaveTypes: companySettings.leaveTypes || [
+          "Casual Leave",
+          "Sick Leave",
+          "Emergency Leave",
+        ],
+      });
+    } catch (error) {
+      console.error(error);
+      set({ error: "Failed to load necessary data. Please try again later." });
+    }
+  },
+
+  // Apply for leave
+  applyLeave: async (leaveData) => {
+    try {
+      const response = await axiosInstance.post(
+        "/leave/apply-leave",
+        leaveData
+      );
+      if (response.status === 201) {
+        toast.success("Leave applied successfully");
+        // Refresh leaves list after applying
+        await get().fetchLeaves(get().activeStatus);
+        // Refresh user profile to update leave balance
+        const updatedProfile = await get().fetchUserProfile();
+        toast.success(
+          `Remaining Paid Leaves: ${updatedProfile.no_of_Paid_Leave}`
+        );
+      } else {
+        throw new Error(response.data.message || "Failed to apply leave.");
+      }
+    } catch (error) {
+      console.error("Error applying leave:", error);
+      toast.error(error.response?.data?.message || "Failed to apply leave");
+      throw error;
+    }
+  },
+}));
+
+export default useLeaveStore;

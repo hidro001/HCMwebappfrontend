@@ -1,200 +1,217 @@
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { MdClose } from "react-icons/md";
-import { Editor } from "@tinymce/tinymce-react";
 
-export default function AddNewPolicyModal({
+
+
+import React, { useEffect } from "react";
+import BaseModal from "../../../common/BaseModal"; // Adjust the path as needed
+import useDepartmentStore from "../../../../store/departmentStore"; // Adjust the path as needed
+import useCategoryStore from "../../../../store/useCategoryStore"; // Adjust the path as needed
+
+const AddNewPolicyModal = ({
   isOpen,
   onClose,
-  roleName,
-  setRoleName,
+  policyTitle,
+  setPolicyTitle,
+  policyCategory,
+  setPolicyCategory,
   department,
   setDepartment,
-  coverImage,
-  setCoverImage,
   description,
   setDescription,
+  coverImage,
+  setCoverImage,
+  pdfFile,
+  setPdfFile,
+  effectiveDate,
+  setEffectiveDate,
+  reviewDate,
+  setReviewDate,
+  policyNumber,
+  setPolicyNumber,
   handleUpload,
-}) {
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setCoverImage(e.target.files[0]);
-    }
-  };
+}) => {
+  // Department store
+  const { departments, fetchDepartments, loading: deptLoading } = useDepartmentStore();
+  // Category store
+  const { categories, fetchCategories, loading: catLoading } = useCategoryStore();
 
-  // If you want to handle changing editor content
-  const handleEditorChange = (content) => {
-    setDescription(content);
-  };
+  // Fetch both departments and categories when the modal is opened
+  useEffect(() => {
+    if (isOpen) {
+      fetchDepartments();
+      fetchCategories();
+    }
+  }, [isOpen, fetchDepartments, fetchCategories]);
+
+  if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          className="fixed inset-0 bg-black bg-opacity-50 
-                     flex justify-center items-center z-50"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-        >
-          <motion.div
-            className="relative bg-white dark:bg-gray-800 
-                       w-11/12 max-w-5xl rounded-md p-6"
-            initial={{ scale: 0.9 }}
-            animate={{ scale: 1 }}
-            exit={{ scale: 0.9 }}
-          >
-            {/* Close Button */}
-            <button
-              className="absolute top-3 right-3 text-gray-500 dark:text-gray-300"
-              onClick={onClose}
-            >
-              <MdClose size={24} />
-            </button>
-
-            {/* Modal Header */}
-            <h2 className="text-2xl font-bold mb-6 dark:text-white">
-              Add New Policy
-            </h2>
-
-            {/* Form Fields */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Role Name */}
-              <div>
-                <label className="block text-sm font-medium mb-1 dark:text-gray-200">
-                  Role Name
-                </label>
-                <input
-                  type="text"
-                  placeholder="Enter Role Name"
-                  className="w-full border dark:border-gray-700 
-                             rounded-md p-2 focus:outline-none 
-                             focus:ring-2 focus:ring-blue-400 
-                             dark:bg-gray-700 dark:text-white"
-                  value={roleName}
-                  onChange={(e) => setRoleName(e.target.value)}
-                />
-              </div>
-
-              {/* Select Department */}
-              <div>
-                <label className="block text-sm font-medium mb-1 dark:text-gray-200">
-                  Select Department
-                </label>
-                <select
-                  className="w-full border dark:border-gray-700 rounded-md p-2 
-                             focus:outline-none focus:ring-2 focus:ring-blue-400 
-                             dark:bg-gray-700 dark:text-white"
-                  value={department}
-                  onChange={(e) => setDepartment(e.target.value)}
-                >
-                  <option value="">Select Department</option>
-                  <option value="All Department">All Department</option>
-                  <option value="Sales">Sales</option>
-                  <option value="Marketing">Marketing</option>
-                  <option value="Engineering">Engineering</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Cover Image */}
-            <div className="mt-6">
-              <label className="block text-sm font-medium mb-1 dark:text-gray-200">
-                Select Cover post of policy
-              </label>
-              <div
-                className="border-2 border-dashed border-gray-300 
-                           dark:border-gray-600 rounded-md p-4 
-                           flex items-center justify-center cursor-pointer
-                           hover:bg-gray-50 dark:hover:bg-gray-700"
+    <BaseModal isOpen={isOpen} onClose={onClose}>
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-lg">
+        <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
+          Add New Policy
+        </h2>
+        <form className="space-y-4">
+          {/* Policy Title */}
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Policy Title <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={policyTitle}
+              onChange={(e) => setPolicyTitle(e.target.value)}
+              placeholder="Enter policy title"
+              required
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-300"
+            />
+          </div>
+          {/* Policy Number */}
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Policy Number
+            </label>
+            <input
+              type="text"
+              value={policyNumber}
+              onChange={(e) => setPolicyNumber(e.target.value)}
+              placeholder="Enter policy number"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-300"
+            />
+          </div>
+          {/* Category (Dynamic Dropdown) */}
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Category <span className="text-red-500">*</span>
+            </label>
+            {catLoading ? (
+              <p>Loading categories...</p>
+            ) : (
+              <select
+                value={policyCategory}
+                onChange={(e) => setPolicyCategory(e.target.value)}
+                required
+                className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-300"
               >
-                {!coverImage && (
-                  <label
-                    htmlFor="coverImage"
-                    className="flex flex-col items-center text-sm 
-                               text-gray-500 dark:text-gray-300"
-                  >
-                    <svg
-                      className="w-8 h-8 mb-2 text-gray-400 dark:text-gray-500"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth="2"
-                        d="M3 7l8.89 5.26a2 2 0 002.22 0L23 
-                           7m-2 10a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 
-                           2 0 012-2h14a2 2 0 012 2v12z"
-                      ></path>
-                    </svg>
-                    Select Cover post of policy
-                  </label>
-                )}
-                {coverImage && (
-                  <div className="text-sm dark:text-gray-200">
-                    {coverImage.name}
-                  </div>
-                )}
-                <input
-                  id="coverImage"
-                  type="file"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
-              </div>
-            </div>
-
-            {/* Policy Description - using TinyMCE */}
-            <div className="mt-6">
-              <label className="block text-sm font-medium mb-2 dark:text-gray-200">
-                Write Policy Description
+                <option value="">Select category</option>
+                {categories.map((cat) => (
+                  <option key={cat._id} value={cat.name}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+          {/* Department (Dynamic Dropdown) */}
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Department <span className="text-red-500">*</span>
+            </label>
+            {deptLoading ? (
+              <p>Loading departments...</p>
+            ) : (
+              <select
+                value={department}
+                onChange={(e) => setDepartment(e.target.value)}
+                required
+                className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-300"
+              >
+                <option value="">Select department</option>
+                {departments.map((dep) => (
+                  <option key={dep._id} value={dep.department}>
+                    {dep.department}
+                  </option>
+                ))}
+              </select>
+            )}
+          </div>
+          {/* Description */}
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Description
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter policy description"
+              rows="3"
+              className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-300"
+            ></textarea>
+          </div>
+          {/* Cover Image Upload */}
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Cover Image
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setCoverImage(e.target.files[0])}
+              className="w-full text-gray-900 dark:text-gray-100"
+            />
+          </div>
+          {/* PDF Document Upload */}
+          <div>
+            <label className="block text-gray-700 dark:text-gray-300 mb-1">
+              Policy Document (PDF) <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="file"
+              accept="application/pdf"
+              onChange={(e) => setPdfFile(e.target.files[0])}
+              required
+              className="w-full text-gray-900 dark:text-gray-100"
+            />
+          </div>
+          {/* Effective Date & Review Date */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-gray-700 dark:text-gray-300 mb-1">
+                Effective Date
               </label>
-              <Editor
-                apiKey="YOUR_TINYMCE_API_KEY"
-                // or: tinymceScriptSrc="/tinymce/tinymce.min.js"
-                value={description}
-                onEditorChange={handleEditorChange}
-                init={{
-                  height: 300,
-                  menubar: false,
-                  plugins: [
-                    "advlist autolink lists link charmap print preview anchor",
-                    "searchreplace visualblocks code fullscreen",
-                    "insertdatetime media table paste code help wordcount",
-                  ],
-                  toolbar:
-                    "undo redo | formatselect | bold italic underline | \
-                     alignleft aligncenter alignright alignjustify | \
-                     bullist numlist outdent indent | removeformat | help",
-                  content_style:
-                    "body { font-family:Helvetica,Arial,sans-serif; font-size:14px }",
-                }}
+              <input
+                type="date"
+                value={effectiveDate}
+                onChange={(e) => setEffectiveDate(e.target.value)}
+                className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-300"
               />
             </div>
-
-            {/* Footer Buttons */}
-            <div className="flex justify-end mt-8">
-              <button
-                className="text-gray-700 dark:text-gray-300 border border-gray-400 
-                           dark:border-gray-600 px-4 py-2 rounded-md mr-4
-                           hover:bg-gray-50 dark:hover:bg-gray-700"
-                onClick={onClose}
-              >
-                Cancel
-              </button>
-              <button
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md"
-                onClick={handleUpload}
-              >
-                Upload
-              </button>
+            <div>
+              <label className="block text-gray-700 dark:text-gray-300 mb-1">
+                Review Date
+              </label>
+              <input
+                type="date"
+                value={reviewDate}
+                onChange={(e) => setReviewDate(e.target.value)}
+                className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring focus:ring-blue-300"
+              />
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+          </div>
+          {/* Modal Actions */}
+          <div className="flex justify-end space-x-3 mt-6">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 bg-gray-300 dark:bg-gray-600 text-gray-700 dark:text-gray-200 rounded hover:bg-gray-400 dark:hover:bg-gray-500"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                handleUpload();
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Upload Policy
+            </button>
+          </div>
+        </form>
+      </div>
+    </BaseModal>
+    
   );
-}
+};
+
+export default AddNewPolicyModal;

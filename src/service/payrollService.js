@@ -1,12 +1,43 @@
 import axiosInstance from './axiosInstance';
 
-// Manage 
+
+// main page #############################################################
+
+export const fetchLineChartData = async ( year = 2025) => {
+  try {
+    const res = await axiosInstance.get(`/payroll-dashboard/linechart?year=${year}`);
+    return res.data?.data;
+  } catch (error) {
+    console.error("Error fetching line chart data:", error);
+    throw error;
+  }
+};
+
+
+export const fetchDoughnutChartData = async () => {
+  try {
+    const res = await axiosInstance.get(`/payroll-dashboard/doughnut`);
+    return res.data?.data;
+  } catch (error) {
+    console.error("Error fetching doughnut chart data:", error);
+    throw error;
+  }
+};
+
+
+export const fetchPayrollList = async () => {
+  try {
+    const res = await axiosInstance.get(`/payroll-dashboard/list`);
+    return res.data?.data;
+  } catch (error) {
+    console.error("Error fetching payroll list:", error);
+    throw error;
+  }
+};
 
 
 
-
-
-// Manage Payroll
+// Manage Payroll #############################################################
 
 
 
@@ -37,33 +68,88 @@ export async function getAdminStats() {
 }
 
 export async function updatePayroll(payrollId, updates) {
-  const response = await axiosInstance.patch(
+  const response = await axiosInstance.put(
     `/admin/payroll/update/${payrollId}`,
     updates
   );
   return response.data;
+  
 }
 
-// Manage Claims
+
+// ✅ Fetch Payroll Data by Employee ID, Month & Year
+export async function getPayrollById(employeeId, month, year) {
+  try {
+    const response = await axiosInstance.get(`/admin/payroll/${employeeId}`, {
+      params: { month, year },
+    });
+    return { success: true, data: response.data.data };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || "Failed to fetch payroll data.",
+    };
+  }
+}
+
+// ✅ Update ONLY Deduction and Final Salary by Employee ID, Month & Year
+export async function updatePayrollDeductionAndSalary(employeeId, month, year, deduction, finalSalary) {
+  try {
+    const response = await axiosInstance.put(`/admin/payroll/update/${employeeId}`, {
+      month,
+      year,
+      deduction,
+      finalSalary,
+    });
+
+    return { success: true, message: response.data.message };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || "Failed to update payroll data.",
+    };
+  }
+}
+
+
+
+
+
+
+// ✅ Fetch Payroll Summary for a given month & year
+export async function getPayrollSummary(month, year) {
+  try {
+    const response = await axiosInstance.get("/admin/payroll/count/payroll", {
+      params: { month, year },
+    });
+
+    return { success: true, data: response.data.data };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.message || "Failed to fetch payroll summary.",
+    };
+  }
+}
+
+
+
+// Manage Claims #############################################################
 
 
 export async function fetchAllRequests() {
  
   const response = await axiosInstance.get(
-    'https://apiv2.humanmaximizer.com/api/v1/superadmin/companysettings/requests',
-   
+    '/superadmin/companysettings/requests',
   );
   return response.data?.data || [];
 }
 
 
-
-
-
 export async function deleteRequests(id) {
   try {
     const response = await axiosInstance.delete(
-      `https://apiv2.humanmaximizer.com/api/v1/superadmin/companysettings/requests/${id}`
+      `/superadmin/companysettings/requests/${id}`
     );
     return response.data?.data || [];
   } catch (error) {
@@ -71,10 +157,11 @@ export async function deleteRequests(id) {
     throw new Error('Failed to delete the request.');
   }
 }
+
 export async function getDepartment() {
   try {
     const response = await axiosInstance.get(
-      `https://apiv2.humanmaximizer.com/api/v1/superadmin/departments`
+      `/superadmin/departments`
     );
     return response.data?.data || [];
   } catch (error) {
@@ -82,3 +169,15 @@ export async function getDepartment() {
     throw new Error('Failed to delete the request.');
   }
 }
+export async function getPayrollCount() {
+  try {
+    const response = await axiosInstance.get(
+      `/superadmin/departments`
+    );
+    return response.data?.data || [];
+  } catch (error) {
+    console.error('Error deleting request:', error);
+    throw new Error('Failed to delete the request.');
+  }
+}
+

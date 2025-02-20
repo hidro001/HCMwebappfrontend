@@ -118,10 +118,9 @@ const Breadcrumb = () => {
       <div className="text-sm">
         Welcome Back,{" "}
         <span className="font-semibold">
-          {userName
-            ? `${capitalizeWords(userName)} (${capitalizeWords
-                 ( permissionRole )     })`: "Guest"}
-        </span>
+  {userName ? capitalizeWords(userName) : "Guest"}
+</span>
+
       </div>
       <div>{generateBreadcrumbs()}</div>
     </div>
