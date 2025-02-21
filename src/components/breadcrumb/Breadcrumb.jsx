@@ -24,6 +24,8 @@ const Breadcrumb = () => {
   const theme = useTheme();
   // Access userName and permissionRole from Zustand store
   const userName = useAuthStore((state) => state.userName);
+  const employeeId = useAuthStore((state) => state.employeeId);
+
   const permissionRole = useAuthStore((state) => state.designation);
 
   // Function to format breadcrumb names
@@ -118,7 +120,7 @@ const Breadcrumb = () => {
       <div className="text-sm">
         Welcome Back,{" "}
         <span className="font-semibold">
-  {userName ? capitalizeWords(userName) : "Guest"}
+  {userName ? capitalizeWords(userName) : "Guest"} ({employeeId})
 </span>
 
       </div>

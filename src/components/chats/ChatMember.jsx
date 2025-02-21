@@ -57,12 +57,7 @@ export default function ChatMember({ employees, currentUser, onSelectUser, unrea
               <li
                 key={member.employee_Id}
                 className="flex items-center justify-between p-3 border-b dark:border-gray-700 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900 transition-colors"
-                onClick={() =>
-                  onSelectUser(
-                    `${member.first_Name} ${member.last_Name}`,
-                    member.employee_Id
-                  )
-                }
+                onClick={() => onSelectUser(member)}
               >
                 <div className="flex items-center space-x-3">
                   {member.avatar ? (
@@ -88,6 +83,9 @@ export default function ChatMember({ employees, currentUser, onSelectUser, unrea
                       {member.status}
                     </p>
                   </div>
+                  <span className="ml-auto text-sm font-medium text-gray-700 dark:text-gray-300">
+                    {member.employee_Id}
+                  </span>
                 </div>
                 {unreadCounts[member.employee_Id] > 0 && (
                   <span className="bg-red-500 text-white text-xs font-semibold rounded-full px-2 py-1">

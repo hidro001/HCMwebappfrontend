@@ -1,4 +1,3 @@
-// src/components/ChatList.jsx
 import React, { useEffect, useRef, useState } from 'react';
 import { FaPhone, FaVideo, FaPaperclip, FaCommentDots } from 'react-icons/fa';
 import { IoSend } from 'react-icons/io5';
@@ -132,7 +131,10 @@ export default function ChatList({
     <div className="flex flex-col bg-white dark:bg-gray-800 shadow-lg w-full" style={{ height: '80vh' }}>
       <header className="flex flex-col sm:flex-row justify-between items-center p-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white">
         <h2 className="text-lg font-semibold mb-2 sm:mb-0">
-          {selectedUser || 'Select a User'}
+          {selectedUser 
+            ? `${selectedUser.first_Name} ${selectedUser.last_Name} (${selectedUser.employee_Id})`
+            : 'Select a User'
+          }
         </h2>
         <div className="flex gap-4">
           <button

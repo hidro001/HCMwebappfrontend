@@ -1,4 +1,3 @@
-// src/contexts/ChatContext.js
 import React, { createContext, useState, useEffect, useRef, useCallback } from 'react';
 import { toast } from 'react-hot-toast';
 import {
@@ -20,6 +19,7 @@ export const ChatProvider = ({ children }) => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [employees, setEmployees] = useState([]);
+  // Store the whole user object in selectedUser
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [error, setError] = useState(null);
@@ -89,25 +89,28 @@ export const ChatProvider = ({ children }) => {
     fetchEmployees();
   }, [fetchEmployees]);
 
-  // When a user is selected, join their chat room and clear unread count
-  const selectUser = useCallback(
-    (name, id) => {
-      if (id !== selectedUserId) {
-        setMessages([]);
-      }
-      setSelectedUser(name);
-      setSelectedUserId(id);
-      setUnreadCounts((prev) => {
-        const newState = { ...prev };
-        delete newState[id];
-        return newState;
-      });
-      joinRoom(socketRef.current, employeeId, id);
-      // Mark messages as read on the server
-      socketRef.current.emit('markRead', { sender: employeeId, receiver: id });
-    },
-    [employeeId, selectedUserId]
-  );
+  // When a user is selected, join their chat room and clear unread count.
+  // The function now accepts a complete user object.
+// In src/contexts/ChatContext.js
+const selectUser = useCallback(
+  (user) => {
+    if (user.employee_Id !== selectedUserId) {
+      setMessages([]);
+    }
+    setSelectedUser(user);
+    setSelectedUserId(user.employee_Id);
+    setUnreadCounts((prev) => {
+      const newState = { ...prev };
+      delete newState[user.employee_Id];
+      return newState;
+    });
+    // Use employee_Id for the payload instead of _id
+    joinRoom(socketRef.current, employeeId, user.employee_Id);
+    socketRef.current.emit('markRead', { sender: employeeId, receiver: user.employee_Id });
+  },
+  [employeeId, selectedUserId]
+);
+
 
   // Send a text message
   const sendMessageHandler = useCallback(

@@ -1,4 +1,3 @@
-// src/components/ChatHome.jsx
 import React, { useContext } from 'react';
 import { ChatContext } from '../../contexts/ChatContext';
 import ChatMember from './ChatMember';
@@ -18,6 +17,9 @@ export default function ChatHome() {
     setMessage,
     sendFileHandler,
   } = useContext(ChatContext);
+
+  console.log('Employees:', employees);
+  console.log('Selected User:', selectedUser);
 
   return (
     <div
