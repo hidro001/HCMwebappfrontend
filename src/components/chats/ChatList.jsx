@@ -88,6 +88,9 @@ export default function ChatList({
       toast.error('Select a user to call.');
       return;
     }
+   
+   
+    
     initiateCall({ callType: 'voice', participants: [selectedUser] });
   };
 
