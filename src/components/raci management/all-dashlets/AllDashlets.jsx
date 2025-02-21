@@ -152,6 +152,7 @@ import CorrelationTrainingPerformanceCard from "./CorrelationTrainingPerformance
 import GrievanceResolutionChart from "./GrievanceResolutionChart";
 // The modal
 import CustomizeDashboardModal from "./model/CustomizeDashboardModal";
+import WorkplaceHotspotsChart from "./WorkplaceHotspotsChart";
 
 export default function AllDashlets() {
   const { preferences, fetchPreferences } = useDashboardStore();
@@ -228,6 +229,12 @@ export default function AllDashlets() {
               <PerformanceTrendsCard />
             </div>
           )}
+
+          {shouldShow("AbsenteeismPatternsCard") && (
+            <div className="mt-3">
+              <AbsenteeismPatternsCard />
+            </div>
+          )}
           {shouldShow("SkillGapAnalysisCard") && (
             <div className="mt-3">
               <SkillGapAnalysisCard />
@@ -264,15 +271,14 @@ export default function AllDashlets() {
             </div>
           )}
 
-          {shouldShow("AbsenteeismPatternsCard") && (
-            <div className="mt-3">
-              <AbsenteeismPatternsCard />
-            </div>
-          )}
-
           {shouldShow("OvertimeCostAnalysisCard") && (
             <div className="mt-3">
               <OvertimeCostAnalysisCard />
+            </div>
+          )}
+          {shouldShow("WorkplaceHotspotsChart") && (
+            <div className="mt-3">
+              <WorkplaceHotspotsChart />
             </div>
           )}
         </div>

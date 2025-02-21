@@ -24,6 +24,8 @@ import ComplianceTrainingCoverageCard from "../ComplianceTrainingCoverageCard";
 import PerformanceCard from "../PerformanceCard";
 import CorrelationTrainingPerformanceCard from "../CorrelationTrainingPerformanceCard";
 import GrievanceResolutionChart from "../GrievanceResolutionChart";
+import WorkplaceHotspotsChart from "../WorkplaceHotspotsChart";
+
 
 
 /**
@@ -147,6 +149,11 @@ export const CHARTS_METADATA = [
     id: "GrievanceResolutionChart",
     label: "Grievance Resolution",
     component: GrievanceResolutionChart,
+  },
+  {
+    id: "WorkplaceHotspotsChart",
+    label: "Workplace Hotspots Chart",
+    component: WorkplaceHotspotsChart,
   },
 ];
 
