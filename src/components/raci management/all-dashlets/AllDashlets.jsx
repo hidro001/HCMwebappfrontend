@@ -149,9 +149,10 @@ import AddressDistributionCard from "./AddressDistributionCard";
 import ComplianceTrainingCoverageCard from "./ComplianceTrainingCoverageCard";
 import PerformanceCard from "./PerformanceCard";
 import CorrelationTrainingPerformanceCard from "./CorrelationTrainingPerformanceCard";
-
+import GrievanceResolutionChart from "./GrievanceResolutionChart";
 // The modal
 import CustomizeDashboardModal from "./model/CustomizeDashboardModal";
+
 
 export default function AllDashlets() {
   const { preferences, fetchPreferences } = useDashboardStore();
@@ -268,6 +269,11 @@ export default function AllDashlets() {
           {shouldShow("OvertimeCostAnalysisCard") && (
             <div className="mt-3">
               <OvertimeCostAnalysisCard />
+            </div>
+          )}
+          {shouldShow("GrievanceResolutionChart") && (
+            <div className="mt-3">
+              <GrievanceResolutionChart />
             </div>
           )}
         </div>

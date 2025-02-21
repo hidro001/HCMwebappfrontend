@@ -23,6 +23,8 @@ import AddressDistributionCard from "../AddressDistributionCard";
 import ComplianceTrainingCoverageCard from "../ComplianceTrainingCoverageCard";
 import PerformanceCard from "../PerformanceCard";
 import CorrelationTrainingPerformanceCard from "../CorrelationTrainingPerformanceCard";
+import GrievanceResolutionChart from "../GrievanceResolutionChart";
+
 
 /**
  * Each object has:
@@ -140,6 +142,11 @@ export const CHARTS_METADATA = [
     id: "CorrelationTrainingPerformanceCard",
     label: "Correlation: Training & Performance",
     component: CorrelationTrainingPerformanceCard,
+  },
+  {
+    id: "GrievanceResolutionChart",
+    label: "Grievance Resolution",
+    component: GrievanceResolutionChart,
   },
 ];
 
