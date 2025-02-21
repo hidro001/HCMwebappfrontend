@@ -282,6 +282,28 @@ export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
             ]}
             className="animatable-input"
           />
+          <FormSelect
+            label="Training Status"
+            name="trainingStatus"
+            options={[
+              { value: "", label: "Select Status" },
+              { value: "upToDate", label: "upToDate" },
+              { value: "needsRefresh", label: "needsRefresh" },
+              { value: "needsCertification", label: "needsCertification" },
+            ]}
+            className="animatable-input"
+          />
+          <FormSelect
+            label="compliance Training Status"
+            name="complianceTrainingStatus"
+            options={[
+              { value: "", label: "Select Status" },
+              { value: "completed", label: "completed" },
+              { value: "pending", label: "pending" },
+              { value: "needsCertification", label: "needsCertification" },
+            ]}
+            className="animatable-input"
+          />
       
         </div>
         <div className="space-y-6">

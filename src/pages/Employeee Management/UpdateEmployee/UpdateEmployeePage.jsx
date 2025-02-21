@@ -484,6 +484,8 @@ function mapEmployeeToFormDefaults(employeeData) {
     overtime_hours: employeeData.overtime_hours || "",
     background_Verification_Status: employeeData.background_Verification_Status || "",
     police_Verification: employeeData.police_Verification || "",
+    trainingStatus: employeeData.trainingStatus || "",
+    complianceTrainingStatus: employeeData.complianceTrainingStatus || "",
     legal_Certifications: employeeData.legal_Certifications || "",
     org_Specific_IDs: employeeData.org_Specific_IDs || "",
     date_of_Resignation: employeeData.date_of_Resignation

@@ -59,28 +59,23 @@ import AssignedTaskEmployeePage from "./task/AssignedTaskEmployeePage";
 import ManageLeavesPage from "./leave management/ManageLeavesPage";
 import AllLeavePage from "./leave management/AllLeavePage";
 // ResignationDashboardPage
-import SubmitResignationPage from './resignation management/SubmitResignationPage'
+import SubmitResignationPage from "./resignation management/SubmitResignationPage";
 import FNFApprovalPage from "./resignation management/FNFApprovalPage";
 import ResignationApprovalPage from "./resignation management/ResignationApprovalPage";
 
-
-
-
 // reci
 
-import AllDashletsPage from '../pages//raci management/AllDashletsPage'
+import AllDashletsPage from "../pages//raci management/AllDashletsPage";
 // product lense
-import MainDashboardPage from '../pages/product-lense/MainDashboardPage'
-import ProductivityDashboardPage from '../pages/product-lense/ProductivityDashboardPage'
-import TeamProductivityPage from '../pages/product-lense/TeamProductivityPage'
+import MainDashboardPage from "../pages/product-lense/MainDashboardPage";
+import ProductivityDashboardPage from "../pages/product-lense/ProductivityDashboardPage";
+import TeamProductivityPage from "../pages/product-lense/TeamProductivityPage";
 
 // my profile
-import MyProfilePage from '../pages/my-profile/MyProfilePage'
+import MyProfilePage from "../pages/my-profile/MyProfilePage";
 
-
-
-
-
+import AllDisciplinaryActionsPage from "./Employeee Management/disciplinary/AllDisciplinaryActionsPage";
+import UsersListForDisciplinaryPage from "./Employeee Management/disciplinary/UsersListForDisciplinaryPage";
 
 export {
   Login,
@@ -139,15 +134,14 @@ export {
   AssignedTaskEmployeePage,
   ManageLeavesPage,
   AllLeavePage,
-
   SubmitResignationPage,
   FNFApprovalPage,
   ResignationApprovalPage,
-  AllDashletsPage  ,
+  AllDashletsPage,
   MyProfilePage,
-
   MainDashboardPage,
-ProductivityDashboardPage,
-TeamProductivityPage,
-
+  ProductivityDashboardPage,
+  TeamProductivityPage,
+  UsersListForDisciplinaryPage,
+  AllDisciplinaryActionsPage,
 };

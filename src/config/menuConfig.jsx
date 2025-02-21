@@ -139,6 +139,16 @@ export const menuItems = [
         link: "/dashboard/assign-assets",
         permission: "assignAssets",
       },
+      {
+        name: "Take Disciplinary actions",
+        link: "/dashboard/disciplinary-actions/all-users",
+        permission: "assignAssets",
+      },
+      {
+        name: "All disciplinary actions",
+        link: "/dashboard/disciplinary-actions",
+        permission: "assignAssets",
+      },
 
       // {
       //   name: "Asset",

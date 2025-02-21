@@ -65,7 +65,9 @@ import {
   MyProfilePage,
   ProductivityDashboardPage,
   MainDashboardPage,
-  TeamProductivityPage
+  TeamProductivityPage,
+  AllDisciplinaryActionsPage,
+  UsersListForDisciplinaryPage,
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -77,7 +79,6 @@ import {
   NotificationsPage,
 } from "../components";
 import DailyTaskPage from "../pages/task/DailyTaskPage";
-
 
 const router = createBrowserRouter([
   {
@@ -93,7 +94,6 @@ const router = createBrowserRouter([
     element: (
       <MainLayout>
         <PrivateRoute />
-      
       </MainLayout>
     ),
     children: [
@@ -364,6 +364,14 @@ const router = createBrowserRouter([
       {
         path: "my-profile",
         element: <MyProfilePage />,
+      },
+      {
+        path: "disciplinary-actions/all-users",
+        element: <UsersListForDisciplinaryPage />,
+      },
+      {
+        path: "disciplinary-actions",
+        element: <AllDisciplinaryActionsPage />,
       },
     ],
   },
