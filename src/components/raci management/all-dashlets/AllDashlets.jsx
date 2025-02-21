@@ -218,6 +218,11 @@ export default function AllDashlets() {
               <CompensationBenchmarkingCard />
             </div>
           )}
+                {shouldShow("GrievanceResolutionChart") && (
+            <div className="mt-3">
+              <GrievanceResolutionChart />
+            </div>
+          )}
           {shouldShow("SkillGapAnalysisCard") && (
             <div className="mt-3">
               <SkillGapAnalysisCard />
@@ -271,11 +276,7 @@ export default function AllDashlets() {
               <OvertimeCostAnalysisCard />
             </div>
           )}
-          {shouldShow("GrievanceResolutionChart") && (
-            <div className="mt-3">
-              <GrievanceResolutionChart />
-            </div>
-          )}
+    
         </div>
 
         {/* Column 2 */}

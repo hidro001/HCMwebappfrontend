@@ -50,6 +50,9 @@ importers:
       chart.js:
         specifier: ^4.4.7
         version: 4.4.7
+      chartjs-plugin-zoom:
+        specifier: ^2.2.0
+        version: 2.2.0(chart.js@4.4.7)
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -1056,6 +1059,9 @@ packages:
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
 
+  '@types/hammerjs@2.0.46':
+    resolution: {integrity: sha512-ynRvcq6wvqexJ9brDMS4BnBLzmr0e14d6ZJTEShTBWKymQiHwlAyGu0ZPEFI2Fh1U53F7tN9ufClWM5KvqkKOw==}
+
   '@types/hoist-non-react-statics@3.3.6':
     resolution: {integrity: sha512-lPByRJUer/iN/xa4qpyL0qmL11DqNW81iU/IG1S3uvRUq4oKagz8VCxZjiWkumgt66YT3vOdDgZ0o32sGKtCEw==}
 
@@ -1285,6 +1291,11 @@ packages:
   chart.js@4.4.7:
     resolution: {integrity: sha512-pwkcKfdzTMAU/+jNosKhNL2bHtJc/sSmYgVbuGTEDhzkrhmyihmP7vUc/5ZK9WopidMDHNe3Wm7jOd/WhuHWuw==}
     engines: {pnpm: '>=8'}
+
+  chartjs-plugin-zoom@2.2.0:
+    resolution: {integrity: sha512-in6kcdiTlP6npIVLMd4zXZ08PDUXC52gZ4FAy5oyjk1zX3gKarXMAof7B9eFiisf9WOC3bh2saHg+J5WtLXZeA==}
+    peerDependencies:
+      chart.js: '>=3.2.0'
 
   chokidar@3.6.0:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
@@ -1811,6 +1822,10 @@ packages:
   gopd@1.2.0:
     resolution: {integrity: sha512-ZUKRh6/kUFoAiTAtTYPZJ3hw9wNxx+BIBOijnlG9PnrJsCcSjs1wyyD6vJpaYtgnzDrKYRSqf3OO6Rfa93xsRg==}
     engines: {node: '>= 0.4'}
+
+  hammerjs@2.0.8:
+    resolution: {integrity: sha512-tSQXBXS/MWQOn/RKckawJ61vvsDpCom87JgxiYdGwHdOa0ht0vzUWDlfioofFCRU0L+6NGDt6XzbgoJvZkMeRQ==}
+    engines: {node: '>=0.8.0'}
 
   has-bigints@1.0.2:
     resolution: {integrity: sha512-tSvCKtBr9lkF0Ex0aQiP9N+OpV4zi2r/Nee5VkRDbaqv35RLYMzbwQfFSZZH0kR+Rd6302UJZ2p/bJCEoR3VoQ==}
@@ -3879,6 +3894,8 @@ snapshots:
 
   '@types/estree@1.0.6': {}
 
+  '@types/hammerjs@2.0.46': {}
+
   '@types/hoist-non-react-statics@3.3.6':
     dependencies:
       '@types/react': 18.3.16
@@ -4143,6 +4160,12 @@ snapshots:
   chart.js@4.4.7:
     dependencies:
       '@kurkle/color': 0.3.4
+
+  chartjs-plugin-zoom@2.2.0(chart.js@4.4.7):
+    dependencies:
+      '@types/hammerjs': 2.0.46
+      chart.js: 4.4.7
+      hammerjs: 2.0.8
 
   chokidar@3.6.0:
     dependencies:
@@ -4790,6 +4813,8 @@ snapshots:
       csstype: 3.1.3
 
   gopd@1.2.0: {}
+
+  hammerjs@2.0.8: {}
 
   has-bigints@1.0.2: {}
 
