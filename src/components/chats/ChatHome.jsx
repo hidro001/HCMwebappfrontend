@@ -18,8 +18,6 @@ export default function ChatHome() {
     sendFileHandler,
   } = useContext(ChatContext);
 
-  console.log('Employees:', employees);
-  console.log('Selected User:', selectedUser);
 
   return (
     <div

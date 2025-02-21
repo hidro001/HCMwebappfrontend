@@ -1,35 +1,36 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
 
 export default function ChatMember({ employees, currentUser, onSelectUser, unreadCounts }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [memberList, setMemberList] = useState([]);
 
-  // Filter out the current user and remove duplicates.
-  const uniqueEmployees = useMemo(() => {
-    return Array.from(
+  useEffect(() => {
+    // Filter out the current user and remove duplicates.
+    const uniqueEmployees = Array.from(
       new Map(
         employees
           .filter((user) => user.employee_Id !== currentUser)
           .map((user) => [user.employee_Id, user])
       ).values()
     );
-  }, [employees, currentUser]);
 
-  // Filter by search term.
-  const filteredEmployees = useMemo(() => {
-    return uniqueEmployees.filter((member) =>
-      `${member.first_Name} ${member.last_Name}`.toLowerCase().includes(searchTerm.toLowerCase())
+    // Filter by search term.
+    const filteredEmployees = uniqueEmployees.filter((member) =>
+      `${member.first_Name} ${member.last_Name}`
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
     );
-  }, [uniqueEmployees, searchTerm]);
 
-  // Sort so that those with unread messages appear first.
-  const sortedEmployees = useMemo(() => {
-    return [...filteredEmployees].sort((a, b) => {
+    // Sort so that those with unread messages appear first.
+    const sortedEmployees = [...filteredEmployees].sort((a, b) => {
       const aUnread = unreadCounts[a.employee_Id] || 0;
       const bUnread = unreadCounts[b.employee_Id] || 0;
       return bUnread - aUnread;
     });
-  }, [filteredEmployees, unreadCounts]);
+
+    setMemberList(sortedEmployees);
+  }, [employees, currentUser, searchTerm, unreadCounts]);
 
   return (
     <div
@@ -51,9 +52,9 @@ export default function ChatMember({ employees, currentUser, onSelectUser, unrea
       </div>
 
       <div className="flex-grow overflow-y-auto">
-        {sortedEmployees.length > 0 ? (
+        {memberList.length > 0 ? (
           <ul>
-            {sortedEmployees.map((member) => (
+            {memberList.map((member) => (
               <li
                 key={member.employee_Id}
                 className="flex items-center justify-between p-3 border-b dark:border-gray-700 cursor-pointer hover:bg-indigo-50 dark:hover:bg-indigo-900 transition-colors"
