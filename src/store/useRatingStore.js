@@ -13,7 +13,7 @@ export const useRatingStore = create((set, get) => ({
   fetchSubordinates: async () => {
     set({ loadingSubordinates: true });
     try {
-      const managerId = localStorage.getItem("mongo_id");
+      const managerId = localStorage.getItem("_id");
       if (!managerId) {
         toast.error("Manager ID not found in localStorage.");
         set({ loadingSubordinates: false });

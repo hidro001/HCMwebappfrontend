@@ -153,7 +153,6 @@ import GrievanceResolutionChart from "./GrievanceResolutionChart";
 // The modal
 import CustomizeDashboardModal from "./model/CustomizeDashboardModal";
 
-
 export default function AllDashlets() {
   const { preferences, fetchPreferences } = useDashboardStore();
   const [showModal, setShowModal] = useState(false);
@@ -218,9 +217,15 @@ export default function AllDashlets() {
               <CompensationBenchmarkingCard />
             </div>
           )}
-                {shouldShow("GrievanceResolutionChart") && (
+          {shouldShow("GrievanceResolutionChart") && (
             <div className="mt-3">
               <GrievanceResolutionChart />
+            </div>
+          )}
+
+          {shouldShow("PerformanceTrendsCard") && (
+            <div className="mt-3">
+              <PerformanceTrendsCard />
             </div>
           )}
           {shouldShow("SkillGapAnalysisCard") && (
@@ -253,12 +258,6 @@ export default function AllDashlets() {
             </div>
           )}
 
-          {shouldShow("PerformanceTrendsCard") && (
-            <div className="mt-3">
-              <PerformanceTrendsCard />
-            </div>
-          )}
-
           {shouldShow("HighPotentialEmployeesTrendsCard") && (
             <div className="mt-3">
               <HighPotentialEmployeesTrendsCard />
@@ -276,7 +275,6 @@ export default function AllDashlets() {
               <OvertimeCostAnalysisCard />
             </div>
           )}
-    
         </div>
 
         {/* Column 2 */}
