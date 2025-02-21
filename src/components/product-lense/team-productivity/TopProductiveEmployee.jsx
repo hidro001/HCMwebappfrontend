@@ -1,74 +1,95 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { fetchTopSubordinates } from "../../../service/productLenseService"; // adjust path as needed
 
 const TopProductiveEmployee = () => {
-  // Sample static data for demonstration
-  const topData = [
-    {
-      sl: "01",
-      empID: "R001",
-      empName: "John Doe",
-      designation: "UI/UX Designer",
-      department: "IT",
-      breakTime: "15 min",
-      unproductiveTime: "30 min",
-      productiveTime: "8h 30m",
-      detectionType: "Keyboard",
-    },
-    {
-      sl: "02",
-      empID: "R002",
-      empName: "Alice Smith",
-      designation: "Software Engineer",
-      department: "Engineering",
-      breakTime: "20 min",
-      unproductiveTime: "45 min",
-      productiveTime: "8h 15m",
-      detectionType: "Mouse",
-    },
-    {
-      sl: "03",
-      empID: "R003",
-      empName: "Chris Johnson",
-      designation: "Data Analyst",
-      department: "Analytics",
-      breakTime: "10 min",
-      unproductiveTime: "20 min",
-      productiveTime: "8h 50m",
-      detectionType: "Keyboard",
-    },
-  ];
+  // State for API data and loading
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Search and pagination states
+  // Filter states: search, interval, and date
+  const [selectedInterval, setSelectedInterval] = useState("daily"); // default is daily
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const now = new Date();
+    return now.toISOString().split("T")[0]; // daily default
+  });
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const entriesPerPage = 2; // Display 2 entries per page for demonstration
+  const entriesPerPage = 2; // For demonstration
 
-  // 1) Filter the data based on searchValue
-  const filteredData = topData.filter((item) => {
+  // Helper to determine the input type based on interval
+  const getDateInputType = () => {
+    if (selectedInterval === "daily") return "date";
+    if (selectedInterval === "monthly") return "month";
+    if (selectedInterval === "yearly") return "number";
+    return "date";
+  };
+
+  // Helper to compute the maximum allowed value (disable future dates)
+  const getMaxValue = () => {
+    const now = new Date();
+    if (selectedInterval === "daily") {
+      return now.toISOString().split("T")[0]; // YYYY-MM-DD
+    } else if (selectedInterval === "monthly") {
+      // Format as YYYY-MM (using current year and month)
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    } else if (selectedInterval === "yearly") {
+      return String(now.getFullYear());
+    }
+    return now.toISOString().split("T")[0];
+  };
+
+  // Fetch data when filters change
+  useEffect(() => {
+    const getData = async () => {
+      setLoading(true);
+      const result = await fetchTopSubordinates(selectedInterval, selectedDate, searchValue);
+      setData(result);
+      setLoading(false);
+    };
+    getData();
+  }, [selectedInterval, selectedDate, searchValue]);
+
+  // Local filtering (if needed)
+  const filteredData = data.filter((item) => {
     const lowerSearch = searchValue.toLowerCase();
     return (
-      item.empName.toLowerCase().includes(lowerSearch) ||
-      item.empID.toLowerCase().includes(lowerSearch)
+      (item.empName && item.empName.toLowerCase().includes(lowerSearch)) ||
+      (item.empID && item.empID.toLowerCase().includes(lowerSearch))
     );
   });
 
-  // 2) Calculate pagination on filtered data
+  // Pagination calculations
   const totalEntries = filteredData.length;
   const totalPages = Math.ceil(totalEntries / entriesPerPage);
   const startIndex = (currentPage - 1) * entriesPerPage;
   const endIndex = startIndex + entriesPerPage;
   const currentEntries = filteredData.slice(startIndex, endIndex);
 
-  // Navigate to specific page (with boundary checks)
   const goToPage = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page);
-    }
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
-  // Reset to first page whenever searchValue changes
   const handleSearchChange = (e) => {
     setSearchValue(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleIntervalChange = (e) => {
+    setSelectedInterval(e.target.value);
+    // Reset date based on new interval
+    const now = new Date();
+    if (e.target.value === "daily") {
+      setSelectedDate(now.toISOString().split("T")[0]);
+    } else if (e.target.value === "monthly") {
+      setSelectedDate(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`);
+    } else if (e.target.value === "yearly") {
+      setSelectedDate(String(now.getFullYear()));
+    }
+    setCurrentPage(1);
+  };
+
+  const handleDateChange = (e) => {
+    setSelectedDate(e.target.value);
     setCurrentPage(1);
   };
 
@@ -77,6 +98,36 @@ const TopProductiveEmployee = () => {
       <h2 className="text-xl font-bold mb-4 text-purple-700">
         Top Productive Employee
       </h2>
+
+      {/* Filter Controls */}
+      <div className="flex flex-col md:flex-row gap-4 mb-4">
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-gray-600 dark:text-gray-300">Interval:</label>
+          <select
+            value={selectedInterval}
+            onChange={handleIntervalChange}
+            className="border border-gray-300 rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
+          >
+            <option value="daily">Daily</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
+        </div>
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-gray-600 dark:text-gray-300">
+            {selectedInterval === "daily" && "Date:"}
+            {selectedInterval === "monthly" && "Month:"}
+            {selectedInterval === "yearly" && "Year:"}
+          </label>
+          <input
+            type={getDateInputType()}
+            value={selectedDate}
+            onChange={handleDateChange}
+            max={getMaxValue()}
+            className="border border-gray-300 rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
+          />
+        </div>
+      </div>
 
       {/* Search Input */}
       <div className="mb-4">
@@ -90,93 +141,99 @@ const TopProductiveEmployee = () => {
       </div>
 
       {/* Table */}
-      <table className="w-full text-sm">
-        <thead className="bg-gray-50 text-gray-600 text-xs uppercase dark:bg-gray-700 dark:text-gray-200">
-          <tr>
-            <th className="px-4 py-3">S.L</th>
-            <th className="px-4 py-3">Emp ID</th>
-            <th className="px-4 py-3">Emp Name</th>
-            <th className="px-4 py-3">Designation</th>
-            <th className="px-4 py-3">Department</th>
-            <th className="px-4 py-3">Break Time</th>
-            <th className="px-4 py-3">Unproductive Time</th>
-            <th className="px-4 py-3">Productive Time</th>
-            <th className="px-4 py-3">Detection Type</th>
-          </tr>
-        </thead>
-        <tbody>
-          {currentEntries.map((item) => (
-            <tr
-              key={item.sl}
-              className="border-b hover:bg-gray-50 dark:hover:bg-gray-600"
-            >
-              <td className="px-4 py-2">{item.sl}</td>
-              <td className="px-4 py-2">{item.empID}</td>
-              <td className="px-4 py-2">{item.empName}</td>
-              <td className="px-4 py-2">{item.designation}</td>
-              <td className="px-4 py-2">{item.department}</td>
-              <td className="px-4 py-2">{item.breakTime}</td>
-              <td className="px-4 py-2">{item.unproductiveTime}</td>
-              <td className="px-4 py-2">{item.productiveTime}</td>
-              <td className="px-4 py-2">{item.detectionType}</td>
-            </tr>
-          ))}
-          {currentEntries.length === 0 && (
-            <tr>
-              <td colSpan="9" className="text-center py-4">
-                No matching records found.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      {loading ? (
+        <p>Loading...</p>
+      ) : (
+        <>
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 text-gray-600 text-xs uppercase dark:bg-gray-700 dark:text-gray-200">
+              <tr>
+                <th className="px-4 py-3">S.L</th>
+                <th className="px-4 py-3">Emp ID</th>
+                <th className="px-4 py-3">Emp Name</th>
+                <th className="px-4 py-3">Designation</th>
+                <th className="px-4 py-3">Department</th>
+                <th className="px-4 py-3">Break Time</th>
+                <th className="px-4 py-3">Unproductive Time</th>
+                <th className="px-4 py-3">Productive Time</th>
+                <th className="px-4 py-3">Detection Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentEntries.map((item, index) => (
+                <tr
+                  key={item.empID}
+                  className="border-b hover:bg-gray-50 dark:hover:bg-gray-600"
+                >
+                  <td className="px-4 py-2">
+                    {String(startIndex + index + 1).padStart(2, "0")}
+                  </td>
+                  <td className="px-4 py-2">{item.empID}</td>
+                  <td className="px-4 py-2">{item.empName}</td>
+                  <td className="px-4 py-2">{item.designation}</td>
+                  <td className="px-4 py-2">{item.department}</td>
+                  <td className="px-4 py-2">{item.breakTime}</td>
+                  <td className="px-4 py-2">{item.unproductiveTime}</td>
+                  <td className="px-4 py-2">{item.productiveTime}</td>
+                  <td className="px-4 py-2">{item.detectionType}</td>
+                </tr>
+              ))}
+              {currentEntries.length === 0 && (
+                <tr>
+                  <td colSpan="9" className="text-center py-4">
+                    No matching records found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
 
-      {/* Pagination */}
-      <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-2">
-        <span className="text-sm text-gray-600 dark:text-gray-300">
-          Showing {totalEntries === 0 ? 0 : startIndex + 1} to{" "}
-          {endIndex > totalEntries ? totalEntries : endIndex} of {totalEntries} entries
-        </span>
-        <div className="flex gap-2">
-          <button
-            onClick={() => goToPage(currentPage - 1)}
-            disabled={currentPage === 1}
-            className={`px-3 py-1 border rounded ${
-              currentPage === 1
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-gray-100 dark:hover:bg-gray-700"
-            }`}
-          >
-            Prev
-          </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-            (pageNum) => (
+          {/* Pagination */}
+          <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-2">
+            <span className="text-sm text-gray-600 dark:text-gray-300">
+              Showing {totalEntries === 0 ? 0 : startIndex + 1} to{" "}
+              {endIndex > totalEntries ? totalEntries : endIndex} of {totalEntries} entries
+            </span>
+            <div className="flex gap-2">
               <button
-                key={pageNum}
-                onClick={() => goToPage(pageNum)}
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage === 1}
                 className={`px-3 py-1 border rounded ${
-                  pageNum === currentPage
-                    ? "bg-purple-200 border-purple-600 text-purple-800"
+                  currentPage === 1
+                    ? "opacity-50 cursor-not-allowed"
                     : "hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
-                {pageNum}
+                Prev
               </button>
-            )
-          )}
-          <button
-            onClick={() => goToPage(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            className={`px-3 py-1 border rounded ${
-              currentPage === totalPages
-                ? "opacity-50 cursor-not-allowed"
-                : "hover:bg-gray-100 dark:hover:bg-gray-700"
-            }`}
-          >
-            Next
-          </button>
-        </div>
-      </div>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                <button
+                  key={pageNum}
+                  onClick={() => goToPage(pageNum)}
+                  className={`px-3 py-1 border rounded ${
+                    pageNum === currentPage
+                      ? "bg-purple-200 border-purple-600 text-purple-800"
+                      : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  {pageNum}
+                </button>
+              ))}
+              <button
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`px-3 py-1 border rounded ${
+                  currentPage === totalPages
+                    ? "opacity-50 cursor-not-allowed"
+                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                }`}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

@@ -26,23 +26,59 @@ const ProductivityDashboard = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchValue, setSearchValue] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("Jan 2025");
+  
+  // Default interval is daily
+  const [selectedInterval, setSelectedInterval] = useState("daily");
+  // Default daily date using today's date in "YYYY-MM-DD" format
+  const [selectedDate, setSelectedDate] = useState(() => {
+    const now = new Date();
+    return now.toISOString().split("T")[0];
+  });
+  
   const [selectedStatus, setSelectedStatus] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
   const [currentPage, setCurrentPage] = useState(1);
   const entriesPerPage = 5;
 
   // --------------------------
-  // Fetch data from API
+  // Update selectedDate when interval changes
+  // --------------------------
+  useEffect(() => {
+    const now = new Date();
+    if (selectedInterval === "daily" || selectedInterval === "weekly") {
+      setSelectedDate(now.toISOString().split("T")[0]); // "YYYY-MM-DD"
+    } else if (selectedInterval === "monthly") {
+      setSelectedDate(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`); // "YYYY-MM"
+    } else if (selectedInterval === "yearly") {
+      setSelectedDate(String(now.getFullYear())); // "YYYY"
+    }
+  }, [selectedInterval]);
+
+  // --------------------------
+  // Compute max value for input to disable future dates
+  // --------------------------
+  const today = new Date();
+  let maxValue;
+  if (selectedInterval === "daily" || selectedInterval === "weekly") {
+    maxValue = today.toISOString().split("T")[0]; // e.g., "2025-02-21"
+  } else if (selectedInterval === "monthly") {
+    maxValue = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`; // e.g., "2025-02"
+  } else if (selectedInterval === "yearly") {
+    maxValue = String(today.getFullYear()); // e.g., "2025"
+  }
+
+  // --------------------------
+  // Fetch data from API whenever selectedInterval or selectedDate changes
   // --------------------------
   useEffect(() => {
     const getData = async () => {
-      const data = await fetchProductivityData();
+      setLoading(true);
+      const data = await fetchProductivityData(selectedInterval, selectedDate);
       setTableData(data);
       setLoading(false);
     };
     getData();
-  }, []);
+  }, [selectedInterval, selectedDate]);
 
   // --------------------------
   // Filtering Data based on Search
@@ -63,7 +99,6 @@ const ProductivityDashboard = () => {
       direction = "desc";
     }
     setSortConfig({ key, direction });
-
     const sorted = [...tableData].sort((a, b) => {
       if (a[key] < b[key]) return direction === "asc" ? -1 : 1;
       if (a[key] > b[key]) return direction === "asc" ? 1 : -1;
@@ -73,7 +108,7 @@ const ProductivityDashboard = () => {
   };
 
   const getSortIcon = (key) => {
-    if (sortConfig.key !== key) return "↕"; // not sorted
+    if (sortConfig.key !== key) return "↕";
     return sortConfig.direction === "asc" ? "↑" : "↓";
   };
 
@@ -99,7 +134,6 @@ const ProductivityDashboard = () => {
     const doc = new jsPDF();
     doc.setFontSize(13);
     doc.text("Employee Productivity", 14, 15);
-
     const columns = [
       { header: "S.L", dataKey: "sl" },
       { header: "Emp ID", dataKey: "empID" },
@@ -109,17 +143,15 @@ const ProductivityDashboard = () => {
       { header: "Break Time", dataKey: "breakTime" },
       { header: "Unproductive", dataKey: "unproductiveTime" },
       { header: "Productive", dataKey: "productiveTime" },
-      { header: "Detection", dataKey: "detectionType" },
+      { header: "Detection", dataKey: "detectionType" }
     ];
-
     doc.autoTable({
       startY: 20,
       head: [columns.map((col) => col.header)],
       body: tableData.map((row) =>
         columns.map((col) => row[col.dataKey] ?? "")
-      ),
+      )
     });
-
     doc.save("EmployeeProductivity.pdf");
   };
 
@@ -137,10 +169,7 @@ const ProductivityDashboard = () => {
     const worksheet = XLSX.utils.json_to_sheet(tableData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Employee Productivity");
-    const excelBuffer = XLSX.write(workbook, {
-      bookType: "xlsx",
-      type: "array",
-    });
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
     const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(blob, "EmployeeProductivity.xlsx");
   };
@@ -150,16 +179,18 @@ const ProductivityDashboard = () => {
   };
 
   // --------------------------
-  // Dropdown Handlers
+  // Handlers for Interval and Date Input
   // --------------------------
-  const handleMonthChange = (e) => {
-    setSelectedMonth(e.target.value);
-    // Optionally, trigger a re-fetch or other actions based on the selected month.
+  const handleIntervalChange = (e) => {
+    setSelectedInterval(e.target.value);
+  };
+
+  const handleDateChange = (e) => {
+    setSelectedDate(e.target.value);
   };
 
   const handleStatusChange = (e) => {
     setSelectedStatus(e.target.value);
-    // Optionally, trigger any additional actions based on the selected status.
   };
 
   // --------------------------
@@ -172,7 +203,7 @@ const ProductivityDashboard = () => {
     { key: "designation", label: "Designation" },
     { key: "department", label: "Department" },
     { key: "unproductiveTime", label: "Unproductive Time" },
-    { key: "productiveTime", label: "Productive Time" },
+    { key: "productiveTime", label: "Productive Time" }
   ];
 
   // --------------------------
@@ -180,7 +211,7 @@ const ProductivityDashboard = () => {
   // --------------------------
   const rowVariants = {
     hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 },
+    visible: { opacity: 1, y: 0 }
   };
 
   // --------------------------
@@ -221,18 +252,42 @@ const ProductivityDashboard = () => {
           />
         </div>
 
-        {/* Month Dropdown */}
+        {/* Interval Selector */}
         <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 dark:text-gray-300">Month:</label>
+          <label className="text-sm text-gray-600 dark:text-gray-300">Interval:</label>
           <select
-            value={selectedMonth}
-            onChange={handleMonthChange}
+            value={selectedInterval}
+            onChange={handleIntervalChange}
             className="border border-gray-300 text-sm rounded px-2 py-1 bg-white dark:bg-gray-700 dark:text-gray-100"
           >
-            <option value="Feb 2020">Feb 2020</option>
-            <option value="Mar 2020">Mar 2020</option>
-            <option value="Jan 2025">Jan 2025</option>
+            <option value="daily">Daily</option>
+            <option value="weekly">Weekly</option>
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
           </select>
+        </div>
+
+        {/* Date/Period Selector */}
+        <div className="flex items-center gap-2">
+          <label className="text-sm text-gray-600 dark:text-gray-300">
+            {selectedInterval === "daily" && "Date:"}
+            {selectedInterval === "weekly" && "Week (any day):"}
+            {selectedInterval === "monthly" && "Month:"}
+            {selectedInterval === "yearly" && "Year:"}
+          </label>
+          <input
+            type={
+              selectedInterval === "daily" || selectedInterval === "weekly"
+                ? "date"
+                : selectedInterval === "monthly"
+                ? "month"
+                : "number"
+            }
+            value={selectedDate}
+            onChange={handleDateChange}
+            max={maxValue}
+            className="border border-gray-300 text-sm rounded px-2 py-1 bg-white dark:bg-gray-700 dark:text-gray-100"
+          />
         </div>
 
         {/* Status Dropdown */}
@@ -270,7 +325,6 @@ const ProductivityDashboard = () => {
       {/* Table Container */}
       <div className="border border-gray-200 shadow-sm rounded mb-4 overflow-x-auto bg-white dark:bg-gray-800">
         {loading ? (
-          // Skeleton loading view for table rows
           <table className="min-w-full text-sm">
             <thead className="bg-gray-50 text-gray-600 text-sm dark:bg-gray-700 dark:text-gray-200">
               <tr>
@@ -316,12 +370,8 @@ const ProductivityDashboard = () => {
               transition={{ staggerChildren: 0.05 }}
               className="text-gray-700 dark:text-gray-200"
             >
-              {currentEntries.map((row, i) => (
-                <motion.tr
-                  key={row.sl}
-                  variants={rowVariants}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
+              {currentEntries.map((row) => (
+                <motion.tr key={row.sl} variants={rowVariants} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                   {headers.map((header) => (
                     <td key={header.key} className="px-4 py-2 border-b border-gray-200">
                       {row[header.key]}
@@ -345,9 +395,7 @@ const ProductivityDashboard = () => {
           <button
             onClick={() => goToPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`px-3 py-1 border border-gray-300 rounded text-sm ${
-              currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-100 dark:hover:bg-gray-700"
-            }`}
+            className={`px-3 py-1 border border-gray-300 rounded text-sm ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-100 dark:hover:bg-gray-700"}`}
           >
             Prev
           </button>
@@ -367,9 +415,7 @@ const ProductivityDashboard = () => {
           <button
             onClick={() => goToPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`px-3 py-1 border border-gray-300 rounded text-sm ${
-              currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-100 dark:hover:bg-gray-700"
-            }`}
+            className={`px-3 py-1 border border-gray-300 rounded text-sm ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-100 dark:hover:bg-gray-700"}`}
           >
             Next
           </button>
