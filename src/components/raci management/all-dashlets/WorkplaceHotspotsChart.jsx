@@ -222,7 +222,7 @@ const WorkplaceHotspotsChart = () => {
         rounded-md shadow-sm text-gray-900 dark:text-gray-100"
       >
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
-          <h2 className="text-lg font-semibold">Workplace Hotspots for HR Intervention</h2>
+          <h2 className="text-lg font-semibold">Ensuring 100% Compliance in Regulated Roles</h2>
           <div className="relative mt-2 sm:mt-0">
             <button
               onClick={handleDropdownToggle}

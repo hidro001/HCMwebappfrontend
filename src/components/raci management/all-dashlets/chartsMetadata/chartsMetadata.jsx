@@ -25,6 +25,7 @@ import PerformanceCard from "../PerformanceCard";
 import CorrelationTrainingPerformanceCard from "../CorrelationTrainingPerformanceCard";
 import GrievanceResolutionChart from "../GrievanceResolutionChart";
 import WorkplaceHotspotsChart from "../WorkplaceHotspotsChart";
+import StreamliningVerificationChart from "../StreamliningVerificationChart";
 
 
 
@@ -154,6 +155,11 @@ export const CHARTS_METADATA = [
     id: "WorkplaceHotspotsChart",
     label: "Workplace Hotspots Chart",
     component: WorkplaceHotspotsChart,
+  },
+  {
+    id: "StreamliningVerificationChart",
+    label: "Streamlining Verification Chart",
+    component: StreamliningVerificationChart,
   },
 ];
 

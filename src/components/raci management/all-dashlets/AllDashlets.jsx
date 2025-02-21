@@ -153,6 +153,7 @@ import GrievanceResolutionChart from "./GrievanceResolutionChart";
 // The modal
 import CustomizeDashboardModal from "./model/CustomizeDashboardModal";
 import WorkplaceHotspotsChart from "./WorkplaceHotspotsChart";
+import StreamliningVerificationChart from "./StreamliningVerificationChart";
 
 export default function AllDashlets() {
   const { preferences, fetchPreferences } = useDashboardStore();
@@ -235,6 +236,16 @@ export default function AllDashlets() {
               <AbsenteeismPatternsCard />
             </div>
           )}
+             {shouldShow("WorkplaceHotspotsChart") && (
+            <div className="mt-3">
+              <WorkplaceHotspotsChart />
+            </div>
+          )}
+          {shouldShow("StreamliningVerificationChart") && (
+            <div className="mt-3">
+              <StreamliningVerificationChart />
+            </div>
+          )}
           {shouldShow("SkillGapAnalysisCard") && (
             <div className="mt-3">
               <SkillGapAnalysisCard />
@@ -276,11 +287,7 @@ export default function AllDashlets() {
               <OvertimeCostAnalysisCard />
             </div>
           )}
-          {shouldShow("WorkplaceHotspotsChart") && (
-            <div className="mt-3">
-              <WorkplaceHotspotsChart />
-            </div>
-          )}
+       
         </div>
 
         {/* Column 2 */}
