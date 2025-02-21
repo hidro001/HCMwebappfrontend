@@ -5,7 +5,7 @@ const LessProductiveEmployee = () => {
   // State for API data and loading
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
-  
+
   // Filter states: search, interval, and date
   const [selectedInterval, setSelectedInterval] = useState("daily"); // default daily
   const [selectedDate, setSelectedDate] = useState(() => {
@@ -30,7 +30,10 @@ const LessProductiveEmployee = () => {
     if (selectedInterval === "daily") {
       return now.toISOString().split("T")[0];
     } else if (selectedInterval === "monthly") {
-      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+        2,
+        "0"
+      )}`;
     } else if (selectedInterval === "yearly") {
       return String(now.getFullYear());
     }
@@ -41,7 +44,11 @@ const LessProductiveEmployee = () => {
   useEffect(() => {
     const getData = async () => {
       setLoading(true);
-      const result = await fetchLessSubordinates(selectedInterval, selectedDate, searchValue);
+      const result = await fetchLessSubordinates(
+        selectedInterval,
+        selectedDate,
+        searchValue
+      );
       setData(result);
       setLoading(false);
     };
@@ -80,7 +87,9 @@ const LessProductiveEmployee = () => {
     if (e.target.value === "daily") {
       setSelectedDate(now.toISOString().split("T")[0]);
     } else if (e.target.value === "monthly") {
-      setSelectedDate(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`);
+      setSelectedDate(
+        `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+      );
     } else if (e.target.value === "yearly") {
       setSelectedDate(String(now.getFullYear()));
     }
@@ -101,7 +110,9 @@ const LessProductiveEmployee = () => {
       {/* Filter Controls */}
       <div className="flex flex-col md:flex-row gap-4 mb-4">
         <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 dark:text-gray-300">Interval:</label>
+          <label className="text-sm text-gray-600 dark:text-gray-300">
+            Interval:
+          </label>
           <select
             value={selectedInterval}
             onChange={handleIntervalChange}
@@ -152,10 +163,9 @@ const LessProductiveEmployee = () => {
                 <th className="px-4 py-3">Emp Name</th>
                 <th className="px-4 py-3">Designation</th>
                 <th className="px-4 py-3">Department</th>
-                <th className="px-4 py-3">Break Time</th>
+
                 <th className="px-4 py-3">Unproductive Time</th>
                 <th className="px-4 py-3">Productive Time</th>
-                <th className="px-4 py-3">Detection Type</th>
               </tr>
             </thead>
             <tbody>
@@ -171,10 +181,9 @@ const LessProductiveEmployee = () => {
                   <td className="px-4 py-2">{item.empName}</td>
                   <td className="px-4 py-2">{item.designation}</td>
                   <td className="px-4 py-2">{item.department}</td>
-                  <td className="px-4 py-2">{item.breakTime}</td>
+
                   <td className="px-4 py-2">{item.unproductiveTime}</td>
                   <td className="px-4 py-2">{item.productiveTime}</td>
-                  <td className="px-4 py-2">{item.detectionType}</td>
                 </tr>
               ))}
               {currentEntries.length === 0 && (
@@ -191,7 +200,8 @@ const LessProductiveEmployee = () => {
           <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-2">
             <span className="text-sm text-gray-600 dark:text-gray-300">
               Showing {totalEntries === 0 ? 0 : startIndex + 1} to{" "}
-              {endIndex > totalEntries ? totalEntries : endIndex} of {totalEntries} entries
+              {endIndex > totalEntries ? totalEntries : endIndex} of{" "}
+              {totalEntries} entries
             </span>
             <div className="flex gap-2">
               <button
@@ -205,19 +215,21 @@ const LessProductiveEmployee = () => {
               >
                 Prev
               </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-                <button
-                  key={pageNum}
-                  onClick={() => goToPage(pageNum)}
-                  className={`px-3 py-1 border rounded ${
-                    pageNum === currentPage
-                      ? "bg-purple-200 border-purple-600 text-purple-800"
-                      : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                  }`}
-                >
-                  {pageNum}
-                </button>
-              ))}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (pageNum) => (
+                  <button
+                    key={pageNum}
+                    onClick={() => goToPage(pageNum)}
+                    className={`px-3 py-1 border rounded ${
+                      pageNum === currentPage
+                        ? "bg-purple-200 border-purple-600 text-purple-800"
+                        : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                )
+              )}
               <button
                 onClick={() => goToPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
