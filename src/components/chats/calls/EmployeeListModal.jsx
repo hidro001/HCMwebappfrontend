@@ -71,6 +71,10 @@
 
 
 // src/components/EmployeeListModal.jsx
+
+
+
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -88,10 +92,10 @@ const EmployeeListModal = ({ onClose, onSelectEmployee }) => {
       try {
         // Fetch subordinates & managers in parallel
         const [subsResponse, managersResponse] = await Promise.all([
-          axios.get("http://localhost:6060/api/v1/admin/subordinates", {
+          axios.get("https://demoapi.humanmaximizer.com/api/v1/admin/subordinates", {
             headers: { Authorization: `Bearer ${accessToken}` },
           }),
-          axios.get("http://localhost:6060/api/v1/admin/both", {
+          axios.get("https://demoapi.humanmaximizer.com/api/v1/admin/both", {
             headers: { Authorization: `Bearer ${accessToken}` },
           }),
         ]);
