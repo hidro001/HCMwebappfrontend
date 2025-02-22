@@ -1,9 +1,12 @@
-import axiosInstance from './axiosInstance';
+import axiosInstance from "./axiosInstance";
 
-export const fetchProductivityData = async (interval = "monthly", date = "2025-01") => {
+export const fetchProductivityData = async (
+  interval = "monthly",
+  date = "2025-01"
+) => {
   try {
     const res = await axiosInstance.get("/break/productivity", {
-      params: { interval, date }
+      params: { interval, date },
     });
 
     if (res.data && res.data.data) {
@@ -16,7 +19,7 @@ export const fetchProductivityData = async (interval = "monthly", date = "2025-0
         breakTime: "", // or item.breakTime if provided
         unproductiveTime: item.unproductiveTime || "0",
         productiveTime: item.productiveTime || "0",
-        detectionType: "" // remove if not needed
+        detectionType: "", // remove if not needed
       }));
     }
     return [];
@@ -26,11 +29,11 @@ export const fetchProductivityData = async (interval = "monthly", date = "2025-0
   }
 };
 
-
-
-
-
-export const fetchTopSubordinates = async (interval = "daily", date = "", search = "") => {
+export const fetchTopSubordinates = async (
+  interval = "daily",
+  date = "",
+  search = ""
+) => {
   try {
     const res = await axiosInstance.get("/break/productivity/top", {
       params: { interval, date, search },
@@ -42,7 +45,11 @@ export const fetchTopSubordinates = async (interval = "daily", date = "", search
   }
 };
 
-export const fetchLessSubordinates = async (interval = "daily", date = "", search = "") => {
+export const fetchLessSubordinates = async (
+  interval = "daily",
+  date = "",
+  search = ""
+) => {
   try {
     const res = await axiosInstance.get("/break/productivity/less", {
       params: { interval, date, search },
@@ -50,6 +57,18 @@ export const fetchLessSubordinates = async (interval = "daily", date = "", searc
     return res.data.data;
   } catch (error) {
     console.error("Error fetching less subordinates:", error);
+    return [];
+  }
+};
+
+export const fetchBreakStats = async (interval = "daily", date = "") => {
+  try {
+    const res = await axiosInstance.get("/break/productivity/break", {
+      params: { interval, date },
+    });
+    return res.data?.data || [];
+  } catch (error) {
+    console.error("Error fetching break stats:", error);
     return [];
   }
 };

@@ -24,7 +24,7 @@
 //         </button>
 //       </div>
 //       <div className="shrink-0 self-stretch mt-2.5 h-px border border-solid border-zinc-300 " />
-      
+
 //       {announcements.map((announcement, index) => (
 //         <React.Fragment key={index}>
 //           <div className="flex gap-2 mt-7 max-w-full w-[338px]">
@@ -64,7 +64,7 @@
 //   return (
 //     <div className="
 //       flex flex-col items-center pt-3 pb-7 mt-8 w-full
-//       bg-white dark:bg-gray-800 
+//       bg-white dark:bg-gray-800
 //       text-gray-800 dark:text-gray-100
 //       rounded-lg shadow-[-1px_7px_32px_2px_rgba(0,0,0,0.25)]
 //     ">
@@ -129,7 +129,6 @@
 // }
 
 // export default AnnouncementCard;
-
 
 // import * as React from "react";
 
@@ -226,7 +225,7 @@
 // export default AnnouncementCard;
 
 // src/components/AnnouncementCard.jsx
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useAnnouncementStore from "../../../store/announcementStore";
 import AnnouncementModal from "./AnnouncementModal"; // import our new modal
 
@@ -245,7 +244,20 @@ function AnnouncementCard() {
   // Helper to parse date
   const formatDate = (announcementDate) => {
     const dateObj = new Date(announcementDate);
-    const monthNames = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const monthNames = [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
+    ];
     const monthIndex = dateObj.getMonth();
     const dayNum = dateObj.getDate();
     return {
@@ -302,23 +314,6 @@ function AnnouncementCard() {
           <h2 className="text-base font-bold text-lime-600 dark:text-lime-400">
             Latest Announcements
           </h2>
-          <button className="flex items-center gap-1 text-sm font-semibold text-blue-600 dark:text-blue-300">
-            <span>Add</span>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="w-4 h-4"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M13.5 4.5L18 9m0 0l-4.5 4.5M18 9H6"
-              />
-            </svg>
-          </button>
         </div>
 
         {/* Divider */}
@@ -353,9 +348,7 @@ function AnnouncementCard() {
                 <span className="text-xs text-gray-500 dark:text-gray-400">
                   {item.month}
                 </span>
-                <span className="text-lg font-bold">
-                  {item.day}
-                </span>
+                <span className="text-lg font-bold">{item.day}</span>
               </div>
 
               {/* Title + Department */}
