@@ -43,7 +43,14 @@ export default function IssueDetailsModal({ isOpen, onClose, issue }) {
             backdrop-blur-md border border-gray-300 dark:border-gray-700
             text-gray-900 dark:text-gray-100 rounded-lg overflow-hidden shadow-lg"
         >
-          <div className="flex flex-col w-1/2 p-4 border-r border-white/20 dark:border-white/10">
+          <div
+            className="flex flex-col w-1/2 p-4 border-r border-white/20 dark:border-white/10 overflow-y-auto
+                [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600"
+          >
             <h2 className="text-xl font-bold mb-4">Issue Details</h2>
             <div className="mb-4">
               <p className="font-semibold">Reporter</p>
@@ -98,7 +105,8 @@ export default function IssueDetailsModal({ isOpen, onClose, issue }) {
               </p>
             </div>
           </div>
-          <div className="flex flex-col w-1/2 p-4">
+
+          <div className="flex flex-col w-1/2 p-4 ">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold">Comment</h2>
               <button onClick={onClose} title="Close">
@@ -108,7 +116,10 @@ export default function IssueDetailsModal({ isOpen, onClose, issue }) {
             <div className="flex-1 overflow-y-auto pr-2 space-y-3">
               {currentItem?.comments?.length ? (
                 currentItem.comments.map((c) => (
-                  <div key={c._id} className="bg-white text-gray-800 rounded p-3">
+                  <div
+                    key={c._id}
+                    className="bg-white text-gray-800 rounded p-3"
+                  >
                     <p className="text-sm font-semibold mb-1">
                       {c.user?.first_Name} {c.user?.last_Name}
                     </p>
@@ -132,7 +143,10 @@ export default function IssueDetailsModal({ isOpen, onClose, issue }) {
                 value={commentText}
                 onChange={(e) => setCommentText(e.target.value)}
               />
-              <button className="mx-1 text-gray-500 hover:text-gray-700" title="Attach File">
+              <button
+                className="mx-1 text-gray-500 hover:text-gray-700"
+                title="Attach File"
+              >
                 <FaPaperclip />
               </button>
               <button
