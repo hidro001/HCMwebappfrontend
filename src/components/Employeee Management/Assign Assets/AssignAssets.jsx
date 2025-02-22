@@ -367,7 +367,7 @@ export default function AssignAssetsPage() {
     errorSubordinates,
   } = useAssetStore();
 
-  const userId = localStorage.getItem("mongo_id");
+  const userId = localStorage.getItem("_id");
 
   useEffect(() => {
     if (userId) {
@@ -375,13 +375,7 @@ export default function AssignAssetsPage() {
     }
   }, [userId, getSubordinates]);
 
-  // NOTE: We remove the direct "if (loadingSubordinates) return ..." block
-  // because we now want to show the table with a skeleton instead.
-  /*
-  if (loadingSubordinates) {
-    return <div className="p-4">Loading subordinates...</div>;
-  }
-  */
+
 
   if (errorSubordinates) {
     return (
