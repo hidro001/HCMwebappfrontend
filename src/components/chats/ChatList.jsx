@@ -80,7 +80,9 @@ export default function ChatList({
       toast.error('Select a user to call.');
       return;
     }
-    initiateCall({ callType: 'video', participants: [selectedUser] });
+    initiateCall({ callType: 'video', participants: [selectedUser.employee_Id
+    ] });
+    console.log("Erfgdgdfgdfgd",selectedUser.employee_Id);
   };
 
   const handleVoiceCall = () => {
@@ -91,7 +93,10 @@ export default function ChatList({
    
    
     
-    initiateCall({ callType: 'voice', participants: [selectedUser] });
+    initiateCall({ callType: 'voice', participants: [selectedUser.employee_Id
+    ] });
+    console.log("Erfgdgdfgdfgd",selectedUser.employee_Id);
+    
   };
 
   const handleSend = () => {

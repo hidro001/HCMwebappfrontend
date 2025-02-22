@@ -65,7 +65,7 @@
 //     console.log("Participant joined:", data);
 //     if (outgoingCall && outgoingCall.callId === data.callId) {
 //       setOutgoingCall(null);
-//       toast.info(`User ${data.userId} answered the call.`);
+//       toast(`User ${data.userId} answered the call.`);
 //     }
 //   };
 
@@ -78,20 +78,20 @@
 //     setRemoteStreams((prev) => prev.filter((s) => s.userId !== data.userId));
 
 //     if (call && call.callId === data.callId) {
-//       toast.warn(`User ${data.userId} ended the call.`);
+//       toast(`User ${data.userId} ended the call.`);
 //       cleanupCall();
 //     }
 //   };
 
 //   const handleCallRejected = (data) => {
 //     console.log(`Call ${data.callId} was rejected by ${data.userId}`);
-//     toast.error(`Call was rejected by ${data.userId}`);
+//     toast(`Call was rejected by ${data.userId}`);
 //     cleanupCall();
 //   };
 
 //   const handleEndCall = (data) => {
 //     console.log("Received endCall event:", data);
-//     toast.info("Call ended.");
+//     toast("Call ended.");
 //     cleanupCall();
 //   };
 
@@ -215,14 +215,14 @@
 //           const mediaStream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
 //           setStream(mediaStream);
 //           localStreamRef.current = mediaStream;
-//           toast.error("Video device not accessible. Switching to audio only.");
+//           toast("Video device not accessible. Switching to audio only.");
 //         } catch (err2) {
 //           console.error("Error accessing audio devices:", err2);
-//           toast.error("Error accessing media devices.");
+//           toast("Error accessing media devices.");
 //           throw err2;
 //         }
 //       } else {
-//         toast.error("Error accessing media devices.");
+//         toast("Error accessing media devices.");
 //         throw err;
 //       }
 //     }
@@ -372,7 +372,7 @@
 //         });
 //       } else {
 //         console.warn("Call cancelled before callId was set.");
-//         toast.info("Call cancelled.");
+//         toast("Call cancelled.");
 //       }
 //     }
 //     cleanupCall();
@@ -423,6 +423,11 @@
 
 
 
+
+
+
+
+
 // src/ContextApi/CallContext.jsx
 import React, {
   createContext,
@@ -432,10 +437,11 @@ import React, {
   useRef,
 } from "react";
 import io from "socket.io-client";
-import { toast } from "react-toastify";
+
+import {toast} from 'react-hot-toast'
 
 const SOCKET_SERVER_URL =
-  import.meta.env.VITE_SOCKET_URL 
+  import.meta.env.VITE_SOCKET_URL || "https://chat.humanmaximizer.com";
 
 const CallContext = createContext();
 
@@ -498,7 +504,7 @@ export const CallProvider = ({ children }) => {
     console.log("Participant joined:", data);
     if (outgoingCall && outgoingCall.callId === data.callId) {
       setOutgoingCall(null);
-      toast.info(`User ${data.userId} answered the call.`);
+      toast(`User ${data.userId} answered the call.`);
     }
   };
 
@@ -511,20 +517,20 @@ export const CallProvider = ({ children }) => {
     setRemoteStreams((prev) => prev.filter((s) => s.userId !== data.userId));
 
     if (call && call.callId === data.callId) {
-      toast.warn(`User ${data.userId} ended the call.`);
+      toast(`User ${data.userId} ended the call.`);
       cleanupCall();
     }
   };
 
   const handleCallRejected = (data) => {
     console.log(`Call ${data.callId} was rejected by ${data.userId}`);
-    toast.error(`Call was rejected by ${data.userId}`);
+    toast(`Call was rejected by ${data.userId}`);
     cleanupCall();
   };
 
   const handleEndCall = (data) => {
     console.log("Received endCall event:", data);
-    toast.info("Call ended.");
+    toast("Call ended.");
     cleanupCall();
   };
 
@@ -791,7 +797,7 @@ export const CallProvider = ({ children }) => {
         });
       } else {
         console.warn("Call cancelled before callId was set.");
-        toast.info("Call cancelled.");
+        toast("Call cancelled.");
       }
     }
     cleanupCall();
