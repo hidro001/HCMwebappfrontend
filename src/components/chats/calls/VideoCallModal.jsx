@@ -103,7 +103,7 @@ const VideoCallModal = () => {
           {/* Hang Up */}
           <button
             onClick={leaveCall}
-            className="w-12 h-12 bg-gray-800 text-white rounded-full flex items-center justify-center hover:bg-gray-700 transition"
+            className="w-12 h-12 bg-red-800 text-white rounded-full flex items-center justify-center hover:bg-red-700 transition"
           >
             <FaPhoneSlash size={18} />
           </button>

@@ -1,11 +1,10 @@
-// src/components/CallWindow.jsx
 import React, { useEffect, useState } from "react";
 import { useCall } from "../../../contexts/CallContext";
 import EmployeeListModal from "./EmployeeListModal";
 
 // Optional: read these from localStorage (or use a user context)
-const currentUserId = localStorage.getItem("employeeId") || "EMP0001";
-const currentUserName = localStorage.getItem("userName") || "HCM User";
+const currentUserId = localStorage.getItem("employeeId");
+const currentUserName = localStorage.getItem("userName");
 
 // Helper component to play remote audio
 const AudioPlayer = ({ stream }) => {
@@ -19,22 +18,13 @@ const AudioPlayer = ({ stream }) => {
 };
 
 const CallWindow = () => {
-  const {
-    call,
-    outgoingCall,
-    stream,
-    remoteStreams,
-    leaveCall,
-    addParticipant,
-  } = useCall();
-
+  const { call, outgoingCall, stream, remoteStreams, leaveCall, addParticipant } = useCall();
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
 
-  // Ensure that local audio tracks follow audioEnabled state.
+  // Update local audio tracks based on audioEnabled state
   useEffect(() => {
     if (stream) {
-      console.log("Local media stream (audio only) available", stream);
       stream.getAudioTracks().forEach((track) => {
         track.enabled = audioEnabled;
       });
@@ -46,12 +36,12 @@ const CallWindow = () => {
     if (outgoingCall.callType === "video") return null;
     const callTypeLabel = "Voice Call";
     return (
-      <div style={containerStyle}>
-        <div style={loaderCardStyle}>
-          <h3 style={{ margin: 0 }}>
+      <div className="fixed top-5 right-5 z-[2000]">
+        <div className="w-64 rounded-xl bg-white shadow-lg flex flex-col items-center py-5 px-4">
+          <h3 className="text-center text-sm">
             {callTypeLabel}: Calling {outgoingCall.participants.join(", ")}...
           </h3>
-          <div style={spinnerStyle}></div>
+          <div className="mt-2 w-8 h-8 border-4 border-gray-300 border-t-[#6B73FF] rounded-full animate-spin"></div>
         </div>
       </div>
     );
@@ -76,28 +66,30 @@ const CallWindow = () => {
   };
 
   return (
-    <div style={containerStyle}>
-      <div style={callCardStyle}>
-        {/* TOP SECTION: User Info */}
-        <div style={topSectionStyle}>
-          <div style={avatarWrapperStyle}>
-            <div style={avatarStyle}></div>
+    <div className="fixed top-5 right-5 z-[2000]">
+      <div className="w-80 rounded-xl bg-white shadow-lg flex flex-col items-center overflow-hidden pb-2">
+        {/* Top Section: User Info */}
+        <div className="flex items-center w-full py-2 px-4 bg-gradient-to-br from-[#6B73FF] to-[#000DFF]">
+          <div className="w-16 h-16 rounded-full bg-gray-200 flex justify-center items-center mr-4">
+            <div className="w-10 h-10 rounded-full bg-gray-400"></div>
           </div>
-          <div style={userInfoStyle}>
-            <span style={userNameStyle}>
+          <div className="flex flex-col text-white">
+            <span className="text-sm font-bold">
               {currentUserName} ({currentUserId})
             </span>
           </div>
         </div>
 
         {/* Badge & Participant Info */}
-        <div style={callTypeBadgeStyle}>{callTypeLabel}</div>
-        <small style={{ marginTop: 5 }}>{remoteUserLabel}</small>
+        <div className="mt-2 py-1 px-3 rounded-lg bg-[#b19cff] text-white text-xs uppercase">
+          {callTypeLabel}
+        </div>
+        <small className="mt-1 text-gray-600">{remoteUserLabel}</small>
 
-        {/* VOICE CALL CONTENT: Display placeholder */}
-        <div style={callContentStyle}>
-          <div style={voicePlaceholderStyle}>
-            <p style={{ color: "#888" }}>Voice Call Connected</p>
+        {/* Call Content: Voice Call Placeholder */}
+        <div className="w-full p-3 text-center">
+          <div className="w-full h-44 rounded-lg bg-gray-100 flex items-center justify-center mt-3">
+            <p className="text-gray-500">Voice Call Connected</p>
           </div>
         </div>
 
@@ -106,183 +98,47 @@ const CallWindow = () => {
           <AudioPlayer key={userId} stream={stream} />
         ))}
 
-        {/* ACTION BUTTONS */}
-        <div style={buttonRowStyle}>
+        {/* Action Buttons */}
+        <div className="flex justify-around w-full pt-2 border-t border-gray-300">
           {/* Hang Up */}
-          <button style={redButtonStyle} onClick={leaveCall}>
-            <span style={phoneIconStyle}>&#x1F5D9;</span>
-          </button>
-          {/* Open Employee List Modal instead of using prompt */}
           <button
-            style={greenButtonStyle}
-            onClick={() => setShowEmployeeModal(true)}
+            onClick={leaveCall}
+            aria-label="Hang Up"
+            className="bg-red-600 rounded-full w-12 h-12 text-white flex items-center justify-center hover:bg-red-700 transition"
           >
-            <span style={phoneIconStyle}>&#x260E;</span>
+            <span className="text-xl">&#x1F5D9;</span>
+          </button>
+          {/* Open Employee List Modal */}
+          <button
+            onClick={() => setShowEmployeeModal(true)}
+            aria-label="Add Participant"
+            className="bg-green-600 rounded-full w-12 h-12 text-white flex items-center justify-center hover:bg-green-700 transition"
+          >
+            <span className="text-xl">&#x260E;</span>
           </button>
           {/* Toggle Audio */}
-          <button style={greenButtonStyle} onClick={toggleAudio}>
-            {audioEnabled ? (
-              <span style={phoneIconStyle}>Mute</span>
-            ) : (
-              <span style={phoneIconStyle}>Unmute</span>
-            )}
+          <button
+            onClick={toggleAudio}
+            aria-label="Toggle Audio"
+            className="bg-green-600 rounded-full w-12 h-12 text-white flex items-center justify-center hover:bg-green-700 transition"
+          >
+            <span className="text-xl">
+              {audioEnabled ? "Mute" : "Unmute"}
+            </span>
           </button>
         </div>
       </div>
-      {/* Render the EmployeeListModal if requested */}
+      {/* Employee List Modal */}
       {showEmployeeModal && (
         <EmployeeListModal
           onClose={() => setShowEmployeeModal(false)}
           onSelectEmployee={(employeeId) => {
-            // Use your context addParticipant function here.
             addParticipant(employeeId);
           }}
         />
       )}
     </div>
   );
-};
-
-/* ---------- STYLES ---------- */
-const containerStyle = {
-  position: "fixed",
-  top: "20px",
-  right: "20px",
-  zIndex: 2000,
-};
-
-const callCardStyle = {
-  width: "320px",
-  borderRadius: "10px",
-  backgroundColor: "#fff",
-  boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-  fontFamily: "sans-serif",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  overflow: "hidden",
-  paddingBottom: "10px",
-};
-
-const loaderCardStyle = {
-  width: "260px",
-  borderRadius: "10px",
-  backgroundColor: "#fff",
-  boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-  fontFamily: "sans-serif",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  padding: "20px 15px",
-};
-
-const spinnerStyle = {
-  marginTop: "10px",
-  width: "30px",
-  height: "30px",
-  border: "4px solid #ccc",
-  borderTop: "4px solid #6B73FF",
-  borderRadius: "50%",
-  animation: "spin 1s linear infinite",
-};
-
-const topSectionStyle = {
-  display: "flex",
-  alignItems: "center",
-  width: "100%",
-  padding: "10px 15px",
-  background: "linear-gradient(135deg, #6B73FF 0%, #000DFF 100%)",
-};
-
-const avatarWrapperStyle = {
-  width: "60px",
-  height: "60px",
-  borderRadius: "50%",
-  backgroundColor: "#e1e1e1",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  marginRight: "15px",
-};
-
-const avatarStyle = {
-  width: "40px",
-  height: "40px",
-  backgroundColor: "#ccc",
-  borderRadius: "50%",
-};
-
-const userInfoStyle = {
-  display: "flex",
-  flexDirection: "column",
-  color: "#fff",
-};
-
-const userNameStyle = {
-  fontSize: "14px",
-  fontWeight: "bold",
-};
-
-const callTypeBadgeStyle = {
-  marginTop: "10px",
-  padding: "6px 12px",
-  borderRadius: "8px",
-  backgroundColor: "#b19cff",
-  color: "#fff",
-  fontSize: "12px",
-  textTransform: "uppercase",
-};
-
-const callContentStyle = {
-  width: "100%",
-  padding: "10px",
-  textAlign: "center",
-};
-
-const voicePlaceholderStyle = {
-  width: "100%",
-  height: "180px",
-  borderRadius: "8px",
-  backgroundColor: "#f1f1f1",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  marginTop: "10px",
-};
-
-const buttonRowStyle = {
-  display: "flex",
-  justifyContent: "space-around",
-  width: "100%",
-  paddingTop: "10px",
-  borderTop: "1px solid #ccc",
-};
-
-const redButtonStyle = {
-  backgroundColor: "#e53935",
-  border: "none",
-  borderRadius: "50%",
-  width: "50px",
-  height: "50px",
-  color: "#fff",
-  cursor: "pointer",
-  fontSize: "18px",
-};
-
-const greenButtonStyle = {
-  backgroundColor: "#43a047",
-  border: "none",
-  borderRadius: "50%",
-  width: "50px",
-  height: "50px",
-  color: "#fff",
-  cursor: "pointer",
-  fontSize: "18px",
-};
-
-const phoneIconStyle = {
-  display: "inline-block",
-  fontSize: "20px",
 };
 
 export default CallWindow;
