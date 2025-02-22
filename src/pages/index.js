@@ -2,6 +2,7 @@ import Login from "./auth/login/Login";
 import Dashboard from "./dashboard/SuperAdminDashboardPage";
 import Page404 from "./page404/Page404";
 import AddEmployeePage from "./Employeee Management/AddEmployee/AddEmployeePage";
+
 import UpdateEmployeePage from "./Employeee Management/UpdateEmployee/UpdateEmployeePage";
 import ViewEmployeePage from "./Employeee Management/ViewEmployeePage";
 import SubordinatesEmployessPage from "./Employeee Management/SubordinatesEmployessPage";
@@ -76,13 +77,18 @@ import MyProfilePage from "../pages/my-profile/MyProfilePage";
 
 import AllDisciplinaryActionsPage from "./Employeee Management/disciplinary/AllDisciplinaryActionsPage";
 import UsersListForDisciplinaryPage from "./Employeee Management/disciplinary/UsersListForDisciplinaryPage";
+import AddEmployeeManagerPage from "./Employeee Management/AddEmployee/AddEmployeeManagerPage";
+import UpdateEmployeeManagerPage from "./Employeee Management/UpdateEmployee/UpdateEmployeeManagerPage";
+
 
 export {
   Login,
   Dashboard,
   Page404,
   AddEmployeePage,
+  AddEmployeeManagerPage,
   UpdateEmployeePage,
+  UpdateEmployeeManagerPage,
   ViewEmployeePage,
   SubordinatesEmployessPage,
   AssignAssetsPage,

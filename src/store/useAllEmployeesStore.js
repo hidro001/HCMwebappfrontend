@@ -1,6 +1,13 @@
 import { create } from "zustand";
 import { toast } from "react-hot-toast";
-import { getEmployeesApi,getEmployeeByIdApi,getAllEmployeesApi } from "../service/getAllEmployeesApi";
+import {
+  getEmployeesApi,
+  getEmployeeByIdApi,
+  getAllEmployeesApi,
+  deleteUserApi,
+  // restoreUserApi,
+  updateUserStatusApi 
+} from "../service/getAllEmployeesApi";
 
 const useEmployeesStore = create((set, get) => ({
   // State
@@ -38,14 +45,14 @@ const useEmployeesStore = create((set, get) => ({
           totalEmployeeCount: response.count || sortedEmployees.length,
         });
       } else {
-        const errorMessage =
-          response?.message || "Failed to fetch employees.";
+        const errorMessage = response?.message || "Failed to fetch employees.";
         set({ error: errorMessage });
         toast.error(errorMessage);
       }
     } catch (err) {
       console.error("Error fetching employees:", err);
-      const errMsg = err?.message || "An error occurred while fetching employees.";
+      const errMsg =
+        err?.message || "An error occurred while fetching employees.";
       set({ error: errMsg });
       toast.error(errMsg);
     } finally {
@@ -78,14 +85,14 @@ const useEmployeesStore = create((set, get) => ({
           totalEmployeeCount: response.count || sortedEmployees.length,
         });
       } else {
-        const errorMessage =
-          response?.message || "Failed to fetch employees.";
+        const errorMessage = response?.message || "Failed to fetch employees.";
         set({ error: errorMessage });
         toast.error(errorMessage);
       }
     } catch (err) {
       console.error("Error fetching employees:", err);
-      const errMsg = err?.message || "An error occurred while fetching employees.";
+      const errMsg =
+        err?.message || "An error occurred while fetching employees.";
       set({ error: errMsg });
       toast.error(errMsg);
     } finally {
@@ -115,7 +122,6 @@ const useEmployeesStore = create((set, get) => ({
     }
   },
 
-
   // Handle changes in the search input
   handleSearchChange: (searchValue) => {
     const { employees } = get();
@@ -127,7 +133,8 @@ const useEmployeesStore = create((set, get) => ({
         `${employee.first_Name || ""} ${employee.last_Name || ""}`
           .toLowerCase()
           .includes(lowerValue) ||
-        (employee.employee_Id && employee.employee_Id.toLowerCase().includes(lowerValue))
+        (employee.employee_Id &&
+          employee.employee_Id.toLowerCase().includes(lowerValue))
     );
 
     set({ searchTerm: searchValue, filteredEmployees: filtered });
@@ -146,6 +153,80 @@ const useEmployeesStore = create((set, get) => ({
 
     set({ sortOrder: newSortOrder, filteredEmployees: sorted });
   },
+  // ---------- NEW ACTION: Delete Employee ----------
+  deleteEmployee: async (employeeId) => {
+    try {
+      const response = await deleteUserApi(employeeId);
+      if (response.success) {
+        toast.success("User Deleted successfully!");
+        // Remove from local state or simply re-fetch:
+        const updatedEmployees = get().employees.filter(
+          (emp) => emp._id !== employeeId
+        );
+        set({
+          employees: updatedEmployees,
+          filteredEmployees: updatedEmployees,
+          totalEmployeeCount: updatedEmployees.length,
+        });
+      } else {
+        toast.error(response.message || "Failed to delete user");
+      }
+    } catch (error) {
+      toast.error(error.message || "An error occurred while deleting");
+      console.error("Error deleting employee:", error);
+    }
+  },
+
+  /**
+   * Toggle active/inactive status for a user.
+   * employeeId => calls the service => updates store => returns success/error
+   */
+  toggleEmployeeStatus: async (employeeId, currentStatus) => {
+    try {
+      const response = await updateUserStatusApi(employeeId);
+      if (response.success) {
+        // Update local store arrays
+        set((state) => {
+          const updated = state.employees.map((emp) => {
+            if (emp._id === employeeId || emp.employee_Id === employeeId) {
+              return { ...emp, isActive: !currentStatus };
+            }
+            return emp;
+          });
+          return {
+            employees: updated,
+            filteredEmployees: updated,
+          };
+        });
+        toast.success(
+          `User ${currentStatus ? "deactivated" : "activated"} successfully!`
+        );
+      } else {
+        throw new Error(response.message || "Failed to update user status.");
+      }
+    } catch (error) {
+      toast.error(
+        error.message || "Failed to update user status. Please try again."
+      );
+      console.error("Error toggling user status:", error);
+    }
+  },
+
+  // ---------- If needed: Restore Employee ----------
+  // restoreEmployee: async (employeeId) => {
+  //   try {
+  //     const response = await restoreUserApi(employeeId);
+  //     if (response.success) {
+  //       toast.success("Employee restored successfully!");
+  //       // Re-fetch or add to local state
+  //     } else {
+  //       toast.error(response.message || "Failed to restore user");
+  //     }
+  //   } catch (error) {
+  //     toast.error(error.message || "An error occurred while restoring");
+  //     console.error("Error restoring employee:", error);
+  //   }
+  // },
 }));
 
 export default useEmployeesStore;

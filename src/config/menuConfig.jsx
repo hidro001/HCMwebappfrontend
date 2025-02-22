@@ -115,12 +115,12 @@ export const menuItems = [
         permission: "addEmployeeAdmin",
         textAnimation: { x: 10 },
       },
-      // {
-      //   name: "Add Employee",
-      //   link: "/dashboard/add-employee2",
-      //   permission: "addEmployeeManager",
-      //   textAnimation: { x: 10 },
-      // },
+      {
+        name: "Add Employee Manager",
+        link: "/dashboard/add-employee-manager",
+        permission: "addEmployeeManager",
+        textAnimation: { x: 10 },
+      },
       {
         name: "Subordinates",
         link: "/dashboard/supordinates-employees",

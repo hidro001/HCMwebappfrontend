@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
@@ -11,6 +10,7 @@ import {
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import useEmployeesStore from "../../store/useAllEmployeesStore";
+import ConfirmationDialog from "../common/ConfirmationDialog";
 
 const tableContainerVariants = {
   hidden: { opacity: 0 },
@@ -31,7 +31,7 @@ const tableRowVariants = {
 // Skeleton row
 function TableRowSkeleton({ colCount }) {
   return (
-    <motion.tr 
+    <motion.tr
       className="animate-pulse border-b last:border-b-0 border-gray-200 dark:border-gray-600"
       variants={tableRowVariants}
     >
@@ -62,6 +62,8 @@ export default function EmployeeList() {
     handleSearchChange,
     totalEmployeeCount,
     loading,
+    deleteEmployee,
+    toggleEmployeeStatus,
   } = useEmployeesStore();
 
   const [pageSize, setPageSize] = useState(10);
@@ -97,6 +99,56 @@ export default function EmployeeList() {
 
   const totalActive = filteredEmployees.filter((emp) => emp.isActive).length;
   const totalInactive = filteredEmployees.filter((emp) => !emp.isActive).length;
+  // ---- State for ConfirmationDialog
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+
+  // -- New Confirmation for Toggle Status
+  const [isToggleConfirmOpen, setIsToggleConfirmOpen] = useState(false);
+  const [toggleUserId, setToggleUserId] = useState(null);
+  const [toggleUserStatus, setToggleUserStatus] = useState(false);
+
+  // ---- Confirm delete logic
+  const openDeleteDialog = (empId) => {
+    setSelectedEmployee(empId);
+    setIsConfirmOpen(true);
+  };
+
+  const handleCancelDelete = () => {
+    setSelectedEmployee(null);
+    setIsConfirmOpen(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedEmployee) return;
+    await deleteEmployee(selectedEmployee);
+    setSelectedEmployee(null);
+    setIsConfirmOpen(false);
+  };
+
+  // ------------------------------ Toggle Status Logic ------------------------------
+  // 1) Open the dialog with user info
+  const openToggleDialog = (userId, currentStatus) => {
+    setToggleUserId(userId);
+    setToggleUserStatus(currentStatus); // e.g. true/false
+    setIsToggleConfirmOpen(true);
+  };
+
+  // 2) Close without action
+  const handleCancelToggle = () => {
+    setToggleUserId(null);
+    setToggleUserStatus(false);
+    setIsToggleConfirmOpen(false);
+  };
+
+  // 3) Confirm status change
+  const handleConfirmToggle = async () => {
+    if (!toggleUserId) return;
+    await toggleEmployeeStatus(toggleUserId, toggleUserStatus);
+    setIsToggleConfirmOpen(false);
+    setToggleUserId(null);
+    setToggleUserStatus(false);
+  };
 
   return (
     <div
@@ -361,15 +413,14 @@ export default function EmployeeList() {
                         {emp.isActive ? "Active" : "Inactive"}
                       </span>
                     </td>
+
                     <td className="p-3 text-sm text-center">
                       <div className="flex items-center justify-center space-x-2">
                         <button
                           title="View"
                           className="text-blue-500 dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors"
                           onClick={() =>
-                            navigate(
-                              `/dashboard/employees/details/${emp._id}`
-                            )
+                            navigate(`/dashboard/employees/details/${emp._id}`)
                           }
                         >
                           <FaEye size={16} />
@@ -386,8 +437,21 @@ export default function EmployeeList() {
                         <button
                           title="Delete"
                           className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 transition-colors"
+                          onClick={() => openDeleteDialog(emp.employee_Id)}
                         >
                           <FaTrash size={16} />
+                        </button>
+
+                        <button className=" flex items-center justify-center gap-2">
+                          <input
+                            id={`toggleSwitch-${emp._id}`}
+                            type="checkbox"
+                            className="cursor-pointer h-4 w-4 accent-blue-500"
+                            checked={emp.isActive}
+                            onChange={() =>
+                              openToggleDialog(emp.employee_Id, emp.isActive)
+                            }
+                          />
                         </button>
                       </div>
                     </td>
@@ -426,6 +490,28 @@ export default function EmployeeList() {
           </div>
         )}
       </motion.div>
+      {/* Confirmation Dialog for Delete */}
+      <ConfirmationDialog
+        open={isConfirmOpen}
+        title="Confirm Deletion"
+        message="Are you sure you want to delete this user? This action cannot be undone."
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
+      {/* Confirmation Dialog for Toggle Status */}
+      <ConfirmationDialog
+        open={isToggleConfirmOpen}
+        title="Confirm Status Change"
+        message={`Are you sure you want to ${
+          toggleUserStatus ? "deactivate" : "activate"
+        } this user?`}
+        onConfirm={handleConfirmToggle}
+        onCancel={handleCancelToggle}
+        confirmText={toggleUserStatus ? "Deactivate" : "Activate"}
+        cancelText="Cancel"
+      />
     </div>
   );
 }
