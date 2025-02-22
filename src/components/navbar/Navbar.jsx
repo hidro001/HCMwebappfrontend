@@ -5,6 +5,7 @@ import {
   FaSignOutAlt,
   FaHome,
   FaComments,
+  FaUserCircle,
 } from "react-icons/fa";
 import { MdOutlineDarkMode, MdLightMode } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,7 +20,7 @@ import ThemeToggleButton from "../theme toggle button/ThemeToggleButton";
 import NotificationDropdown from "../Notification/NotificationDropdown";
 import { FaBusinessTime } from "react-icons/fa6";
 import BreakCard from "./BreakCard";
-import { ChatContext } from '../../contexts/ChatContext';
+import { ChatContext } from "../../contexts/ChatContext";
 import { useContext } from "react";
 
 // Helper to format seconds into HH:MM:SS
@@ -36,37 +37,36 @@ function formatHMS(totalSeconds) {
 
 const Navbar = () => {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
+  const [showNotificationDropdown, setShowNotificationDropdown] =
+    useState(false);
   // const [showChatDropdown, setShowChatDropdown] = useState(false);
   const [showBreakCard, setShowBreakCard] = useState(false);
   const [currentDate, setCurrentDate] = useState("");
 
-  
-// chat related ###################
+  // chat related ###################
 
-const { unreadCounts } = useContext(ChatContext);
-const navigate = useNavigate();
-const userCount = Object.keys(unreadCounts).length;
+  const { unreadCounts } = useContext(ChatContext);
+  const navigate = useNavigate();
+  const userCount = Object.keys(unreadCounts).length;
 
-// Local state to control badge visibility.
-const [showBadge, setShowBadge] = useState(true);
+  // Local state to control badge visibility.
+  const [showBadge, setShowBadge] = useState(true);
 
-// Whenever unreadCounts changes and there are unread messages, show the badge.
-useEffect(() => {
-  if (userCount > 0) {
-    setShowBadge(true);
-  }
-}, [userCount]);
+  // Whenever unreadCounts changes and there are unread messages, show the badge.
+  useEffect(() => {
+    if (userCount > 0) {
+      setShowBadge(true);
+    }
+  }, [userCount]);
 
-const handleClick = () => {
-  // Hide the badge.
-  setShowBadge(false);
-  // Navigate to the chat dashboard.
-  navigate("/dashboard/chats");
-};
+  const handleClick = () => {
+    // Hide the badge.
+    setShowBadge(false);
+    // Navigate to the chat dashboard.
+    navigate("/dashboard/chats");
+  };
 
-// chat end ######################
-
+  // chat end ######################
 
   const authStore = useAuthStore();
 
@@ -89,7 +89,7 @@ const handleClick = () => {
     fetchAttendanceData,
     fetchTargetCoordinates,
     fetchUserBreakType,
-    getUserLocation
+    getUserLocation,
   } = usePunchStore();
 
   // Local timer in the navbar
@@ -171,9 +171,9 @@ const handleClick = () => {
       {/* Left Section: Company Branding */}
       <div className="flex items-center space-x-4">
         <div className="text-2xl font-bold text-white">
-        <Link to="/dashboard">
-  <img className="w-24" src={companyLogo} alt="Company Logo" />
-</Link>
+          <Link to="/dashboard">
+            <img className="w-24" src={companyLogo} alt="Company Logo" />
+          </Link>
         </div>
       </div>
 
@@ -237,13 +237,13 @@ const handleClick = () => {
 
         {/* Chat Icon */}
         <div className="relative cursor-pointer" onClick={handleClick}>
-      {userCount > 0 && showBadge && (
-        <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-full transition-opacity duration-300">
-          {userCount}
-        </span>
-      )}
-      <FaComments className="text-blue-500 w-6 h-6" />
-    </div>
+          {userCount > 0 && showBadge && (
+            <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-full transition-opacity duration-300">
+              {userCount}
+            </span>
+          )}
+          <FaComments className="text-blue-500 w-6 h-6" />
+        </div>
 
         {/* Theme Toggle */}
         <ThemeToggleButton />
@@ -274,8 +274,6 @@ const handleClick = () => {
                   <p className="text-xs text-gray-300">{userEmail}</p>
                 </div>
                 <ul className="py-2">
-
-
                   {/* <li>
                     <a
                       href="/dashboard"
@@ -285,16 +283,14 @@ const handleClick = () => {
                     </a>
                   </li> */}
 
-{/*                   
                   <li>
-                    <a
-                      href="/settings"
+                    <Link
+                      to={"/dashboard/my-profile"}
                       className="flex items-center px-4 py-2 text-sm hover:bg-gray-600"
                     >
-                      <FaCog className="mr-2 text-green-400" /> Settings
-                    </a>
-                  </li> */}
-
+                      <FaUserCircle className="mr-2 text-green-400" /> Profile
+                    </Link>
+                  </li>
 
                   <li>
                     <button
