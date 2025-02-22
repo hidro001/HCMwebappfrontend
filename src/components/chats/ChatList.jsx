@@ -92,6 +92,8 @@ export default function ChatList({
    
     
     initiateCall({ callType: 'voice', participants: [selectedUser] });
+    console.log("Erfgdgdfgdfgd",selectedUser);
+    
   };
 
   const handleSend = () => {
