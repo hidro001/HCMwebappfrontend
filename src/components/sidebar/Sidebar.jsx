@@ -20,7 +20,7 @@ export default function Sidebar({ onSectionSelect }) {
 
   const filterMenuItems = () => {
     if (!permissions || permissions.length === 0) {
-      setFilteredMenuItems([]); 
+      setFilteredMenuItems([]);
       return;
     }
     const filtered = menuItems
@@ -59,7 +59,7 @@ export default function Sidebar({ onSectionSelect }) {
             onClick={() => handleSidebarItemClick(item)}
             data-tooltip-id="sidebar-tooltip"
             data-tooltip-html={tooltipHtml}
-            className={`p-2 rounded-lg transition-colors w-full flex justify-center ${
+            className={`p-1 rounded-lg transition-colors w-full flex justify-center  ${
               active
                 ? "bg-gray-300 dark:bg-gray-700"
                 : "hover:bg-gray-300 dark:hover:bg-gray-700"
@@ -80,9 +80,8 @@ export default function Sidebar({ onSectionSelect }) {
         place="right"
         effect="solid"
         multiline={true}
-        style={{ maxWidth: "200px" }}
+        style={{ maxWidth: "200px", marginTop: "-0px" }}
       />
     </div>
   );
 }
-
