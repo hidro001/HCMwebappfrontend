@@ -85,7 +85,7 @@ export default function SubordinatesAttendance() {
   } = useAttendanceStore();
 
   // Get userId from localStorage (adjust key if needed)
-  const userId = localStorage.getItem("mongo_id");
+  const userId = localStorage.getItem("_id");
 
   // Set default month to the current month/year
   const currentDate = new Date();
@@ -123,6 +123,36 @@ export default function SubordinatesAttendance() {
     : [];
 
   // Filter + search
+  // const filteredEmployees = employeesData.filter((emp) => {
+  //   // Department filter
+  //   if (
+  //     selectedDepartment !== "Department" &&
+  //     emp.department !== selectedDepartment
+  //   ) {
+  //     return false;
+  //   }
+  //   // Month filter
+  //   if (selectedMonth && emp.attendanceDate) {
+  //     const [filterYear, filterMonth] = selectedMonth.split("-");
+  //     const empYear = emp.attendanceDate.slice(0, 4);
+  //     const empMonth = emp.attendanceDate.slice(5, 7);
+  //     if (empYear !== filterYear || empMonth !== filterMonth) {
+  //       return false;
+  //     }
+  //   }
+  //   // Search
+  //   const lowerSearch = searchTerm.toLowerCase();
+  //   if (
+  //     !emp.name.toLowerCase().includes(lowerSearch) &&
+  //     !emp.email.toLowerCase().includes(lowerSearch) &&
+  //     !emp.empID.toString().toLowerCase().includes(lowerSearch)
+  //   ) {
+  //     return false;
+  //   }
+  //   return true;
+  // });
+
+
   const filteredEmployees = employeesData.filter((emp) => {
     // Department filter
     if (
@@ -140,18 +170,18 @@ export default function SubordinatesAttendance() {
         return false;
       }
     }
-    // Search
+    // Search filter
     const lowerSearch = searchTerm.toLowerCase();
     if (
       !emp.name.toLowerCase().includes(lowerSearch) &&
       !emp.email.toLowerCase().includes(lowerSearch) &&
-      !emp.empID.toString().toLowerCase().includes(lowerSearch)
+      !String(emp.empID).toLowerCase().includes(lowerSearch)
     ) {
       return false;
     }
     return true;
   });
-
+  
   // Pagination
   const totalEntries = filteredEmployees.length;
   const totalPages = Math.ceil(totalEntries / showCount) || 1;

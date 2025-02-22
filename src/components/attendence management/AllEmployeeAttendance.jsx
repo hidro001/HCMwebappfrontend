@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaFilePdf, FaFileCsv, FaPrint, FaSearch } from "react-icons/fa";
@@ -77,7 +75,6 @@ export default function AllEmployeeAttendance() {
   const {
     subordinates,
     fetchAllUser,
-   
     departments,
     fetchDepartments,
     stats,
@@ -103,9 +100,7 @@ export default function AllEmployeeAttendance() {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-   
     fetchAllUser();
- 
     fetchDepartments();
     fetchStats();
   }, [fetchAllUser, fetchDepartments, fetchStats]);
@@ -142,12 +137,12 @@ export default function AllEmployeeAttendance() {
         return false;
       }
     }
-    // Search
+    // Search filter
     const lowerSearch = searchTerm.toLowerCase();
     if (
       !emp.name.toLowerCase().includes(lowerSearch) &&
       !emp.email.toLowerCase().includes(lowerSearch) &&
-      !emp.empID.toString().toLowerCase().includes(lowerSearch)
+      !String(emp.empID).toLowerCase().includes(lowerSearch)
     ) {
       return false;
     }

@@ -102,10 +102,10 @@ export const addTask = async (taskData) => {
   }
 };
 
-export const fetchAllTasks = async (empId) => {
+export const fetchAllTasks = async () => {
   try {
     // The empId is passed in the URL.
-    const response = await axiosInstance.post(`/task/all-task/${empId}`);
+    const response = await axiosInstance.post(`/task/all-task`);
     console.log("Fetched tasks:", response.data);
     return response.data;
   } catch (error) {
