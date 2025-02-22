@@ -77,7 +77,7 @@ export const menuItems = [
     name: "Synergy",
     tooltip:
       "Foster collaboration and synergy across teams with our Engage System",
-    icon: <TiSocialTwitter />,
+    icon: <FaDiceD20 />,
     color: "text-blue-400",
     iconAnimation: { rotate: 360 },
     options: [
@@ -492,7 +492,6 @@ export const menuItems = [
     ],
   },
 
-
   // Productivity Lenses
   {
     name: "Productivity Lenses",
@@ -503,7 +502,6 @@ export const menuItems = [
     iconAnimation: { scale: 1.2 },
     textAnimation: { x: 10 },
     options: [
-     
       {
         name: "Main",
         link: "/dashboard/main-dashboard",
@@ -519,11 +517,10 @@ export const menuItems = [
         link: "/dashboard/team-productivity",
         permission: "postTopPerformer",
       },
-     
     ],
   },
 
-    // Productivity Lenses Ended
+  // Productivity Lenses Ended
 
   {
     name: "Chats",
@@ -603,7 +600,6 @@ export const menuItems = [
       },
     ],
   },
-
 
   // {
   //   name: "Training Material",

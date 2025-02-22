@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useContext } from "react";
 import {
   FaBell,
   FaCog,
   FaSignOutAlt,
   FaHome,
   FaComments,
+  FaBusinessTime,
 } from "react-icons/fa";
 import { MdOutlineDarkMode, MdLightMode } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,14 +14,11 @@ import { toast } from "react-toastify";
 
 import useAuthStore from "../../store/store";
 import useNotificationStore from "../../store/notificationStore";
-import usePunchStore from "../../store/usePunchStore"; // <-- Import the punch store
-
+import usePunchStore from "../../store/usePunchStore";
 import ThemeToggleButton from "../theme toggle button/ThemeToggleButton";
 import NotificationDropdown from "../Notification/NotificationDropdown";
-import { FaBusinessTime } from "react-icons/fa6";
 import BreakCard from "./BreakCard";
-import { ChatContext } from '../../contexts/ChatContext';
-import { useContext } from "react";
+import { ChatContext } from "../../contexts/ChatContext";
 
 // Helper to format seconds into HH:MM:SS
 function formatHMS(totalSeconds) {
@@ -36,38 +34,29 @@ function formatHMS(totalSeconds) {
 
 const Navbar = () => {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
-  // const [showChatDropdown, setShowChatDropdown] = useState(false);
+  const [showNotificationDropdown, setShowNotificationDropdown] =
+    useState(false);
   const [showBreakCard, setShowBreakCard] = useState(false);
   const [currentDate, setCurrentDate] = useState("");
 
-  
-// chat related ###################
+  // Chat context
+  const { unreadCounts } = useContext(ChatContext);
+  const navigate = useNavigate();
+  const userCount = Object.keys(unreadCounts).length;
+  const [showBadge, setShowBadge] = useState(true);
 
-const { unreadCounts } = useContext(ChatContext);
-const navigate = useNavigate();
-const userCount = Object.keys(unreadCounts).length;
+  useEffect(() => {
+    if (userCount > 0) {
+      setShowBadge(true);
+    }
+  }, [userCount]);
 
-// Local state to control badge visibility.
-const [showBadge, setShowBadge] = useState(true);
+  const handleClick = () => {
+    setShowBadge(false);
+    navigate("/dashboard/chats");
+  };
 
-// Whenever unreadCounts changes and there are unread messages, show the badge.
-useEffect(() => {
-  if (userCount > 0) {
-    setShowBadge(true);
-  }
-}, [userCount]);
-
-const handleClick = () => {
-  // Hide the badge.
-  setShowBadge(false);
-  // Navigate to the chat dashboard.
-  navigate("/dashboard/chats");
-};
-
-// chat end ######################
-
-
+  // Auth store
   const authStore = useAuthStore();
 
   // Notification store
@@ -79,26 +68,22 @@ const handleClick = () => {
   const loading = useNotificationStore((state) => state.loading);
   const error = useNotificationStore((state) => state.error);
 
-  // -----------------------------------------
-  // PUNCH STORE: for break info + fetch logic
-  // -----------------------------------------
+  // Punch store
   const {
     onBreak,
     breakStartTime,
-    // methods to fetch data
     fetchAttendanceData,
     fetchTargetCoordinates,
     fetchUserBreakType,
-    getUserLocation
+    getUserLocation,
   } = usePunchStore();
 
   // Local timer in the navbar
   const [navbarTimer, setNavbarTimer] = useState("00:00:00");
 
-  // 1) On mount (if authenticated), fetch punch/attendance data
+  // Fetch punch/attendance and location on mount if authenticated
   useEffect(() => {
     if (authStore.isAuthenticated) {
-      // same calls you do in BreakCard
       fetchAttendanceData();
       fetchTargetCoordinates();
       fetchUserBreakType(authStore.employeeId);
@@ -106,29 +91,27 @@ const handleClick = () => {
     }
   }, [authStore.isAuthenticated]);
 
-  // 2) Notification fetch if user is authenticated
+  // Fetch notifications if authenticated
   useEffect(() => {
     if (authStore.isAuthenticated) {
       fetchNotifications();
     }
   }, [authStore.isAuthenticated, fetchNotifications]);
 
-  // 3) Set current date on mount
+  // Set current date
   useEffect(() => {
     const today = new Date();
     const options = { day: "numeric", month: "long", year: "numeric" };
-    const formatted = today.toLocaleDateString(undefined, options);
-    setCurrentDate(formatted);
+    setCurrentDate(today.toLocaleDateString(undefined, options));
   }, []);
 
-  // 4) If on break, update local timer every second
+  // Update break timer if on break
   useEffect(() => {
     let intervalId;
     if (onBreak && breakStartTime) {
-      updateTimer(); // run once immediately
+      updateTimer();
       intervalId = setInterval(updateTimer, 1000);
     } else {
-      // reset if not on break
       setNavbarTimer("00:00:00");
     }
     return () => clearInterval(intervalId);
@@ -160,6 +143,43 @@ const handleClick = () => {
   const userName = authStore.userName || "John Doe";
   const userEmail = authStore.workingEmail || "john.doe@example.com";
 
+  // REFS for outside click
+  const profileDropdownRef = useRef(null);
+  const notificationDropdownRef = useRef(null);
+  const breakCardRef = useRef(null);
+
+  // Close dropdowns on outside click
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        showProfileDropdown &&
+        profileDropdownRef.current &&
+        !profileDropdownRef.current.contains(event.target)
+      ) {
+        setShowProfileDropdown(false);
+      }
+      if (
+        showNotificationDropdown &&
+        notificationDropdownRef.current &&
+        !notificationDropdownRef.current.contains(event.target)
+      ) {
+        setShowNotificationDropdown(false);
+      }
+      if (
+        showBreakCard &&
+        breakCardRef.current &&
+        !breakCardRef.current.contains(event.target)
+      ) {
+        setShowBreakCard(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showProfileDropdown, showNotificationDropdown, showBreakCard]);
+
   return (
     <nav
       className={
@@ -171,9 +191,9 @@ const handleClick = () => {
       {/* Left Section: Company Branding */}
       <div className="flex items-center space-x-4">
         <div className="text-2xl font-bold text-white">
-        <Link to="/dashboard">
-  <img className="w-24" src={companyLogo} alt="Company Logo" />
-</Link>
+          <Link to="/dashboard">
+            <img className="w-24" src={companyLogo} alt="Company Logo" />
+          </Link>
         </div>
       </div>
 
@@ -198,6 +218,7 @@ const handleClick = () => {
           <AnimatePresence>
             {showBreakCard && (
               <motion.div
+                ref={breakCardRef}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
@@ -225,25 +246,33 @@ const handleClick = () => {
           )}
           <AnimatePresence>
             {showNotificationDropdown && (
-              <NotificationDropdown
-                notifications={notifications}
-                loading={loading}
-                error={error}
-                onClose={() => setShowNotificationDropdown(false)}
-              />
+              <motion.div
+                ref={notificationDropdownRef}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="absolute right-0 mt-2 w-64 bg-gray-700 dark:bg-gray-800 text-white rounded-md shadow-lg z-10"
+              >
+                <NotificationDropdown
+                  notifications={notifications}
+                  loading={loading}
+                  error={error}
+                  onClose={() => setShowNotificationDropdown(false)}
+                />
+              </motion.div>
             )}
           </AnimatePresence>
         </div>
 
         {/* Chat Icon */}
         <div className="relative cursor-pointer" onClick={handleClick}>
-      {userCount > 0 && showBadge && (
-        <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-full transition-opacity duration-300">
-          {userCount}
-        </span>
-      )}
-      <FaComments className="text-blue-500 w-6 h-6" />
-    </div>
+          {userCount > 0 && showBadge && (
+            <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-full transition-opacity duration-300">
+              {userCount}
+            </span>
+          )}
+          <FaComments className="text-blue-500 w-6 h-6" />
+        </div>
 
         {/* Theme Toggle */}
         <ThemeToggleButton />
@@ -264,6 +293,7 @@ const handleClick = () => {
           <AnimatePresence>
             {showProfileDropdown && (
               <motion.div
+                ref={profileDropdownRef}
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
@@ -274,8 +304,7 @@ const handleClick = () => {
                   <p className="text-xs text-gray-300">{userEmail}</p>
                 </div>
                 <ul className="py-2">
-
-
+                  {/* If you need these links, uncomment */}
                   {/* <li>
                     <a
                       href="/dashboard"
@@ -283,9 +312,7 @@ const handleClick = () => {
                     >
                       <FaHome className="mr-2 text-blue-400" /> Dashboard
                     </a>
-                  </li> */}
-
-{/*                   
+                  </li>
                   <li>
                     <a
                       href="/settings"
@@ -294,8 +321,6 @@ const handleClick = () => {
                       <FaCog className="mr-2 text-green-400" /> Settings
                     </a>
                   </li> */}
-
-
                   <li>
                     <button
                       onClick={handleSignOut}

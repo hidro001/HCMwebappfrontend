@@ -1,6 +1,5 @@
-import  { useEffect } from 'react';
-import { useDashboardStore } from '../../../store/useDashboardStore'; // adjust import path as needed
-
+import { useEffect } from "react";
+import { useDashboardStore } from "../../../store/useDashboardStore"; // adjust import path as needed
 
 function DemographicCard() {
   const {
@@ -18,9 +17,9 @@ function DemographicCard() {
   // Compute “other” for gender
   const otherCount = totalUsers - maleCount - femaleCount;
   const genderSegments = [
-    { label: 'Male', count: maleCount },
-    { label: 'Female', count: femaleCount },
-    { label: 'Other', count: otherCount },
+    { label: "Male", count: maleCount },
+    { label: "Female", count: femaleCount },
+    // { label: 'Other', count: otherCount },
   ];
 
   // Convert genderSegments -> { label, count, percentage }
@@ -31,18 +30,18 @@ function DemographicCard() {
 
   // Updated color map to match the new ranges from the API response
   const colorMap = {
-    'Below 18 ': 'red-500',
-    '18 - 30 ': 'pink-500',
-    '31 - 40 ': 'emerald-400',
-    '41 - 50 ': 'sky-500',
-    '51 - 60 ': 'violet-600',
-    '61 - 90 ': 'gray-500',
+    "Below 18 ": "red-500",
+    "18 - 30 ": "pink-500",
+    "31 - 40 ": "emerald-400",
+    "41 - 50 ": "sky-500",
+    "51 - 60 ": "violet-600",
+    "61 - 90 ": "gray-500",
   };
 
   // Convert each item in ageDistribution -> the format needed by the UI
   // item => { range, count, percentage: "xx.x%" }
   const ageData = (ageDistribution || []).map((item) => {
-    const color = colorMap[item.range] || 'gray-400'; // fallback color
+    const color = colorMap[item.range] || "gray-400"; // fallback color
     return {
       label: item.range,
       color,
@@ -102,7 +101,7 @@ function DemographicCard() {
               {totalUsers}
             </span>
             <span className="text-sm text-gray-500 dark:text-gray-300">
-            Employees
+              Employees
             </span>
           </div>
         </div>
@@ -112,11 +111,11 @@ function DemographicCard() {
       <div className="mt-2 flex flex-wrap gap-2 justify-center">
         {genderData.map((item, index) => {
           const colorMapping = {
-            Male: 'sky-500',
-            Female: 'sky-400',
-            Other: 'sky-200',
+            Male: "sky-500",
+            Female: "sky-400",
+            Other: "sky-200",
           };
-          const colorClass = colorMapping[item.label] || 'sky-200';
+          const colorClass = colorMapping[item.label] || "sky-200";
           return (
             <div
               key={index}

@@ -218,7 +218,9 @@ export default function BreakCard() {
           <FaUserCircle className="text-4xl text-gray-500 dark:text-gray-300" />
         </div>
         <div>
-          <h1 className="text-xl font-semibold">{userName || "Unknown User"}</h1>
+          <h1 className="text-xl font-semibold">
+            {userName || "Unknown User"}
+          </h1>
           <p className="text-sm text-gray-600 dark:text-gray-400">
             {employeeId || "No ID"}
           </p>
@@ -272,9 +274,7 @@ export default function BreakCard() {
           </p>
           <p>
             Remaining Break:{" "}
-            <span className="font-bold p-1">
-              {remaining} min
-            </span>
+            <span className="font-bold p-1">{remaining} min</span>
           </p>
         </div>
       </div>
@@ -309,10 +309,10 @@ export default function BreakCard() {
       {/* If on break, show running timer */}
       {onBreak && (
         <div className="mt-2 text-center text-sm text-green-600 dark:text-green-300">
-          Break Running: <span className="font-semibold">{elapsedBreakTime}</span>
+          Break Running:{" "}
+          <span className="font-semibold">{elapsedBreakTime}</span>
         </div>
       )}
     </motion.div>
   );
 }
-
