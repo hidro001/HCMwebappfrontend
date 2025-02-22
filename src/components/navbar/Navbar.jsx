@@ -6,6 +6,7 @@ import {
   FaHome,
   FaComments,
   FaUserCircle,
+  FaBusinessTime,
 } from "react-icons/fa";
 import { MdOutlineDarkMode, MdLightMode } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,7 +20,6 @@ import ThemeToggleButton from "../theme toggle button/ThemeToggleButton";
 import NotificationDropdown from "../Notification/NotificationDropdown";
 import BreakCard from "./BreakCard";
 import { ChatContext } from "../../contexts/ChatContext";
-import { useContext } from "react";
 
 // Helper to format seconds into HH:MM:SS
 function formatHMS(totalSeconds) {
