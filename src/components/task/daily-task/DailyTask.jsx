@@ -13,8 +13,7 @@ export default function UpdateTask() {
   const [currentPage, setCurrentPage] = useState(1);
   const tasksPerPage = 5; // Number of tasks to display per page
 
-  // Hardcoded employee ID; in a real app, you might pass this as a prop or derive it from context.
-  const empId = "RI0526";
+  
 
   // Add a new empty task field
   const handleAddTask = () => {
@@ -37,7 +36,7 @@ export default function UpdateTask() {
   const fetchTasks = async () => {
     setLoading(true);
     try {
-      const res = await fetchAllTasks(empId);
+      const res = await fetchAllTasks();
       if (res && res.success) {
         setFetchedTasks(res.data);
       } else {
@@ -54,7 +53,7 @@ export default function UpdateTask() {
   // Fetch tasks on component mount and when the employee ID changes
   useEffect(() => {
     fetchTasks();
-  }, [empId]);
+  }, []);
 
   // Pagination calculations
   const indexOfLastTask = currentPage * tasksPerPage;
