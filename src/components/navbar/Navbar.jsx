@@ -5,7 +5,7 @@ import {
   FaSignOutAlt,
   FaHome,
   FaComments,
-  FaBusinessTime,
+  FaUserCircle,
 } from "react-icons/fa";
 import { MdOutlineDarkMode, MdLightMode } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
@@ -19,6 +19,7 @@ import ThemeToggleButton from "../theme toggle button/ThemeToggleButton";
 import NotificationDropdown from "../Notification/NotificationDropdown";
 import BreakCard from "./BreakCard";
 import { ChatContext } from "../../contexts/ChatContext";
+import { useContext } from "react";
 
 // Helper to format seconds into HH:MM:SS
 function formatHMS(totalSeconds) {
@@ -36,15 +37,20 @@ const Navbar = () => {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showNotificationDropdown, setShowNotificationDropdown] =
     useState(false);
+  // const [showChatDropdown, setShowChatDropdown] = useState(false);
   const [showBreakCard, setShowBreakCard] = useState(false);
   const [currentDate, setCurrentDate] = useState("");
 
-  // Chat context
+  // chat related ###################
+
   const { unreadCounts } = useContext(ChatContext);
   const navigate = useNavigate();
   const userCount = Object.keys(unreadCounts).length;
+
+  // Local state to control badge visibility.
   const [showBadge, setShowBadge] = useState(true);
 
+  // Whenever unreadCounts changes and there are unread messages, show the badge.
   useEffect(() => {
     if (userCount > 0) {
       setShowBadge(true);
@@ -52,9 +58,13 @@ const Navbar = () => {
   }, [userCount]);
 
   const handleClick = () => {
+    // Hide the badge.
     setShowBadge(false);
+    // Navigate to the chat dashboard.
     navigate("/dashboard/chats");
   };
+
+  // chat end ######################
 
   // Auth store
   const authStore = useAuthStore();
@@ -304,7 +314,6 @@ const Navbar = () => {
                   <p className="text-xs text-gray-300">{userEmail}</p>
                 </div>
                 <ul className="py-2">
-                  {/* If you need these links, uncomment */}
                   {/* <li>
                     <a
                       href="/dashboard"
@@ -312,15 +321,17 @@ const Navbar = () => {
                     >
                       <FaHome className="mr-2 text-blue-400" /> Dashboard
                     </a>
-                  </li>
+                  </li> */}
+
                   <li>
-                    <a
-                      href="/settings"
+                    <Link
+                      to={"/dashboard/my-profile"}
                       className="flex items-center px-4 py-2 text-sm hover:bg-gray-600"
                     >
-                      <FaCog className="mr-2 text-green-400" /> Settings
-                    </a>
-                  </li> */}
+                      <FaUserCircle className="mr-2 text-green-400" /> Profile
+                    </Link>
+                  </li>
+
                   <li>
                     <button
                       onClick={handleSignOut}
