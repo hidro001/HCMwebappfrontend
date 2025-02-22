@@ -68,6 +68,8 @@ import {
   TeamProductivityPage,
   AllDisciplinaryActionsPage,
   UsersListForDisciplinaryPage,
+  UpdateEmployeeManagerPage,
+  AddEmployeeManagerPage,
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -156,12 +158,20 @@ const router = createBrowserRouter([
         element: <AddEmployeePage />,
       },
       {
+        path: "add-employee-manager",
+        element: <AddEmployeeManagerPage />,
+      },
+      {
         path: "supordinates-employees",
         element: <SubordinatesEmployessPage />,
       },
       {
         path: "update-employee/:id",
         element: <UpdateEmployeePage />,
+      },
+      {
+        path: "update-employee-manager/:id",
+        element: <UpdateEmployeeManagerPage />,
       },
       {
         path: "employees/details/:id",

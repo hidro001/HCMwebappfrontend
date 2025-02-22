@@ -1,9 +1,12 @@
-import  { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { FaEdit, FaTrash, FaSearch, FaArrowRight } from "react-icons/fa";
 import useEmployeesStore from "../../store/useAllEmployeesStore";
+import ConfirmationDialog from "../common/ConfirmationDialog";
+import useAuthStore from "../../store/store"; // Zustand store
+
 
 const statusColors = {
   ACTIVE: "bg-green-500 text-white dark:bg-green-600",
@@ -65,20 +68,84 @@ function SupordinatesEmployess() {
     fetchEmployees,
     handleSearchChange,
     handleSortOrderChange,
+    deleteEmployee,
+    toggleEmployeeStatus,
   } = useEmployeesStore();
 
+   // Auth store to get "permissions"
+   const { permissions } = useAuthStore((state) => state);
+  
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+
+  // ---- State for ConfirmationDialog
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [selectedEmployee, setSelectedEmployee] = useState(null);
+
+  // -- New Confirmation for Toggle Status
+  const [isToggleConfirmOpen, setIsToggleConfirmOpen] = useState(false);
+  const [toggleUserId, setToggleUserId] = useState(null);
+  const [toggleUserStatus, setToggleUserStatus] = useState(false);
+
   const navigate = useNavigate();
+
+    // ------------------------------ Derived Permissions ------------------------------
+    const canDeleteEmployee = permissions?.includes("deleteEmployeeAdmin");
+    const canToggleStatus = permissions?.includes("active/InactiveEmployeeAdmin");
 
   useEffect(() => {
     fetchEmployees();
   }, [fetchEmployees]);
 
+  // ---- Confirm delete logic
+  const openDeleteDialog = (empId) => {
+    setSelectedEmployee(empId);
+    setIsConfirmOpen(true);
+  };
+
+  const handleCancelDelete = () => {
+    setSelectedEmployee(null);
+    setIsConfirmOpen(false);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!selectedEmployee) return;
+    await deleteEmployee(selectedEmployee);
+    setSelectedEmployee(null);
+    setIsConfirmOpen(false);
+  };
+
+  // ------------------------------ Toggle Status Logic ------------------------------
+  // 1) Open the dialog with user info
+  const openToggleDialog = (userId, currentStatus) => {
+    setToggleUserId(userId);
+    setToggleUserStatus(currentStatus); // e.g. true/false
+    setIsToggleConfirmOpen(true);
+  };
+
+  // 2) Close without action
+  const handleCancelToggle = () => {
+    setToggleUserId(null);
+    setToggleUserStatus(false);
+    setIsToggleConfirmOpen(false);
+  };
+
+  // 3) Confirm status change
+  const handleConfirmToggle = async () => {
+    if (!toggleUserId) return;
+    await toggleEmployeeStatus(toggleUserId, toggleUserStatus);
+    setIsToggleConfirmOpen(false);
+    setToggleUserId(null);
+    setToggleUserStatus(false);
+  };
+
   const totalData = filteredEmployees.length;
   const totalPages = Math.ceil(totalData / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const currentUsers = filteredEmployees.slice(startIndex, startIndex + itemsPerPage);
+  const currentUsers = filteredEmployees.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
 
   const handlePageChange = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -164,7 +231,9 @@ function SupordinatesEmployess() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {currentUsers.map((user) => {
-            const fullName = `${user.first_Name || ""} ${user.last_Name || ""}`.trim();
+            const fullName = `${user.first_Name || ""} ${
+              user.last_Name || ""
+            }`.trim();
             const status = user.isActive ? "ACTIVE" : "Inactive";
             return (
               <motion.div
@@ -178,7 +247,9 @@ function SupordinatesEmployess() {
               >
                 <div className="relative h-20 bg-[#6D7F9B] dark:bg-gray-700">
                   <span
-                    className={`absolute top-2 left-2 text-xs font-semibold uppercase px-3 py-1 rounded-full ${statusColors[status] || ""}`}
+                    className={`absolute top-2 left-2 text-xs font-semibold uppercase px-3 py-1 rounded-full ${
+                      statusColors[status] || ""
+                    }`}
                   >
                     {status}
                   </span>
@@ -186,16 +257,31 @@ function SupordinatesEmployess() {
                     <button
                       title="Edit"
                       className="hover:text-gray-800 dark:hover:text-white"
-                      onClick={() => navigate(`/dashboard/update-employee/${user._id}`)}
+                      onClick={() =>
+                        navigate(
+                          `/dashboard/update-employee-manager/${user._id}`
+                        )
+                      }
                     >
                       <FaEdit />
                     </button>
-                    <button
+                    {/* <button
                       title="Delete"
                       className="hover:text-gray-800 dark:hover:text-white"
+                      onClick={() => openDeleteDialog(user.employee_Id)}
                     >
                       <FaTrash />
-                    </button>
+                    </button> */}
+                         {/* Delete Button (conditional) */}
+                         {canDeleteEmployee && (
+                      <button
+                        title="Delete"
+                        className="hover:text-gray-800 dark:hover:text-white"
+                        onClick={() => openDeleteDialog(user.employee_Id)}
+                      >
+                        <FaTrash />
+                      </button>
+                    )}
                   </div>
                   <div className="absolute w-full flex justify-center -bottom-8">
                     <div className="w-20 h-20 rounded-full bg-gray-200 dark:bg-gray-600 border-white dark:border-gray-800 overflow-hidden">
@@ -236,9 +322,47 @@ function SupordinatesEmployess() {
                       </div>
                     </div>
                   </div>
+                  {/* Toggle Switch to activate/deactivate user */}
+                  {/* <div className="mt-4 flex items-center justify-center gap-2">
+                    <label
+                      htmlFor={`toggleSwitch-${user._id}`}
+                      className="text-xs sm:text-sm font-semibold"
+                    >
+                      Status:
+                    </label>
+                    <input
+                      id={`toggleSwitch-${user._id}`}
+                      type="checkbox"
+                      className="cursor-pointer h-4 w-4 accent-blue-500"
+                      checked={user.isActive}
+                      onChange={() =>
+                        openToggleDialog(user.employee_Id, user.isActive)
+                      }
+                    />
+                  </div> */}
+                       {/* Toggle Switch to activate/deactivate user (conditional) */}
+                       {canToggleStatus && (
+                    <div className="mt-4 flex items-center justify-center gap-2">
+                      <label
+                        htmlFor={`toggleSwitch-${user._id}`}
+                        className="text-xs sm:text-sm font-semibold"
+                      >
+                        Status:
+                      </label>
+                      <input
+                        id={`toggleSwitch-${user._id}`}
+                        type="checkbox"
+                        className="cursor-pointer h-4 w-4 accent-blue-500"
+                        checked={user.isActive}
+                        onChange={() => openToggleDialog(user.employee_Id, user.isActive)}
+                      />
+                    </div>
+                  )}
                   <button
                     className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center justify-center"
-                    onClick={() => navigate(`/dashboard/employees/details/${user._id}`)}
+                    onClick={() =>
+                      navigate(`/dashboard/employees/details/${user._id}`)
+                    }
                   >
                     View Profile
                     <FaArrowRight className="ml-2" />
@@ -266,6 +390,28 @@ function SupordinatesEmployess() {
           </div>
         )}
       </div>
+      {/* Confirmation Dialog for Delete */}
+      <ConfirmationDialog
+        open={isConfirmOpen}
+        title="Confirm Deletion"
+        message="Are you sure you want to delete this user? This action cannot be undone."
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+        confirmText="Delete"
+        cancelText="Cancel"
+      />
+      {/* Confirmation Dialog for Toggle Status */}
+      <ConfirmationDialog
+        open={isToggleConfirmOpen}
+        title="Confirm Status Change"
+        message={`Are you sure you want to ${
+          toggleUserStatus ? "deactivate" : "activate"
+        } this user?`}
+        onConfirm={handleConfirmToggle}
+        onCancel={handleCancelToggle}
+        confirmText={toggleUserStatus ? "Deactivate" : "Activate"}
+        cancelText="Cancel"
+      />
     </div>
   );
 }

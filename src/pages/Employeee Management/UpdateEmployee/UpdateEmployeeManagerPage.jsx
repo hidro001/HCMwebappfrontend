@@ -5,9 +5,9 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useEmployeeStore from "../../../store/useEmployeeStore.js";
 import { toast } from "react-hot-toast";
-import EmployeeFormTabs from "../../../components/Employeee Management/EmployeeFormTabs/EmployeeFormTabs";
+import EmployeeFormTabs from "../../../components/Employeee Management/add employee manager/EmployeeFormTabs";
 
-export default function UpdateEmployeePage() {
+export default function UpdateEmployeeManagerPage() {
   const { id: employeeId } = useParams();
   const { loadEmployeeById, selectedEmployee, loadingSelectedEmployee } = useEmployeeStore();
   const [defaultValues, setDefaultValues] = useState(null);
