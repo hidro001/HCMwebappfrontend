@@ -1,4 +1,3 @@
-// src/components/CallModal.jsx
 import React from "react";
 import { useCall } from "../../../contexts/CallContext";
 
@@ -8,65 +7,31 @@ const CallModal = () => {
   if (!incomingCall) return null;
 
   return (
-    <div style={modalOverlayStyle}>
-      <div style={modalStyle}>
-        <h3>Incoming {incomingCall.callType} call</h3>
-        <p>Caller: {incomingCall.caller}</p>
-        <div style={buttonContainerStyle}>
-          <button onClick={answerCall} style={answerButtonStyle}>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg text-center w-11/12 max-w-md shadow-lg">
+        <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-gray-100">
+          Incoming {incomingCall.callType} call
+        </h3>
+        <p className="mb-4 text-gray-700 dark:text-gray-300">
+          Caller: {incomingCall.caller}
+        </p>
+        <div className="flex justify-around">
+          <button
+            onClick={answerCall}
+            className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded transition duration-200 focus:outline-none"
+          >
             Answer
           </button>
-          <button onClick={rejectCall} style={rejectButtonStyle}>
+          <button
+            onClick={rejectCall}
+            className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded transition duration-200 focus:outline-none"
+          >
             Reject
           </button>
         </div>
       </div>
     </div>
   );
-};
-
-const modalOverlayStyle = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  backgroundColor: "rgba(0,0,0,0.5)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  zIndex: 1000,
-};
-
-const modalStyle = {
-  backgroundColor: "#fff",
-  padding: "20px",
-  borderRadius: "8px",
-  textAlign: "center",
-};
-
-const buttonContainerStyle = {
-  marginTop: "20px",
-  display: "flex",
-  justifyContent: "space-around",
-};
-
-const answerButtonStyle = {
-  padding: "10px 20px",
-  backgroundColor: "green",
-  color: "#fff",
-  border: "none",
-  borderRadius: "4px",
-  cursor: "pointer",
-};
-
-const rejectButtonStyle = {
-  padding: "10px 20px",
-  backgroundColor: "red",
-  color: "#fff",
-  border: "none",
-  borderRadius: "4px",
-  cursor: "pointer",
 };
 
 export default CallModal;
