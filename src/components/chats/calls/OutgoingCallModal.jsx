@@ -1,6 +1,6 @@
 // src/components/OutgoingCallModal.jsx
 import React from "react";
-import { useCall } from "../../../contexts/CallContext";
+import { useCall } from "../../ContextApi/CallContext";
 
 const OutgoingCallModal = () => {
   const { outgoingCall, leaveCall } = useCall();
