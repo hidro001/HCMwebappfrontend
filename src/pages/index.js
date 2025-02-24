@@ -79,6 +79,9 @@ import AllDisciplinaryActionsPage from "./Employeee Management/disciplinary/AllD
 import UsersListForDisciplinaryPage from "./Employeee Management/disciplinary/UsersListForDisciplinaryPage";
 import AddEmployeeManagerPage from "./Employeee Management/AddEmployee/AddEmployeeManagerPage";
 import UpdateEmployeeManagerPage from "./Employeee Management/UpdateEmployee/UpdateEmployeeManagerPage";
+import CompanyPoliciesViewPage from "./Policies-Induction/CompanyPoliciesViewPage";
+import CompanyInductionViewPage from "./Policies-Induction/CompanyInductionViewPage";
+
 
 
 export {
@@ -150,4 +153,6 @@ export {
   TeamProductivityPage,
   UsersListForDisciplinaryPage,
   AllDisciplinaryActionsPage,
+  CompanyPoliciesViewPage,
+  CompanyInductionViewPage
 };

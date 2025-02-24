@@ -70,6 +70,8 @@ import {
   UsersListForDisciplinaryPage,
   UpdateEmployeeManagerPage,
   AddEmployeeManagerPage,
+  CompanyPoliciesViewPage,
+  CompanyInductionViewPage,
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -382,6 +384,14 @@ const router = createBrowserRouter([
       {
         path: "disciplinary-actions",
         element: <AllDisciplinaryActionsPage />,
+      },
+      {
+        path: "induction-ppt",
+        element: <CompanyInductionViewPage />,
+      },
+      {
+        path: "company-policies",
+        element: <CompanyPoliciesViewPage />,
       },
     ],
   },
