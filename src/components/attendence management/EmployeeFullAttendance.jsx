@@ -1,21 +1,12 @@
-
-
-import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion"; // Removed AnimatePresence import
-import {
-  FiPrinter,
-  FiDownload,
-  FiFileText,
-  FiSettings,
-  FiSearch,
-} from "react-icons/fi";
+import React, { useEffect, useState, useMemo } from "react";
+import { motion } from "framer-motion";
+import { FiSearch } from "react-icons/fi";
 import { useParams } from "react-router-dom";
-import { toast } from "react-hot-toast";
 
-// <-- Our Zustand store with all logic
 import useAttendanceStore from "../../store/useFullAttendanceStore";
+// <-- Import your ExportButtons component:
+import ExportButtons from "../../components/common/PdfExcel";
 
-// Optional utility to color-code the status badge
 function renderStatusBadge(status) {
   let bgColor = "bg-gray-100 dark:bg-gray-700";
   let textColor = "text-gray-600 dark:text-gray-200";
@@ -56,18 +47,14 @@ function renderStatusBadge(status) {
 }
 
 export default function EmployeeFullAttendance() {
-  const { empID } = useParams(); // If your route is /employee/:empID
+  const { empID } = useParams();
 
-  // --------- Zustand store states and actions -----------
   const {
-    // Fetched store data:
     userProfileData,
     attendanceData,
     dummyAttendanceData,
     hasRealData,
-    // Async method to fetch everything:
     fetchAllData,
-    // Calculation methods:
     calculateTotalShifts,
     calculateTotalCompletedDays,
     calculateTotalLates,
@@ -76,30 +63,27 @@ export default function EmployeeFullAttendance() {
     calculateNotLoggedOut,
   } = useAttendanceStore();
 
-  // --------- Local UI states -----------
   const [selectedMonth, setSelectedMonth] = useState("2025-01");
   const [searchText, setSearchText] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // --------- On mount, fetch data -----------
   useEffect(() => {
     if (empID) {
       fetchAllData(empID);
     } else {
-      // If there's no param, you could skip or use a default
-      fetchAllData("RI0546"); // example fallback
+      fetchAllData("RI0546"); // fallback example
     }
   }, [empID, fetchAllData]);
 
-  // --------- Prepare data for the table -----------
+  // Build real vs. dummy data
   const realAttendanceData = attendanceData.map((record, index) => ({
     sl: index + 1,
     date: record.date || "",
     day: record.day || "",
     logInTime: record.login || "------",
     logOutTime: record.logout || "------",
-    totalBreak: "--", // Replace with real calculation if available
+    totalBreak: "--", // placeholder
     status: record.status || "Absent",
   }));
 
@@ -108,40 +92,73 @@ export default function EmployeeFullAttendance() {
       ? realAttendanceData
       : dummyAttendanceData;
 
-  // ---------- Filter by month + search ----------
-  const filteredByMonth = allAttendanceData.filter((item) =>
-    item.date.startsWith(selectedMonth)
-  );
-
-  const fullyFilteredData = filteredByMonth.filter((item) => {
-    const combined = `${item.date} ${item.day} ${item.status}`.toLowerCase();
-    return combined.includes(searchText.toLowerCase());
-  });
+  // Filter by selectedMonth and searchText
+  const filteredData = useMemo(() => {
+    const byMonth = allAttendanceData.filter((item) =>
+      item.date.startsWith(selectedMonth)
+    );
+    const bySearch = byMonth.filter((item) => {
+      const combined = `${item.date} ${item.day} ${item.status}`.toLowerCase();
+      return combined.includes(searchText.toLowerCase());
+    });
+    return bySearch;
+  }, [allAttendanceData, selectedMonth, searchText]);
 
   // Pagination
-  const totalEntries = fullyFilteredData.length;
+  const totalEntries = filteredData.length;
   const totalPages = Math.ceil(totalEntries / rowsPerPage);
-  const safeCurrentPage =
-    currentPage > totalPages ? totalPages : currentPage < 1 ? 1 : currentPage;
+  const safeCurrentPage = Math.min(Math.max(currentPage, 1), totalPages || 1);
   const startIndex = (safeCurrentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
-  const displayedData = fullyFilteredData.slice(startIndex, endIndex);
+  const displayedData = filteredData.slice(startIndex, endIndex);
 
-  // ---------- Convert "YYYY-MM" to "Month YYYY" for heading ----------
+  // Prepare columns for export
+  const columns = [
+    { header: "S.L", dataKey: "sl" },
+    { header: "Date", dataKey: "date" },
+    { header: "Day", dataKey: "day" },
+    { header: "Log In Time", dataKey: "logInTime" },
+    { header: "Log Out Time", dataKey: "logOutTime" },
+    { header: "Total Break", dataKey: "totalBreak" },
+    { header: "Status", dataKey: "status" },
+  ];
+
+  function handleMonthChange(e) {
+    setSelectedMonth(e.target.value);
+    setCurrentPage(1);
+  }
+
+  function handleSearch(e) {
+    setSearchText(e.target.value);
+    setCurrentPage(1);
+  }
+
+  function handleRowsPerPage(e) {
+    setRowsPerPage(Number(e.target.value));
+    setCurrentPage(1);
+  }
+
+  function goToPage(pageNum) {
+    if (pageNum >= 1 && pageNum <= totalPages) {
+      setCurrentPage(pageNum);
+    }
+  }
+
+  // Convert "YYYY-MM" to "Month YYYY"
   const [year, month] = selectedMonth.split("-");
-  const dateObj = new Date(year, parseInt(month, 10) - 1, 1);
+  const dateObj = new Date(parseInt(year), parseInt(month, 10) - 1, 1);
   const monthName = dateObj.toLocaleString("default", { month: "long" });
 
-  // Employee name/code from userProfileData
-  const employeeName = `${userProfileData?.first_Name || ""} ${
-    userProfileData?.last_Name || ""
-  }`.trim() || "Unknown Name";
+  // Employee info
+  const employeeName =
+    `${userProfileData?.first_Name || ""} ${
+      userProfileData?.last_Name || ""
+    }`.trim() || "Unknown Name";
   const employeeCode = userProfileData?.employee_Id || "Unknown Code";
 
-  // ---------- Some dynamic calculations for the side overview ----------
+  // Summaries
   const parsedYear = parseInt(year, 10);
   const parsedMonth = parseInt(month, 10);
-
   const totalShifts = calculateTotalShifts(parsedYear, parsedMonth);
   const completedShifts = calculateTotalCompletedDays(parsedYear, parsedMonth);
   const totalLates = calculateTotalLates(parsedYear, parsedMonth);
@@ -149,7 +166,7 @@ export default function EmployeeFullAttendance() {
   const notEvenHalfDay = calculateNotEvenHalfDays(parsedYear, parsedMonth);
   const notLoggedOut = calculateNotLoggedOut(parsedYear, parsedMonth);
 
-  // Example for present/absent/holiday counts from displayedData
+  // Basic present/absent/holiday counts from displayed data
   const presentCount = displayedData.filter((item) =>
     item.status.toLowerCase().includes("present")
   ).length;
@@ -160,13 +177,12 @@ export default function EmployeeFullAttendance() {
     item.status.toLowerCase().includes("holiday")
   ).length;
 
-  // Custom placeholders or real logic for totalPaidLeave, totalLeave, etc.
-  const totalPaidLeaves = 3; // or from store if needed
-  const totalLeaves = 4; // or from store
-  const overTime = "--"; // or from store
-  const regularization = "--"; // or from store
+  // Example placeholders
+  const totalPaidLeaves = 3;
+  const totalLeaves = 4;
+  const overTime = "--";
+  const regularization = "--";
 
-  // Build your overviewData array
   const overviewData = [
     {
       label: "Total Present",
@@ -261,29 +277,6 @@ export default function EmployeeFullAttendance() {
     },
   ];
 
-  // ---------- Handlers for user actions ----------
-  function handleMonthChange(e) {
-    setSelectedMonth(e.target.value);
-    setCurrentPage(1);
-  }
-
-  function handleSearch(e) {
-    setSearchText(e.target.value);
-    setCurrentPage(1);
-  }
-
-  function handleRowsPerPage(e) {
-    setRowsPerPage(Number(e.target.value));
-    setCurrentPage(1);
-  }
-
-  function goToPage(pageNum) {
-    if (pageNum >= 1 && pageNum <= totalPages) {
-      setCurrentPage(pageNum);
-    }
-  }
-
-  // ---------- Render -----------
   return (
     <motion.div
       className="p-6 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen"
@@ -291,7 +284,7 @@ export default function EmployeeFullAttendance() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
-      {/* Page Heading - dynamically use month/year and employee name */}
+      {/* Page Heading */}
       <motion.h1
         className="text-xl md:text-2xl font-bold mb-6"
         initial={{ opacity: 0, x: -50 }}
@@ -353,7 +346,7 @@ export default function EmployeeFullAttendance() {
           </div>
         </div>
 
-        {/* Right group: Search + icons */}
+        {/* Right group: Search + ExportButtons */}
         <div className="flex items-center gap-2">
           {/* Search box */}
           <div className="relative">
@@ -372,19 +365,12 @@ export default function EmployeeFullAttendance() {
             />
           </div>
 
-          {/* Action icons */}
-          <button className="p-2 rounded bg-green-100 dark:bg-green-900 hover:bg-green-200 dark:hover:bg-green-800">
-            <FiPrinter className="text-green-600 dark:text-green-100" size={16} />
-          </button>
-          <button className="p-2 rounded bg-pink-100 dark:bg-pink-900 hover:bg-pink-200 dark:hover:bg-pink-800">
-            <FiDownload className="text-pink-600 dark:text-pink-100" size={16} />
-          </button>
-          <button className="p-2 rounded bg-purple-100 dark:bg-purple-900 hover:bg-purple-200 dark:hover:bg-purple-800">
-            <FiFileText className="text-purple-600 dark:text-purple-100" size={16} />
-          </button>
-          <button className="p-2 rounded bg-orange-100 dark:bg-orange-900 hover:bg-orange-200 dark:hover:bg-orange-800">
-            <FiSettings className="text-orange-600 dark:text-orange-100" size={16} />
-          </button>
+          {/* Here is the ExportButtons component replacing the four icons */}
+          <ExportButtons
+            data={displayedData} // current table data
+            columns={columns} // column definitions for export
+            filename={`Attendance_${employeeCode}_${selectedMonth}`}
+          />
         </div>
       </motion.div>
 
@@ -416,19 +402,22 @@ export default function EmployeeFullAttendance() {
                 </tr>
               </thead>
               <tbody>
-                {/* Removed AnimatePresence and replaced motion.tr with standard tr */}
                 {displayedData.map((item) => (
                   <tr
                     key={item.sl}
                     className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
                   >
-                    <td className="py-3 px-4">{String(item.sl).padStart(2, "0")}</td>
+                    <td className="py-3 px-4">
+                      {String(item.sl).padStart(2, "0")}
+                    </td>
                     <td className="py-3 px-4">{item.date}</td>
                     <td className="py-3 px-4">{item.day}</td>
                     <td className="py-3 px-4">{item.logInTime}</td>
                     <td className="py-3 px-4">{item.logOutTime}</td>
                     <td className="py-3 px-4">{item.totalBreak}</td>
-                    <td className="py-3 px-4">{renderStatusBadge(item.status)}</td>
+                    <td className="py-3 px-4">
+                      {renderStatusBadge(item.status)}
+                    </td>
                   </tr>
                 ))}
 
@@ -533,4 +522,3 @@ export default function EmployeeFullAttendance() {
     </motion.div>
   );
 }
-
