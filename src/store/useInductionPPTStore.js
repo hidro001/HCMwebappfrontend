@@ -19,6 +19,16 @@ const useInductionPPTStore = create((set) => ({
       toast.error("Failed to fetch induction PPTs");
     }
   },
+  fetchPPTsUser: async () => {
+    set({ loading: true });
+    try {
+      const response = await axiosInstance.get("/induction-ppt/ppt-by-dept");
+      set({ pptList: response.data, loading: false });
+    } catch (error) {
+      set({ error: error.message, loading: false });
+      toast.error("Failed to fetch induction PPTs");
+    }
+  },
 
   // Create a new induction PPT
   createPPT: async (pptData) => {
