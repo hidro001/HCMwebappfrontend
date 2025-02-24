@@ -323,7 +323,6 @@
 //   );
 // }
 
-
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaEye, FaEdit, FaTrash, FaPrint, FaFilePdf } from "react-icons/fa";
@@ -335,6 +334,7 @@ import useVacancyStore from "../../store/useVacancyStore";
 import ViewVacancyModal from "./model/ViewVacancyModal";
 import UpdateVacancyModal from "./model/UpdateVacancyModal";
 import ConfirmationDialog from "../common/ConfirmationDialog"; // Adjust path as needed
+import ExportButtons from "../common/PdfExcel"; // adjust path if needed
 
 const tableContainerVariants = {
   hidden: { opacity: 0 },
@@ -350,7 +350,8 @@ const tableRowVariants = {
 };
 
 export default function VacanciesList() {
-  const { vacancies, loading, error, fetchAllVacancies, deleteVacancy } = useVacancyStore();
+  const { vacancies, loading, error, fetchAllVacancies, deleteVacancy } =
+    useVacancyStore();
 
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -380,11 +381,16 @@ export default function VacanciesList() {
     if (!vacancies || vacancies.length === 0) return [];
     return vacancies.filter((job) => {
       if (searchText) {
-        const matchTitle = job.jobTitle.toLowerCase().includes(searchText.toLowerCase());
-        const matchDept = job.jobDepartment.toLowerCase().includes(searchText.toLowerCase());
+        const matchTitle = job.jobTitle
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
+        const matchDept = job.jobDepartment
+          .toLowerCase()
+          .includes(searchText.toLowerCase());
         if (!matchTitle && !matchDept) return false;
       }
-      if (department !== "All" && job.jobDepartment !== department) return false;
+      if (department !== "All" && job.jobDepartment !== department)
+        return false;
       if (status !== "All" && job.vacancyStatus !== status) return false;
       if (selectedDate) {
         const itemDate = new Date(job.createdAt);
@@ -442,6 +448,39 @@ export default function VacanciesList() {
     setIsConfirmDialogOpen(false);
   };
 
+  // Flatten currentTableData for export
+  const exportData = currentTableData.map((vac, idx) => {
+    const rowIndex = (currentPage - 1) * pageSize + (idx + 1);
+
+    const postedBy = vac?.createdBy
+      ? `${vac.createdBy.first_Name} ${vac.createdBy.last_Name} (${vac.createdBy.employee_Id})`
+      : "N/A";
+
+    const formattedSalary =
+      vac.salary && vac.salary > 0 ? `${vac.salary} (${vac.currency})` : "---";
+
+    return {
+      sl: String(rowIndex).padStart(2, "0"),
+      jobTitle: vac.jobTitle,
+      department: vac.jobDepartment,
+      salary: formattedSalary,
+      postedBy,
+      postedDate: new Date(vac.createdAt).toLocaleDateString("en-GB"),
+      vacancyStatus: vac.vacancyStatus,
+    };
+  });
+
+  // Define columns for PDF/Excel/CSV
+  const columns = [
+    { header: "S.L", dataKey: "sl" },
+    { header: "Designation", dataKey: "jobTitle" },
+    { header: "Department", dataKey: "department" },
+    { header: "Salary", dataKey: "salary" },
+    { header: "Posted By", dataKey: "postedBy" },
+    { header: "Posted Date", dataKey: "postedDate" },
+    { header: "Status", dataKey: "vacancyStatus" },
+  ];
+
   return (
     <div className="mx-auto px-4 py-6 bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-100 transition-colors">
       <div className="flex items-center justify-between mb-4">
@@ -453,7 +492,9 @@ export default function VacanciesList() {
       <div className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow mb-4 transition-colors">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-semibold whitespace-nowrap">Show</label>
+            <label className="text-sm font-semibold whitespace-nowrap">
+              Show
+            </label>
             <select
               className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
               value={pageSize}
@@ -518,23 +559,26 @@ export default function VacanciesList() {
             <option value="Closed">Closed</option>
           </select>
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-300">
-            <button className="hover:text-gray-700 dark:hover:text-gray-200 transition-colors" title="Print">
-              <FaPrint size={16} />
-            </button>
-            <button className="hover:text-gray-700 dark:hover:text-gray-200 transition-colors" title="Export PDF">
-              <FaFilePdf size={16} />
-            </button>
-            <button className="hover:text-gray-700 dark:hover:text-gray-200 transition-colors" title="Export CSV/Excel">
-              <MdOutlineFileDownload size={18} />
-            </button>
+            <ExportButtons
+              data={exportData}
+              columns={columns}
+              filename="ReferralList"
+            />
           </div>
         </div>
       </div>
-      {error && <div className="bg-red-100 text-red-800 p-3 rounded mb-4">{error}</div>}
+      {error && (
+        <div className="bg-red-100 text-red-800 p-3 rounded mb-4">{error}</div>
+      )}
       {loading ? (
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow transition-colors">
           {Array.from({ length: pageSize }).map((_, i) => (
-            <Skeleton key={i} variant="rectangular" height={40} className="mb-2" />
+            <Skeleton
+              key={i}
+              variant="rectangular"
+              height={40}
+              className="mb-2"
+            />
           ))}
         </div>
       ) : (
@@ -578,21 +622,27 @@ export default function VacanciesList() {
                       vac.salary && vac.salary > 0
                         ? `${vac.salary} (${vac.currency})`
                         : "---";
-                    const postedDate = new Date(vac.createdAt).toLocaleDateString("en-GB");
+                    const postedDate = new Date(
+                      vac.createdAt
+                    ).toLocaleDateString("en-GB");
                     return (
                       <motion.tr
                         key={vac._id}
                         variants={tableRowVariants}
                         className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                       >
-                        <td className="p-3 text-sm">{String(rowIndex).padStart(2, "0")}</td>
+                        <td className="p-3 text-sm">
+                          {String(rowIndex).padStart(2, "0")}
+                        </td>
                         <td className="p-3 text-sm">{vac.jobTitle}</td>
                         <td className="p-3 text-sm">{vac.jobDepartment}</td>
                         <td className="p-3 text-sm">{formattedSalary}</td>
                         <td className="p-3 text-sm">{postedBy}</td>
                         <td className="p-3 text-sm">{postedDate}</td>
                         <td className="p-3 text-sm">
-                          <span className={statusClasses}>{vac.vacancyStatus}</span>
+                          <span className={statusClasses}>
+                            {vac.vacancyStatus}
+                          </span>
                         </td>
                         <td className="p-3 text-sm">
                           <div className="flex items-center gap-2">
@@ -623,7 +673,8 @@ export default function VacanciesList() {
               </motion.table>
               <div className="flex flex-col md:flex-row justify-between items-center p-3 gap-2 text-sm text-gray-600 dark:text-gray-200 transition-colors">
                 <div>
-                  Showing {currentTableData.length} of {filteredVacancies.length} entries
+                  Showing {currentTableData.length} of{" "}
+                  {filteredVacancies.length} entries
                 </div>
                 <div className="flex items-center space-x-1">
                   {Array.from({ length: totalPages }, (_, i) => (

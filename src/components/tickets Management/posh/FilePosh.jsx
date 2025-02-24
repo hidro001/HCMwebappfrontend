@@ -1,4 +1,4 @@
-import  { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Skeleton } from "@mui/material";
 import { FaEye, FaEdit, FaTrash, FaPrint, FaFilePdf } from "react-icons/fa";
@@ -12,7 +12,7 @@ import ConfirmationDialog from "../../common/ConfirmationDialog";
 import { usePoshStore } from "../../../store/poshStore";
 
 export default function FilePosh() {
-  const { poshActs, fetchAllUserPoshActs, loading } = usePoshStore(); 
+  const { poshActs, fetchAllUserPoshActs, loading } = usePoshStore();
 
   const [searchText, setSearchText] = useState("");
   const [selectedDate, setSelectedDate] = useState(null);
@@ -62,7 +62,8 @@ export default function FilePosh() {
           return false;
         }
       }
-      if (statusFilter !== "All" && ticket.status !== statusFilter) return false;
+      if (statusFilter !== "All" && ticket.status !== statusFilter)
+        return false;
       if (selectedDate) {
         const ticketDate = new Date(ticket.incidentDate).setHours(0, 0, 0, 0);
         const filterDate = selectedDate.setHours(0, 0, 0, 0);
@@ -115,7 +116,7 @@ export default function FilePosh() {
   return (
     <div className="mx-auto px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors  ">
       <h1 className="text-2xl font-bold mb-2">POSH Issues</h1>
-      
+
       {/* Toolbar */}
       <motion.div
         className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow transition-colors mb-3"
@@ -125,7 +126,9 @@ export default function FilePosh() {
       >
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-semibold whitespace-nowrap">Show</label>
+            <label className="text-sm font-semibold whitespace-nowrap">
+              Show
+            </label>
             <select
               className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none"
               value={pageSize}
@@ -176,26 +179,6 @@ export default function FilePosh() {
             <option value="Resolved">Resolved</option>
             <option value="Under Review">Under Review</option>
           </select>
-          <div className="flex items-center gap-4 text-gray-500 dark:text-gray-300">
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-              title="Print"
-            >
-              <FaPrint size={18} />
-            </button>
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-              title="Export to PDF"
-            >
-              <FaFilePdf size={18} />
-            </button>
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-              title="Export CSV/Excel"
-            >
-              <MdOutlineFileDownload size={20} />
-            </button>
-          </div>
           <button
             onClick={handleEdit}
             className="ml-auto bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 text-sm transition-colors"
@@ -215,7 +198,12 @@ export default function FilePosh() {
         {loading ? (
           <div className="p-4">
             {Array.from({ length: 10 }).map((_, i) => (
-              <Skeleton key={i} variant="rectangular" height={40} className="mb-2" />
+              <Skeleton
+                key={i}
+                variant="rectangular"
+                height={40}
+                className="mb-2"
+              />
             ))}
           </div>
         ) : (
@@ -255,23 +243,26 @@ export default function FilePosh() {
                     variants={tableRowVariants}
                     className="border-b last:border-b-0 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                   >
-                    <td className="p-3 text-sm">{String(slIndex).padStart(2, "0")}</td>
+                    <td className="p-3 text-sm">
+                      {String(slIndex).padStart(2, "0")}
+                    </td>
                     <td className="p-3 text-sm text-blue-600 dark:text-blue-400">
                       {ticket.type}
                     </td>
                     <td className="p-3 text-sm text-blue-600 dark:text-blue-400">
                       {ticket.accusedId}
                     </td>
-                    <td className="p-3 text-sm">
-                      {ticket.accusedName}
-                    </td>
+                    <td className="p-3 text-sm">{ticket.accusedName}</td>
                     <td className="p-3 text-sm">
                       {ticket.incidentDate
-                        ? new Date(ticket.incidentDate).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })
+                        ? new Date(ticket.incidentDate).toLocaleDateString(
+                            "en-GB",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )
                         : "N/A"}
                     </td>
                     <td className="p-3 text-sm">
@@ -380,4 +371,3 @@ export default function FilePosh() {
     </div>
   );
 }
-

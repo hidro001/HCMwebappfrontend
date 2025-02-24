@@ -1,4 +1,4 @@
-import  { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   FaEye,
@@ -16,9 +16,10 @@ import IssueDetailsModal from "./model/IssueDetailsModal";
 import EditStatusModal from "./model/EditStatusModal";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import { usePoshStore } from "../../../store/poshStore";
+import ExportButtons from "../../common/PdfExcel"; // Adjust path if needed
 
 export default function PoshManage() {
-  const { poshActs, fetchPoshActs, loading } = usePoshStore(); 
+  const { poshActs, fetchPoshActs, loading } = usePoshStore();
 
   // State
   const [searchText, setSearchText] = useState("");
@@ -72,7 +73,8 @@ export default function PoshManage() {
         }
       }
       // Status filter
-      if (statusFilter !== "All" && ticket.status !== statusFilter) return false;
+      if (statusFilter !== "All" && ticket.status !== statusFilter)
+        return false;
       // Date filter
       if (selectedDate) {
         const ticketDate = new Date(ticket.incidentDate).setHours(0, 0, 0, 0);
@@ -104,7 +106,7 @@ export default function PoshManage() {
     visible: {
       opacity: 1,
       transition: {
-        duration: 0.2, 
+        duration: 0.2,
         when: "beforeChildren",
         staggerChildren: 0.05,
       },
@@ -124,6 +126,33 @@ export default function PoshManage() {
     },
   };
 
+  // Flatten paginatedData for exporting
+  const exportData = paginatedData.map((ticket, index) => {
+    const slIndex = (currentPage - 1) * pageSize + (index + 1);
+    return {
+      sl: String(slIndex).padStart(2, "0"),
+      reporterId: ticket.reporterId,
+      reporterName: ticket.reporterName,
+      accusedId: ticket.accusedId,
+      accusedName: ticket.accusedName,
+      incidentDate: ticket.incidentDate
+        ? new Date(ticket.incidentDate).toLocaleDateString("en-GB")
+        : "N/A",
+      status: ticket.status,
+    };
+  });
+
+  // Define columns
+  const columns = [
+    { header: "S.L", dataKey: "sl" },
+    { header: "Reporter Emp ID", dataKey: "reporterId" },
+    { header: "Reporter Name", dataKey: "reporterName" },
+    { header: "Accused Emp ID", dataKey: "accusedId" },
+    { header: "Accused Name", dataKey: "accusedName" },
+    { header: "Incident Date", dataKey: "incidentDate" },
+    { header: "Status", dataKey: "status" },
+  ];
+
   return (
     <div className="mx-auto px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors ">
       <h1 className="text-2xl font-bold mb-2">POSH Issues</h1>
@@ -137,7 +166,9 @@ export default function PoshManage() {
       >
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-semibold whitespace-nowrap">Show</label>
+            <label className="text-sm font-semibold whitespace-nowrap">
+              Show
+            </label>
             <select
               className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none"
               value={pageSize}
@@ -189,15 +220,11 @@ export default function PoshManage() {
             <option value="Under Review">Under Review</option>
           </select>
           <div className="flex items-center gap-4 text-gray-500 dark:text-gray-300">
-            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Print">
-              <FaPrint size={18} />
-            </button>
-            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Export to PDF">
-              <FaFilePdf size={18} />
-            </button>
-            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Export CSV/Excel">
-              <MdOutlineFileDownload size={20} />
-            </button>
+            <ExportButtons
+              data={exportData}
+              columns={columns}
+              filename="PoshIssues"
+            />
           </div>
         </div>
       </motion.div>
@@ -206,7 +233,12 @@ export default function PoshManage() {
       {loading ? (
         <div className="bg-white dark:bg-gray-800 rounded-md shadow p-4 transition-colors">
           {Array.from({ length: 10 }).map((_, i) => (
-            <Skeleton key={i} variant="rectangular" height={40} className="mb-2" />
+            <Skeleton
+              key={i}
+              variant="rectangular"
+              height={40}
+              className="mb-2"
+            />
           ))}
         </div>
       ) : (
@@ -253,7 +285,9 @@ export default function PoshManage() {
                     variants={tableRowVariants}
                     className="border-b last:border-b-0 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                   >
-                    <td className="p-3 text-sm">{String(slIndex).padStart(2, "0")}</td>
+                    <td className="p-3 text-sm">
+                      {String(slIndex).padStart(2, "0")}
+                    </td>
                     <td className="p-3 text-sm text-blue-600 dark:text-blue-400">
                       {ticket.reporterId}
                     </td>
@@ -264,11 +298,14 @@ export default function PoshManage() {
                     <td className="p-3 text-sm">{ticket.accusedName}</td>
                     <td className="p-3 text-sm">
                       {ticket.incidentDate
-                        ? new Date(ticket.incidentDate).toLocaleDateString("en-GB", {
-                            day: "2-digit",
-                            month: "short",
-                            year: "numeric",
-                          })
+                        ? new Date(ticket.incidentDate).toLocaleDateString(
+                            "en-GB",
+                            {
+                              day: "2-digit",
+                              month: "short",
+                              year: "numeric",
+                            }
+                          )
                         : "N/A"}
                     </td>
                     <td className="p-3 text-sm">
@@ -368,6 +405,3 @@ export default function PoshManage() {
     </div>
   );
 }
-
-
-

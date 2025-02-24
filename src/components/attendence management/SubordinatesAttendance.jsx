@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaFilePdf, FaFileCsv, FaPrint, FaSearch } from "react-icons/fa";
@@ -63,8 +62,18 @@ function formatMonthYear(monthValue) {
   if (!monthValue) return "";
   const [year, month] = monthValue.split("-");
   const monthNames = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
   const monthIndex = parseInt(month, 10) - 1;
   return `${monthNames[monthIndex]} ${year}`;
@@ -152,7 +161,6 @@ export default function SubordinatesAttendance() {
   //   return true;
   // });
 
-
   const filteredEmployees = employeesData.filter((emp) => {
     // Department filter
     if (
@@ -181,7 +189,7 @@ export default function SubordinatesAttendance() {
     }
     return true;
   });
-  
+
   // Pagination
   const totalEntries = filteredEmployees.length;
   const totalPages = Math.ceil(totalEntries / showCount) || 1;
@@ -276,9 +284,7 @@ export default function SubordinatesAttendance() {
       </motion.div>
 
       {/* Title (Dynamically shows the selected month/year) */}
-      <h1 className="text-xl md:text-2xl font-bold mb-4">
-        {headingText}
-      </h1>
+      <h1 className="text-xl md:text-2xl font-bold mb-4">{headingText}</h1>
 
       {/* Filters + Export Icons */}
       <div className="bg-white dark:bg-gray-800 rounded-md shadow px-4 py-3 mb-6 transition-colors">
@@ -345,20 +351,6 @@ export default function SubordinatesAttendance() {
           </div>
 
           {/* Right side: Export Icons */}
-          <div className="flex items-center gap-3">
-            <button className="hover:opacity-75 transition">
-              <FaPrint size={16} className="text-teal-500" />
-            </button>
-            <button className="hover:opacity-75 transition">
-              <FaFilePdf size={16} className="text-red-500" />
-            </button>
-            <button className="hover:opacity-75 transition">
-              <FaFileCsv size={16} className="text-green-600" />
-            </button>
-            <button className="hover:opacity-75 transition">
-              <MdOutlineFileDownload size={16} className="text-blue-500" />
-            </button>
-          </div>
         </div>
       </div>
 
@@ -438,7 +430,10 @@ export default function SubordinatesAttendance() {
 
               {currentPageData.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="text-center py-4 text-sm text-gray-500">
+                  <td
+                    colSpan={6}
+                    className="text-center py-4 text-sm text-gray-500"
+                  >
                     No matching records found
                   </td>
                 </tr>
@@ -476,5 +471,3 @@ export default function SubordinatesAttendance() {
     </div>
   );
 }
-
-

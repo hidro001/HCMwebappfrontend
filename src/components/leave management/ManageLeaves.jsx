@@ -14,6 +14,7 @@ import {
 import LeaveDetailsModal from "./model/LeaveDetailsModal";
 import LeaveEdit from "./model/LeaveEdit";
 import useLeaveStore from "../../store/useLeaveStore";
+import ExportButtons from "../common/PdfExcel"; // Adjust path if needed
 
 const tableContainerVariants = {
   hidden: { opacity: 0 },
@@ -84,6 +85,53 @@ export default function ManageLeaves() {
     setSelectedLeave(null);
     setShowEditModal(false);
   };
+
+  // Flatten the paginatedData for exporting
+  const exportData = paginatedData.map((entry, index) => {
+    const serialNo = (currentPage - 1) * pageSize + (index + 1);
+    return {
+      sl: serialNo,
+      empID: entry.employee.employee_Id || "N/A",
+      empName: entry.employee
+        ? `${entry.employee.first_Name} ${entry.employee.last_Name}`
+        : "Unknown",
+      paidLeaveBalance: entry.employee?.no_of_Paid_Leave ?? "N/A",
+      leaveType: entry.leave_Type,
+      leaveFrom: new Date(entry.leave_From).toLocaleDateString(),
+      leaveTo: entry.leave_To
+        ? new Date(entry.leave_To).toLocaleDateString()
+        : "N/A",
+      days: entry.no_Of_Days,
+      reasonForLeave: entry.reason_For_Leave,
+      leaveCategory:
+        entry.is_Paid === null ? "Pending" : entry.is_Paid ? "Paid" : "Unpaid",
+      processedBy:
+        entry.leave_Status === "approved" && entry.approved_By
+          ? `${entry.approved_By.first_Name} ${entry.approved_By.last_Name}`
+          : entry.leave_Status === "rejected" && entry.rejected_By
+          ? `Rejected by ${entry.rejected_By.first_Name} ${entry.rejected_By.last_Name}`
+          : "Pending",
+      status:
+        entry.leave_Status.charAt(0).toUpperCase() +
+        entry.leave_Status.slice(1),
+    };
+  });
+
+  // Define columns
+  const columns = [
+    { header: "S.L", dataKey: "sl" },
+    { header: "Emp ID", dataKey: "empID" },
+    { header: "Emp Name", dataKey: "empName" },
+    { header: "Paid Leave Balance", dataKey: "paidLeaveBalance" },
+    { header: "Leave Type", dataKey: "leaveType" },
+    { header: "From", dataKey: "leaveFrom" },
+    { header: "To", dataKey: "leaveTo" },
+    { header: "Days", dataKey: "days" },
+    { header: "Reason for Leave", dataKey: "reasonForLeave" },
+    { header: "Leave Category", dataKey: "leaveCategory" },
+    { header: "Processed By", dataKey: "processedBy" },
+    { header: "Status", dataKey: "status" },
+  ];
 
   return (
     <div className="mx-auto p-4 bg-bg-primary text-text-primary transition-colors">
@@ -191,30 +239,11 @@ export default function ManageLeaves() {
         </select>
 
         <div className="flex items-center gap-2">
-          <button
-            className="text-green-600 hover:text-green-800"
-            title="Export CSV"
-          >
-            <FaFileCsv size={18} />
-          </button>
-          <button
-            className="text-pink-600 hover:text-pink-800"
-            title="Export PDF"
-          >
-            <FaFilePdf size={18} />
-          </button>
-          <button
-            className="text-orange-500 hover:text-orange-600"
-            title="Print"
-          >
-            <FaPrint size={18} />
-          </button>
-          <button
-            className="text-blue-600 hover:text-blue-800"
-            title="Export Excel"
-          >
-            <FaFileExcel size={18} />
-          </button>
+          <ExportButtons
+            data={exportData}
+            columns={columns}
+            filename="ManageLeaves"
+          />
         </div>
       </div>
 

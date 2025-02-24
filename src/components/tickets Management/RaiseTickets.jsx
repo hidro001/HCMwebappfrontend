@@ -79,7 +79,9 @@ export default function RaiseTickets() {
 
   const handleDelete = (issue) => {
     setConfirmTitle("Delete Issue");
-    setConfirmMessage(`Are you sure you want to delete issue "${issue.issueTitle}"?`);
+    setConfirmMessage(
+      `Are you sure you want to delete issue "${issue.issueTitle}"?`
+    );
     setConfirmAction(() => async () => {
       setConfirmOpen(false);
       await removeIssue(issue._id);
@@ -118,7 +120,9 @@ export default function RaiseTickets() {
   const filteredIssues = useMemo(() => {
     return issues.filter((issue) => {
       if (searchText) {
-        const matchTitle = issue.issueTitle?.toLowerCase().includes(searchText.toLowerCase());
+        const matchTitle = issue.issueTitle
+          ?.toLowerCase()
+          .includes(searchText.toLowerCase());
         const matchEmployeeId = issue.createdBy?.employee_Id
           ?.toLowerCase()
           .includes(searchText.toLowerCase());
@@ -126,7 +130,8 @@ export default function RaiseTickets() {
       }
       if (department !== "All" && issue.assignedTo !== department) return false;
       if (status !== "All" && issue.issueStatus !== status) return false;
-      if (priorityFilter !== "All" && issue.priority !== priorityFilter) return false;
+      if (priorityFilter !== "All" && issue.priority !== priorityFilter)
+        return false;
       if (selectedDate) {
         const issueDate = new Date(issue.createdAt).setHours(0, 0, 0, 0);
         const filterDate = selectedDate.setHours(0, 0, 0, 0);
@@ -163,7 +168,9 @@ export default function RaiseTickets() {
       >
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-semibold whitespace-nowrap">Show</label>
+            <label className="text-sm font-semibold whitespace-nowrap">
+              Show
+            </label>
             <select
               className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none"
               value={pageSize}
@@ -242,17 +249,6 @@ export default function RaiseTickets() {
             <option value="In Progress">In Progress</option>
             <option value="Resolved">Resolved</option>
           </select>
-          <div className="flex items-center gap-4 text-gray-500 dark:text-gray-300">
-            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Print">
-              <FaPrint size={18} />
-            </button>
-            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Export to PDF">
-              <FaFilePdf size={18} />
-            </button>
-            <button className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors" title="Export CSV/Excel">
-              <MdOutlineFileDownload size={20} />
-            </button>
-          </div>
           <button
             onClick={handleRaiseTicket}
             className="ml-auto bg-blue-600 text-white px-4 py-2 rounded shadow hover:bg-blue-700 text-sm transition-colors"
@@ -264,7 +260,12 @@ export default function RaiseTickets() {
       {loading ? (
         <div className="bg-white dark:bg-gray-800 rounded-md shadow p-4 transition-colors">
           {Array.from({ length: 10 }).map((_, i) => (
-            <Skeleton key={i} variant="rectangular" height={40} className="mb-2" />
+            <Skeleton
+              key={i}
+              variant="rectangular"
+              height={40}
+              className="mb-2"
+            />
           ))}
         </div>
       ) : filteredIssues.length > 0 ? (
@@ -320,7 +321,9 @@ export default function RaiseTickets() {
                     variants={tableRowVariants}
                     className="border-b last:border-b-0 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                   >
-                    <td className="p-3 text-sm">{String(globalIndex).padStart(2, "0")}</td>
+                    <td className="p-3 text-sm">
+                      {String(globalIndex).padStart(2, "0")}
+                    </td>
                     <td className="p-3 text-sm">
                       {issue.createdBy
                         ? `${issue.createdBy.first_Name} ${issue.createdBy.last_Name}`
@@ -328,12 +331,16 @@ export default function RaiseTickets() {
                     </td>
                     <td className="p-3 text-sm">{issue.issueTitle}</td>
                     <td className="p-3 text-sm">
-                      <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-md ${priorityClasses}`}>
+                      <span
+                        className={`inline-block px-2 py-1 text-xs font-semibold rounded-md ${priorityClasses}`}
+                      >
                         {issue.priority}
                       </span>
                     </td>
                     <td className="p-3 text-sm">
-                      <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-md ${statusClasses}`}>
+                      <span
+                        className={`inline-block px-2 py-1 text-xs font-semibold rounded-md ${statusClasses}`}
+                      >
                         {issue.issueStatus}
                       </span>
                     </td>
@@ -375,7 +382,8 @@ export default function RaiseTickets() {
           </motion.table>
           <div className="flex flex-col md:flex-row justify-between items-center p-3 gap-2 text-sm">
             <div>
-              Showing {paginatedIssues.length} of {filteredIssues.length} entries
+              Showing {paginatedIssues.length} of {filteredIssues.length}{" "}
+              entries
             </div>
             <div className="flex items-center space-x-1">
               {Array.from({ length: totalPages }, (_, i) => (

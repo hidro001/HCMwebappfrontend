@@ -8,6 +8,7 @@ import { Skeleton } from "@mui/material";
 import ViewReferralModal from "./model/ViewReferralModal";
 import UpdateStatusModal from "./model/UpdateStatusModal";
 import useReferralStore from "../../store/useReferralStore";
+import ExportButtons from "../common/PdfExcel"; // adjust path if needed
 
 const tableContainerVariants = {
   hidden: { opacity: 0 },
@@ -94,6 +95,33 @@ export default function ReferralList() {
     }
   };
 
+  // Flatten currentTableData for export
+  const exportData = currentTableData.map((item, index) => {
+    const rowIndex = (currentPage - 1) * pageSize + (index + 1);
+    return {
+      sl: String(rowIndex).padStart(2, "0"),
+      designation: item.designation,
+      department: item.department,
+      referredBy: item.referredBy,
+      candidateName: item.candidateName,
+      candidateEmail: item.candidateEmail,
+      candidateLocation: item.candidateLocation,
+      status: item.status,
+    };
+  });
+
+  // Define columns for PDF/Excel/CSV
+  const columns = [
+    { header: "S.L", dataKey: "sl" },
+    { header: "Designation", dataKey: "designation" },
+    { header: "Department", dataKey: "department" },
+    { header: "Referred By", dataKey: "referredBy" },
+    { header: "Candidate Name", dataKey: "candidateName" },
+    { header: "Candidate Email", dataKey: "candidateEmail" },
+    { header: "Candidate Location", dataKey: "candidateLocation" },
+    { header: "Status", dataKey: "status" },
+  ];
+
   return (
     <div className="px-4 py-6 bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-100 transition-colors">
       <div className="flex items-center justify-between mb-4">
@@ -105,7 +133,9 @@ export default function ReferralList() {
       <div className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow mb-4 transition-colors">
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-semibold whitespace-nowrap">Show</label>
+            <label className="text-sm font-semibold whitespace-nowrap">
+              Show
+            </label>
             <select
               className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
               value={pageSize}
@@ -157,32 +187,26 @@ export default function ReferralList() {
             <option value="Marketing">Marketing</option>
           </select>
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-300">
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-              title="Print"
-            >
-              <FaPrint size={16} />
-            </button>
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-              title="Export PDF"
-            >
-              <FaFilePdf size={16} />
-            </button>
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
-              title="Export CSV/Excel"
-            >
-              <MdOutlineFileDownload size={18} />
-            </button>
+            <ExportButtons
+              data={exportData}
+              columns={columns}
+              filename="ReferralList"
+            />
           </div>
         </div>
       </div>
-      {error && <div className="bg-red-100 text-red-800 p-3 rounded mb-4">{error}</div>}
+      {error && (
+        <div className="bg-red-100 text-red-800 p-3 rounded mb-4">{error}</div>
+      )}
       {loading ? (
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow transition-colors">
           {Array.from({ length: pageSize }).map((_, index) => (
-            <Skeleton key={index} variant="rectangular" height={40} className="mb-2" />
+            <Skeleton
+              key={index}
+              variant="rectangular"
+              height={40}
+              className="mb-2"
+            />
           ))}
         </div>
       ) : (
@@ -201,9 +225,15 @@ export default function ReferralList() {
                     <th className="p-3 text-sm font-semibold">Designation</th>
                     <th className="p-3 text-sm font-semibold">Department</th>
                     <th className="p-3 text-sm font-semibold">Referred By</th>
-                    <th className="p-3 text-sm font-semibold">Candidate Name</th>
-                    <th className="p-3 text-sm font-semibold">Candidate Email</th>
-                    <th className="p-3 text-sm font-semibold">Candidate Location</th>
+                    <th className="p-3 text-sm font-semibold">
+                      Candidate Name
+                    </th>
+                    <th className="p-3 text-sm font-semibold">
+                      Candidate Email
+                    </th>
+                    <th className="p-3 text-sm font-semibold">
+                      Candidate Location
+                    </th>
                     <th className="p-3 text-sm font-semibold">Status</th>
                     <th className="p-3 text-sm font-semibold">Action</th>
                   </tr>
@@ -232,13 +262,17 @@ export default function ReferralList() {
                         variants={tableRowVariants}
                         className="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                       >
-                        <td className="p-3 text-sm">{String(rowIndex).padStart(2, "0")}</td>
+                        <td className="p-3 text-sm">
+                          {String(rowIndex).padStart(2, "0")}
+                        </td>
                         <td className="p-3 text-sm">{item.designation}</td>
                         <td className="p-3 text-sm">{item.department}</td>
                         <td className="p-3 text-sm">{item.referredBy}</td>
                         <td className="p-3 text-sm">{item.candidateName}</td>
                         <td className="p-3 text-sm">{item.candidateEmail}</td>
-                        <td className="p-3 text-sm">{item.candidateLocation}</td>
+                        <td className="p-3 text-sm">
+                          {item.candidateLocation}
+                        </td>
                         <td className="p-3 text-sm">
                           <span className={statusClasses}>{item.status}</span>
                         </td>
@@ -258,7 +292,9 @@ export default function ReferralList() {
                             </button>
                             <button
                               className="text-red-500 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300 transition-colors"
-                              onClick={() => alert(`Delete referral ${item.id}`)}
+                              onClick={() =>
+                                alert(`Delete referral ${item.id}`)
+                              }
                             >
                               <FaTrash size={14} />
                             </button>
@@ -271,7 +307,8 @@ export default function ReferralList() {
               </motion.table>
               <div className="flex flex-col md:flex-row justify-between items-center p-3 gap-2 text-sm text-gray-600 dark:text-gray-200 transition-colors">
                 <div>
-                  Showing {currentTableData.length} of {filteredReferrals.length} entries
+                  Showing {currentTableData.length} of{" "}
+                  {filteredReferrals.length} entries
                 </div>
                 <div className="flex items-center space-x-1">
                   {Array.from({ length: totalPages }, (_, i) => (

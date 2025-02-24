@@ -312,20 +312,7 @@ export default function AllEmployeeAttendance() {
           </div>
 
           {/* Right side: Export Icons */}
-          <div className="flex items-center gap-3">
-            <button className="hover:opacity-75 transition">
-              <FaPrint size={16} className="text-teal-500" />
-            </button>
-            <button className="hover:opacity-75 transition">
-              <FaFilePdf size={16} className="text-red-500" />
-            </button>
-            <button className="hover:opacity-75 transition">
-              <FaFileCsv size={16} className="text-green-600" />
-            </button>
-            <button className="hover:opacity-75 transition">
-              <MdOutlineFileDownload size={16} className="text-blue-500" />
-            </button>
-          </div>
+          
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from "react";
 import {
   FaRegEye,
   FaPen,
@@ -10,33 +10,43 @@ import {
   FaCalendarAlt,
   FaFileAlt,
   FaSpinner,
-} from 'react-icons/fa';
+} from "react-icons/fa";
 
 // Import your custom components
-import ManagePayrollView from './ManagePayrollView';
-import ManagePayrollEdit from './ManagePayrollEdit';
-import ConfirmationDialog from '../../common/ConfirmationDialog';
+import ManagePayrollView from "./ManagePayrollView";
+import ManagePayrollEdit from "./ManagePayrollEdit";
+import ConfirmationDialog from "../../common/ConfirmationDialog";
+import ExportButtons from "../../common/PdfExcel"; // Adjust path if needed
 
 // Service calls
 import {
   fetchAllPayroll,
   fetchAllocatedDepartments,
   addPayroll,
-  getPayrollSummary
-} from '../../../service/payrollService';
+  getPayrollSummary,
+} from "../../../service/payrollService";
 
 // Utility: Converts numeric month (1-12) to text
 function getMonthName(month) {
   const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December',
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
   ];
-  return monthNames[month - 1] || 'Unknown';
+  return monthNames[month - 1] || "Unknown";
 }
 
 export default function ManagePayroll() {
   // Defaults to current month/year
-
 
   const [loading, setLoading] = useState(true);
   const today = new Date();
@@ -52,8 +62,8 @@ export default function ManagePayroll() {
   const [departmentOptions, setDepartmentOptions] = useState([]);
 
   // Filters
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState("");
 
   // Pagination
   const [pageSize, setPageSize] = useState(10);
@@ -71,20 +81,12 @@ export default function ManagePayroll() {
   // Confirmation dialog (for Delete)
   const [confirmOpen, setConfirmOpen] = useState(false);
 
-
-
-
-
   // for count
-
 
   const [summary, setSummary] = useState({
     totalEmployees: 0,
     totalPayout: 0,
-   
   });
-
-
 
   useEffect(() => {
     async function fetchSummary() {
@@ -104,12 +106,12 @@ export default function ManagePayroll() {
 
   // 1) Fetch Departments (once on mount)
   useEffect(() => {
-    const employeeId = localStorage.getItem('employeeId');
+    const employeeId = localStorage.getItem("employeeId");
     if (!employeeId) return;
 
     fetchAllocatedDepartments(employeeId)
       .then((depts) => setDepartmentOptions(depts))
-      .catch((err) => console.error('Failed to fetch departments:', err));
+      .catch((err) => console.error("Failed to fetch departments:", err));
   }, []);
 
   // 2) Fetch Payroll Data on month/year change
@@ -120,7 +122,7 @@ export default function ManagePayroll() {
         setPayrollList(data);
         setCurrentPage(1);
       } catch (error) {
-        console.error('Error fetching payroll data:', error);
+        console.error("Error fetching payroll data:", error);
       }
     };
     loadPayrollData();
@@ -189,7 +191,7 @@ export default function ManagePayroll() {
 
   // Handler for <input type="month">
   const handleMonthChange = (e) => {
-    const [yr, mo] = e.target.value.split('-');
+    const [yr, mo] = e.target.value.split("-");
     setYear(parseInt(yr, 10));
     setMonth(parseInt(mo, 10));
     setCurrentPage(1);
@@ -234,35 +236,64 @@ export default function ManagePayroll() {
     setSelectedPayroll(null);
   };
 
+  // Flatten displayedPayroll for exporting
+  const exportData = displayedPayroll.map((entry, index) => {
+    const sl = (currentPage - 1) * pageSize + (index + 1);
+    return {
+      sl,
+      empID: entry.employeeId,
+      department: entry.department,
+      month: entry.month,
+      year: entry.year,
+      amount: entry.amount,
+      deduction: entry.deduction,
+      finalSalary: entry.finalSalary,
+    };
+  });
+
+  // Define columns for PDF/Excel/CSV
+  const columns = [
+    { header: "S.L", dataKey: "sl" },
+    { header: "Employee ID", dataKey: "empID" },
+    { header: "Department", dataKey: "department" },
+    { header: "Month", dataKey: "month" },
+    { header: "Year", dataKey: "year" },
+    { header: "Amount", dataKey: "amount" },
+    { header: "Deduction", dataKey: "deduction" },
+    { header: "Final Salary", dataKey: "finalSalary" },
+  ];
+
   return (
     <div className="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen flex flex-col">
       {/* Top Banner */}
-    
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4">
-      {/* Total Employees */}
-      <div className="rounded-lg bg-blue-50 dark:bg-blue-900 p-4 border border-blue-100 dark:border-blue-800">
-        <div className="text-sm text-blue-700 dark:text-blue-300 font-semibold">
-          Total Employee
+        {/* Total Employees */}
+        <div className="rounded-lg bg-blue-50 dark:bg-blue-900 p-4 border border-blue-100 dark:border-blue-800">
+          <div className="text-sm text-blue-700 dark:text-blue-300 font-semibold">
+            Total Employee
+          </div>
+          <div className="text-2xl font-bold mt-1 text-black dark:text-white">
+            {loading ? "Loading..." : summary.totalEmployees.toLocaleString()}
+          </div>
         </div>
-        <div className="text-2xl font-bold mt-1 text-black dark:text-white">
-          {loading ? "Loading..." : summary.totalEmployees.toLocaleString()}
-        </div>
-      </div>
 
-      {/* Total Payout */}
-      <div className="rounded-lg bg-pink-50 dark:bg-pink-900 p-4 border border-pink-100 dark:border-pink-800">
-        <div className="text-sm text-pink-700 dark:text-pink-300 font-semibold">
-          Total Payout for {new Date(0, currentMonth - 1).toLocaleString("default", { month: "long" })}
+        {/* Total Payout */}
+        <div className="rounded-lg bg-pink-50 dark:bg-pink-900 p-4 border border-pink-100 dark:border-pink-800">
+          <div className="text-sm text-pink-700 dark:text-pink-300 font-semibold">
+            Total Payout for{" "}
+            {new Date(0, currentMonth - 1).toLocaleString("default", {
+              month: "long",
+            })}
+          </div>
+          <div className="text-2xl font-bold mt-1 text-black dark:text-white">
+            {loading ? "Loading..." : `₹ ${summary.totalPayout}`}
+          </div>
         </div>
-        <div className="text-2xl font-bold mt-1 text-black dark:text-white">
-          {loading ? "Loading..." : `₹ ${summary.totalPayout}`}
-        </div>
-      </div>
 
-      {/* Total Unpaid Salary */}
-      {/* <div className="rounded-lg bg-purple-50 dark:bg-purple-900 p-4 border border-purple-100 dark:border-purple-800">
+        {/* Total Unpaid Salary */}
+        {/* <div className="rounded-lg bg-purple-50 dark:bg-purple-900 p-4 border border-purple-100 dark:border-purple-800">
         <div className="text-sm text-purple-700 dark:text-purple-300 font-semibold">
           Total Unpaid Salary
         </div>
@@ -270,7 +301,7 @@ export default function ManagePayroll() {
           {loading ? "Loading..." : `₹ ${summary.totalUnpaidSalary.toFixed(2)}`}
         </div>
       </div> */}
-    </div>
+      </div>
 
       {/* Main Heading */}
       <div className="px-4 mb-2">
@@ -283,7 +314,10 @@ export default function ManagePayroll() {
       <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 px-4 mb-4">
         {/* Page Size */}
         <div className="flex items-center">
-          <label htmlFor="pageSize" className="mr-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="pageSize"
+            className="mr-2 text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Show
           </label>
           <select
@@ -337,7 +371,7 @@ export default function ManagePayroll() {
             <FaCalendarAlt className="absolute left-2 text-gray-400" />
             <input
               type="month"
-              value={`${year}-${String(month).padStart(2, '0')}`}
+              value={`${year}-${String(month).padStart(2, "0")}`}
               onChange={handleMonthChange}
               className="border border-gray-300 dark:border-gray-700 rounded-md pl-8 pr-2 py-1 text-sm focus:outline-none dark:bg-gray-900"
             />
@@ -362,62 +396,11 @@ export default function ManagePayroll() {
 
         {/* Export/Print */}
         <div className="flex items-center gap-3">
-          <button
-            title="Export CSV"
-            className="
-              w-10 h-10
-              flex items-center justify-center
-              rounded-md
-              bg-green-100 text-green-600
-              hover:bg-green-200
-              dark:bg-green-900 dark:text-green-200
-              dark:hover:bg-green-800
-            "
-          >
-            <FaFileAlt className="w-5 h-5" />
-          </button>
-          <button
-            title="Export Excel"
-            className="
-              w-10 h-10
-              flex items-center justify-center
-              rounded-md
-              bg-purple-100 text-purple-600
-              hover:bg-purple-200
-              dark:bg-purple-900 dark:text-purple-200
-              dark:hover:bg-purple-800
-            "
-          >
-            <FaFileExcel className="w-5 h-5" />
-          </button>
-          <button
-            title="Export PDF"
-            className="
-              w-10 h-10
-              flex items-center justify-center
-              rounded-md
-              bg-red-100 text-red-600
-              hover:bg-red-200
-              dark:bg-red-900 dark:text-red-200
-              dark:hover:bg-red-800
-            "
-          >
-            <FaFilePdf className="w-5 h-5" />
-          </button>
-          <button
-            title="Print"
-            className="
-              w-10 h-10
-              flex items-center justify-center
-              rounded-md
-              bg-orange-100 text-orange-600
-              hover:bg-orange-200
-              dark:bg-orange-900 dark:text-orange-200
-              dark:hover:bg-orange-800
-            "
-          >
-            <FaPrint className="w-5 h-5" />
-          </button>
+          <ExportButtons
+            data={exportData}
+            columns={columns}
+            filename="ManagePayroll"
+          />
         </div>
 
         {/* Processing Payroll (Confirmation Dialog) */}
@@ -427,7 +410,7 @@ export default function ManagePayroll() {
           className={`
             bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-md
             flex items-center justify-center gap-2
-            ${isProcessing ? 'opacity-70 cursor-not-allowed' : ''}
+            ${isProcessing ? "opacity-70 cursor-not-allowed" : ""}
           `}
         >
           {isProcessing ? (
@@ -436,7 +419,7 @@ export default function ManagePayroll() {
               Processing...
             </>
           ) : (
-            'Processing Payroll'
+            "Processing Payroll"
           )}
         </button>
       </div>
@@ -453,13 +436,18 @@ export default function ManagePayroll() {
               <th className="px-4 py-2 text-left font-semibold">Year</th>
               <th className="px-4 py-2 text-left font-semibold">Amount</th>
               <th className="px-4 py-2 text-left font-semibold">Deduction</th>
-              <th className="px-4 py-2 text-left font-semibold">Final Salary</th>
+              <th className="px-4 py-2 text-left font-semibold">
+                Final Salary
+              </th>
               <th className="px-4 py-2 text-left font-semibold">Action</th>
             </tr>
           </thead>
           <tbody>
             {displayedPayroll.map((entry, index) => (
-              <tr key={entry._id} className="border-b last:border-0 dark:border-gray-700">
+              <tr
+                key={entry._id}
+                className="border-b last:border-0 dark:border-gray-700"
+              >
                 <td className="px-4 py-2">
                   {(currentPage - 1) * pageSize + (index + 1)}
                 </td>
@@ -513,7 +501,8 @@ export default function ManagePayroll() {
       {/* Pagination */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4">
         <span className="text-sm mb-2 sm:mb-0">
-          Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of {totalItems} entries
+          Showing {startIndex + 1} to {Math.min(endIndex, totalItems)} of{" "}
+          {totalItems} entries
         </span>
         <div className="flex items-center gap-2">
           <button
@@ -531,7 +520,7 @@ export default function ManagePayroll() {
                 onClick={() => goToPage(pageNum)}
                 className={`
                   px-3 py-1 border rounded
-                  ${currentPage === pageNum ? 'bg-blue-500 text-white' : ''}
+                  ${currentPage === pageNum ? "bg-blue-500 text-white" : ""}
                 `}
               >
                 {pageNum}
@@ -554,13 +543,12 @@ export default function ManagePayroll() {
         onClose={handleCloseViewModal}
         payrollData={selectedPayroll}
       />
-    <ManagePayrollEdit
-  isOpen={isEditModalOpen}
-  onClose={handleCloseEditModal}
-  payrollData={selectedPayroll}
-  onRefresh={() => fetchAllPayroll(month, year).then(setPayrollList)}
-/>
-
+      <ManagePayrollEdit
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEditModal}
+        payrollData={selectedPayroll}
+        onRefresh={() => fetchAllPayroll(month, year).then(setPayrollList)}
+      />
 
       {/* ConfirmationDialog for Processing Payroll */}
       <ConfirmationDialog

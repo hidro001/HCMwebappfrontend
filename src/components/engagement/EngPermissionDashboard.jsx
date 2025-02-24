@@ -1,7 +1,5 @@
-
-
-import  { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
+import { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import {
   Box,
   Button,
@@ -30,15 +28,10 @@ import {
   Paper,
   Avatar,
   ListItemIcon,
-} from '@mui/material';
-import {
-  Delete,
-  Edit,
-  Block,
-  Check,
-} from '@mui/icons-material';
-import { toast } from 'react-toastify';
-import { useTheme } from '@mui/material/styles';
+} from "@mui/material";
+import { Delete, Edit, Block, Check } from "@mui/icons-material";
+import { toast } from "react-toastify";
+import { useTheme } from "@mui/material/styles";
 
 // Import services
 import {
@@ -54,18 +47,18 @@ import {
   assignRoleToUser,
   banUser,
   unbanUser,
-} from '../../service/service';
-import axiosInstance from '../../service/axiosInstance';
+} from "../../service/service";
+import axiosInstance from "../../service/axiosInstance";
 
 // Import stores
-import useAuthStore from '../../store/store';
-import useEngagementStore from '../../store/engagementStore';
+import useAuthStore from "../../store/store";
+import useEngagementStore from "../../store/engagementStore";
 
 // Import ConfirmationDialog
-import ConfirmationDialog from '../common/ConfirmationDialog'; // Adjust the path as necessary
+import ConfirmationDialog from "../common/ConfirmationDialog"; // Adjust the path as necessary
 
 // Import Socket Context
-import { useSocket } from '../../contexts/SocketContext'; // Adjust the path
+import { useSocket } from "../../contexts/SocketContext"; // Adjust the path
 
 const EngPermissionDashboard = () => {
   const theme = useTheme();
@@ -76,39 +69,48 @@ const EngPermissionDashboard = () => {
 
   // --- Permission Management States ---
   const [permissions, setPermissions] = useState([]);
-  const [newPermissionName, setNewPermissionName] = useState('');
-  const [newPermissionDescription, setNewPermissionDescription] = useState('');
-  const [editPermissionDialogOpen, setEditPermissionDialogOpen] = useState(false);
+  const [newPermissionName, setNewPermissionName] = useState("");
+  const [newPermissionDescription, setNewPermissionDescription] = useState("");
+  const [editPermissionDialogOpen, setEditPermissionDialogOpen] =
+    useState(false);
   const [currentPermission, setCurrentPermission] = useState(null);
-  const [editedPermissionDescription, setEditedPermissionDescription] = useState('');
+  const [editedPermissionDescription, setEditedPermissionDescription] =
+    useState("");
 
   // --- Role Management States ---
   const [roles, setRoles] = useState([]);
-  const [newRoleName, setNewRoleName] = useState('');
-  const [selectedPermissionsForRole, setSelectedPermissionsForRole] = useState([]);
+  const [newRoleName, setNewRoleName] = useState("");
+  const [selectedPermissionsForRole, setSelectedPermissionsForRole] = useState(
+    []
+  );
   const [editRoleDialogOpen, setEditRoleDialogOpen] = useState(false);
   const [currentRole, setCurrentRole] = useState(null);
-  const [editedRoleName, setEditedRoleName] = useState('');
+  const [editedRoleName, setEditedRoleName] = useState("");
   const [editedRolePermissions, setEditedRolePermissions] = useState([]);
 
   // --- User Moderation States ---
   const [users, setUsers] = useState([]);
-  const [selectedRoleForUser, setSelectedRoleForUser] = useState('');
+  const [selectedRoleForUser, setSelectedRoleForUser] = useState("");
   const [editUserRoleDialogOpen, setEditUserRoleDialogOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+
+  // --- Search State for Users ---
+  const [searchTerm, setSearchTerm] = useState("");
 
   // --- Confirmation Dialog States ---
   const [confirmationDialog, setConfirmationDialog] = useState({
     open: false,
-    title: '',
-    message: '',
+    title: "",
+    message: "",
     onConfirm: null,
   });
 
   // --- Common States ---
   const user = useAuthStore((state) => state);
   const userId = user._id || user.employeeId;
-  const userPermissions = useEngagementStore((state) => state.permissions || []);
+  const userPermissions = useEngagementStore(
+    (state) => state.permissions || []
+  );
 
   // Fetch initial data
   useEffect(() => {
@@ -123,14 +125,16 @@ const EngPermissionDashboard = () => {
       const data = await getPermissions();
       setPermissions(data);
     } catch (error) {
-      console.error('Error fetching permissions:', error);
-      toast.error(error.response?.data?.message || 'Failed to fetch permissions.');
+      console.error("Error fetching permissions:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to fetch permissions."
+      );
     }
   };
 
   const handleCreatePermission = async () => {
     if (!newPermissionName || !newPermissionDescription) {
-      toast.error('Please fill all fields.');
+      toast.error("Please fill all fields.");
       return;
     }
     try {
@@ -139,29 +143,33 @@ const EngPermissionDashboard = () => {
         description: newPermissionDescription,
       };
       await createPermission(permissionData);
-      toast.success('Permission created successfully.');
-      setNewPermissionName('');
-      setNewPermissionDescription('');
+      toast.success("Permission created successfully.");
+      setNewPermissionName("");
+      setNewPermissionDescription("");
       fetchPermissions();
     } catch (error) {
-      console.error('Error creating permission:', error);
-      toast.error(error.response?.data?.message || 'Failed to create permission.');
+      console.error("Error creating permission:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to create permission."
+      );
     }
   };
 
   const handleDeletePermission = (permissionId, permissionName) => {
     handleOpenConfirmationDialog(
-      'Delete Permission',
+      "Delete Permission",
       `Are you sure you want to delete the permission "${permissionName}"? This action cannot be undone.`,
       async () => {
         try {
           await deletePermission(permissionId);
-          toast.success('Permission deleted successfully.');
+          toast.success("Permission deleted successfully.");
           fetchPermissions();
           handleCloseConfirmationDialog();
         } catch (error) {
-          console.error('Error deleting permission:', error);
-          toast.error(error.response?.data?.message || 'Failed to delete permission.');
+          console.error("Error deleting permission:", error);
+          toast.error(
+            error.response?.data?.message || "Failed to delete permission."
+          );
           handleCloseConfirmationDialog();
         }
       }
@@ -176,7 +184,7 @@ const EngPermissionDashboard = () => {
 
   const handleUpdatePermission = async () => {
     if (!editedPermissionDescription) {
-      toast.error('Permission description is required.');
+      toast.error("Permission description is required.");
       return;
     }
     try {
@@ -184,14 +192,16 @@ const EngPermissionDashboard = () => {
         description: editedPermissionDescription,
       };
       await updatePermission(currentPermission._id, updatedData);
-      toast.success('Permission updated successfully.');
+      toast.success("Permission updated successfully.");
       setEditPermissionDialogOpen(false);
       setCurrentPermission(null);
-      setEditedPermissionDescription('');
+      setEditedPermissionDescription("");
       fetchPermissions();
     } catch (error) {
-      console.error('Error updating permission:', error);
-      toast.error(error.response?.data?.message || 'Failed to update permission.');
+      console.error("Error updating permission:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to update permission."
+      );
     }
   };
 
@@ -201,14 +211,14 @@ const EngPermissionDashboard = () => {
       const data = await getRoles();
       setRoles(data);
     } catch (error) {
-      console.error('Error fetching roles:', error);
-      toast.error(error.response?.data?.message || 'Failed to fetch roles.');
+      console.error("Error fetching roles:", error);
+      toast.error(error.response?.data?.message || "Failed to fetch roles.");
     }
   };
 
   const handleCreateRole = async () => {
     if (!newRoleName) {
-      toast.error('Role name is required.');
+      toast.error("Role name is required.");
       return;
     }
     try {
@@ -217,29 +227,31 @@ const EngPermissionDashboard = () => {
         permissions: selectedPermissionsForRole,
       };
       await createRole(roleData);
-      toast.success('Role created successfully.');
-      setNewRoleName('');
+      toast.success("Role created successfully.");
+      setNewRoleName("");
       setSelectedPermissionsForRole([]);
       fetchRoles();
     } catch (error) {
-      console.error('Error creating role:', error);
-      toast.error(error.response?.data?.message || 'Failed to create role.');
+      console.error("Error creating role:", error);
+      toast.error(error.response?.data?.message || "Failed to create role.");
     }
   };
 
   const handleDeleteRole = (roleId, roleName) => {
     handleOpenConfirmationDialog(
-      'Delete Role',
+      "Delete Role",
       `Are you sure you want to delete the role "${roleName}"? This action cannot be undone.`,
       async () => {
         try {
           await deleteRole(roleId);
-          toast.success('Role deleted successfully.');
+          toast.success("Role deleted successfully.");
           fetchRoles();
           handleCloseConfirmationDialog();
         } catch (error) {
-          console.error('Error deleting role:', error);
-          toast.error(error.response?.data?.message || 'Failed to delete role.');
+          console.error("Error deleting role:", error);
+          toast.error(
+            error.response?.data?.message || "Failed to delete role."
+          );
           handleCloseConfirmationDialog();
         }
       }
@@ -255,7 +267,7 @@ const EngPermissionDashboard = () => {
 
   const handleUpdateRole = async () => {
     if (!editedRoleName) {
-      toast.error('Role name is required.');
+      toast.error("Role name is required.");
       return;
     }
     try {
@@ -264,15 +276,15 @@ const EngPermissionDashboard = () => {
         permissions: editedRolePermissions,
       };
       await updateRole(currentRole._id, updatedData);
-      toast.success('Role updated successfully.');
+      toast.success("Role updated successfully.");
       setEditRoleDialogOpen(false);
       setCurrentRole(null);
-      setEditedRoleName('');
+      setEditedRoleName("");
       setEditedRolePermissions([]);
       fetchRoles();
     } catch (error) {
-      console.error('Error updating role:', error);
-      toast.error(error.response?.data?.message || 'Failed to update role.');
+      console.error("Error updating role:", error);
+      toast.error(error.response?.data?.message || "Failed to update role.");
     }
   };
 
@@ -302,29 +314,30 @@ const EngPermissionDashboard = () => {
       const response = await getUsers(); // response = { success: true, message: "...", data: [...] }
       if (response.success) {
         setUsers(response.data);
-        toast.success('Users fetched successfully.');
       } else {
-        toast.error(response.message || 'Failed to fetch users.');
+        toast.error(response.message || "Failed to fetch users.");
       }
     } catch (error) {
-      console.error('Error fetching users:', error);
-      toast.error(error.response?.data?.message || 'Failed to fetch users.');
+      console.error("Error fetching users:", error);
+      toast.error(error.response?.data?.message || "Failed to fetch users.");
     }
   };
 
   const handleAssignRole = (userId, roleName, userName) => {
     handleOpenConfirmationDialog(
-      'Assign Role',
+      "Assign Role",
       `Are you sure you want to assign the role "${roleName}" to "${userName}"?`,
       async () => {
         try {
           await assignRoleToUser(userId, roleName);
-          toast.success('Role assigned successfully.');
+          toast.success("Role assigned successfully.");
           fetchUsers();
           handleCloseConfirmationDialog();
         } catch (error) {
-          console.error('Error assigning role:', error);
-          toast.error(error.response?.data?.message || 'Failed to assign role.');
+          console.error("Error assigning role:", error);
+          toast.error(
+            error.response?.data?.message || "Failed to assign role."
+          );
           handleCloseConfirmationDialog();
         }
       }
@@ -333,17 +346,17 @@ const EngPermissionDashboard = () => {
 
   const handleBanUser = (userId, userName) => {
     handleOpenConfirmationDialog(
-      'Ban User',
+      "Ban User",
       `Are you sure you want to ban "${userName}" from engagement?`,
       async () => {
         try {
           await banUser(userId);
-          toast.success('User banned from engagement.');
+          toast.success("User banned from engagement.");
           fetchUsers();
           handleCloseConfirmationDialog();
         } catch (error) {
-          console.error('Error banning user:', error);
-          toast.error(error.response?.data?.message || 'Failed to ban user.');
+          console.error("Error banning user:", error);
+          toast.error(error.response?.data?.message || "Failed to ban user.");
           handleCloseConfirmationDialog();
         }
       }
@@ -352,17 +365,17 @@ const EngPermissionDashboard = () => {
 
   const handleUnbanUser = (userId, userName) => {
     handleOpenConfirmationDialog(
-      'Unban User',
+      "Unban User",
       `Are you sure you want to unban "${userName}" from engagement?`,
       async () => {
         try {
           await unbanUser(userId);
-          toast.success('User unbanned from engagement.');
+          toast.success("User unbanned from engagement.");
           fetchUsers();
           handleCloseConfirmationDialog();
         } catch (error) {
-          console.error('Error unbanning user:', error);
-          toast.error(error.response?.data?.message || 'Failed to unban user.');
+          console.error("Error unbanning user:", error);
+          toast.error(error.response?.data?.message || "Failed to unban user.");
           handleCloseConfirmationDialog();
         }
       }
@@ -371,23 +384,27 @@ const EngPermissionDashboard = () => {
 
   const handleOpenEditUserRoleDialog = (user) => {
     setCurrentUser(user);
-    setSelectedRoleForUser(user.permission_role || '');
+    setSelectedRoleForUser(user.permission_role || "");
     setEditUserRoleDialogOpen(true);
   };
 
   const handleCloseEditUserRoleDialog = () => {
     setCurrentUser(null);
-    setSelectedRoleForUser('');
+    setSelectedRoleForUser("");
     setEditUserRoleDialogOpen(false);
   };
 
   const handleUpdateUserRole = () => {
     if (!selectedRoleForUser) {
-      toast.error('Please select a role.');
+      toast.error("Please select a role.");
       return;
     }
     // Pass userName for confirmation message
-    handleAssignRole(currentUser._id, selectedRoleForUser, `${currentUser.first_Name} ${currentUser.last_Name}`);
+    handleAssignRole(
+      currentUser._id,
+      selectedRoleForUser,
+      `${currentUser.first_Name} ${currentUser.last_Name}`
+    );
     handleCloseEditUserRoleDialog();
   };
 
@@ -404,8 +421,8 @@ const EngPermissionDashboard = () => {
   const handleCloseConfirmationDialog = () => {
     setConfirmationDialog({
       open: false,
-      title: '',
-      message: '',
+      title: "",
+      message: "",
       onConfirm: null,
     });
   };
@@ -420,37 +437,41 @@ const EngPermissionDashboard = () => {
     if (!socket) return;
 
     // Role Events
-    socket.on('newRole', (role) => {
+    socket.on("newRole", (role) => {
       setRoles((prevRoles) => [...prevRoles, role]);
       toast.info(`New role "${role.name}" has been created.`);
     });
 
-    socket.on('updateRole', (updatedRole) => {
+    socket.on("updateRole", (updatedRole) => {
       setRoles((prevRoles) =>
-        prevRoles.map((role) => (role._id === updatedRole._id ? updatedRole : role))
+        prevRoles.map((role) =>
+          role._id === updatedRole._id ? updatedRole : role
+        )
       );
       toast.info(`Role "${updatedRole.name}" has been updated.`);
     });
 
-    socket.on('deleteRole', ({ roleId }) => {
+    socket.on("deleteRole", ({ roleId }) => {
       setRoles((prevRoles) => prevRoles.filter((role) => role._id !== roleId));
       toast.info(`A role has been deleted.`);
     });
 
     // Permission Events
-    socket.on('newPermission', (permission) => {
+    socket.on("newPermission", (permission) => {
       setPermissions((prevPermissions) => [...prevPermissions, permission]);
       toast.info(`New permission "${permission.name}" has been created.`);
     });
 
-    socket.on('updatePermission', (updatedPermission) => {
+    socket.on("updatePermission", (updatedPermission) => {
       setPermissions((prevPermissions) =>
-        prevPermissions.map((perm) => (perm._id === updatedPermission._id ? updatedPermission : perm))
+        prevPermissions.map((perm) =>
+          perm._id === updatedPermission._id ? updatedPermission : perm
+        )
       );
       toast.info(`Permission "${updatedPermission.name}" has been updated.`);
     });
 
-    socket.on('deletePermission', ({ permissionId }) => {
+    socket.on("deletePermission", ({ permissionId }) => {
       setPermissions((prevPermissions) =>
         prevPermissions.filter((perm) => perm._id !== permissionId)
       );
@@ -459,14 +480,24 @@ const EngPermissionDashboard = () => {
 
     // Cleanup on unmount
     return () => {
-      socket.off('newRole');
-      socket.off('updateRole');
-      socket.off('deleteRole');
-      socket.off('newPermission');
-      socket.off('updatePermission');
-      socket.off('deletePermission');
+      socket.off("newRole");
+      socket.off("updateRole");
+      socket.off("deleteRole");
+      socket.off("newPermission");
+      socket.off("updatePermission");
+      socket.off("deletePermission");
     };
   }, [socket]);
+
+  // --- Filtered users based on search term ---
+  const filteredUsers = users.filter((userItem) => {
+    const fullName = `${userItem.first_Name} ${userItem.last_Name}`;
+    const role = userItem.permission_role || "";
+    return (
+      fullName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      role.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  });
 
   return (
     <Box p={4}>
@@ -503,46 +534,11 @@ const EngPermissionDashboard = () => {
           </Typography>
           <Divider sx={{ mb: 2 }} />
 
-          {/* Create Permission */}
-          <Paper elevation={3} sx={{ p: 3, mb: 4, backgroundColor: 'background.paper' }}>
-            <Typography variant="h6" color="text.primary">
-              Create New Permission
-            </Typography>
-            <Grid container spacing={2} mt={1}>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label="Permission Name"
-                  value={newPermissionName}
-                  onChange={(e) => setNewPermissionName(e.target.value)}
-                  variant="outlined"
-                  fullWidth
-                  color="primary"
-                />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <TextField
-                  label="Description"
-                  value={newPermissionDescription}
-                  onChange={(e) => setNewPermissionDescription(e.target.value)}
-                  variant="outlined"
-                  fullWidth
-                  color="primary"
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleCreatePermission}
-                >
-                  Create Permission
-                </Button>
-              </Grid>
-            </Grid>
-          </Paper>
-
           {/* Permissions List */}
-          <Paper elevation={3} sx={{ p: 3, backgroundColor: 'background.paper' }}>
+          <Paper
+            elevation={3}
+            sx={{ p: 3, backgroundColor: "background.paper" }}
+          >
             <Typography variant="h6" color="text.primary">
               Existing Permissions
             </Typography>
@@ -556,15 +552,17 @@ const EngPermissionDashboard = () => {
                         edge="end"
                         aria-label="edit"
                         onClick={() => handleEditPermission(perm)}
-                        sx={{ color: 'primary.main' }}
+                        sx={{ color: "primary.main" }}
                       >
                         <Edit />
                       </IconButton>
                       <IconButton
                         edge="end"
                         aria-label="delete"
-                        onClick={() => handleDeletePermission(perm._id, perm.name)}
-                        sx={{ color: 'error.main' }}
+                        onClick={() =>
+                          handleDeletePermission(perm._id, perm.name)
+                        }
+                        sx={{ color: "error.main" }}
                       >
                         <Delete />
                       </IconButton>
@@ -574,8 +572,8 @@ const EngPermissionDashboard = () => {
                   <ListItemText
                     primary={perm.name}
                     secondary={perm.description}
-                    primaryTypographyProps={{ color: 'text.primary' }}
-                    secondaryTypographyProps={{ color: 'text.secondary' }}
+                    primaryTypographyProps={{ color: "text.primary" }}
+                    secondaryTypographyProps={{ color: "text.secondary" }}
                   />
                 </ListItem>
               ))}
@@ -593,7 +591,10 @@ const EngPermissionDashboard = () => {
           <Divider sx={{ mb: 2 }} />
 
           {/* Create Role */}
-          <Paper elevation={3} sx={{ p: 3, mb: 4, backgroundColor: 'background.paper' }}>
+          <Paper
+            elevation={3}
+            sx={{ p: 3, mb: 4, backgroundColor: "background.paper" }}
+          >
             <Typography variant="h6" color="text.primary">
               Create New Role
             </Typography>
@@ -609,7 +610,11 @@ const EngPermissionDashboard = () => {
                 />
               </Grid>
               <Grid item xs={12} md={6}>
-                <Typography variant="subtitle1" gutterBottom color="text.primary">
+                <Typography
+                  variant="subtitle1"
+                  gutterBottom
+                  color="text.primary"
+                >
                   Select Permissions:
                 </Typography>
                 <Box display="flex" flexWrap="wrap">
@@ -618,9 +623,14 @@ const EngPermissionDashboard = () => {
                       key={perm._id}
                       control={
                         <Checkbox
-                          checked={selectedPermissionsForRole.includes(perm.name)}
+                          checked={selectedPermissionsForRole.includes(
+                            perm.name
+                          )}
                           onChange={(e) =>
-                            handlePermissionChangeForRole(perm.name, e.target.checked)
+                            handlePermissionChangeForRole(
+                              perm.name,
+                              e.target.checked
+                            )
                           }
                           name={perm.name}
                           color="primary"
@@ -645,7 +655,10 @@ const EngPermissionDashboard = () => {
           </Paper>
 
           {/* Roles List */}
-          <Paper elevation={3} sx={{ p: 3, backgroundColor: 'background.paper' }}>
+          <Paper
+            elevation={3}
+            sx={{ p: 3, backgroundColor: "background.paper" }}
+          >
             <Typography variant="h6" color="text.primary">
               Existing Roles
             </Typography>
@@ -659,7 +672,7 @@ const EngPermissionDashboard = () => {
                         edge="end"
                         aria-label="edit"
                         onClick={() => handleEditRole(role)}
-                        sx={{ color: 'primary.main' }}
+                        sx={{ color: "primary.main" }}
                       >
                         <Edit />
                       </IconButton>
@@ -667,7 +680,7 @@ const EngPermissionDashboard = () => {
                         edge="end"
                         aria-label="delete"
                         onClick={() => handleDeleteRole(role._id, role.name)}
-                        sx={{ color: 'error.main' }}
+                        sx={{ color: "error.main" }}
                       >
                         <Delete />
                       </IconButton>
@@ -676,9 +689,9 @@ const EngPermissionDashboard = () => {
                 >
                   <ListItemText
                     primary={role.name}
-                    secondary={`Permissions: ${role.permissions.join(', ')}`}
-                    primaryTypographyProps={{ color: 'text.primary' }}
-                    secondaryTypographyProps={{ color: 'text.secondary' }}
+                    secondary={`Permissions: ${role.permissions.join(", ")}`}
+                    primaryTypographyProps={{ color: "text.primary" }}
+                    secondaryTypographyProps={{ color: "text.secondary" }}
                   />
                 </ListItem>
               ))}
@@ -695,16 +708,31 @@ const EngPermissionDashboard = () => {
           </Typography>
           <Divider sx={{ mb: 2 }} />
 
+          {/* Search Field */}
+          <Box sx={{ mb: 2 }}>
+            <TextField
+              label="Search Users by Name or Role"
+              variant="outlined"
+              fullWidth
+              color="primary"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </Box>
+
           {/* Users List */}
-          <Paper elevation={3} sx={{ p: 3, backgroundColor: 'background.paper' }}>
+          <Paper
+            elevation={3}
+            sx={{ p: 3, backgroundColor: "background.paper" }}
+          >
             <Typography variant="h6" color="text.primary">
               Users
             </Typography>
             <List>
-              {users.length === 0 ? (
+              {filteredUsers.length === 0 ? (
                 <Typography>No users found.</Typography>
               ) : (
-                users.map((userItem) => (
+                filteredUsers.map((userItem) => (
                   <ListItem
                     key={userItem._id}
                     secondaryAction={
@@ -713,7 +741,7 @@ const EngPermissionDashboard = () => {
                           edge="end"
                           aria-label="edit"
                           onClick={() => handleOpenEditUserRoleDialog(userItem)}
-                          sx={{ color: 'primary.main' }}
+                          sx={{ color: "primary.main" }}
                         >
                           <Edit />
                         </IconButton>
@@ -721,8 +749,13 @@ const EngPermissionDashboard = () => {
                           <IconButton
                             edge="end"
                             aria-label="ban"
-                            onClick={() => handleBanUser(userItem._id, `${userItem.first_Name} ${userItem.last_Name}`)}
-                            sx={{ color: 'error.main' }}
+                            onClick={() =>
+                              handleBanUser(
+                                userItem._id,
+                                `${userItem.first_Name} ${userItem.last_Name}`
+                              )
+                            }
+                            sx={{ color: "error.main" }}
                           >
                             <Block />
                           </IconButton>
@@ -730,8 +763,13 @@ const EngPermissionDashboard = () => {
                           <IconButton
                             edge="end"
                             aria-label="unban"
-                            onClick={() => handleUnbanUser(userItem._id, `${userItem.first_Name} ${userItem.last_Name}`)}
-                            sx={{ color: 'success.main' }}
+                            onClick={() =>
+                              handleUnbanUser(
+                                userItem._id,
+                                `${userItem.first_Name} ${userItem.last_Name}`
+                              )
+                            }
+                            sx={{ color: "success.main" }}
                           >
                             <Check />
                           </IconButton>
@@ -744,7 +782,7 @@ const EngPermissionDashboard = () => {
                         src={
                           userItem.user_Avatar ||
                           `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                            userItem.first_Name + ' ' + userItem.last_Name
+                            userItem.first_Name + " " + userItem.last_Name
                           )}`
                         }
                         alt={`${userItem.first_Name} ${userItem.last_Name}`}
@@ -752,11 +790,11 @@ const EngPermissionDashboard = () => {
                     </ListItemIcon>
                     <ListItemText
                       primary={`${userItem.first_Name} ${userItem.last_Name}`}
-                      secondary={`Role: ${userItem.permission_role || 'N/A'} | Active: ${
-                        userItem.isActive ? 'Yes' : 'No'
-                      }`}
-                      primaryTypographyProps={{ color: 'text.primary' }}
-                      secondaryTypographyProps={{ color: 'text.secondary' }}
+                      secondary={`Role: ${
+                        userItem.permission_role || "N/A"
+                      } | Active: ${userItem.isActive ? "Yes" : "No"}`}
+                      primaryTypographyProps={{ color: "text.primary" }}
+                      secondaryTypographyProps={{ color: "text.secondary" }}
                     />
                   </ListItem>
                 ))
@@ -791,7 +829,10 @@ const EngPermissionDashboard = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditPermissionDialogOpen(false)} color="secondary">
+          <Button
+            onClick={() => setEditPermissionDialogOpen(false)}
+            color="secondary"
+          >
             Cancel
           </Button>
           <Button onClick={handleUpdatePermission} color="primary">
@@ -829,7 +870,10 @@ const EngPermissionDashboard = () => {
                       <Checkbox
                         checked={editedRolePermissions.includes(perm.name)}
                         onChange={(e) =>
-                          handleEditPermissionChangeForRole(perm.name, e.target.checked)
+                          handleEditPermissionChangeForRole(
+                            perm.name,
+                            e.target.checked
+                          )
                         }
                         name={perm.name}
                         color="primary"
@@ -844,7 +888,10 @@ const EngPermissionDashboard = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditRoleDialogOpen(false)} color="secondary">
+          <Button
+            onClick={() => setEditRoleDialogOpen(false)}
+            color="secondary"
+          >
             Cancel
           </Button>
           <Button onClick={handleUpdateRole} color="primary">
@@ -882,7 +929,10 @@ const EngPermissionDashboard = () => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditUserRoleDialogOpen(false)} color="secondary">
+          <Button
+            onClick={() => setEditUserRoleDialogOpen(false)}
+            color="secondary"
+          >
             Cancel
           </Button>
           <Button onClick={handleUpdateUserRole} color="primary">
@@ -930,7 +980,7 @@ TabPanel.propTypes = {
 const a11yProps = (index) => {
   return {
     id: `admin-dashboard-tab-${index}`,
-    'aria-controls': `admin-dashboard-tabpanel-${index}`,
+    "aria-controls": `admin-dashboard-tabpanel-${index}`,
   };
 };
 

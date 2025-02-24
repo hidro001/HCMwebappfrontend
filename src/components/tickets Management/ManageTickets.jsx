@@ -9,6 +9,7 @@ import TicketFormModal from "./model/TicketFormModal";
 import TicketDetailsModal from "./model/TicketDetailsModal";
 import ConfirmationDialog from "../common/ConfirmationDialog";
 import useIssuesStore from "../../store/useIssuesStore";
+import ExportButtons from "../common/PdfExcel"; // Adjust path if needed
 
 const tableContainerVariants = {
   hidden: { opacity: 0 },
@@ -155,6 +156,35 @@ export default function ManageTickets() {
     setCurrentPage(page);
   };
 
+  // Flatten paginatedIssues for exporting
+  const exportData = paginatedIssues.map((issue, index) => {
+    const globalIndex = (currentPage - 1) * pageSize + (index + 1);
+    return {
+      sl: String(globalIndex).padStart(2, "0"),
+      empID: issue.createdBy?.employee_Id || "--",
+      name: issue.createdBy
+        ? `${issue.createdBy.first_Name} ${issue.createdBy.last_Name}`
+        : "Unknown",
+      title: issue.issueTitle,
+      priority: issue.priority,
+      status: issue.issueStatus,
+      department: issue.assignedTo || "--",
+      createdOn: new Date(issue.createdAt).toLocaleDateString("en-GB"),
+    };
+  });
+
+  // Define columns
+  const columns = [
+    { header: "S.L", dataKey: "sl" },
+    { header: "Emp ID", dataKey: "empID" },
+    { header: "Name", dataKey: "name" },
+    { header: "Title", dataKey: "title" },
+    { header: "Priority", dataKey: "priority" },
+    { header: "Status", dataKey: "status" },
+    { header: "Department", dataKey: "department" },
+    { header: "Created On", dataKey: "createdOn" },
+  ];
+
   return (
     <div className="mx-auto px-4 bg-bg-primary transition-colors text-text-primary">
       <h1 className="text-2xl font-bold mb-2">Employees Tickets</h1>
@@ -228,24 +258,11 @@ export default function ManageTickets() {
             <option value="Resolved">Resolved</option>
           </select>
           <div className="flex items-center gap-4 text-gray-500 dark:text-gray-300">
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-              title="Print"
-            >
-              <FaPrint size={18} />
-            </button>
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-              title="Export to PDF"
-            >
-              <FaFilePdf size={18} />
-            </button>
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-              title="Export CSV/Excel"
-            >
-              <MdOutlineFileDownload size={20} />
-            </button>
+            <ExportButtons
+              data={exportData}
+              columns={columns}
+              filename="ManageTickets"
+            />
           </div>
         </div>
       </div>

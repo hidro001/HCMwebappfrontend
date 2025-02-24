@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   FaRegEye,
   FaPen,
@@ -9,19 +9,23 @@ import {
   FaSearch,
   FaCalendarAlt,
   FaFileAlt,
-} from 'react-icons/fa';
+} from "react-icons/fa";
+import ExportButtons from "../../common/PdfExcel"; // Adjust path if needed
 
 // Hypothetical service functions
-import { fetchAllRequests, getDepartment } from '../../../service/payrollService';
+import {
+  fetchAllRequests,
+  getDepartment,
+} from "../../../service/payrollService";
 
 // Tab components
-import HikeRequests from './hike-requests/HikeRequests';
-import AdvanceRequests from './advance-requests/AdvanceRequests';
-import ReimbursementRequests from './reimbursement-requests/ReimbursementRequests';
-import LoanRequests from './loan-requests/LoanRequests';
+import HikeRequests from "./hike-requests/HikeRequests";
+import AdvanceRequests from "./advance-requests/AdvanceRequests";
+import ReimbursementRequests from "./reimbursement-requests/ReimbursementRequests";
+import LoanRequests from "./loan-requests/LoanRequests";
 
 export default function ManageClaim() {
-  const [activeTab, setActiveTab] = useState('hike');
+  const [activeTab, setActiveTab] = useState("hike");
   const [allRequests, setAllRequests] = useState([]);
   const [filteredRequests, setFilteredRequests] = useState([]);
 
@@ -31,11 +35,13 @@ export default function ManageClaim() {
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const today = new Date();
   const currentMonth = today.getMonth() + 1;
   const currentYear = today.getFullYear();
-  const [month, setMonth] = useState(`${currentYear}-${String(currentMonth).padStart(2, "0")}`);
+  const [month, setMonth] = useState(
+    `${currentYear}-${String(currentMonth).padStart(2, "0")}`
+  );
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,7 +54,7 @@ export default function ManageClaim() {
         const data = await fetchAllRequests();
         setAllRequests(data);
       } catch (error) {
-        console.error('Error fetching requests:', error);
+        console.error("Error fetching requests:", error);
       }
     }
     loadRequests();
@@ -75,10 +81,10 @@ export default function ManageClaim() {
 
     // Filter by active tab
     requests = requests.filter((r) => {
-      if (activeTab === 'hike') return r.type === 'Hike';
-      if (activeTab === 'advance') return r.type === 'Advance';
-      if (activeTab === 'reimbursement') return r.type === 'Reimbursement';
-      if (activeTab === 'loan') return r.type === 'Loan';
+      if (activeTab === "hike") return r.type === "Hike";
+      if (activeTab === "advance") return r.type === "Advance";
+      if (activeTab === "reimbursement") return r.type === "Reimbursement";
+      if (activeTab === "loan") return r.type === "Loan";
       return false;
     });
 
@@ -117,18 +123,40 @@ export default function ManageClaim() {
   const endIndex = startIndex + pageSize;
   const displayedRequests = filteredRequests.slice(startIndex, endIndex);
 
+  // Flatten displayedRequests for exporting
+  const exportData = displayedRequests.map((req, index) => {
+    const sl = (currentPage - 1) * pageSize + (index + 1);
+    return {
+      sl,
+      employeeId: req.employeeId,
+      department: req.department,
+      type: req.type,
+      requestedAt: new Date(req.requestedAt).toLocaleDateString(),
+      // Add additional fields if you like...
+    };
+  });
+
+  // Define columns for PDF/Excel/CSV
+  const columns = [
+    { header: "S.L", dataKey: "sl" },
+    { header: "Employee ID", dataKey: "employeeId" },
+    { header: "Department", dataKey: "department" },
+    { header: "Type", dataKey: "type" },
+    { header: "Requested At", dataKey: "requestedAt" },
+  ];
+
   return (
     <div className="bg-gray-50 dark:bg-gray-900 min-h-screen text-gray-800 dark:text-gray-100 flex flex-col">
       {/* Tabs */}
       <div className="flex flex-wrap gap-4 p-4">
-        {['hike', 'advance', 'reimbursement', 'loan'].map((tab) => (
+        {["hike", "advance", "reimbursement", "loan"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-full border ${
               activeTab === tab
-                ? 'bg-purple-600 text-white border-purple-600'
-                : 'bg-purple-50 dark:bg-purple-900 text-purple-700 dark:text-purple-200 border-purple-100 dark:border-purple-700'
+                ? "bg-purple-600 text-white border-purple-600"
+                : "bg-purple-50 dark:bg-purple-900 text-purple-700 dark:text-purple-200 border-purple-100 dark:border-purple-700"
             }`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)} Requests
@@ -147,7 +175,9 @@ export default function ManageClaim() {
       <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 px-4 mb-4">
         {/* Show select */}
         <div className="flex items-center">
-          <label className="mr-2 text-sm font-medium text-gray-700 dark:text-gray-300">Show</label>
+          <label className="mr-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+            Show
+          </label>
           <select
             className="border border-gray-300 dark:border-gray-700 rounded-md px-2 py-1 text-sm bg-white dark:bg-gray-800"
             value={pageSize}
@@ -197,70 +227,23 @@ export default function ManageClaim() {
         </div>
 
         <div className="flex items-center gap-2">
-          <button
-            title="Export CSV"
-            className="
-              w-10 h-10
-              flex items-center justify-center
-              rounded-md
-              bg-green-100 text-green-600
-              hover:bg-green-200
-              dark:bg-green-900 dark:text-green-200
-              dark:hover:bg-green-800
-            "
-          >
-            <FaFileAlt className="w-4 h-4" />
-          </button>
-          <button
-            title="Export Excel"
-            className="
-              w-10 h-10
-              flex items-center justify-center
-              rounded-md
-              bg-purple-100 text-purple-600
-              hover:bg-purple-200
-              dark:bg-purple-900 dark:text-purple-200
-              dark:hover:bg-purple-800
-            "
-          >
-            <FaFileExcel className="w-4 h-4" />
-          </button>
-          <button
-            title="Export PDF"
-            className="
-              w-10 h-10
-              flex items-center justify-center
-              rounded-md
-              bg-red-100 text-red-600
-              hover:bg-red-200
-              dark:bg-red-900 dark:text-red-200
-              dark:hover:bg-red-800
-            "
-          >
-            <FaFilePdf className="w-4 h-4" />
-          </button>
-          <button
-            title="Print"
-            className="
-              w-10 h-10
-              flex items-center justify-center
-              rounded-md
-              bg-orange-100 text-orange-600
-              hover:bg-orange-200
-              dark:bg-orange-900 dark:text-orange-200
-              dark:hover:bg-orange-800
-            "
-          >
-            <FaPrint className="w-4 h-4" />
-          </button>
+          <ExportButtons
+            data={exportData}
+            columns={columns}
+            filename="ManageClaim"
+          />
         </div>
       </div>
 
       {/* Tab Content */}
-      {activeTab === 'hike' && <HikeRequests requests={displayedRequests} />}
-      {activeTab === 'advance' && <AdvanceRequests requests={displayedRequests} />}
-      {activeTab === 'reimbursement' && <ReimbursementRequests requests={displayedRequests} />}
-      {activeTab === 'loan' && <LoanRequests requests={displayedRequests} />}
+      {activeTab === "hike" && <HikeRequests requests={displayedRequests} />}
+      {activeTab === "advance" && (
+        <AdvanceRequests requests={displayedRequests} />
+      )}
+      {activeTab === "reimbursement" && (
+        <ReimbursementRequests requests={displayedRequests} />
+      )}
+      {activeTab === "loan" && <LoanRequests requests={displayedRequests} />}
     </div>
   );
 }

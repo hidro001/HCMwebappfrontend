@@ -346,8 +346,6 @@
 //   );
 // }
 
-
-
 // import React, { useState, useEffect, useMemo } from "react";
 // import { motion } from "framer-motion";
 // import { FaEye, FaPrint, FaFilePdf } from "react-icons/fa";
@@ -727,15 +725,21 @@
 //   );
 // }
 
-
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { motion } from "framer-motion";
-import { FaEye, FaPrint, FaFilePdf, FaArrowUp, FaArrowDown } from "react-icons/fa";
+import {
+  FaEye,
+  FaPrint,
+  FaFilePdf,
+  FaArrowUp,
+  FaArrowDown,
+} from "react-icons/fa";
 import { MdOutlineFileDownload } from "react-icons/md";
 import { Skeleton } from "@mui/material";
 import useResignationStore from "../../store/useResignationStore";
 import ResignationDetailsModal from "./model/ResignationDetailsModal";
 import { Bar, Line } from "react-chartjs-2";
+import ExportButtons from "../common/PdfExcel"; // Adjust path as needed
 
 const tableContainerVariants = {
   hidden: { opacity: 0 },
@@ -790,7 +794,15 @@ export default function EmployeeResignationHistory() {
     };
     setFilters(newFilters);
     setCurrentPage(1);
-  }, [searchText, statusFilter, selectedYear, selectedMonth, chartPeriod, setFilters, setCurrentPage]);
+  }, [
+    searchText,
+    statusFilter,
+    selectedYear,
+    selectedMonth,
+    chartPeriod,
+    setFilters,
+    setCurrentPage,
+  ]);
 
   // Fetch data whenever filters or currentPage change.
   useEffect(() => {
@@ -822,8 +834,14 @@ export default function EmployeeResignationHistory() {
         {
           label: "Number of Resignations",
           data: counts,
-          backgroundColor: selectedChart === "bar" ? "rgba(54, 162, 235, 0.6)" : "rgba(255, 99, 132, 0.2)",
-          borderColor: selectedChart === "bar" ? "rgba(54, 162, 235, 1)" : "rgba(255, 99, 132, 1)",
+          backgroundColor:
+            selectedChart === "bar"
+              ? "rgba(54, 162, 235, 0.6)"
+              : "rgba(255, 99, 132, 0.2)",
+          borderColor:
+            selectedChart === "bar"
+              ? "rgba(54, 162, 235, 1)"
+              : "rgba(255, 99, 132, 1)",
           borderWidth: 1,
           fill: selectedChart === "line",
           tension: selectedChart === "line" ? 0.4 : 0,
@@ -833,14 +851,17 @@ export default function EmployeeResignationHistory() {
   }, [chartData, chartPeriod, selectedChart]);
 
   // Compute summary statistics.
-  const pendingCount = useMemo(() => 
-    resignations.filter(r => r.status === "Pending").length, [resignations]
+  const pendingCount = useMemo(
+    () => resignations.filter((r) => r.status === "Pending").length,
+    [resignations]
   );
-  const approvedCount = useMemo(() => 
-    resignations.filter(r => r.status === "Approved").length, [resignations]
+  const approvedCount = useMemo(
+    () => resignations.filter((r) => r.status === "Approved").length,
+    [resignations]
   );
-  const rejectedCount = useMemo(() => 
-    resignations.filter(r => r.status === "Rejected").length, [resignations]
+  const rejectedCount = useMemo(
+    () => resignations.filter((r) => r.status === "Rejected").length,
+    [resignations]
   );
 
   // Transform resignation records for the table.
@@ -850,8 +871,12 @@ export default function EmployeeResignationHistory() {
       empNameAndId: r.employee
         ? `${r.employee.first_Name} ${r.employee.last_Name} (${r.employee.employee_Id})`
         : "N/A",
-      resignationDate: r.resignationDate ? new Date(r.resignationDate).toLocaleDateString() : "N/A",
-      lastWorkingDay: r.lastWorkingDay ? new Date(r.lastWorkingDay).toLocaleDateString() : "N/A",
+      resignationDate: r.resignationDate
+        ? new Date(r.resignationDate).toLocaleDateString()
+        : "N/A",
+      lastWorkingDay: r.lastWorkingDay
+        ? new Date(r.lastWorkingDay).toLocaleDateString()
+        : "N/A",
       reason: r.comments || "N/A",
       department: r.employee?.department || "N/A",
       designation: r.employee?.designation || "N/A",
@@ -859,6 +884,32 @@ export default function EmployeeResignationHistory() {
       submittedAt: r.createdAt ? new Date(r.createdAt).toLocaleString() : "N/A",
     }));
   }, [resignations]);
+
+  // Flatten the transformedResignations data for export
+  const exportData = transformedResignations.map((item, index) => ({
+    sl: String((currentPage - 1) * 10 + (index + 1)).padStart(2, "0"),
+    employee: item.empNameAndId,
+    resignationDate: item.resignationDate,
+    lastWorkingDay: item.lastWorkingDay,
+    reason: item.reason,
+    department: item.department,
+    designation: item.designation,
+    status: item.status,
+    submittedAt: item.submittedAt,
+  }));
+
+  // Define columns for PDF/CSV/Excel
+  const columns = [
+    { header: "S.L", dataKey: "sl" },
+    { header: "Employee", dataKey: "employee" },
+    { header: "Resignation Date", dataKey: "resignationDate" },
+    { header: "Last Working Day", dataKey: "lastWorkingDay" },
+    { header: "Reason", dataKey: "reason" },
+    { header: "Department", dataKey: "department" },
+    { header: "Designation", dataKey: "designation" },
+    { header: "Status", dataKey: "status" },
+    { header: "Submitted At", dataKey: "submittedAt" },
+  ];
 
   return (
     <div className="mx-auto p-4 dark:bg-gray-900 dark:text-gray-100 transition-colors">
@@ -930,8 +981,18 @@ export default function EmployeeResignationHistory() {
             >
               <option value="">Select Month</option>
               {[
-                "January", "February", "March", "April", "May", "June",
-                "July", "August", "September", "October", "November", "December"
+                "January",
+                "February",
+                "March",
+                "April",
+                "May",
+                "June",
+                "July",
+                "August",
+                "September",
+                "October",
+                "November",
+                "December",
               ].map((m, idx) => (
                 <option key={idx + 1} value={idx + 1}>
                   {m}
@@ -941,15 +1002,11 @@ export default function EmployeeResignationHistory() {
           )}
         </div>
         <div className="flex items-center gap-4">
-          <button className="hover:text-gray-700" title="Print">
-            <FaPrint size={16} />
-          </button>
-          <button className="hover:text-gray-700" title="Export PDF">
-            <FaFilePdf size={16} />
-          </button>
-          <button className="hover:text-gray-700" title="Export CSV/Excel">
-            <MdOutlineFileDownload size={18} />
-          </button>
+          <ExportButtons
+            data={exportData}
+            columns={columns}
+            filename="EmployeeResignations"
+          />
         </div>
       </div>
 
@@ -978,7 +1035,13 @@ export default function EmployeeResignationHistory() {
                   responsive: true,
                   plugins: {
                     legend: { position: "top" },
-                    title: { display: true, text: chartPeriod === "Monthly" ? "Resignations by Day" : "Resignations by Month" },
+                    title: {
+                      display: true,
+                      text:
+                        chartPeriod === "Monthly"
+                          ? "Resignations by Day"
+                          : "Resignations by Month",
+                    },
                   },
                 }}
               />
@@ -989,7 +1052,13 @@ export default function EmployeeResignationHistory() {
                   responsive: true,
                   plugins: {
                     legend: { position: "top" },
-                    title: { display: true, text: chartPeriod === "Monthly" ? "Resignations by Day" : "Resignations by Month" },
+                    title: {
+                      display: true,
+                      text:
+                        chartPeriod === "Monthly"
+                          ? "Resignations by Day"
+                          : "Resignations by Month",
+                    },
                   },
                   scales: {
                     y: { beginAtZero: true, ticks: { stepSize: 1 } },
@@ -1005,7 +1074,12 @@ export default function EmployeeResignationHistory() {
       {loading ? (
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow">
           {Array.from({ length: 10 }).map((_, i) => (
-            <Skeleton key={i} variant="rectangular" height={40} className="mb-2" />
+            <Skeleton
+              key={i}
+              variant="rectangular"
+              height={40}
+              className="mb-2"
+            />
           ))}
         </div>
       ) : (
@@ -1022,8 +1096,12 @@ export default function EmployeeResignationHistory() {
                   <tr>
                     <th className="p-3 text-sm font-semibold">S.L</th>
                     <th className="p-3 text-sm font-semibold">Employee</th>
-                    <th className="p-3 text-sm font-semibold">Resignation Date</th>
-                    <th className="p-3 text-sm font-semibold">Last Working Day</th>
+                    <th className="p-3 text-sm font-semibold">
+                      Resignation Date
+                    </th>
+                    <th className="p-3 text-sm font-semibold">
+                      Last Working Day
+                    </th>
                     <th className="p-3 text-sm font-semibold">Reason</th>
                     <th className="p-3 text-sm font-semibold">Department</th>
                     <th className="p-3 text-sm font-semibold">Designation</th>
@@ -1035,29 +1113,44 @@ export default function EmployeeResignationHistory() {
                 <tbody>
                   {transformedResignations.map((item, index) => {
                     const rowIndex = (currentPage - 1) * 10 + (index + 1);
-                    let statusClasses = "bg-gray-100 text-gray-700 border px-2 py-1 rounded text-xs font-semibold";
+                    let statusClasses =
+                      "bg-gray-100 text-gray-700 border px-2 py-1 rounded text-xs font-semibold";
                     if (item.status === "Pending") {
-                      statusClasses = "bg-orange-50 text-orange-600 border px-2 py-1 rounded text-xs font-semibold";
+                      statusClasses =
+                        "bg-orange-50 text-orange-600 border px-2 py-1 rounded text-xs font-semibold";
                     } else if (item.status === "Approved") {
-                      statusClasses = "bg-green-50 text-green-600 border px-2 py-1 rounded text-xs font-semibold";
+                      statusClasses =
+                        "bg-green-50 text-green-600 border px-2 py-1 rounded text-xs font-semibold";
                     } else if (item.status === "Rejected") {
-                      statusClasses = "bg-red-50 text-red-600 border px-2 py-1 rounded text-xs font-semibold";
+                      statusClasses =
+                        "bg-red-50 text-red-600 border px-2 py-1 rounded text-xs font-semibold";
                     }
                     return (
-                      <motion.tr key={item.id} variants={tableRowVariants} className="border-b hover:bg-gray-50  dark:hover:bg-gray-700 transition-colors">
-                        <td className="p-3 text-sm">{String(rowIndex).padStart(2, "0")}</td>
+                      <motion.tr
+                        key={item.id}
+                        variants={tableRowVariants}
+                        className="border-b hover:bg-gray-50  dark:hover:bg-gray-700 transition-colors"
+                      >
+                        <td className="p-3 text-sm">
+                          {String(rowIndex).padStart(2, "0")}
+                        </td>
                         <td className="p-3 text-sm">{item.empNameAndId}</td>
                         <td className="p-3 text-sm">{item.resignationDate}</td>
                         <td className="p-3 text-sm">{item.lastWorkingDay}</td>
                         <td className="p-3 text-sm">{item.reason}</td>
                         <td className="p-3 text-sm">{item.department}</td>
                         <td className="p-3 text-sm">{item.designation}</td>
-                        <td className="p-3 text-sm"><span className={statusClasses}>{item.status}</span></td>
+                        <td className="p-3 text-sm">
+                          <span className={statusClasses}>{item.status}</span>
+                        </td>
                         <td className="p-3 text-sm">{item.submittedAt}</td>
                         <td className="p-3 text-sm">
                           <button
                             className="text-blue-500 hover:text-blue-600 transition-colors"
-                            onClick={() => { setSelectedResignation(item); setShowModal(true); }}
+                            onClick={() => {
+                              setSelectedResignation(item);
+                              setShowModal(true);
+                            }}
                           >
                             <FaEye />
                           </button>
@@ -1068,12 +1161,19 @@ export default function EmployeeResignationHistory() {
                 </tbody>
               </motion.table>
               <div className="flex flex-col md:flex-row justify-between items-center p-3 text-sm">
-                <div>Showing {transformedResignations.length} of {totalResignations} entries</div>
+                <div>
+                  Showing {transformedResignations.length} of{" "}
+                  {totalResignations} entries
+                </div>
                 <div className="flex space-x-1">
                   {Array.from({ length: totalPages }, (_, i) => (
                     <button
                       key={i}
-                      className={`px-3 py-1 rounded border transition-colors ${currentPage === i + 1 ? "bg-blue-600 text-white" : "bg-white dark:bg-gray-700 text-gray-700 hover:bg-gray-50"}`}
+                      className={`px-3 py-1 rounded border transition-colors ${
+                        currentPage === i + 1
+                          ? "bg-blue-600 text-white"
+                          : "bg-white dark:bg-gray-700 text-gray-700 hover:bg-gray-50"
+                      }`}
                       onClick={() => setCurrentPage(i + 1)}
                     >
                       {i + 1}
@@ -1093,9 +1193,11 @@ export default function EmployeeResignationHistory() {
       <ResignationDetailsModal
         isOpen={showModal}
         data={selectedResignation}
-        onClose={() => { setShowModal(false); setSelectedResignation(null); }}
+        onClose={() => {
+          setShowModal(false);
+          setSelectedResignation(null);
+        }}
       />
     </div>
   );
 }
-

@@ -11,6 +11,7 @@ import ConfirmationDialog from "../common/ConfirmationDialog";
 import TicketDetailsModal from "./model/TicketDetailsModal";
 import useIssuesStore from "../../store/useIssuesStore";
 import useDepartmentStore from "../../store/departmentStore";
+import ExportButtons from "../common/PdfExcel";
 
 const tableContainerVariants = {
   hidden: { opacity: 0 },
@@ -77,7 +78,9 @@ export default function AllTickets() {
 
   const handleDelete = (issue) => {
     setConfirmTitle("Delete Issue");
-    setConfirmMessage(`Are you sure you want to delete issue "${issue.issueTitle}"?`);
+    setConfirmMessage(
+      `Are you sure you want to delete issue "${issue.issueTitle}"?`
+    );
     setConfirmAction(() => async () => {
       setConfirmOpen(false);
       await removeIssue(issue._id);
@@ -116,7 +119,9 @@ export default function AllTickets() {
   const filteredIssues = useMemo(() => {
     return issues.filter((issue) => {
       if (searchText) {
-        const matchTitle = issue.issueTitle?.toLowerCase().includes(searchText.toLowerCase());
+        const matchTitle = issue.issueTitle
+          ?.toLowerCase()
+          .includes(searchText.toLowerCase());
         const matchEmployeeId = issue.createdBy?.employee_Id
           ?.toLowerCase()
           .includes(searchText.toLowerCase());
@@ -124,7 +129,8 @@ export default function AllTickets() {
       }
       if (department !== "All" && issue.assignedTo !== department) return false;
       if (status !== "All" && issue.issueStatus !== status) return false;
-      if (priorityFilter !== "All" && issue.priority !== priorityFilter) return false;
+      if (priorityFilter !== "All" && issue.priority !== priorityFilter)
+        return false;
       if (selectedDate) {
         const issueDate = new Date(issue.createdAt).setHours(0, 0, 0, 0);
         const filterDate = selectedDate.setHours(0, 0, 0, 0);
@@ -145,6 +151,38 @@ export default function AllTickets() {
     setCurrentPage(page);
   };
 
+  const exportData = paginatedIssues.map((issue, index) => {
+    const globalIndex = (currentPage - 1) * pageSize + (index + 1);
+    return {
+      sl: String(globalIndex).padStart(2, "0"),
+      empId: issue.createdBy?.employee_Id || "--",
+      name: issue.createdBy
+        ? `${issue.createdBy.first_Name} ${issue.createdBy.last_Name}`
+        : "Unknown",
+      title: issue.issueTitle,
+      priority: issue.priority,
+      status: issue.issueStatus,
+      department: issue.assignedTo || "--",
+      createdOn: new Date(issue.createdAt).toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+    };
+  });
+
+  // Define columns for PDF/CSV/Excel
+  const columnsArray = [
+    { header: "S.L", dataKey: "sl" },
+    { header: "Emp ID", dataKey: "empId" },
+    { header: "Name", dataKey: "name" },
+    { header: "Title", dataKey: "title" },
+    { header: "Priority", dataKey: "priority" },
+    { header: "Status", dataKey: "status" },
+    { header: "Department", dataKey: "department" },
+    { header: "Created On", dataKey: "createdOn" },
+  ];
+
   return (
     <div className="mx-auto px-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors">
       <h1 className="text-2xl font-bold mb-2">ALL Tickets</h1>
@@ -156,7 +194,9 @@ export default function AllTickets() {
       >
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-semibold whitespace-nowrap">Show</label>
+            <label className="text-sm font-semibold whitespace-nowrap">
+              Show
+            </label>
             <select
               className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none"
               value={pageSize}
@@ -235,32 +275,22 @@ export default function AllTickets() {
             <option value="In Progress">In Progress</option>
             <option value="Resolved">Resolved</option>
           </select>
-          <div className="flex items-center gap-4 text-gray-500 dark:text-gray-300">
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-              title="Print"
-            >
-              <FaPrint size={18} />
-            </button>
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-              title="Export to PDF"
-            >
-              <FaFilePdf size={18} />
-            </button>
-            <button
-              className="hover:text-gray-700 dark:hover:text-gray-100 transition-colors"
-              title="Export CSV/Excel"
-            >
-              <MdOutlineFileDownload size={20} />
-            </button>
-          </div>
+          <ExportButtons
+            data={exportData}
+            columns={columnsArray}
+            filename="Tickets"
+          />
         </div>
       </motion.div>
       {loading ? (
         <div className="bg-white dark:bg-gray-800 rounded-md shadow p-4 transition-colors">
           {Array.from({ length: 10 }).map((_, i) => (
-            <Skeleton key={i} variant="rectangular" height={40} className="mb-2" />
+            <Skeleton
+              key={i}
+              variant="rectangular"
+              height={40}
+              className="mb-2"
+            />
           ))}
         </div>
       ) : filteredIssues.length > 0 ? (
@@ -317,7 +347,9 @@ export default function AllTickets() {
                     variants={tableRowVariants}
                     className="border-b last:border-b-0 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                   >
-                    <td className="p-3 text-sm">{String(globalIndex).padStart(2, "0")}</td>
+                    <td className="p-3 text-sm">
+                      {String(globalIndex).padStart(2, "0")}
+                    </td>
                     <td className="p-3 text-sm text-blue-600 dark:text-blue-400 cursor-pointer">
                       {issue.createdBy?.employee_Id || "--"}
                     </td>
@@ -379,7 +411,8 @@ export default function AllTickets() {
           </motion.table>
           <div className="flex flex-col md:flex-row justify-between items-center p-3 gap-2 text-sm">
             <div>
-              Showing {paginatedIssues.length} of {filteredIssues.length} entries
+              Showing {paginatedIssues.length} of {filteredIssues.length}{" "}
+              entries
             </div>
             <div className="flex items-center space-x-1">
               {Array.from({ length: totalPages }, (_, i) => (

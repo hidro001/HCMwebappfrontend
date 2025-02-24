@@ -1,4 +1,3 @@
-
 import React, { useState, useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
@@ -13,6 +12,7 @@ import {
 } from "react-icons/fa";
 import LeaveDetailsModal from "./model/LeaveDetailsAllModal";
 import useLeaveStore from "../../store/allLeaveStore"; // Import the Zustand store
+import ExportButtons from "../common/PdfExcel"; // adjust path if needed
 
 // Dummy user profile data for top cards (you can later replace this with an API call if needed)
 const dummyUserProfile = {
@@ -93,6 +93,54 @@ export default function AllLeave() {
   const handleCloseModal = () => {
     setSelectedLeave(null);
   };
+
+  // Flatten the paginatedData for exporting
+  const exportData = paginatedData.map((entry, index) => {
+    const serialNo = (currentPage - 1) * pageSize + (index + 1);
+
+    return {
+      sl: serialNo,
+      empID: entry.employee?.employee_Id || "N/A",
+      empName: entry.employee
+        ? `${entry.employee.first_Name} ${entry.employee.last_Name}`
+        : "Unknown",
+      paidLeaveBalance: entry.employee?.no_of_Paid_Leave || "N/A",
+      leaveType: entry.leave_Type,
+      leaveFrom: new Date(entry.leave_From).toLocaleDateString(),
+      leaveTo: entry.leave_To
+        ? new Date(entry.leave_To).toLocaleDateString()
+        : "N/A",
+      days: entry.no_Of_Days,
+      reasonForLeave: entry.reason_For_Leave,
+      leaveCategory:
+        entry.is_Paid === null ? "Pending" : entry.is_Paid ? "Paid" : "Unpaid",
+      processedBy:
+        entry.leave_Status === "approved" && entry.approved_By
+          ? `${entry.approved_By.first_Name} ${entry.approved_By.last_Name}`
+          : entry.leave_Status === "rejected" && entry.rejected_By
+          ? `Rejected by ${entry.rejected_By.first_Name} ${entry.rejected_By.last_Name}`
+          : "Pending",
+      status:
+        entry.leave_Status.charAt(0).toUpperCase() +
+        entry.leave_Status.slice(1),
+    };
+  });
+
+  // Define columns for PDF/Excel/CSV
+  const columns = [
+    { header: "S.L", dataKey: "sl" },
+    { header: "Emp ID", dataKey: "empID" },
+    { header: "Emp Name", dataKey: "empName" },
+    { header: "Paid Leave Balance", dataKey: "paidLeaveBalance" },
+    { header: "Leave Type", dataKey: "leaveType" },
+    { header: "From", dataKey: "leaveFrom" },
+    { header: "To", dataKey: "leaveTo" },
+    { header: "Days", dataKey: "days" },
+    { header: "Reason for Leave", dataKey: "reasonForLeave" },
+    { header: "Leave Category", dataKey: "leaveCategory" },
+    { header: "Processed By", dataKey: "processedBy" },
+    { header: "Status", dataKey: "status" },
+  ];
 
   return (
     <div className="mx-auto p-4 bg-bg-primary text-text-primary transition-colors">
@@ -200,18 +248,11 @@ export default function AllLeave() {
         </select>
 
         <div className="flex items-center gap-2">
-          <button className="text-green-600 hover:text-green-800" title="Export CSV">
-            <FaFileCsv size={18} />
-          </button>
-          <button className="text-pink-600 hover:text-pink-800" title="Export PDF">
-            <FaFilePdf size={18} />
-          </button>
-          <button className="text-orange-500 hover:text-orange-600" title="Print">
-            <FaPrint size={18} />
-          </button>
-          <button className="text-blue-600 hover:text-blue-800" title="Export Excel">
-            <FaFileExcel size={18} />
-          </button>
+          <ExportButtons
+            data={exportData}
+            columns={columns}
+            filename="AllLeaveRecords"
+          />
         </div>
       </div>
 
@@ -236,13 +277,19 @@ export default function AllLeave() {
                     <th className="p-3 text-sm font-semibold">S.L</th>
                     <th className="p-3 text-sm font-semibold">Emp ID</th>
                     <th className="p-3 text-sm font-semibold">Emp Name</th>
-                    <th className="p-3 text-sm font-semibold">Paid Leave Balance</th>
+                    <th className="p-3 text-sm font-semibold">
+                      Paid Leave Balance
+                    </th>
                     <th className="p-3 text-sm font-semibold">Leave Type</th>
                     <th className="p-3 text-sm font-semibold">From</th>
                     <th className="p-3 text-sm font-semibold">To</th>
                     <th className="p-3 text-sm font-semibold">Days</th>
-                    <th className="p-3 text-sm font-semibold">Reason for Leave</th>
-                    <th className="p-3 text-sm font-semibold">Leave Category</th>
+                    <th className="p-3 text-sm font-semibold">
+                      Reason for Leave
+                    </th>
+                    <th className="p-3 text-sm font-semibold">
+                      Leave Category
+                    </th>
                     <th className="p-3 text-sm font-semibold">Processed By</th>
                     <th className="p-3 text-sm font-semibold">Status</th>
                     <th className="p-3 text-sm font-semibold">Action</th>
@@ -283,8 +330,10 @@ export default function AllLeave() {
                       <td className="p-3 text-sm">
                         {entry.reason_For_Leave &&
                         entry.reason_For_Leave.split(" ").length > 3
-                          ? entry.reason_For_Leave.split(" ").slice(0, 3).join(" ") +
-                            "..."
+                          ? entry.reason_For_Leave
+                              .split(" ")
+                              .slice(0, 3)
+                              .join(" ") + "..."
                           : entry.reason_For_Leave}
                       </td>
                       <td className="p-3 text-sm">
@@ -297,7 +346,8 @@ export default function AllLeave() {
                       <td className="p-3 text-sm">
                         {entry.leave_Status === "approved" && entry.approved_By
                           ? `${entry.approved_By.first_Name} ${entry.approved_By.last_Name}`
-                          : entry.leave_Status === "rejected" && entry.rejected_By
+                          : entry.leave_Status === "rejected" &&
+                            entry.rejected_By
                           ? `Rejected by ${entry.rejected_By.first_Name} ${entry.rejected_By.last_Name}`
                           : "Pending"}
                       </td>
@@ -333,7 +383,8 @@ export default function AllLeave() {
 
               <div className="flex justify-between items-center p-3 gap-2 text-sm">
                 <div>
-                  Showing {paginatedData.length} of {filteredData.length} entries
+                  Showing {paginatedData.length} of {filteredData.length}{" "}
+                  entries
                 </div>
                 <div className="flex items-center space-x-1">
                   {Array.from({ length: totalPages }, (_, i) => (
@@ -367,4 +418,3 @@ export default function AllLeave() {
     </div>
   );
 }
-

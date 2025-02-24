@@ -304,7 +304,6 @@
 //   );
 // }
 
-
 import React, { useState, useEffect } from "react";
 import { FaFilePdf, FaFileCsv, FaPrint, FaSearch, FaEye } from "react-icons/fa";
 import { MdOutlineFileDownload } from "react-icons/md";
@@ -374,8 +373,6 @@ export default function AssignAssetsPage() {
       getSubordinates(userId);
     }
   }, [userId, getSubordinates]);
-
-
 
   if (errorSubordinates) {
     return (
@@ -506,20 +503,6 @@ export default function AssignAssetsPage() {
                 Add Asset Group
               </button>
             </div>
-            <div className="flex items-center gap-3">
-              <button className="hover:opacity-75 transition">
-                <FaPrint size={16} className="text-teal-500" />
-              </button>
-              <button className="hover:opacity-75 transition">
-                <FaFilePdf size={16} className="text-red-500" />
-              </button>
-              <button className="hover:opacity-75 transition">
-                <FaFileCsv size={16} className="text-green-600" />
-              </button>
-              <button className="hover:opacity-75 transition">
-                <MdOutlineFileDownload size={16} className="text-blue-500" />
-              </button>
-            </div>
           </div>
         </div>
       </div>
@@ -548,8 +531,7 @@ export default function AssignAssetsPage() {
               <TableBodySkeleton rowCount={pageSize} colCount={6} />
             ) : paginatedData.length > 0 ? (
               paginatedData.map((emp, idx) => {
-                const serialNumber =
-                  (currentPage - 1) * pageSize + (idx + 1);
+                const serialNumber = (currentPage - 1) * pageSize + (idx + 1);
                 return (
                   <motion.tr
                     key={emp._id}
@@ -655,4 +637,3 @@ export default function AssignAssetsPage() {
     </div>
   );
 }
-

@@ -14,6 +14,7 @@ import {
 import ApplyLeaveModal from "./model/ApplyLeaveModal";
 import LeaveDetailsModal from "./model/LeaveDetailsModal";
 import useLeaveStore from "../../store/leaveStore.js";
+import ExportButtons from "../common/PdfExcel"; // Adjust path if needed
 
 const tableContainerVariants = {
   hidden: { opacity: 0 },
@@ -93,6 +94,45 @@ export default function EmployeeLeaveHistory() {
   }, [filteredData, currentPage, pageSize]);
 
   const totalPages = Math.ceil(filteredData.length / pageSize);
+
+  // Flatten the paginatedData for exporting
+  const exportData = paginatedData.map((entry, index) => {
+    const serialNo = (currentPage - 1) * pageSize + (index + 1);
+    return {
+      sl: serialNo,
+      leaveType: entry.leave_Type,
+      from: new Date(entry.leave_From).toLocaleDateString(),
+      to: new Date(entry.leave_To).toLocaleDateString(),
+      days: entry.no_Of_Days,
+      reasonForLeave: entry.reason_For_Leave,
+      leaveCategory:
+        entry.is_Paid === null ? "Pending" : entry.is_Paid ? "Paid" : "Unpaid",
+      processedBy:
+        entry.leave_Status === "approved" && entry.approved_By
+          ? `Approved by ${entry.approved_By.first_Name} ${entry.approved_By.last_Name}`
+          : entry.leave_Status === "rejected" && entry.rejected_By
+          ? `Rejected by ${entry.rejected_By.first_Name} ${entry.rejected_By.last_Name}`
+          : "Pending",
+      reasonForReject: entry.reason_For_Reject || "N/A",
+      status:
+        entry.leave_Status.charAt(0).toUpperCase() +
+        entry.leave_Status.slice(1),
+    };
+  });
+
+  // Define columns for PDF/Excel/CSV
+  const columns = [
+    { header: "S.L", dataKey: "sl" },
+    { header: "Leave Type", dataKey: "leaveType" },
+    { header: "From", dataKey: "from" },
+    { header: "To", dataKey: "to" },
+    { header: "Days", dataKey: "days" },
+    { header: "Reason for Leave", dataKey: "reasonForLeave" },
+    { header: "Leave Category", dataKey: "leaveCategory" },
+    { header: "Processed By", dataKey: "processedBy" },
+    { header: "Reason For Reject", dataKey: "reasonForReject" },
+    { header: "Status", dataKey: "status" },
+  ];
 
   return (
     <div className="mx-auto p-4 bg-bg-primary text-text-primary transition-colors">
@@ -192,7 +232,6 @@ export default function EmployeeLeaveHistory() {
             setCurrentPage(1);
           }}
         >
-          
           <option value="all">All</option>
           <option value="approved">Approved</option>
           <option value="pending">Pending</option>
@@ -200,30 +239,11 @@ export default function EmployeeLeaveHistory() {
         </select>
 
         <div className="flex items-center gap-2">
-          <button
-            className="text-green-600 hover:text-green-800"
-            title="Export CSV"
-          >
-            <FaFileCsv size={18} />
-          </button>
-          <button
-            className="text-pink-600 hover:text-pink-800"
-            title="Export PDF"
-          >
-            <FaFilePdf size={18} />
-          </button>
-          <button
-            className="text-orange-500 hover:text-orange-600"
-            title="Print"
-          >
-            <FaPrint size={18} />
-          </button>
-          <button
-            className="text-blue-600 hover:text-blue-800"
-            title="Export Excel"
-          >
-            <FaFileExcel size={18} />
-          </button>
+          <ExportButtons
+            data={exportData}
+            columns={columns}
+            filename="EmployeeLeaveHistory"
+          />
         </div>
 
         <button
