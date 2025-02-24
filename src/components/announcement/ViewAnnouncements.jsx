@@ -1,79 +1,40 @@
-import  { useState, useEffect, useMemo } from "react";
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  CircularProgress,
-  Card,
-  CardContent,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions as MuiDialogActions,
-  Chip,
-  Grid,
-  useTheme,
-  useMediaQuery,
-  IconButton,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  Skeleton,
-  Paper,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import InfiniteScroll from "react-infinite-scroll-component";
+import { FaSearch, FaFilter } from "react-icons/fa";
+
 import useAnnouncementStore from "../../store/announcementStore";
-import { toast } from "react-toastify";
-import { FaSearch, FaFilter, FaTimes } from "react-icons/fa";
+import AnnouncementDetailModal from "./model/AnnouncementDetailModal"; // path depends on your file structure
 
-
-const StyledCard = styled(Card)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
-  color: theme.palette.text.primary,
-  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-  borderRadius: "16px",
-  transition: "transform 0.3s, box-shadow 0.3s",
-  cursor: "pointer",
-  "&:hover": {
-    transform: "translateY(-8px)",
-    boxShadow: "0 12px 24px rgba(0,0,0,0.2)",
-  },
-}));
+const SkeletonPlaceholder = ({ className }) => (
+  <div
+    className={`bg-gray-200 dark:bg-gray-700 animate-pulse rounded-md ${className}`}
+  />
+);
 
 const ViewAnnouncements = () => {
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
-
-  // Pull announcements from store
   const {
     announcements,
     loading: announcementsLoading,
     error: announcementsError,
-    fetchAnnouncements,
+    fetchAnnouncementsuser,
   } = useAnnouncementStore();
-
-  // We no longer fetch or store departments since we removed filtering by dept.
-  // ───────────────────────────────────────────────────────────────────────────
 
   // Detailed Announcement Dialog
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
   // Infinite Scroll
-  const [visibleCount, setVisibleCount] = useState(18); // Initial # to display
+  const [visibleCount, setVisibleCount] = useState(18); // initial # to display
 
-  // Filters (now only search + sort)
+  // Filters
   const [sortOrder, setSortOrder] = useState("Newest");
   const [searchQuery, setSearchQuery] = useState("");
 
   // Fetch announcements on mount
   useEffect(() => {
-    fetchAnnouncements();
-  }, [fetchAnnouncements]);
+    fetchAnnouncementsuser();
+  }, [fetchAnnouncementsuser]);
 
   // Search
   const handleSearchQueryChange = (e) => {
@@ -97,10 +58,9 @@ const ViewAnnouncements = () => {
     setOpenDetailDialog(true);
   };
 
-  // Filter + Sort Logic (now ignoring departments)
+  // Filter + Sort logic
   const filteredAnnouncements = useMemo(() => {
     return announcements
-      // Filter by search
       .filter((announcement) => {
         if (!searchQuery.trim()) return true;
         const q = searchQuery.toLowerCase();
@@ -109,7 +69,6 @@ const ViewAnnouncements = () => {
           announcement.announcementDescription.toLowerCase().includes(q)
         );
       })
-      // Sort by date
       .sort((a, b) => {
         if (sortOrder === "Newest") {
           return new Date(b.announcementDate) - new Date(a.announcementDate);
@@ -133,305 +92,175 @@ const ViewAnnouncements = () => {
   }, [filteredAnnouncements, sortOrder, searchQuery]);
 
   return (
-    <Box
-      className="min-h-screen p-6"
-      sx={{
-        backgroundColor: "background.default",
-        color: "text.primary",
-        transition: "background-color 0.3s, color 0.3s",
-      }}
-    >
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-50 p-6">
       {/* Header */}
-      <Box className="flex flex-col md:flex-row justify-between items-center mb-6">
-        <Typography variant="h4" className="mb-4 md:mb-0">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-0">
           View Announcements
-        </Typography>
-      </Box>
+        </h1>
+      </div>
 
-      {/* Search, Sort, and Clear Filters (no department filter) */}
-      <Paper
-        elevation={3}
-        sx={{
-          padding: 2,
-          marginBottom: 4,
-          borderRadius: "16px",
-        }}
-      >
-        <Grid
-          container
-          spacing={2}
-          alignItems="center"
-          justifyContent="space-around"
-        >
+      {/* Search, Sort, and Clear Filters */}
+      <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
           {/* Search Bar */}
-          <Grid item xs={12} sm={6} md={4}>
-            <Box display="flex" alignItems="center">
-              <FaSearch style={{ marginRight: 8, color: "grey" }} />
-              <TextField
-                label="Search Announcements"
-                variant="outlined"
+          <div className="col-span-12 md:col-span-4 flex flex-col">
+            <label htmlFor="searchBar" className="text-sm font-medium mb-1">
+              Search
+            </label>
+            <div className="flex items-center bg-gray-50 dark:bg-gray-700 rounded-md px-2">
+              <span className="text-gray-400 dark:text-gray-300 mr-2">
+                <FaSearch />
+              </span>
+              <input
+                id="searchBar"
+                type="text"
+                placeholder="Search Announcements"
                 value={searchQuery}
                 onChange={handleSearchQueryChange}
-                fullWidth
+                className="w-full bg-transparent focus:outline-none py-2 text-sm"
               />
-            </Box>
-          </Grid>
+            </div>
+          </div>
 
           {/* Sort by Date */}
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth>
-              <InputLabel id="sort-order-label">Sort by Date</InputLabel>
-              <Select
-                labelId="sort-order-label"
-                id="sort-order"
-                value={sortOrder}
-                label="Sort by Date"
-                onChange={handleSortOrderChange}
-              >
-                <MenuItem value="Newest">Newest First</MenuItem>
-                <MenuItem value="Oldest">Oldest First</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
+          <div className="col-span-12 md:col-span-4 flex flex-col">
+            <label htmlFor="sortOrder" className="text-sm font-medium mb-1">
+              Sort by Date
+            </label>
+            <select
+              id="sortOrder"
+              value={sortOrder}
+              onChange={handleSortOrderChange}
+              className="w-full bg-white dark:bg-gray-700 
+                   border border-gray-300 dark:border-gray-600 
+                   rounded-md px-3 py-2 text-sm
+                   focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              <option value="Newest">Newest First</option>
+              <option value="Oldest">Oldest First</option>
+            </select>
+          </div>
 
           {/* Clear Filters Button */}
-          <Grid item xs={12} sm={6} md={3}>
-            <Button
-              variant="outlined"
-              startIcon={<FaFilter />}
-              onClick={handleClearFilters}
-              fullWidth
-              sx={{ height: "100%" }}
-            >
+          <div className="col-span-12 md:col-span-4 flex flex-col">
+            {/* Invisible label for consistent vertical spacing */}
+            <label className="invisible  text-sm font-medium">
               Clear Filters
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
+            </label>
+            <button
+              onClick={handleClearFilters}
+              className="w-full bg-white dark:bg-gray-700 border border-gray-300 
+                   dark:border-gray-600 rounded-md px-4 py-2 text-gray-700 
+                   dark:text-gray-200 font-medium flex items-center 
+                   justify-center space-x-2 hover:bg-gray-100 
+                   dark:hover:bg-gray-600 text-sm"
+            >
+              <FaFilter />
+              <span>Clear Filters</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Announcements List with Infinite Scroll */}
-      <Box>
+      <div>
         {announcementsLoading ? (
-          <Grid container spacing={3}>
+          // Skeleton loading placeholders
+          <div className="grid grid-cols-1 gap-4">
             {Array.from(new Array(6)).map((_, index) => (
-              <Grid item xs={12} key={index}>
-                <Skeleton variant="rectangular" height={100} />
-                <Box mt={2}>
-                  <Skeleton width="60%" />
-                  <Skeleton width="80%" />
-                </Box>
-              </Grid>
+              <div
+                key={index}
+                className="bg-white dark:bg-gray-800 p-4 rounded-md shadow"
+              >
+                <SkeletonPlaceholder className="w-full h-24 mb-4" />
+                <SkeletonPlaceholder className="w-3/5 h-4 mb-2" />
+                <SkeletonPlaceholder className="w-4/5 h-4" />
+              </div>
             ))}
-          </Grid>
+          </div>
         ) : announcementsError ? (
-          <Typography color="error" align="center">
-            {announcementsError}
-          </Typography>
+          <p className="text-center text-red-500">{announcementsError}</p>
         ) : filteredAnnouncements.length === 0 ? (
-          <Typography align="center">
+          <p className="text-center">
             No announcements found for the selected criteria.
-          </Typography>
+          </p>
         ) : (
           <InfiniteScroll
             dataLength={visibleCount}
             next={fetchMoreData}
             hasMore={visibleCount < filteredAnnouncements.length}
             loader={
-              <Box display="flex" justifyContent="center" my={4}>
-                <CircularProgress />
-              </Box>
+              <div className="flex justify-center my-4">
+                {/* Tailwind-based spinner */}
+                <div className="w-6 h-6 border-4 border-blue-500 dark:border-blue-300 border-t-transparent rounded-full animate-spin"></div>
+              </div>
             }
             style={{ overflow: "visible" }}
           >
-            {/* Single row "card" layout */}
-            {filteredAnnouncements.slice(0, visibleCount).map((announcement) => (
-              <StyledCard
-                key={announcement._id}
-                component={motion.div}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                onClick={() => handleCardClick(announcement)}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  p: 2,
-                  mb: 2, // spacing between cards
-                }}
-              >
-                {/* Left: Announcement Image */}
-                <Box
-                  sx={{
-                    width: 100,
-                    height: 80,
-                    overflow: "hidden",
-                    borderRadius: 1,
-                    flexShrink: 0,
-                    mr: 10,
-                  }}
-                >
-                  {announcement.announcementPostImg ? (
-                    <img
-                      src={announcement.announcementPostImg}
-                      alt={announcement.announcementSubject}
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                      loading="lazy"
-                    />
-                  ) : (
-                    <Skeleton variant="rectangular" width="100%" height="100%" />
-                  )}
-                </Box>
-
-                {/* Middle: Subject, Date, Department(s) */}
-                <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                  {/* Date */}
-                  <Typography variant="caption" sx={{ color: "gray" }}>
-                    {announcement.announcementDate
-                      ? new Date(announcement.announcementDate).toLocaleString()
-                      : ""}
-                  </Typography>
-
-                  {/* Subject / Title */}
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ fontWeight: "bold", color: "green" }}
-                    noWrap
+            {/* Wrap your cards in a grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredAnnouncements
+                .slice(0, visibleCount)
+                .map((announcement) => (
+                  <motion.div
+                    key={announcement._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    onClick={() => handleCardClick(announcement)}
+                    className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 
+                             cursor-pointer transform transition-transform 
+                             hover:-translate-y-1 hover:shadow-lg"
                   >
-                    {announcement.announcementSubject}
-                  </Typography>
+                    {/* Top: Image */}
+                    <div className="w-full h-48 mb-3 rounded-md overflow-hidden">
+                      {announcement.announcementPostImg ? (
+                        <img
+                          src={announcement.announcementPostImg}
+                          alt={announcement.announcementSubject}
+                          className="w-full h-full object-contain"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <SkeletonPlaceholder className="w-full h-full" />
+                      )}
+                    </div>
 
-                  {/* Departments (just for display) */}
-                  <Typography
-                    variant="body2"
-                    sx={{ mt: 0.5, overflow: "hidden", textOverflow: "ellipsis" }}
-                    noWrap
-                  >
-                    Department:{" "}
-                    {announcement.publish_for_all
-                      ? "All"
-                      : announcement.department
-                          .map((dept) => dept.department)
-                          .join(", ")}
-                  </Typography>
-                </Box>
-              </StyledCard>
-            ))}
+                    {/* Content */}
+                    <div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        {announcement.announcementDate
+                          ? new Date(
+                              announcement.announcementDate
+                            ).toLocaleString()
+                          : ""}
+                      </p>
+                      <h2 className="font-semibold text-green-600 dark:text-green-400 truncate mb-1">
+                        {announcement.announcementSubject}
+                      </h2>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                        {announcement.publish_for_all
+                          ? "Department: All"
+                          : `Department: ${announcement.department
+                              .map((dept) => dept.department)
+                              .join(", ")}`}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+            </div>
           </InfiniteScroll>
         )}
-      </Box>
+      </div>
 
-      {/* Detailed Announcement Dialog */}
-      <Dialog
-        open={openDetailDialog}
+      {/* Modal: Use the separate AnnouncementDetailModal component */}
+      <AnnouncementDetailModal
+        isOpen={openDetailDialog}
         onClose={() => setOpenDetailDialog(false)}
-        fullWidth
-        maxWidth="md"
-        aria-labelledby="detail-announcement-dialog-title"
-        PaperComponent={motion.div}
-        PaperProps={{
-          initial: { opacity: 0, scale: 0.8 },
-          animate: { opacity: 1, scale: 1 },
-          transition: { duration: 0.3 },
-          sx: {
-            backgroundColor: "background.paper",
-            borderRadius: "16px",
-          },
-        }}
-        BackdropProps={{
-          style: { backgroundColor: "rgba(0, 0, 0, 0.5)" },
-        }}
-      >
-        <DialogTitle id="detail-announcement-dialog-title">
-          Announcement Details
-        </DialogTitle>
-        <DialogContent dividers>
-          {selectedAnnouncement ? (
-            <Box>
-              {/* Close Button */}
-              <IconButton
-                onClick={() => setOpenDetailDialog(false)}
-                sx={{
-                  position: "absolute",
-                  right: 16,
-                  top: 16,
-                  color: "grey.500",
-                }}
-                aria-label="Close announcement details"
-              >
-                <FaTimes />
-              </IconButton>
-
-              {/* Announcement Image */}
-              {selectedAnnouncement.announcementPostImg ? (
-                <Box
-                  sx={{
-                    width: "100%",
-                    height: 300,
-                    overflow: "hidden",
-                    borderRadius: 2,
-                  }}
-                >
-                  <img
-                    src={selectedAnnouncement.announcementPostImg}
-                    alt={selectedAnnouncement.announcementSubject}
-                    style={{ width: "100%", height: "100%", objectFit: "contain " }}
-                    loading="lazy"
-                  />
-                </Box>
-              ) : (
-                <Skeleton variant="rectangular" height={300} width="100%" />
-              )}
-
-              {/* Announcement Details */}
-              <Box mt={4}>
-                <Typography variant="h5" gutterBottom>
-                  {selectedAnnouncement.announcementSubject || <Skeleton />}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  {selectedAnnouncement.announcementDescription || <Skeleton />}
-                </Typography>
-                <Box
-                  mt={2}
-                  display="flex"
-                  flexDirection={isSmallScreen ? "column" : "row"}
-                  justifyContent="space-between"
-                >
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Date:{" "}
-                    {selectedAnnouncement.announcementDate
-                      ? new Date(
-                          selectedAnnouncement.announcementDate
-                        ).toLocaleDateString()
-                      : <Skeleton width="50%" />}
-                  </Typography>
-                  <Chip
-                    label={
-                      selectedAnnouncement.publish_for_all
-                        ? "All Departments"
-                        : `${selectedAnnouncement.department.length} Dept`
-                    }
-                    color={selectedAnnouncement.publish_for_all ? "primary" : "secondary"}
-                    size="small"
-                  />
-                </Box>
-                <Typography variant="subtitle2" color="textSecondary" mt={1}>
-                  <strong>Departments:</strong>{" "}
-                  {selectedAnnouncement.publish_for_all
-                    ? "All Departments"
-                    : selectedAnnouncement.department
-                        .map((dept) => dept.department)
-                        .join(", ")}
-                </Typography>
-              </Box>
-            </Box>
-          ) : (
-            <Box display="flex" justifyContent="center" alignItems="center" height={200}>
-              <CircularProgress />
-            </Box>
-          )}
-        </DialogContent>
-      </Dialog>
-    </Box>
+        announcement={selectedAnnouncement}
+      />
+    </div>
   );
 };
 

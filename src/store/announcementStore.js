@@ -32,6 +32,29 @@ const useAnnouncementStore = create(
         }
       },
 
+      // Fetch Announcements user
+      fetchAnnouncementsuser: async () => {
+        set({ loading: true, error: null });
+        try {
+          const response = await axiosInstance.get("/admin/announcement-user");
+          const data = response.data;
+          if (data.success) {
+            set({ announcements: data.data });
+          } else {
+            throw new Error(data.message || "Failed to fetch announcements");
+          }
+        } catch (error) {
+          const errorMessage =
+            error.response?.data?.message || error.message || "Failed to fetch announcements";
+          set({ error: errorMessage });
+          toast.error(errorMessage);
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+
+
       // Add Announcement
       addAnnouncement: async (announcementDetails, token) => {
         set({ loading: true, error: null });

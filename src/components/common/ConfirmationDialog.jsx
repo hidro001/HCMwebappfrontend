@@ -14,7 +14,7 @@ const ConfirmationDialog = ({
 }) => {
   return (
     <BaseModal isOpen={open} onClose={onCancel}>
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-md w-11/12 md:w-1/3 text-center">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-md w-11/12 md:w-1/3 text-center ">
         <h3 className="text-lg font-bold mb-3">{title}</h3>
         <p className="text-gray-700 dark:text-gray-300 mb-4">{message}</p>
 
