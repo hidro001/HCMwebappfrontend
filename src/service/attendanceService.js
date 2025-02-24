@@ -85,3 +85,16 @@ export async function fetchPunchStatusToday() {
     throw error;
   }
 }
+
+
+export async function fetchDepartmentAttendanceSummary() {
+  try {
+    const response = await axiosInstance.get(
+      "/admin/attendance-dashboard/getDepartmentAttendanceSummary"
+    );
+    return response.data; // => { success: true, data: [ { department, present, absent, totalEmployees } ] }
+  } catch (error) {
+    console.error("Error in fetchDepartmentAttendanceSummary:", error);
+    throw error;
+  }
+}
