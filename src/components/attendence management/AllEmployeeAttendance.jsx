@@ -195,52 +195,7 @@ export default function AllEmployeeAttendance() {
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 dark:text-gray-100 p-6">
-      {/* Top Stats Cards */}
-      <motion.div
-        className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        {/* Example card: Total Logged In */}
-        <div className="rounded-md p-4 flex items-center justify-between bg-white dark:bg-gray-800 shadow">
-          <div>
-            <h2 className="text-sm font-medium mb-1">Total Logged In</h2>
-            <p className="text-2xl font-semibold">
-              {stats?.numberOfUsersLoggedInToday || 0}
-            </p>
-          </div>
-          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-green-500 text-white text-xl font-bold">
-            👤
-          </div>
-        </div>
-
-        {/* Example card: Total On Leave */}
-        <div className="rounded-md p-4 flex items-center justify-between bg-white dark:bg-gray-800 shadow">
-          <div>
-            <h2 className="text-sm font-medium mb-1">Total On Leave</h2>
-            <p className="text-2xl font-semibold">
-              {stats?.numberOfEmployeesOnLeaveToday || 0}
-            </p>
-          </div>
-          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-pink-500 text-white text-xl font-bold">
-            🏷
-          </div>
-        </div>
-
-        {/* Example card: Total In Late */}
-        <div className="rounded-md p-4 flex items-center justify-between bg-white dark:bg-gray-800 shadow">
-          <div>
-            <h2 className="text-sm font-medium mb-1">Total In Late</h2>
-            <p className="text-2xl font-semibold">
-              {stats?.numberOfEmployeesLateToday || 0}
-            </p>
-          </div>
-          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-purple-600 text-white text-xl font-bold">
-            ⏰
-          </div>
-        </div>
-      </motion.div>
+    
 
       {/* Title (Dynamically shows the selected month/year) */}
       <h1 className="text-xl md:text-2xl font-bold mb-4">

@@ -69,3 +69,32 @@ export async function fetchLateInToday() {
     throw error;
   }
 }
+
+/**
+ * Punch-In Status Today (returns { onTime: [], late: [] })
+ */
+export async function fetchPunchStatusToday() {
+  try {
+    // Adjust the URL if you have a different route
+    const response = await axiosInstance.get(
+      "/admin/attendance-dashboard/punch-status-today"
+    );
+    return response.data; // This should be { success: true, data: { onTime: [...], late: [...] } }
+  } catch (error) {
+    console.error("Error in fetchPunchStatusToday:", error);
+    throw error;
+  }
+}
+
+
+export async function fetchDepartmentAttendanceSummary() {
+  try {
+    const response = await axiosInstance.get(
+      "/admin/attendance-dashboard/getDepartmentAttendanceSummary"
+    );
+    return response.data; // => { success: true, data: [ { department, present, absent, totalEmployees } ] }
+  } catch (error) {
+    console.error("Error in fetchDepartmentAttendanceSummary:", error);
+    throw error;
+  }
+}

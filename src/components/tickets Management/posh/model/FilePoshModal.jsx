@@ -105,6 +105,7 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
                   isDisabled={isEdit}
                   isSearchable={!isEdit}
                   placeholder="Select or search an employee..."
+                  className="dark:bg-gray-700 dark:text-gray-100 "
                   styles={{
                     control: (base) => ({
                       ...base,

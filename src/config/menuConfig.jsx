@@ -601,21 +601,27 @@ export const menuItems = [
     ],
   },
 
-  // {
-  //   name: "Training Material",
-  //   icon: <MdModelTraining />,
-  //   color: "text-blue-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Training Material",
-  //       link: "/dashboard/training-material",
-  //       permission: "trainingMaterial",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+  {
+    name: "Policies & Induction",
+    icon: <FaFileSignature />,
+    color: "text-blue-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Induction PPT's",
+        link: "/dashboard/induction-ppt",
+        permission: "inductionPPT",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Company Policies",
+        link: "/dashboard/company-policies",
+        permission: "companyPolicies",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
 
   // {
   //   name: "User Profile",

@@ -1,47 +1,879 @@
 
-import  { useState, useEffect, useMemo } from "react";
-import {
-  Box,
-  Button,
-  TextField,
-  Checkbox,
-  FormControlLabel,
-  Typography,
-  CircularProgress,
-  Card,
-  CardContent,
-  CardActions,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions as MuiDialogActions,
-  Chip,
-  Grid,
-  useTheme,
-  useMediaQuery,
-  IconButton,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  Skeleton,
-  Paper,
-} from "@mui/material";
-import { styled } from "@mui/material/styles";
+// // import { useState, useEffect, useMemo } from "react";
+// // import { motion } from "framer-motion";
+// // import { useNavigate } from "react-router-dom";
+// // import InfiniteScroll from "react-infinite-scroll-component";
+// // import { FaEdit, FaTrash, FaPlus, FaTimes, FaSearch, FaFilter } from "react-icons/fa";
+// // import { toast } from "react-hot-toast";
+
+// // import useAnnouncementStore from "../../store/announcementStore";
+// // import useDepartmentStore from "../../store/departmentStore";
+
+// // // Modals
+// // import AnnouncementDetailModal from "./model/AnnouncementDetailModal";
+// // import AnnouncementEditModal from "./model/AnnouncementEditModal";
+// // import AnnouncementAddModal from "./model/AnnouncementAddModal";
+// // import ConfirmationDialog from "../common/ConfirmationDialog"; 
+// // import FullScreenLoader from "../common/FullScreenLoader";     
+
+// // const MakeAnnouncement = () => {
+// //   const navigate = useNavigate();
+
+// //   // -------------------- Store Hooks --------------------
+// //   const {
+// //     announcements,
+// //     loading: announcementsLoading,
+// //     error: announcementsError,
+// //     fetchAnnouncements,
+// //     deleteAnnouncement, 
+// //     // (addAnnouncement and updateAnnouncement are used inside the modals now)
+// //   } = useAnnouncementStore();
+
+// //   const {
+// //     departments,
+// //     loading: departmentsLoading,
+// //     error: departmentsError,
+// //     fetchDepartments,
+// //   } = useDepartmentStore();
+
+// //   // -------------------- Local UI State --------------------
+// //   // Add Modal
+// //   const [openAddModal, setOpenAddModal] = useState(false);
+
+// //   // Edit Modal
+// //   const [openEditModal, setOpenEditModal] = useState(false);
+// //   const [currentAnnouncement, setCurrentAnnouncement] = useState(null);
+
+// //   // Detail Modal
+// //   const [openDetailDialog, setOpenDetailDialog] = useState(false);
+// //   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+
+// //   // Confirmation for DELETE
+// //   const [confirmDialog, setConfirmDialog] = useState({
+// //     open: false,
+// //     title: "",
+// //     message: "",
+// //     onConfirm: null,
+// //   });
+
+// //   // **Loader** for Delete
+// //   const [deleteLoading, setDeleteLoading] = useState(false);
+
+// //   // Infinite Scroll
+// //   const [visibleCount, setVisibleCount] = useState(18);
+
+// //   // Filters
+// //   const [filterDepartment, setFilterDepartment] = useState("All");
+// //   const [sortOrder, setSortOrder] = useState("Newest");
+// //   const [searchQuery, setSearchQuery] = useState("");
+
+// //   // -------------------- Effects --------------------
+// //   useEffect(() => {
+// //     fetchDepartments();
+// //     fetchAnnouncements();
+// //   }, [fetchDepartments, fetchAnnouncements]);
+
+// //   // Reset visible count whenever filters change
+// //   useEffect(() => {
+// //     setVisibleCount(18);
+// //   }, [filterDepartment, sortOrder, searchQuery]);
+
+// //   // -------------------- Delete Handler --------------------
+// //   const handleDelete = (id) => {
+// //     setConfirmDialog({
+// //       open: true,
+// //       title: "Delete Announcement",
+// //       message: "Are you sure you want to delete this announcement?",
+// //       onConfirm: async () => {
+// //         try {
+// //           setDeleteLoading(true);
+// //           await deleteAnnouncement(id);
+// //           toast.success("Announcement deleted successfully!");
+// //         } catch (error) {
+// //           console.error(error);
+// //           toast.error("Failed to delete announcement.");
+// //         } finally {
+// //           setConfirmDialog((prev) => ({ ...prev, open: false }));
+// //           setDeleteLoading(false);
+// //         }
+// //       },
+// //     });
+// //   };
+
+// //   // -------------------- Detail Modal Handler --------------------
+// //   const handleCardClick = (announcement) => {
+// //     setSelectedAnnouncement(announcement);
+// //     setOpenDetailDialog(true);
+// //   };
+
+// //   // -------------------- Edit Modal Handlers --------------------
+// //   const handleOpenEditModal = (announcement) => {
+// //     setCurrentAnnouncement({
+// //       ...announcement,
+// //       publishForAll: announcement.publish_for_all,
+// //       selectedDepartments: announcement.publish_for_all
+// //         ? []
+// //         : announcement.department.map((dept) => dept._id),
+// //       announcementPostImgUrl: announcement.announcementPostImg,
+// //     });
+// //     setOpenEditModal(true);
+// //   };
+
+// //   const handleCloseEditModal = () => {
+// //     setOpenEditModal(false);
+// //     setCurrentAnnouncement(null);
+// //   };
+
+// //   // -------------------- Filters & Sorting --------------------
+// //   const handleSearchQueryChange = (e) => setSearchQuery(e.target.value);
+// //   const handleClearFilters = () => {
+// //     setFilterDepartment("All");
+// //     setSortOrder("Newest");
+// //     setSearchQuery("");
+// //   };
+// //   const handleFilterDepartmentChange = (e) => setFilterDepartment(e.target.value);
+// //   const handleSortOrderChange = (e) => setSortOrder(e.target.value);
+
+// //   const filteredAnnouncements = useMemo(() => {
+// //     return announcements
+// //       .filter((ann) => {
+// //         // Department filter
+// //         if (filterDepartment === "All") return true;
+// //         // If publish_for_all is true, skip it if filter != "All"
+// //         if (ann.publish_for_all) return false;
+// //         return ann.department?.some((dept) => dept._id === filterDepartment);
+// //       })
+// //       .filter((ann) => {
+// //         // Search
+// //         if (!searchQuery.trim()) return true;
+// //         const q = searchQuery.toLowerCase();
+// //         return (
+// //           ann.announcementSubject.toLowerCase().includes(q) ||
+// //           ann.announcementDescription.toLowerCase().includes(q)
+// //         );
+// //       })
+// //       .sort((a, b) => {
+// //         // Sort by date
+// //         if (sortOrder === "Newest") {
+// //           return new Date(b.announcementDate) - new Date(a.announcementDate);
+// //         }
+// //         return new Date(a.announcementDate) - new Date(b.announcementDate);
+// //       });
+// //   }, [announcements, filterDepartment, sortOrder, searchQuery]);
+
+// //   // -------------------- Infinite Scroll --------------------
+// //   const fetchMoreData = () => {
+// //     if (visibleCount >= filteredAnnouncements.length) return;
+// //     setTimeout(() => {
+// //       setVisibleCount((prev) => prev + 18);
+// //     }, 500);
+// //   };
+
+// //   // -------------------- Render --------------------
+// //   return (
+// //     <div className="min-h-screen p-6 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-50 transition-colors">
+// //       {/* If currently deleting, show our full-screen loader */}
+// //       {deleteLoading && <FullScreenLoader />}
+
+// //       {/* Header + Add Button */}
+// //       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+// //         <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-0">
+// //           Manage Announcements
+// //         </h1>
+// //         <motion.button
+// //           whileHover={{ scale: 1.05 }}
+// //           whileTap={{ scale: 0.95 }}
+// //           onClick={() => setOpenAddModal(true)}
+// //           className="flex items-center bg-yellow-600 text-indigo-800 
+// //                      px-4 py-2 rounded-md font-semibold hover:bg-yellow-500"
+// //         >
+// //           <FaPlus className="mr-2" />
+// //           Add Announcement
+// //         </motion.button>
+// //       </div>
+
+// //       {/* Search & Filters */}
+// //       <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4 mb-6">
+// //   <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+    
+// //     {/* Search */}
+// //     <div className="col-span-12 md:col-span-4 flex flex-col">
+// //       <label className="text-sm font-medium mb-1">Search</label>
+// //       <div className="flex items-center bg-gray-50 dark:bg-gray-700 rounded-md px-2">
+// //         <FaSearch className="text-gray-400 dark:text-gray-300 mr-2" />
+// //         <input
+// //           type="text"
+// //           placeholder="Search Announcements"
+// //           value={searchQuery}
+// //           onChange={handleSearchQueryChange}
+// //           className="w-full bg-transparent focus:outline-none py-2 text-sm"
+// //         />
+// //       </div>
+// //     </div>
+    
+// //     {/* Filter by Department */}
+// //     <div className="col-span-12 md:col-span-3 flex flex-col">
+// //       <label className="text-sm font-medium mb-1">Filter by Department</label>
+// //       <select
+// //         value={filterDepartment}
+// //         onChange={handleFilterDepartmentChange}
+// //         className="w-full bg-white dark:bg-gray-700 border border-gray-300 
+// //                    dark:border-gray-600 rounded-md px-3 py-2 text-sm 
+// //                    focus:outline-none focus:ring-1 focus:ring-blue-500"
+// //       >
+// //         <option value="All">All Departments</option>
+// //         {departments.map((dept) => (
+// //           <option key={dept._id} value={dept._id}>
+// //             {dept.department}
+// //           </option>
+// //         ))}
+// //       </select>
+// //     </div>
+    
+// //     {/* Sort by Date */}
+// //     <div className="col-span-12 md:col-span-3 flex flex-col">
+// //       <label className="text-sm font-medium mb-1">Sort by Date</label>
+// //       <select
+// //         value={sortOrder}
+// //         onChange={handleSortOrderChange}
+// //         className="w-full bg-white dark:bg-gray-700 border border-gray-300 
+// //                    dark:border-gray-600 rounded-md px-3 py-2 text-sm 
+// //                    focus:outline-none focus:ring-1 focus:ring-blue-500"
+// //       >
+// //         <option value="Newest">Newest First</option>
+// //         <option value="Oldest">Oldest First</option>
+// //       </select>
+// //     </div>
+    
+// //     {/* Clear Filters */}
+// //     <div className="col-span-12 md:col-span-2 flex flex-col">
+// //       {/* Hidden label so spacing is consistent */}
+// //       <label className="invisible ">Clear</label>
+// //       <button
+// //         onClick={handleClearFilters}
+// //         className="w-full bg-white dark:bg-gray-700 border border-gray-300 
+// //                    dark:border-gray-600 rounded-md px-2 py-2 text-gray-700 
+// //                    dark:text-gray-200 font-medium flex items-center 
+// //                    justify-center space-x-2 hover:bg-gray-100 
+// //                    dark:hover:bg-gray-600 text-sm "
+// //       >
+// //         <FaFilter />
+// //         <span>Clear Filters</span>
+// //       </button>
+// //     </div>
+
+// //   </div>
+// // </div>
+
+
+// //       {/* Announcements List + Infinite Scroll */}
+// //       <div>
+// //         {/* Loading State */}
+// //         {announcementsLoading && (
+// //           <div className="grid grid-cols-1 gap-4">
+// //             {Array.from({ length: 6 }).map((_, i) => (
+// //               <div
+// //                 key={i}
+// //                 className="bg-white dark:bg-gray-800 p-4 rounded-md shadow space-y-3"
+// //               >
+// //                 <div className="w-full h-24 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
+// //                 <div className="w-3/5 h-4 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
+// //                 <div className="w-4/5 h-4 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
+// //               </div>
+// //             ))}
+// //           </div>
+// //         )}
+
+// //         {/* Error State */}
+// //         {announcementsError && !announcementsLoading && (
+// //           <p className="text-center text-red-500">{announcementsError}</p>
+// //         )}
+
+// //         {/* No Results */}
+// //         {!announcementsLoading &&
+// //           !announcementsError &&
+// //           filteredAnnouncements.length === 0 && (
+// //             <p className="text-center">No announcements found.</p>
+// //           )}
+
+// //         {/* Data */}
+// //         {!announcementsLoading &&
+// //           !announcementsError &&
+// //           filteredAnnouncements.length > 0 && (
+// //             <InfiniteScroll
+// //               dataLength={visibleCount}
+// //               next={fetchMoreData}
+// //               hasMore={visibleCount < filteredAnnouncements.length}
+// //               loader={
+// //                 <div className="flex justify-center my-4">
+// //                   <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+// //                 </div>
+// //               }
+// //               style={{ overflow: "visible" }}
+// //             >
+// //               {filteredAnnouncements.slice(0, visibleCount).map((announcement) => (
+// //                 <motion.div
+// //                   key={announcement._id}
+// //                   initial={{ opacity: 0, y: 20 }}
+// //                   animate={{ opacity: 1, y: 0 }}
+// //                   transition={{ duration: 0.3 }}
+// //                   className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 mb-4 
+// //                              flex flex-col md:flex-row items-start md:items-center 
+// //                              justify-between transform hover:-translate-y-1 
+// //                              hover:shadow-lg transition"
+// //                 >
+// //                   {/* Left: Image & Subject */}
+// //                   <div
+// //                     onClick={() => handleCardClick(announcement)}
+// //                     className="flex items-start cursor-pointer"
+// //                   >
+// //                     <div className="w-24 h-20 flex-shrink-0 rounded-md overflow-hidden mr-4">
+// //                       {announcement.announcementPostImg ? (
+// //                         <img
+// //                           src={announcement.announcementPostImg}
+// //                           alt={announcement.announcementSubject}
+// //                           className="w-full h-full object-contain"
+// //                           loading="lazy"
+// //                         />
+// //                       ) : (
+// //                         <div className="w-full h-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
+// //                       )}
+// //                     </div>
+
+// //                     <div>
+// //                       {/* Using createdAt to show real date/time */}
+// //                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+// //                         {announcement.updatedAt
+// //                           ? new Date(announcement.updatedAt).toLocaleString()
+// //                           : ""}
+// //                       </p>
+// //                       <p className="font-semibold text-green-600 dark:text-green-400">
+// //                         {announcement.announcementSubject}
+// //                       </p>
+// //                       <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-1">
+// //                         Department:{" "}
+// //                         {announcement.publish_for_all
+// //                           ? "All"
+// //                           : announcement.department
+// //                               .map((dept) => dept.department)
+// //                               .join(", ")}
+// //                       </p>
+// //                     </div>
+// //                   </div>
+
+// //                   {/* Right: Edit / Delete Buttons */}
+// //                   <div className="flex mt-4 md:mt-0 space-x-2 md:space-x-4">
+// //                     <motion.button
+// //                       whileHover={{ scale: 1.05 }}
+// //                       whileTap={{ scale: 0.95 }}
+// //                       onClick={(e) => {
+// //                         e.stopPropagation();
+// //                         handleOpenEditModal(announcement);
+// //                       }}
+// //                       className="flex items-center bg-yellow-600 text-white
+// //                                  px-3 py-2 rounded-md font-medium hover:bg-yellow-500"
+// //                     >
+// //                       <FaEdit className="mr-2" />
+// //                       Edit
+// //                     </motion.button>
+// //                     <motion.button
+// //                       whileHover={{ scale: 1.05 }}
+// //                       whileTap={{ scale: 0.95 }}
+// //                       onClick={(e) => {
+// //                         e.stopPropagation();
+// //                         handleDelete(announcement._id);
+// //                       }}
+// //                       className="flex items-center bg-red-600 text-white
+// //                                  px-3 py-2 rounded-md font-medium hover:bg-red-500"
+// //                     >
+// //                       <FaTrash className="mr-2" />
+// //                       Delete
+// //                     </motion.button>
+// //                   </div>
+// //                 </motion.div>
+// //               ))}
+// //             </InfiniteScroll>
+// //           )}
+// //       </div>
+
+// //       {/* --------------------------- Add Announcement Modal --------------------------- */}
+// //       <AnnouncementAddModal
+// //         isOpen={openAddModal}
+// //         onClose={() => setOpenAddModal(false)}
+// //         departments={departments}
+// //       />
+
+// //       {/* --------------------------- Edit Announcement Modal --------------------------- */}
+// //       <AnnouncementEditModal
+// //         isOpen={openEditModal}
+// //         onClose={handleCloseEditModal}
+// //         currentAnnouncement={currentAnnouncement}
+// //         departments={departments}
+// //       />
+
+// //       {/* --------------------------- Confirmation Dialog (DELETE) --------------------------- */}
+// //       <ConfirmationDialog
+// //         open={confirmDialog.open}
+// //         title={confirmDialog.title}
+// //         message={confirmDialog.message}
+// //         onConfirm={confirmDialog.onConfirm}
+// //         onCancel={() => setConfirmDialog((prev) => ({ ...prev, open: false }))}
+// //       />
+
+// //       {/* --------------------------- Detailed Announcement Modal --------------------------- */}
+// //       <AnnouncementDetailModal
+// //         isOpen={openDetailDialog}
+// //         onClose={() => setOpenDetailDialog(false)}
+// //         announcement={selectedAnnouncement}
+// //       />
+// //     </div>
+// //   );
+// // };
+
+// // export default MakeAnnouncement;
+
+
+// import { useState, useEffect, useMemo } from "react";
+// import { motion } from "framer-motion";
+// import { useNavigate } from "react-router-dom";
+// import InfiniteScroll from "react-infinite-scroll-component";
+// import { FaEdit, FaTrash, FaPlus, FaTimes, FaSearch, FaFilter } from "react-icons/fa";
+// import { toast } from "react-hot-toast";
+
+// import useAnnouncementStore from "../../store/announcementStore";
+// import useDepartmentStore from "../../store/departmentStore";
+
+// // Modals
+// import AnnouncementDetailModal from "./model/AnnouncementDetailModal";
+// import AnnouncementEditModal from "./model/AnnouncementEditModal";
+// import AnnouncementAddModal from "./model/AnnouncementAddModal";
+// import ConfirmationDialog from "../common/ConfirmationDialog";
+// import FullScreenLoader from "../common/FullScreenLoader";
+
+// const MakeAnnouncement = () => {
+//   const navigate = useNavigate();
+
+//   // -------------------- Store Hooks --------------------
+//   const {
+//     announcements,
+//     loading: announcementsLoading,
+//     error: announcementsError,
+//     fetchAnnouncements,
+//     deleteAnnouncement,
+//   } = useAnnouncementStore();
+
+//   const {
+//     departments,
+//     loading: departmentsLoading,
+//     error: departmentsError,
+//     fetchDepartments,
+//   } = useDepartmentStore();
+
+//   // -------------------- Local UI State --------------------
+//   // Add Modal
+//   const [openAddModal, setOpenAddModal] = useState(false);
+
+//   // Edit Modal
+//   const [openEditModal, setOpenEditModal] = useState(false);
+//   const [currentAnnouncement, setCurrentAnnouncement] = useState(null);
+
+//   // Detail Modal
+//   const [openDetailDialog, setOpenDetailDialog] = useState(false);
+//   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+
+//   // Confirmation for DELETE
+//   const [confirmDialog, setConfirmDialog] = useState({
+//     open: false,
+//     title: "",
+//     message: "",
+//     onConfirm: null,
+//   });
+
+//   // Loader for Delete
+//   const [deleteLoading, setDeleteLoading] = useState(false);
+
+//   // Infinite Scroll
+//   const [visibleCount, setVisibleCount] = useState(18);
+
+//   // Filters
+//   const [filterDepartment, setFilterDepartment] = useState("All");
+//   const [sortOrder, setSortOrder] = useState("Newest");
+//   const [searchQuery, setSearchQuery] = useState("");
+
+//   // -------------------- Effects --------------------
+//   useEffect(() => {
+//     fetchDepartments();
+//     fetchAnnouncements();
+//   }, [fetchDepartments, fetchAnnouncements]);
+
+//   // Reset visible count whenever filters change
+//   useEffect(() => {
+//     setVisibleCount(18);
+//   }, [filterDepartment, sortOrder, searchQuery]);
+
+//   // -------------------- Delete Handler --------------------
+//   const handleDelete = (id) => {
+//     setConfirmDialog({
+//       open: true,
+//       title: "Delete Announcement",
+//       message: "Are you sure you want to delete this announcement?",
+//       onConfirm: async () => {
+//         try {
+//           setDeleteLoading(true);
+//           await deleteAnnouncement(id);
+//           toast.success("Announcement deleted successfully!");
+//         } catch (error) {
+//           console.error(error);
+//           toast.error("Failed to delete announcement.");
+//         } finally {
+//           setConfirmDialog((prev) => ({ ...prev, open: false }));
+//           setDeleteLoading(false);
+//         }
+//       },
+//     });
+//   };
+
+//   // -------------------- Detail Modal Handler --------------------
+//   const handleCardClick = (announcement) => {
+//     setSelectedAnnouncement(announcement);
+//     setOpenDetailDialog(true);
+//   };
+
+//   // -------------------- Edit Modal Handlers --------------------
+//   const handleOpenEditModal = (announcement) => {
+//     setCurrentAnnouncement({
+//       ...announcement,
+//       publishForAll: announcement.publish_for_all,
+//       selectedDepartments: announcement.publish_for_all
+//         ? []
+//         : announcement.department.map((dept) => dept._id),
+//       announcementPostImgUrl: announcement.announcementPostImg,
+//     });
+//     setOpenEditModal(true);
+//   };
+
+//   const handleCloseEditModal = () => {
+//     setOpenEditModal(false);
+//     setCurrentAnnouncement(null);
+//   };
+
+//   // -------------------- Filters & Sorting --------------------
+//   const handleSearchQueryChange = (e) => setSearchQuery(e.target.value);
+//   const handleClearFilters = () => {
+//     setFilterDepartment("All");
+//     setSortOrder("Newest");
+//     setSearchQuery("");
+//   };
+//   const handleFilterDepartmentChange = (e) => setFilterDepartment(e.target.value);
+//   const handleSortOrderChange = (e) => setSortOrder(e.target.value);
+
+//   const filteredAnnouncements = useMemo(() => {
+//     return announcements
+//       .filter((ann) => {
+//         // Department filter
+//         if (filterDepartment === "All") return true;
+//         // If publish_for_all is true, skip it if filter != "All"
+//         if (ann.publish_for_all) return false;
+//         return ann.department?.some((dept) => dept._id === filterDepartment);
+//       })
+//       .filter((ann) => {
+//         // Search
+//         if (!searchQuery.trim()) return true;
+//         const q = searchQuery.toLowerCase();
+//         return (
+//           ann.announcementSubject.toLowerCase().includes(q) ||
+//           ann.announcementDescription.toLowerCase().includes(q)
+//         );
+//       })
+//       .sort((a, b) => {
+//         // ***** Updated to sort by full date-time using updatedAt *****
+//         if (sortOrder === "Newest") {
+//           return new Date(b.updatedAt) - new Date(a.updatedAt);
+//         } else {
+//           return new Date(a.updatedAt) - new Date(b.updatedAt);
+//         }
+//       });
+//   }, [announcements, filterDepartment, sortOrder, searchQuery]);
+
+//   // -------------------- Infinite Scroll --------------------
+//   const fetchMoreData = () => {
+//     if (visibleCount >= filteredAnnouncements.length) return;
+//     setTimeout(() => {
+//       setVisibleCount((prev) => prev + 18);
+//     }, 500);
+//   };
+
+//   // -------------------- Render --------------------
+//   return (
+//     <div className="min-h-screen p-6 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-50 transition-colors">
+//       {/* If currently deleting, show our full-screen loader */}
+//       {deleteLoading && <FullScreenLoader />}
+
+//       {/* Header + Add Button */}
+//       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+//         <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-0">
+//           Manage Announcements
+//         </h1>
+//         <motion.button
+//           whileHover={{ scale: 1.05 }}
+//           whileTap={{ scale: 0.95 }}
+//           onClick={() => setOpenAddModal(true)}
+//           className="flex items-center bg-yellow-600 text-indigo-800 
+//                      px-4 py-2 rounded-md font-semibold hover:bg-yellow-500"
+//         >
+//           <FaPlus className="mr-2" />
+//           Add Announcement
+//         </motion.button>
+//       </div>
+
+//       {/* Search & Filters */}
+//       <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4 mb-6">
+//         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+
+//           {/* Search */}
+//           <div className="col-span-12 md:col-span-4 flex flex-col">
+//             <label className="text-sm font-medium mb-1">Search</label>
+//             <div className="flex items-center bg-gray-50 dark:bg-gray-700 rounded-md px-2">
+//               <FaSearch className="text-gray-400 dark:text-gray-300 mr-2" />
+//               <input
+//                 type="text"
+//                 placeholder="Search Announcements"
+//                 value={searchQuery}
+//                 onChange={handleSearchQueryChange}
+//                 className="w-full bg-transparent focus:outline-none py-2 text-sm"
+//               />
+//             </div>
+//           </div>
+
+//           {/* Filter by Department */}
+//           <div className="col-span-12 md:col-span-3 flex flex-col">
+//             <label className="text-sm font-medium mb-1">Filter by Department</label>
+//             <select
+//               value={filterDepartment}
+//               onChange={handleFilterDepartmentChange}
+//               className="w-full bg-white dark:bg-gray-700 border border-gray-300 
+//                          dark:border-gray-600 rounded-md px-3 py-2 text-sm 
+//                          focus:outline-none focus:ring-1 focus:ring-blue-500"
+//             >
+//               <option value="All">All Departments</option>
+//               {departments.map((dept) => (
+//                 <option key={dept._id} value={dept._id}>
+//                   {dept.department}
+//                 </option>
+//               ))}
+//             </select>
+//           </div>
+
+//           {/* Sort by Date */}
+//           <div className="col-span-12 md:col-span-3 flex flex-col">
+//             <label className="text-sm font-medium mb-1">Sort by Date</label>
+//             <select
+//               value={sortOrder}
+//               onChange={handleSortOrderChange}
+//               className="w-full bg-white dark:bg-gray-700 border border-gray-300 
+//                          dark:border-gray-600 rounded-md px-3 py-2 text-sm 
+//                          focus:outline-none focus:ring-1 focus:ring-blue-500"
+//             >
+//               <option value="Newest">Newest First</option>
+//               <option value="Oldest">Oldest First</option>
+//             </select>
+//           </div>
+
+//           {/* Clear Filters */}
+//           <div className="col-span-12 md:col-span-2 flex flex-col">
+//             {/* Hidden label so spacing is consistent */}
+//             <label className="invisible">Clear</label>
+//             <button
+//               onClick={handleClearFilters}
+//               className="w-full bg-white dark:bg-gray-700 border border-gray-300 
+//                          dark:border-gray-600 rounded-md px-2 py-2 text-gray-700 
+//                          dark:text-gray-200 font-medium flex items-center 
+//                          justify-center space-x-2 hover:bg-gray-100 
+//                          dark:hover:bg-gray-600 text-sm"
+//             >
+//               <FaFilter />
+//               <span>Clear Filters</span>
+//             </button>
+//           </div>
+
+//         </div>
+//       </div>
+
+//       {/* Announcements List + Infinite Scroll */}
+//       <div>
+//         {/* Loading State */}
+//         {announcementsLoading && (
+//           <div className="grid grid-cols-1 gap-4">
+//             {Array.from({ length: 6 }).map((_, i) => (
+//               <div
+//                 key={i}
+//                 className="bg-white dark:bg-gray-800 p-4 rounded-md shadow space-y-3"
+//               >
+//                 <div className="w-full h-24 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
+//                 <div className="w-3/5 h-4 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
+//                 <div className="w-4/5 h-4 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
+//               </div>
+//             ))}
+//           </div>
+//         )}
+
+//         {/* Error State */}
+//         {announcementsError && !announcementsLoading && (
+//           <p className="text-center text-red-500">{announcementsError}</p>
+//         )}
+
+//         {/* No Results */}
+//         {!announcementsLoading &&
+//           !announcementsError &&
+//           filteredAnnouncements.length === 0 && (
+//             <p className="text-center">No announcements found.</p>
+//           )}
+
+//         {/* Data */}
+//         {!announcementsLoading &&
+//           !announcementsError &&
+//           filteredAnnouncements.length > 0 && (
+
+//             <InfiniteScroll
+//               dataLength={visibleCount}
+//               next={fetchMoreData}
+//               hasMore={visibleCount < filteredAnnouncements.length}
+//               loader={
+//                 <div className="flex justify-center my-4">
+//                   <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+//                 </div>
+//               }
+//               style={{ overflow: "visible" }}
+//             >
+//               {filteredAnnouncements.slice(0, visibleCount).map((announcement) => (
+//                 <motion.div
+//                   key={announcement._id}
+//                   initial={{ opacity: 0, y: 20 }}
+//                   animate={{ opacity: 1, y: 0 }}
+//                   transition={{ duration: 0.3 }}
+//                   onClick={() => handleCardClick(announcement)}
+//                   className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 mb-4 
+//                              flex flex-col md:flex-row items-start md:items-center 
+//                              justify-between transform hover:-translate-y-1 
+//                              hover:shadow-lg transition  cursor-pointer"
+//                 >
+//                   {/* Left: Image & Subject */}
+//                   <div
+//                     // onClick={() => handleCardClick(announcement)}
+//                     className="flex items-start cursor-pointer "
+//                   >
+//                     <div className="w-40 h-20 flex-shrink-0 rounded-md overflow-hidden mr-4">
+//                       {announcement.announcementPostImg ? (
+//                         <img
+//                           src={announcement.announcementPostImg}
+//                           alt={announcement.announcementSubject}
+//                           className="w-full h-full object-contain"
+//                           loading="lazy"
+//                         />
+//                       ) : (
+//                         <div className="w-full h-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
+//                       )}
+//                     </div>
+
+//                     <div className=" ml-10">
+//                       {/* Show the actual date/time from updatedAt */}
+//                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+//                         {announcement.updatedAt
+//                           ? new Date(announcement.updatedAt).toLocaleString()
+//                           : ""}
+//                       </p>
+//                       <p className="font-semibold text-green-600 dark:text-green-400">
+//                         {announcement.announcementSubject}
+//                       </p>
+//                       <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-1">
+//                         Department:{" "}
+//                         {announcement.publish_for_all
+//                           ? "All"
+//                           : announcement.department
+//                               .map((dept) => dept.department)
+//                               .join(", ")}
+//                       </p>
+//                     </div>
+//                   </div>
+
+//                   {/* Right: Edit / Delete Buttons */}
+//                   <div className="flex mt-4 md:mt-0 space-x-2 md:space-x-4">
+//                     <motion.button
+//                       whileHover={{ scale: 1.05 }}
+//                       whileTap={{ scale: 0.95 }}
+//                       onClick={(e) => {
+//                         e.stopPropagation();
+//                         handleOpenEditModal(announcement);
+//                       }}
+//                       className="flex items-center bg-yellow-600 text-white
+//                                  px-3 py-2 rounded-md font-medium hover:bg-yellow-500"
+//                     >
+//                       <FaEdit className="mr-2" />
+//                       Edit
+//                     </motion.button>
+//                     <motion.button
+//                       whileHover={{ scale: 1.05 }}
+//                       whileTap={{ scale: 0.95 }}
+//                       onClick={(e) => {
+//                         e.stopPropagation();
+//                         handleDelete(announcement._id);
+//                       }}
+//                       className="flex items-center bg-red-600 text-white
+//                                  px-3 py-2 rounded-md font-medium hover:bg-red-500"
+//                     >
+//                       <FaTrash className="mr-2" />
+//                       Delete
+//                     </motion.button>
+//                   </div>
+//                 </motion.div>
+//               ))}
+//             </InfiniteScroll>
+            
+//           )}
+//       </div>
+
+//       {/* --------------------------- Add Announcement Modal --------------------------- */}
+//       <AnnouncementAddModal
+//         isOpen={openAddModal}
+//         onClose={() => setOpenAddModal(false)}
+//         departments={departments}
+//       />
+
+//       {/* --------------------------- Edit Announcement Modal --------------------------- */}
+//       <AnnouncementEditModal
+//         isOpen={openEditModal}
+//         onClose={handleCloseEditModal}
+//         currentAnnouncement={currentAnnouncement}
+//         departments={departments}
+//       />
+
+//       {/* --------------------------- Confirmation Dialog (DELETE) --------------------------- */}
+//       <ConfirmationDialog
+//         open={confirmDialog.open}
+//         title={confirmDialog.title}
+//         message={confirmDialog.message}
+//         onConfirm={confirmDialog.onConfirm}
+//         onCancel={() => setConfirmDialog((prev) => ({ ...prev, open: false }))}
+//       />
+
+//       {/* --------------------------- Detailed Announcement Modal --------------------------- */}
+//       <AnnouncementDetailModal
+//         isOpen={openDetailDialog}
+//         onClose={() => setOpenDetailDialog(false)}
+//         announcement={selectedAnnouncement}
+//       />
+//     </div>
+//   );
+// };
+
+// export default MakeAnnouncement;
+
+
+
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import InfiniteScroll from "react-infinite-scroll-component";
-
-
-
-// 2) Import react-hot-toast
-import { toast } from "react-hot-toast";
-
-// 3) Optionally, you can import the default styles here or in your top-level App:
-// import 'react-hot-toast/dist/react-hot-toast.css';
-
-import useAnnouncementStore from "../../store/announcementStore";
-import useDepartmentStore from "../../store/departmentStore";
 import {
   FaEdit,
   FaTrash,
@@ -50,39 +882,28 @@ import {
   FaSearch,
   FaFilter,
 } from "react-icons/fa";
+import { toast } from "react-hot-toast";
 
-// If you want to show toasts, it's typical to place <Toaster /> somewhere in your App.
-// For demonstration, you can place it in this file:
+import useAnnouncementStore from "../../store/announcementStore";
+import useDepartmentStore from "../../store/departmentStore";
 
-// Styled Components using Material-UI
-const StyledCard = styled(Card)(({ theme }) => ({
-  backgroundColor: theme.palette.background.paper,
-  color: theme.palette.text.primary,
-  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-  borderRadius: "16px",
-  transition: "transform 0.3s, box-shadow 0.3s",
-  cursor: "pointer",
-  "&:hover": {
-    transform: "translateY(-8px)",
-    boxShadow: "0 12px 24px rgba(0,0,0,0.2)",
-  },
-}));
-
-const AnimatedButton = motion(Button);
+// Modals
+import AnnouncementDetailModal from "./model/AnnouncementDetailModal";
+import AnnouncementEditModal from "./model/AnnouncementEditModal";
+import AnnouncementAddModal from "./model/AnnouncementAddModal";
+import ConfirmationDialog from "../common/ConfirmationDialog";
+import FullScreenLoader from "../common/FullScreenLoader";
 
 const MakeAnnouncement = () => {
   const navigate = useNavigate();
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
+  // -------------------- Store Hooks --------------------
   const {
     announcements,
     loading: announcementsLoading,
     error: announcementsError,
     fetchAnnouncements,
-    addAnnouncement,
     deleteAnnouncement,
-    updateAnnouncement,
   } = useAnnouncementStore();
 
   const {
@@ -92,170 +913,77 @@ const MakeAnnouncement = () => {
     fetchDepartments,
   } = useDepartmentStore();
 
-  // State for Add Announcement Dialog
+  // -------------------- Local UI State --------------------
+  // Add Modal
   const [openAddModal, setOpenAddModal] = useState(false);
 
-  // Form State for Adding Announcement
-  const [formData, setFormData] = useState({
-    announcementDate: "",
-    announcementSubject: "",
-    announcementPostImg: null,
-    announcementDescription: "",
-    publishForAll: true,
-    selectedDepartments: [],
-  });
-
-  // State for Edit Announcement Modal
+  // Edit Modal
   const [openEditModal, setOpenEditModal] = useState(false);
   const [currentAnnouncement, setCurrentAnnouncement] = useState(null);
 
-  // State for Confirmation Dialog
-  const [confirmDialog, setConfirmDialog] = useState({
-    open: false,
-    title: "",
-    content: "",
-    onConfirm: null,
-  });
-
-  // State for Detailed Announcement Dialog
+  // Detail Modal
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
-  // State for Infinite Scroll
-  const [visibleCount, setVisibleCount] = useState(18); // Initial number of announcements to display
+  // Confirmation for DELETE
+  const [confirmDialog, setConfirmDialog] = useState({
+    open: false,
+    title: "",
+    message: "",
+    onConfirm: null,
+  });
 
-  // State for Filters
+  // Loader for Delete
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  // Infinite Scroll
+  const [visibleCount, setVisibleCount] = useState(18);
+
+  // Filters
   const [filterDepartment, setFilterDepartment] = useState("All");
   const [sortOrder, setSortOrder] = useState("Newest");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Fetch departments and announcements on mount
+  // -------------------- Effects --------------------
   useEffect(() => {
     fetchDepartments();
     fetchAnnouncements();
   }, [fetchDepartments, fetchAnnouncements]);
 
-  // Handle input changes for Add Announcement Form
-  const handleChange = (e) => {
-    const { name, value, files, type, checked } = e.target;
-    if (type === "file") {
-      setFormData({ ...formData, [name]: files[0] });
-    } else if (type === "checkbox") {
-      if (name === "publishForAll") {
-        setFormData({
-          ...formData,
-          publishForAll: checked,
-          selectedDepartments: checked ? [] : formData.selectedDepartments,
-        });
-      }
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-  };
+  // Reset visible count whenever filters change
+  useEffect(() => {
+    setVisibleCount(18);
+  }, [filterDepartment, sortOrder, searchQuery]);
 
-  // Handle department checkbox selection for Add Announcement
-  const handleDepartmentSelection = (deptId) => {
-    setFormData((prevData) => {
-      const isSelected = prevData.selectedDepartments.includes(deptId);
-      const updatedDepartments = isSelected
-        ? prevData.selectedDepartments.filter((id) => id !== deptId)
-        : [...prevData.selectedDepartments, deptId];
-
-      return {
-        ...prevData,
-        selectedDepartments: updatedDepartments,
-        publishForAll: false,
-      };
-    });
-  };
-
-  // Handle form submission for Adding Announcement
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Validation
-    if (!formData.announcementDate) {
-      toast.error("Announcement date is required");
-      return;
-    }
-    if (!formData.announcementSubject.trim()) {
-      toast.error("Announcement subject is required");
-      return;
-    }
-    if (!formData.announcementDescription.trim()) {
-      toast.error("Announcement description is required");
-      return;
-    }
-    if (!formData.publishForAll && formData.selectedDepartments.length === 0) {
-      toast.error("Please select at least one department");
-      return;
-    }
-
-    // Show confirmation dialog
-    setConfirmDialog({
-      open: true,
-      title: "Publish Announcement",
-      content: "Do you want to publish this announcement?",
-      onConfirm: async () => {
-        try {
-          const announcementDetails = new FormData();
-          announcementDetails.append("announcementDate", formData.announcementDate);
-          announcementDetails.append("announcementSubject", formData.announcementSubject);
-          if (formData.announcementPostImg) {
-            announcementDetails.append("announcementPostImg", formData.announcementPostImg);
-          }
-          announcementDetails.append("announcementDescription", formData.announcementDescription);
-          announcementDetails.append("publish_for_all", formData.publishForAll);
-          formData.selectedDepartments.forEach((deptId) => {
-            announcementDetails.append("department[]", deptId);
-          });
-
-          await addAnnouncement(
-            announcementDetails,
-            localStorage.getItem("accessToken")
-          );
-
-          // Reset form
-          setFormData({
-            announcementDate: "",
-            announcementSubject: "",
-            announcementPostImg: null,
-            announcementDescription: "",
-            publishForAll: true,
-            selectedDepartments: [],
-          });
-
-          setOpenAddModal(false);
-          toast.success("Announcement published successfully!");
-        } catch (error) {
-          toast.error("Failed to publish announcement.");
-        } finally {
-          setConfirmDialog({ ...confirmDialog, open: false });
-        }
-      },
-    });
-  };
-
-  // Handle Delete Announcement
+  // -------------------- Delete Handler --------------------
   const handleDelete = (id) => {
     setConfirmDialog({
       open: true,
       title: "Delete Announcement",
-      content: "Are you sure you want to delete this announcement?",
+      message: "Are you sure you want to delete this announcement?",
       onConfirm: async () => {
         try {
+          setDeleteLoading(true);
           await deleteAnnouncement(id);
           toast.success("Announcement deleted successfully!");
         } catch (error) {
+          console.error(error);
           toast.error("Failed to delete announcement.");
         } finally {
-          setConfirmDialog({ ...confirmDialog, open: false });
+          setConfirmDialog((prev) => ({ ...prev, open: false }));
+          setDeleteLoading(false);
         }
       },
     });
   };
 
-  // Handle Open Edit Modal
+  // -------------------- Detail Modal Handler --------------------
+  const handleCardClick = (announcement) => {
+    setSelectedAnnouncement(announcement);
+    setOpenDetailDialog(true);
+  };
+
+  // -------------------- Edit Modal Handlers --------------------
   const handleOpenEditModal = (announcement) => {
     setCurrentAnnouncement({
       ...announcement,
@@ -268,1016 +996,389 @@ const MakeAnnouncement = () => {
     setOpenEditModal(true);
   };
 
-  // Handle Close Edit Modal
   const handleCloseEditModal = () => {
     setOpenEditModal(false);
     setCurrentAnnouncement(null);
   };
 
-  // Handle Update Form Submission
-  const handleUpdateSubmit = async (e) => {
-    e.preventDefault();
-
-    // Validation
-    if (!currentAnnouncement.announcementDate) {
-      toast.error("Announcement date is required");
-      return;
-    }
-    if (!currentAnnouncement.announcementSubject.trim()) {
-      toast.error("Announcement subject is required");
-      return;
-    }
-    if (!currentAnnouncement.announcementDescription.trim()) {
-      toast.error("Announcement description is required");
-      return;
-    }
-    if (
-      !currentAnnouncement.publishForAll &&
-      currentAnnouncement.selectedDepartments.length === 0
-    ) {
-      toast.error("Please select at least one department");
-      return;
-    }
-
-    // Show confirmation dialog
-    setConfirmDialog({
-      open: true,
-      title: "Update Announcement",
-      content: "Do you want to update this announcement?",
-      onConfirm: async () => {
-        try {
-          const announcementDetails = new FormData();
-          announcementDetails.append(
-            "announcementDate",
-            currentAnnouncement.announcementDate
-          );
-          announcementDetails.append(
-            "announcementSubject",
-            currentAnnouncement.announcementSubject
-          );
-          if (currentAnnouncement.announcementPostImg) {
-            announcementDetails.append(
-              "announcementPostImg",
-              currentAnnouncement.announcementPostImg
-            );
-          }
-          announcementDetails.append(
-            "announcementDescription",
-            currentAnnouncement.announcementDescription
-          );
-          announcementDetails.append(
-            "publish_for_all",
-            currentAnnouncement.publishForAll
-          );
-          currentAnnouncement.selectedDepartments.forEach((deptId) => {
-            announcementDetails.append("department[]", deptId);
-          });
-
-          await updateAnnouncement(
-            currentAnnouncement._id,
-            announcementDetails
-          );
-
-          handleCloseEditModal();
-          toast.success("Announcement updated successfully!");
-        } catch (error) {
-          toast.error("Failed to update announcement.");
-        } finally {
-          setConfirmDialog({ ...confirmDialog, open: false });
-        }
-      },
-    });
-  };
-
-  // Handle department selection in edit modal
-  const handleEditModalDepartmentSelection = (deptId) => {
-    setCurrentAnnouncement((prev) => {
-      const isSelected = prev.selectedDepartments.includes(deptId);
-      const updatedDepartments = isSelected
-        ? prev.selectedDepartments.filter((id) => id !== deptId)
-        : [...prev.selectedDepartments, deptId];
-
-      return {
-        ...prev,
-        selectedDepartments: updatedDepartments,
-        publishForAll: false,
-      };
-    });
-  };
-
-  // Handle input changes within the Edit Announcement Modal
-  const handleModalChange = (e) => {
-    const { name, value, files, type, checked } = e.target;
-    if (type === "file") {
-      setCurrentAnnouncement((prev) => ({ ...prev, [name]: files[0] }));
-    } else if (type === "checkbox") {
-      if (name === "publishForAll") {
-        setCurrentAnnouncement((prev) => ({
-          ...prev,
-          publishForAll: checked,
-          selectedDepartments: checked ? [] : prev.selectedDepartments,
-        }));
-      }
-    } else {
-      setCurrentAnnouncement((prev) => ({ ...prev, [name]: value }));
-    }
-  };
-
-  // Handle Card Click to Open Detailed Dialog
-  const handleCardClick = (announcement) => {
-    setSelectedAnnouncement(announcement);
-    setOpenDetailDialog(true);
-  };
-
-  // Handle Search Query Change
-  const handleSearchQueryChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
-  // Handle Clear Filters
+  // -------------------- Filters & Sorting --------------------
+  const handleSearchQueryChange = (e) => setSearchQuery(e.target.value);
   const handleClearFilters = () => {
     setFilterDepartment("All");
     setSortOrder("Newest");
     setSearchQuery("");
   };
+  const handleFilterDepartmentChange = (e) => setFilterDepartment(e.target.value);
+  const handleSortOrderChange = (e) => setSortOrder(e.target.value);
 
-  // Handle Filter Department Change
-  const handleFilterDepartmentChange = (e) => {
-    setFilterDepartment(e.target.value);
-  };
-
-  // Handle Sort Order Change
-  const handleSortOrderChange = (e) => {
-    setSortOrder(e.target.value);
-  };
-
-  // Apply Filters, Sorting, and Search
   const filteredAnnouncements = useMemo(() => {
     return announcements
-      .filter((announcement) => {
+      .filter((ann) => {
+        // Department filter
         if (filterDepartment === "All") return true;
-        return (
-          !announcement.publish_for_all &&
-          announcement.department &&
-          announcement.department.some((dept) => dept._id === filterDepartment)
-        );
+        // If publish_for_all is true, skip it if filter != "All"
+        if (ann.publish_for_all) return false;
+        return ann.department?.some((dept) => dept._id === filterDepartment);
       })
-      .filter((announcement) => {
+      .filter((ann) => {
+        // Search
         if (!searchQuery.trim()) return true;
-        const query = searchQuery.toLowerCase();
+        const q = searchQuery.toLowerCase();
         return (
-          announcement.announcementSubject.toLowerCase().includes(query) ||
-          announcement.announcementDescription.toLowerCase().includes(query)
+          ann.announcementSubject.toLowerCase().includes(q) ||
+          ann.announcementDescription.toLowerCase().includes(q)
         );
       })
       .sort((a, b) => {
+        // Sort by full date-time using updatedAt
         if (sortOrder === "Newest") {
-          return new Date(b.announcementDate) - new Date(a.announcementDate);
-        } else if (sortOrder === "Oldest") {
-          return new Date(a.announcementDate) - new Date(b.announcementDate);
+          return new Date(b.updatedAt) - new Date(a.updatedAt);
+        } else {
+          return new Date(a.updatedAt) - new Date(b.updatedAt);
         }
-        return 0;
       });
   }, [announcements, filterDepartment, sortOrder, searchQuery]);
 
-  // Debugging
-  useEffect(() => {
-    console.log("Filter Department ID:", filterDepartment);
-    console.log("Search Query:", searchQuery);
-    console.log("Filtered Announcements Count:", filteredAnnouncements.length);
-    console.log("Filtered Announcements:", filteredAnnouncements);
-  }, [filteredAnnouncements, filterDepartment, searchQuery]);
-
-  // Load more data (Infinite Scroll)
+  // -------------------- Infinite Scroll --------------------
   const fetchMoreData = () => {
     if (visibleCount >= filteredAnnouncements.length) return;
     setTimeout(() => {
-      setVisibleCount((prevCount) => prevCount + 18);
+      setVisibleCount((prev) => prev + 18);
     }, 500);
   };
 
-  useEffect(() => {
-    setVisibleCount(18);
-  }, [filteredAnnouncements, filterDepartment, sortOrder, searchQuery]);
-
+  // -------------------- Render --------------------
   return (
-    <Box
-      className="min-h-screen p-6 dark:bg-gray-900"
-      sx={{
-        backgroundColor: "background.default",
-        color: "text.primary",
-        transition: "background-color 0.3s, color 0.3s",
-      }}
-    >
-      {/* Insert the Toaster somewhere in your app (can be top-level) */}
+    <div className="min-h-screen p-6 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-50 transition-colors">
+      {/* If currently deleting, show our full-screen loader */}
+      {deleteLoading && <FullScreenLoader />}
 
-      {/* Header with Add Announcement Button */}
-      <Box className="flex flex-col md:flex-row justify-between items-center mb-6 ">
-        <Typography variant="h4" className="mb-4 md:mb-0">
+      {/* Header + Add Button */}
+      <div className="flex flex-col md:flex-row justify-between items-center mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-0">
           Manage Announcements
-        </Typography>
-        <AnimatedButton
-          variant="contained"
-          color="secondary"
-          startIcon={<FaPlus />}
-          onClick={() => setOpenAddModal(true)}
+        </h1>
+        <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          sx={{
-            backgroundColor: "yellow.600",
-            color: "indigo.600",
-            "&:hover": {
-              backgroundColor: "indigo.100",
-            },
-          }}
+          onClick={() => setOpenAddModal(true)}
+          className="flex items-center bg-yellow-600 text-indigo-800 
+                     px-4 py-2 rounded-md font-semibold hover:bg-yellow-500"
         >
+          <FaPlus className="mr-2" />
           Add Announcement
-        </AnimatedButton>
-      </Box>
+        </motion.button>
+      </div>
 
-      {/* Search, Filter, Sort, and Clear Filters Section */}
-      <Paper
-      className=" dark:bg-gray-800"
-        elevation={3}
-        sx={{
-          padding: 2,
-          marginBottom: 4,
-          borderRadius: "16px",
-        }}
-      >
-        <Grid container spacing={2} alignItems="center" className="">
-          {/* Search Bar */}
-          <Grid item xs={12} md={4}>
-            <Box display="flex" alignItems="center">
-              <FaSearch style={{ marginRight: "8px", color: "grey" }} />
-              <TextField
-                label="Search Announcements"
-                variant="outlined"
+      {/* Search & Filters */}
+      <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
+
+          {/* Search */}
+          <div className="col-span-12 md:col-span-4 flex flex-col">
+            <label className="text-sm font-medium mb-1">Search</label>
+            <div className="flex items-center bg-gray-50 dark:bg-gray-700 rounded-md px-2">
+              <FaSearch className="text-gray-400 dark:text-gray-300 mr-2" />
+              <input
+                type="text"
+                placeholder="Search Announcements"
                 value={searchQuery}
                 onChange={handleSearchQueryChange}
-                fullWidth
+                className="w-full bg-transparent focus:outline-none py-2 text-sm"
               />
-            </Box>
-          </Grid>
+            </div>
+          </div>
 
           {/* Filter by Department */}
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth>
-              <InputLabel id="filter-department-label">
-                Filter by Department
-              </InputLabel>
-              <Select
-                labelId="filter-department-label"
-                id="filter-department"
-                value={filterDepartment}
-                label="Filter by Department"
-                onChange={handleFilterDepartmentChange}
-              >
-                <MenuItem value="All">All Departments</MenuItem>
-                {departments.map((dept) => (
-                  <MenuItem key={dept._id} value={dept._id}>
-                    {dept.department}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-          </Grid>
+          <div className="col-span-12 md:col-span-3 flex flex-col">
+            <label className="text-sm font-medium mb-1">Filter by Department</label>
+            <select
+              value={filterDepartment}
+              onChange={handleFilterDepartmentChange}
+              className="w-full bg-white dark:bg-gray-700 border border-gray-300 
+                         dark:border-gray-600 rounded-md px-3 py-2 text-sm 
+                         focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              <option value="All">All Departments</option>
+              {departments.map((dept) => (
+                <option key={dept._id} value={dept._id}>
+                  {dept.department}
+                </option>
+              ))}
+            </select>
+          </div>
 
           {/* Sort by Date */}
-          <Grid item xs={12} sm={6} md={3}>
-            <FormControl fullWidth>
-              <InputLabel id="sort-order-label">Sort by Date</InputLabel>
-              <Select
-                labelId="sort-order-label"
-                id="sort-order"
-                value={sortOrder}
-                label="Sort by Date"
-                onChange={handleSortOrderChange}
-              >
-                <MenuItem value="Newest">Newest First</MenuItem>
-                <MenuItem value="Oldest">Oldest First</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-
-          {/* Clear Filters Button */}
-          <Grid item xs={12} md={2}>
-            <Button
-              variant="outlined"
-              startIcon={<FaFilter />}
-              onClick={handleClearFilters}
-              fullWidth
-              sx={{
-                height: "100%",
-              }}
-              aria-label="Clear all filters"
+          <div className="col-span-12 md:col-span-3 flex flex-col">
+            <label className="text-sm font-medium mb-1">Sort by Date</label>
+            <select
+              value={sortOrder}
+              onChange={handleSortOrderChange}
+              className="w-full bg-white dark:bg-gray-700 border border-gray-300 
+                         dark:border-gray-600 rounded-md px-3 py-2 text-sm 
+                         focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
-              Clear Filters
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
+              <option value="Newest">Newest First</option>
+              <option value="Oldest">Oldest First</option>
+            </select>
+          </div>
 
-      {/* Announcements Section with Infinite Scroll */}
-      <Box >
-        {announcementsLoading ? (
-          <Grid container spacing={3}>
-            {Array.from(new Array(6)).map((_, index) => (
-              <Grid item xs={12} key={index}>
-                <Skeleton variant="rectangular" height={100} />
-                <Box mt={2}>
-                  <Skeleton width="60%" />
-                  <Skeleton width="80%" />
-                </Box>
-              </Grid>
+          {/* Clear Filters */}
+          <div className="col-span-12 md:col-span-2 flex flex-col">
+            {/* Hidden label so spacing is consistent */}
+            <label className="invisible">Clear</label>
+            <button
+              onClick={handleClearFilters}
+              className="w-full bg-white dark:bg-gray-700 border border-gray-300 
+                         dark:border-gray-600 rounded-md px-2 py-2 text-gray-700 
+                         dark:text-gray-200 font-medium flex items-center 
+                         justify-center space-x-2 hover:bg-gray-100 
+                         dark:hover:bg-gray-600 text-sm"
+            >
+              <FaFilter />
+              <span>Clear Filters</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      {/* Announcements List + Infinite Scroll */}
+      <div>
+        {/* Loading State */}
+        {announcementsLoading && (
+          <div className="grid grid-cols-1 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div
+                key={i}
+                className="bg-white dark:bg-gray-800 p-4 rounded-md shadow space-y-3"
+              >
+                <div className="w-full h-24 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
+                <div className="w-3/5 h-4 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
+                <div className="w-4/5 h-4 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
+              </div>
             ))}
-          </Grid>
-        ) : announcementsError ? (
-          <Typography color="error" className="text-center">
-            {announcementsError}
-          </Typography>
-        ) : filteredAnnouncements.length === 0 ? (
-          <Typography className="text-center">
-            No announcements found for the selected criteria.
-          </Typography>
-        ) : (
-          <InfiniteScroll
-            dataLength={visibleCount}
-            next={fetchMoreData}
-            hasMore={visibleCount < filteredAnnouncements.length}
-            loader={
-              <Box className="flex justify-center items-center my-4">
-                <CircularProgress />
-              </Box>
-            }
-            style={{ overflow: "visible" }}
-          >
-            <Grid container spacing={2} className="">
+          </div>
+        )}
+
+        {/* Error State */}
+        {announcementsError && !announcementsLoading && (
+          <p className="text-center text-red-500">{announcementsError}</p>
+        )}
+
+        {/* No Results */}
+        {!announcementsLoading &&
+          !announcementsError &&
+          filteredAnnouncements.length === 0 && (
+            <p className="text-center">No announcements found.</p>
+          )}
+
+        {/* Data */}
+        {!announcementsLoading &&
+          !announcementsError &&
+          filteredAnnouncements.length > 0 && (
+            <InfiniteScroll
+              dataLength={visibleCount}
+              next={fetchMoreData}
+              hasMore={visibleCount < filteredAnnouncements.length}
+              loader={
+                <div className="flex justify-center my-4">
+                  <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+                </div>
+              }
+              style={{ overflow: "visible" }}
+            >
               {filteredAnnouncements.slice(0, visibleCount).map((announcement) => (
-                <Grid item xs={12} key={announcement._id}>
-                  {/* Single row "card" layout */}
-                  <StyledCard
-                  className="dark:bg-gray-800"
-                    component={motion.div}
+                <div key={announcement._id} className="mb-4">
+                  {/* ------------------ Mobile Layout (< md) ------------------ */}
+                  <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.3 }}
                     onClick={() => handleCardClick(announcement)}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      cursor: "pointer",
-                      p: 2,
-                    }}
+                    className="block md:hidden bg-white dark:bg-gray-800 
+                               rounded-xl shadow-md p-4 flex flex-col 
+                               transform hover:-translate-y-1 hover:shadow-lg 
+                               transition cursor-pointer"
                   >
-                    {/* Left Side: Image */}
-                    <Box
-                      sx={{
-                        width: 100,
-                        height: 80,
-                        overflow: "hidden",
-                        borderRadius: 1,
-                        flexShrink: 0,
-                        mr: 4,
-                      }}
-                    >
+                    {/* Image */}
+                    <div className="w-full h-48 rounded-md overflow-hidden mb-4">
                       {announcement.announcementPostImg ? (
                         <img
                           src={announcement.announcementPostImg}
                           alt={announcement.announcementSubject}
-                          style={{
-                            width: "100%",
-                            height: "100%",
-                            objectFit: "cover",
-                            borderRadius: "8px ",
-                          }}
+                          className="w-full h-full object-contain"
                           loading="lazy"
                         />
                       ) : (
-                        <Skeleton
-                          variant="rectangular"
-                          width="100%"
-                          height="100%"
-                        />
+                        <div className="w-full h-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
                       )}
-                    </Box>
+                    </div>
 
-                    {/* Middle: Text details */}
-                    <Box sx={{ flexGrow: 1, minWidth: 0, p: 2 }}>
-                      {/* Date */}
-                      <Typography variant="caption" sx={{ color: "gray" }}>
-                        {announcement.announcementDate
-                          ? new Date(announcement.announcementDate).toLocaleString()
+                    {/* Text */}
+                    <div className="flex-1">
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                        {announcement.updatedAt
+                          ? new Date(announcement.updatedAt).toLocaleString()
                           : ""}
-                      </Typography>
-
-                      {/* Subject / Title */}
-                      <Typography
-                        variant="subtitle1"
-                        sx={{ fontWeight: "bold", color: "green" }}
-                        noWrap
-                      >
+                      </p>
+                      <p className="font-semibold text-green-600 dark:text-green-400 mb-1">
                         {announcement.announcementSubject}
-                      </Typography>
-
-                      {/* Department */}
-                      <Typography
-                        variant="body2"
-                        sx={{ mt: 0.5, overflow: "hidden", textOverflow: "ellipsis" }}
-                        noWrap
-                      >
+                      </p>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">
                         Department:{" "}
                         {announcement.publish_for_all
                           ? "All"
                           : announcement.department
                               .map((dept) => dept.department)
                               .join(", ")}
-                      </Typography>
-                    </Box>
+                      </p>
+                    </div>
 
-                    {/* Right Side: Buttons */}
-                    <Box
-                      sx={{
-                        display: "flex",
-                        // flexDirection: "column",
-                        gap: 6,
-                        ml: 2,
-                      }}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      <AnimatedButton
-                        variant="contained"
-                        startIcon={<FaEdit />}
-                        onClick={() => handleOpenEditModal(announcement)}
+                    {/* Action Buttons */}
+                    <div className="mt-4 flex items-center justify-end space-x-2">
+                      <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        sx={{
-                          backgroundColor: "#d4af37",
-                          color: "#fff",
-                          "&:hover": {
-                            backgroundColor: "#b28a2d",
-                          },
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenEditModal(announcement);
                         }}
+                        className="flex items-center bg-yellow-600 text-white
+                                   px-3 py-2 rounded-md font-medium hover:bg-yellow-500"
                       >
+                        <FaEdit className="mr-2" />
                         Edit
-                      </AnimatedButton>
-                      <AnimatedButton
-                        variant="contained"
-                        startIcon={<FaTrash />}
-                        onClick={() => handleDelete(announcement._id)}
+                      </motion.button>
+                      <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        sx={{
-                          backgroundColor: "#b71c1c",
-                          color: "#fff",
-                          "&:hover": {
-                            backgroundColor: "#8e1717",
-                          },
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(announcement._id);
                         }}
+                        className="flex items-center bg-red-600 text-white
+                                   px-3 py-2 rounded-md font-medium hover:bg-red-500"
                       >
+                        <FaTrash className="mr-2" />
                         Delete
-                      </AnimatedButton>
-                    </Box>
-                  </StyledCard>
-                </Grid>
-              ))}
-            </Grid>
-          </InfiniteScroll>
-        )}
-      </Box>
+                      </motion.button>
+                    </div>
+                  </motion.div>
 
-      {/* Add Announcement Dialog */}
-      <Dialog
-        open={openAddModal}
-        onClose={() => setOpenAddModal(false)}
-        fullWidth
-        maxWidth="md"
-        aria-labelledby="add-announcement-dialog-title"
-        PaperComponent={motion.div}
-        PaperProps={{
-          initial: { opacity: 0, scale: 0.8 },
-          animate: { opacity: 1, scale: 1 },
-          transition: { duration: 0.3 },
-          sx: {
-            backgroundColor: "background.paper",
-            borderRadius: "16px",
-          },
-        }}
-        BackdropProps={{
-          style: { backgroundColor: "rgba(0, 0, 0, 0.5)" },
-        }}
-      >
-        <DialogTitle id="add-announcement-dialog-title">
-          Add Announcement
-        </DialogTitle>
-        <DialogContent>
-          <form onSubmit={handleSubmit} encType="multipart/form-data">
-            <Grid container spacing={2}>
-              {/* Announcement Date */}
-              <Grid item xs={12} sm={6} md={4}>
-                <TextField
-                  label="Announcement Date"
-                  type="date"
-                  name="announcementDate"
-                  value={formData.announcementDate}
-                  onChange={handleChange}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  required
-                  fullWidth
-                  inputProps={{
-                    min: new Date().toISOString().split("T")[0],
-                  }}
-                />
-              </Grid>
-
-              {/* Announcement Subject */}
-              <Grid item xs={12} sm={6} md={4}>
-                <TextField
-                  label="Subject or Title"
-                  type="text"
-                  name="announcementSubject"
-                  value={formData.announcementSubject}
-                  onChange={handleChange}
-                  required
-                  fullWidth
-                />
-              </Grid>
-
-              {/* Announcement Image */}
-              <Grid item xs={12} sm={12} md={4}>
-                <Typography variant="body1" gutterBottom>
-                  Post Image
-                </Typography>
-                <Button
-                  variant="contained"
-                  component="label"
-                  fullWidth
-                  sx={{
-                    backgroundColor: "indigo.600",
-                    "&:hover": {
-                      backgroundColor: "indigo.700",
-                    },
-                  }}
-                >
-                  Upload Image
-                  <input
-                    type="file"
-                    name="announcementPostImg"
-                    hidden
-                    accept="image/*"
-                    onChange={handleChange}
-                  />
-                </Button>
-                {formData.announcementPostImg && (
-                  <Typography variant="body2" mt={1}>
-                    {formData.announcementPostImg.name}
-                  </Typography>
-                )}
-              </Grid>
-            </Grid>
-
-            {/* Announcement Description */}
-            <Box mt={4}>
-              <TextField
-                label="Announcement Description"
-                name="announcementDescription"
-                value={formData.announcementDescription}
-                onChange={handleChange}
-                required
-                multiline
-                rows={4}
-                fullWidth
-              />
-            </Box>
-
-            {/* Posting Options */}
-            <Box mt={2}>
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={formData.publishForAll}
-                    onChange={handleChange}
-                    name="publishForAll"
-                    color="primary"
-                  />
-                }
-                label="Publish for all departments"
-              />
-            </Box>
-
-            {/* Specific Departments Selection */}
-            {!formData.publishForAll && (
-              <Box mt={2}>
-                <Typography variant="body1" gutterBottom>
-                  Select Departments
-                </Typography>
-                <Grid container spacing={1}>
-                  {departments.map((dept) => (
-                    <Grid item xs={6} sm={4} md={3} key={dept._id}>
-                      <FormControlLabel
-                        control={
-                          <Checkbox
-                            checked={formData.selectedDepartments.includes(dept._id)}
-                            onChange={() => handleDepartmentSelection(dept._id)}
-                            name="selectedDepartments"
-                            color="primary"
-                          />
-                        }
-                        label={dept.department}
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
-              </Box>
-            )}
-
-            {/* Submit Button */}
-            <Box mt={4} display="flex" justifyContent="flex-end">
-              <AnimatedButton
-                type="submit"
-                variant="contained"
-                color="secondary"
-                disabled={announcementsLoading}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                sx={{
-                  backgroundColor: "indigo.600",
-                  color: "white",
-                  "&:hover": {
-                    backgroundColor: "indigo.700",
-                  },
-                }}
-                aria-label="Publish Announcement"
-              >
-                {announcementsLoading ? (
-                  <CircularProgress size={24} color="inherit" />
-                ) : (
-                  "Publish"
-                )}
-              </AnimatedButton>
-            </Box>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Announcement Dialog */}
-      <Dialog
-        open={openEditModal}
-        onClose={handleCloseEditModal}
-        fullWidth
-        maxWidth="md"
-        aria-labelledby="edit-announcement-dialog-title"
-        PaperComponent={motion.div}
-        PaperProps={{
-          initial: { opacity: 0, scale: 0.8 },
-          animate: { opacity: 1, scale: 1 },
-          transition: { duration: 0.3 },
-          sx: {
-            backgroundColor: "background.paper",
-            borderRadius: "16px",
-          },
-        }}
-        BackdropProps={{
-          style: { backgroundColor: "rgba(0, 0, 0, 0.5)" },
-        }}
-      >
-        <DialogTitle id="edit-announcement-dialog-title">
-          Edit Announcement
-        </DialogTitle>
-        <DialogContent>
-          {currentAnnouncement && (
-            <form onSubmit={handleUpdateSubmit} encType="multipart/form-data">
-              <Grid container spacing={2}>
-                {/* Announcement Date */}
-                <Grid item xs={12} sm={6} md={4}>
-                  <TextField
-                    label="Announcement Date"
-                    type="date"
-                    name="announcementDate"
-                    value={currentAnnouncement.announcementDate}
-                    onChange={handleModalChange}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    required
-                    fullWidth
-                    inputProps={{
-                      min: new Date().toISOString().split("T")[0],
-                    }}
-                  />
-                </Grid>
-
-                {/* Announcement Subject */}
-                <Grid item xs={12} sm={6} md={4}>
-                  <TextField
-                    label="Subject or Title"
-                    type="text"
-                    name="announcementSubject"
-                    value={currentAnnouncement.announcementSubject}
-                    onChange={handleModalChange}
-                    required
-                    fullWidth
-                  />
-                </Grid>
-
-                {/* Announcement Image */}
-                <Grid item xs={12} sm={12} md={4}>
-                  <Typography variant="body1" gutterBottom>
-                    Post Image
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    component="label"
-                    fullWidth
-                    sx={{
-                      backgroundColor: "indigo.600",
-                      "&:hover": {
-                        backgroundColor: "indigo.700",
-                      },
-                    }}
+                  {/* ------------------ Desktop Layout (md+) ------------------ */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3 }}
+                    onClick={() => handleCardClick(announcement)}
+                    className="hidden md:flex bg-white dark:bg-gray-800 
+                               rounded-xl shadow-md p-4 items-start md:items-center 
+                               justify-between transform hover:-translate-y-1 
+                               hover:shadow-lg transition cursor-pointer"
                   >
-                    Upload Image
-                    <input
-                      type="file"
-                      name="announcementPostImg"
-                      hidden
-                      accept="image/*"
-                      onChange={handleModalChange}
-                    />
-                  </Button>
-                  {currentAnnouncement.announcementPostImg && (
-                    <Typography variant="body2" mt={1}>
-                      {currentAnnouncement.announcementPostImg.name}
-                    </Typography>
-                  )}
-                  {currentAnnouncement.announcementPostImgUrl && (
-                    <Box mt={2}>
-                      <img
-                        src={currentAnnouncement.announcementPostImgUrl}
-                        alt={currentAnnouncement.announcementSubject}
-                        className="w-full h-24 rounded-md object-cover"
-                      />
-                    </Box>
-                  )}
-                </Grid>
-              </Grid>
+                    {/* Left: Image + Subject */}
+                    <div className="flex items-start">
+                      <div className="w-40 h-20 flex-shrink-0 rounded-md overflow-hidden mr-4">
+                        {announcement.announcementPostImg ? (
+                          <img
+                            src={announcement.announcementPostImg}
+                            alt={announcement.announcementSubject}
+                            className="w-full h-full object-contain"
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                        )}
+                      </div>
+                      <div className="ml-10">
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                          {announcement.updatedAt
+                            ? new Date(announcement.updatedAt).toLocaleString()
+                            : ""}
+                        </p>
+                        <p className="font-semibold text-green-600 dark:text-green-400">
+                          {announcement.announcementSubject}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-1">
+                          Department:{" "}
+                          {announcement.publish_for_all
+                            ? "All"
+                            : announcement.department
+                                .map((dept) => dept.department)
+                                .join(", ")}
+                        </p>
+                      </div>
+                    </div>
 
-              {/* Announcement Description */}
-              <Box mt={4}>
-                <TextField
-                  label="Announcement Description"
-                  name="announcementDescription"
-                  value={currentAnnouncement.announcementDescription}
-                  onChange={handleModalChange}
-                  required
-                  multiline
-                  rows={4}
-                  fullWidth
-                />
-              </Box>
-
-              {/* Posting Options */}
-              <Box mt={2}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={currentAnnouncement.publishForAll}
-                      onChange={handleModalChange}
-                      name="publishForAll"
-                      color="primary"
-                    />
-                  }
-                  label="Publish for all departments"
-                />
-              </Box>
-
-              {/* Specific Departments Selection */}
-              {!currentAnnouncement.publishForAll && (
-                <Box mt={2}>
-                  <Typography variant="body1" gutterBottom>
-                    Select Departments
-                  </Typography>
-                  <Grid container spacing={1}>
-                    {departments.map((dept) => (
-                      <Grid item xs={6} sm={4} md={3} key={dept._id}>
-                        <FormControlLabel
-                          control={
-                            <Checkbox
-                              checked={currentAnnouncement.selectedDepartments.includes(
-                                dept._id
-                              )}
-                              onChange={() =>
-                                handleEditModalDepartmentSelection(dept._id)
-                              }
-                              name="selectedDepartments"
-                              color="primary"
-                            />
-                          }
-                          label={dept.department}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
-                </Box>
-              )}
-
-              {/* Submit Button */}
-              <Box mt={4} display="flex" justifyContent="flex-end">
-                <AnimatedButton
-                  type="submit"
-                  variant="contained"
-                  color="secondary"
-                  disabled={announcementsLoading}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  sx={{
-                    backgroundColor: "indigo.600",
-                    color: "white",
-                    "&:hover": {
-                      backgroundColor: "indigo.700",
-                    },
-                  }}
-                  aria-label="Update Announcement"
-                >
-                  {announcementsLoading ? (
-                    <CircularProgress size={24} color="inherit" />
-                  ) : (
-                    "Update"
-                  )}
-                </AnimatedButton>
-              </Box>
-            </form>
+                    {/* Right: Edit / Delete */}
+                    <div className="flex mt-4 md:mt-0 space-x-2 md:space-x-4">
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleOpenEditModal(announcement);
+                        }}
+                        className="flex items-center bg-yellow-600 text-white
+                                   px-3 py-2 rounded-md font-medium hover:bg-yellow-500"
+                      >
+                        <FaEdit className="mr-2" />
+                        Edit
+                      </motion.button>
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(announcement._id);
+                        }}
+                        className="flex items-center bg-red-600 text-white
+                                   px-3 py-2 rounded-md font-medium hover:bg-red-500"
+                      >
+                        <FaTrash className="mr-2" />
+                        Delete
+                      </motion.button>
+                    </div>
+                  </motion.div>
+                </div>
+              ))}
+            </InfiniteScroll>
           )}
-        </DialogContent>
-      </Dialog>
+      </div>
 
-      {/* Confirmation Dialog */}
-      <Dialog
+      {/* --------------------------- Add Announcement Modal --------------------------- */}
+      <AnnouncementAddModal
+        isOpen={openAddModal}
+        onClose={() => setOpenAddModal(false)}
+        departments={departments}
+      />
+
+      {/* --------------------------- Edit Announcement Modal --------------------------- */}
+      <AnnouncementEditModal
+        isOpen={openEditModal}
+        onClose={handleCloseEditModal}
+        currentAnnouncement={currentAnnouncement}
+        departments={departments}
+      />
+
+      {/* --------------------------- Confirmation Dialog (DELETE) --------------------------- */}
+      <ConfirmationDialog
         open={confirmDialog.open}
-        onClose={() => setConfirmDialog({ ...confirmDialog, open: false })}
-        aria-labelledby="confirm-dialog-title"
-        aria-describedby="confirm-dialog-description"
-        PaperComponent={motion.div}
-        PaperProps={{
-          initial: { opacity: 0, scale: 0.8 },
-          animate: { opacity: 1, scale: 1 },
-          transition: { duration: 0.3 },
-          sx: {
-            backgroundColor: "background.paper",
-            borderRadius: "16px",
-          },
-        }}
-        BackdropProps={{
-          style: { backgroundColor: "rgba(0, 0, 0, 0.5)" },
-        }}
-      >
-        <DialogTitle id="confirm-dialog-title">
-          {confirmDialog.title}
-        </DialogTitle>
-        <DialogContent>
-          <Typography id="confirm-dialog-description">
-            {confirmDialog.content}
-          </Typography>
-        </DialogContent>
-        <MuiDialogActions>
-          <Button
-            onClick={() => setConfirmDialog({ ...confirmDialog, open: false })}
-            sx={{
-              backgroundColor: "grey.300",
-              color: "grey.800",
-              "&:hover": {
-                backgroundColor: "grey.400",
-              },
-            }}
-            aria-label="Cancel action"
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={confirmDialog.onConfirm}
-            sx={{
-              backgroundColor: "red",
-              color: "yellow",
-              "&:hover": {
-                backgroundColor: "indigo.700",
-              },
-            }}
-            aria-label="Confirm action"
-          >
-            Confirm
-          </Button>
-        </MuiDialogActions>
-      </Dialog>
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        onConfirm={confirmDialog.onConfirm}
+        onCancel={() => setConfirmDialog((prev) => ({ ...prev, open: false }))}
+      />
 
-      {/* Detailed Announcement Dialog */}
-      <Dialog
-        open={openDetailDialog}
+      {/* --------------------------- Detailed Announcement Modal --------------------------- */}
+      <AnnouncementDetailModal
+        isOpen={openDetailDialog}
         onClose={() => setOpenDetailDialog(false)}
-        fullWidth
-        maxWidth="md"
-        aria-labelledby="detail-announcement-dialog-title"
-        PaperComponent={motion.div}
-        PaperProps={{
-          initial: { opacity: 0, scale: 0.8 },
-          animate: { opacity: 1, scale: 1 },
-          transition: { duration: 0.3 },
-          sx: {
-            backgroundColor: "background.paper",
-            borderRadius: "16px",
-          },
-        }}
-        BackdropProps={{
-          style: { backgroundColor: "rgba(0, 0, 0, 0.5)" },
-        }}
-      >
-        <DialogTitle id="detail-announcement-dialog-title">
-          Announcement Details
-        </DialogTitle>
-        <DialogContent dividers>
-          {selectedAnnouncement ? (
-            <Box>
-              {/* Close Button */}
-              <IconButton
-                onClick={() => setOpenDetailDialog(false)}
-                sx={{
-                  position: "absolute",
-                  right: 16,
-                  top: 16,
-                  color: "grey.500",
-                }}
-                aria-label="Close announcement details"
-              >
-                <FaTimes />
-              </IconButton>
-
-              {/* Announcement Image */}
-              {selectedAnnouncement.announcementPostImg ? (
-                <Box className="w-full h-64 overflow-hidden rounded-md">
-                  <img
-                    src={selectedAnnouncement.announcementPostImg}
-                    alt={selectedAnnouncement.announcementSubject}
-                    className="w-full h-full object-contain"
-                    loading="lazy"
-                  />
-                </Box>
-              ) : (
-                <Skeleton variant="rectangular" height={256} width="100%" />
-              )}
-
-              {/* Announcement Details */}
-              <Box mt={4}>
-                <Typography variant="h5" gutterBottom>
-                  {selectedAnnouncement.announcementSubject || <Skeleton />}
-                </Typography>
-                <Typography variant="body1" gutterBottom>
-                  {selectedAnnouncement.announcementDescription || <Skeleton />}
-                </Typography>
-                <Box
-                  mt={2}
-                  display="flex"
-                  flexDirection={isSmallScreen ? "column" : "row"}
-                  justifyContent="space-between"
-                >
-                  <Typography variant="subtitle2" color="textSecondary">
-                    Date:{" "}
-                    {selectedAnnouncement.announcementDate
-                      ? new Date(selectedAnnouncement.announcementDate).toLocaleDateString()
-                      : <Skeleton width="50%" />}
-                  </Typography>
-                  <Chip
-                    label={
-                      selectedAnnouncement.publish_for_all
-                        ? "All Departments"
-                        : `${selectedAnnouncement.department.length} Dept`
-                    }
-                    color={selectedAnnouncement.publish_for_all ? "primary" : "secondary"}
-                    size="small"
-                  />
-                </Box>
-                <Typography variant="subtitle2" color="textSecondary" mt={1}>
-                  <strong>Departments:</strong>{" "}
-                  {selectedAnnouncement.publish_for_all
-                    ? "All Departments"
-                    : selectedAnnouncement.department
-                        .map((dept) => dept.department)
-                        .join(", ")}
-                </Typography>
-              </Box>
-            </Box>
-          ) : (
-            <Box className="flex justify-center items-center h-64">
-              <CircularProgress />
-            </Box>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      
-    </Box>
+        announcement={selectedAnnouncement}
+      />
+    </div>
   );
 };
 
 export default MakeAnnouncement;
-
