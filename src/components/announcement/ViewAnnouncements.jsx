@@ -71,9 +71,9 @@ const ViewAnnouncements = () => {
       })
       .sort((a, b) => {
         if (sortOrder === "Newest") {
-          return new Date(b.announcementDate) - new Date(a.announcementDate);
+          return new Date(b.updatedAt) - new Date(a.updatedAt);
         } else {
-          return new Date(a.announcementDate) - new Date(b.announcementDate);
+          return new Date(a.updatedAt) - new Date(b.updatedAt);
         }
       });
   }, [announcements, searchQuery, sortOrder]);
@@ -230,9 +230,9 @@ const ViewAnnouncements = () => {
                     {/* Content */}
                     <div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                        {announcement.announcementDate
+                        {announcement.updatedAt
                           ? new Date(
-                              announcement.announcementDate
+                              announcement.updatedAt
                             ).toLocaleString()
                           : ""}
                       </p>

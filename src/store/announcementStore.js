@@ -127,6 +127,7 @@ const useAnnouncementStore = create(
               headers: {
                 Authorization: `Bearer ${token}`,
                 // When sending FormData, the browser will set the correct Content-Type automatically.
+                "Content-Type": "multipart/form-data",
               },
             }
           );
