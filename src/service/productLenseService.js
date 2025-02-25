@@ -61,14 +61,23 @@ export const fetchLessSubordinates = async (
   }
 };
 
-export const fetchBreakStats = async (interval = "daily", date = "") => {
+
+
+export const fetchBreakStats = async (interval = "daily", date = "", page = 1, limit = 10) => {
   try {
     const res = await axiosInstance.get("/break/productivity/break", {
-      params: { interval, date },
+      params: { interval, date, page, limit },
     });
-    return res.data?.data || [];
+    // Expected response structure:
+    // {
+    //   data: [ ...paginated break stats... ],
+    //   pagination: {
+    //     totalResults, totalPages, currentPage, limit
+    //   }
+    // }
+    return res.data;
   } catch (error) {
     console.error("Error fetching break stats:", error);
-    return [];
+    return { data: [], pagination: {} };
   }
 };

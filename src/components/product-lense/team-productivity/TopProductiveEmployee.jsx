@@ -14,7 +14,7 @@ const TopProductiveEmployee = () => {
   });
   const [searchValue, setSearchValue] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const entriesPerPage = 2; // For demonstration
+  const entriesPerPage = 10; // 10 entries per page
 
   // Helper to determine the input type based on interval
   const getDateInputType = () => {
@@ -30,18 +30,14 @@ const TopProductiveEmployee = () => {
     if (selectedInterval === "daily") {
       return now.toISOString().split("T")[0]; // YYYY-MM-DD
     } else if (selectedInterval === "monthly") {
-      // Format as YYYY-MM (using current year and month)
-      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
-        2,
-        "0"
-      )}`;
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
     } else if (selectedInterval === "yearly") {
       return String(now.getFullYear());
     }
     return now.toISOString().split("T")[0];
   };
 
-  // Fetch data when filters change
+  // Fetch data when filters change and reset current page
   useEffect(() => {
     const getData = async () => {
       setLoading(true);
@@ -52,6 +48,7 @@ const TopProductiveEmployee = () => {
       );
       setData(result);
       setLoading(false);
+      setCurrentPage(1); // Reset page when new data loads
     };
     getData();
   }, [selectedInterval, selectedDate, searchValue]);
@@ -83,7 +80,6 @@ const TopProductiveEmployee = () => {
 
   const handleIntervalChange = (e) => {
     setSelectedInterval(e.target.value);
-    // Reset date based on new interval
     const now = new Date();
     if (e.target.value === "daily") {
       setSelectedDate(now.toISOString().split("T")[0]);
@@ -102,6 +98,44 @@ const TopProductiveEmployee = () => {
     setCurrentPage(1);
   };
 
+  // Helper: generate pagination numbers with ellipses if needed
+  const getPaginationNumbers = () => {
+    const pages = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1); // always show first page
+
+      let left = Math.max(2, currentPage - 1);
+      let right = Math.min(totalPages - 1, currentPage + 1);
+
+      // Adjust boundaries if at start or end
+      if (currentPage === 1) {
+        right = 3;
+      }
+      if (currentPage === totalPages) {
+        left = totalPages - 2;
+      }
+
+      if (left > 2) {
+        pages.push("...");
+      }
+
+      for (let i = left; i <= right; i++) {
+        pages.push(i);
+      }
+
+      if (right < totalPages - 1) {
+        pages.push("...");
+      }
+
+      pages.push(totalPages); // always show last page
+    }
+    return pages;
+  };
+
   return (
     <div className="p-4 border rounded shadow-sm bg-white dark:bg-gray-800 dark:text-gray-100 w-full">
       <h2 className="text-xl font-bold mb-4 text-purple-700">
@@ -111,9 +145,7 @@ const TopProductiveEmployee = () => {
       {/* Filter Controls */}
       <div className="flex flex-col md:flex-row gap-4 mb-4">
         <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 dark:text-gray-300">
-            Interval:
-          </label>
+          <label className="text-sm text-gray-600 dark:text-gray-300">Interval:</label>
           <select
             value={selectedInterval}
             onChange={handleIntervalChange}
@@ -164,7 +196,6 @@ const TopProductiveEmployee = () => {
                 <th className="px-4 py-3">Emp Name</th>
                 <th className="px-4 py-3">Designation</th>
                 <th className="px-4 py-3">Department</th>
-
                 <th className="px-4 py-3">Unproductive Time</th>
                 <th className="px-4 py-3">Productive Time</th>
               </tr>
@@ -182,14 +213,13 @@ const TopProductiveEmployee = () => {
                   <td className="px-4 py-2">{item.empName}</td>
                   <td className="px-4 py-2">{item.designation}</td>
                   <td className="px-4 py-2">{item.department}</td>
-
                   <td className="px-4 py-2">{item.unproductiveTime}</td>
                   <td className="px-4 py-2">{item.productiveTime}</td>
                 </tr>
               ))}
               {currentEntries.length === 0 && (
                 <tr>
-                  <td colSpan="9" className="text-center py-4">
+                  <td colSpan="7" className="text-center py-4">
                     No matching records found.
                   </td>
                 </tr>
@@ -198,52 +228,57 @@ const TopProductiveEmployee = () => {
           </table>
 
           {/* Pagination */}
-          <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-2">
-            <span className="text-sm text-gray-600 dark:text-gray-300">
-              Showing {totalEntries === 0 ? 0 : startIndex + 1} to{" "}
-              {endIndex > totalEntries ? totalEntries : endIndex} of{" "}
-              {totalEntries} entries
-            </span>
-            <div className="flex gap-2">
-              <button
-                onClick={() => goToPage(currentPage - 1)}
-                disabled={currentPage === 1}
-                className={`px-3 py-1 border rounded ${
-                  currentPage === 1
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
-              >
-                Prev
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                (pageNum) => (
-                  <button
-                    key={pageNum}
-                    onClick={() => goToPage(pageNum)}
-                    className={`px-3 py-1 border rounded ${
-                      pageNum === currentPage
-                        ? "bg-purple-200 border-purple-600 text-purple-800"
-                        : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                    }`}
-                  >
-                    {pageNum}
-                  </button>
-                )
-              )}
-              <button
-                onClick={() => goToPage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className={`px-3 py-1 border rounded ${
-                  currentPage === totalPages
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
-              >
-                Next
-              </button>
+          {totalPages > 1 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-4 gap-2">
+              <span className="text-sm text-gray-600 dark:text-gray-300">
+                Showing {totalEntries === 0 ? 0 : startIndex + 1} to{" "}
+                {endIndex > totalEntries ? totalEntries : endIndex} of {totalEntries} entries
+              </span>
+              <div className="flex gap-2 items-center">
+                <button
+                  onClick={() => goToPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className={`px-3 py-1 border rounded ${
+                    currentPage === 1
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  Prev
+                </button>
+                {getPaginationNumbers().map((page, idx) =>
+                  typeof page === "number" ? (
+                    <button
+                      key={idx}
+                      onClick={() => goToPage(page)}
+                      className={`px-3 py-1 border rounded ${
+                        page === currentPage
+                          ? "bg-purple-200 border-purple-600 text-purple-800"
+                          : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ) : (
+                    <span key={idx} className="px-3 py-1">
+                      {page}
+                    </span>
+                  )
+                )}
+                <button
+                  onClick={() => goToPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className={`px-3 py-1 border rounded ${
+                    currentPage === totalPages
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </>
       )}
     </div>
