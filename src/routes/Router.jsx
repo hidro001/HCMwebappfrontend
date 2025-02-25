@@ -74,6 +74,7 @@ import {
   CompanyInductionViewPage,
   TrainingMaterialsPage,
   AdminPanelTrainingPage,
+  EmployeeTreemapPage
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -402,6 +403,10 @@ const router = createBrowserRouter([
       {
         path: "admin-panel-training",
         element: <AdminPanelTrainingPage />,
+      },
+      {
+        path: "organization-chart",
+        element: <EmployeeTreemapPage />,
       },
     ],
   },

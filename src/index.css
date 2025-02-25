@@ -77,3 +77,24 @@ html {
 .modal-body-locked {
   overflow: hidden !important;
 }
+
+/* e.g. in your global styles or a CSS module */
+.dark #orgchart-container > svg {
+  background-color: #111827  !important;
+}
+
+/* For light mode */
+.light #orgchart-container > svg {
+  background-color: #fafafa !important;
+}
+
+/* Dark node fill override (if you want nodes to be different in dark mode) */
+.dark #orgchart-container [data-n-id] rect {
+  fill: #333333 !important;  /* dark nodes */
+}
+
+/* Or text color for node labels */
+.dark #orgchart-container text {
+  fill: #dddddd !important;
+}
+

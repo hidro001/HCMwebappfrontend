@@ -83,10 +83,7 @@ import CompanyPoliciesViewPage from "./Policies-Induction/CompanyPoliciesViewPag
 import CompanyInductionViewPage from "./Policies-Induction/CompanyInductionViewPage";
 import TrainingMaterialsPage from "./Policies-Induction/TrainingMaterialsPage";
 import AdminPanelTrainingPage from "./Policies-Induction/AdminPanelTrainingPage";
-
-
-
-
+import EmployeeTreemapPage from "./Org Chart/EmployeeTreemapPage";
 
 export {
   Login,
@@ -160,6 +157,6 @@ export {
   CompanyPoliciesViewPage,
   CompanyInductionViewPage,
   TrainingMaterialsPage,
-  AdminPanelTrainingPage  ,
-
+  AdminPanelTrainingPage,
+  EmployeeTreemapPage,
 };
