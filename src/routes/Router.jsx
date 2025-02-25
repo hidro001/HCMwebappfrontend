@@ -74,7 +74,8 @@ import {
   CompanyInductionViewPage,
   TrainingMaterialsPage,
   AdminPanelTrainingPage,
-  EmployeeTreemapPage
+  EmployeeTreemapPage,
+  RequestDashboardPage,
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -407,6 +408,10 @@ const router = createBrowserRouter([
       {
         path: "organization-chart",
         element: <EmployeeTreemapPage />,
+      },
+      {
+        path: "request-hike-advance-reimbursement",
+        element: <RequestDashboardPage />,
       },
     ],
   },

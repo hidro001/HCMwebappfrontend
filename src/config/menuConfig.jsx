@@ -193,6 +193,12 @@ export const menuItems = [
         permission: "viewallAttendance",
         textAnimation: { x: 10 },
       },
+      {
+        name: "Request Hike Advance Reimbursement",
+        link: "/dashboard/request-hike-advance-reimbursement",
+        permission: "requestHikeAdvanceReimbursement",
+        textAnimation: { x: 10 },
+      },
     ],
   },
 

@@ -65,6 +65,7 @@ const availablePermission = [
   { name: "Take Disciplinary actions", permission: "takeDisciplinaryAction" },
   { name: "All disciplinary actions", permission: "viewDisciplinaryAction" },
   { name: "Organization Chart", permission: "organizationChart" },
+  { name: "Request Hike Advance Reimbursement", permission: "requestHikeAdvanceReimbursement" },
 ];
 
 const availablePermissionManager = [
