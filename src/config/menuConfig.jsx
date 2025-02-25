@@ -609,6 +609,12 @@ export const menuItems = [
     textAnimation: { x: 10 },
     options: [
       {
+        name: "Admin Panel Training",
+        link: "/dashboard/admin-panel-training",
+        permission: "adminPanelTraining",
+        textAnimation: { x: 10 },
+      },
+      {
         name: "Induction PPT's",
         link: "/dashboard/induction-ppt",
         permission: "inductionPPT",

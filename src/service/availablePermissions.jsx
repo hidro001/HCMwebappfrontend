@@ -61,6 +61,7 @@ const availablePermission = [
   { name: "User Profile", permission: "viewProfile" },
   { name: "Induction PPT's", permission: "inductionPPT" },
   { name: "Company Policies", permission: "companyPolicies" },
+  { name: "Admin Panel Training", permission: "adminPanelTraining" },
   { name: "Take Disciplinary actions", permission: "takeDisciplinaryAction" },
   { name: "All disciplinary actions", permission: "viewDisciplinaryAction" },
   { name: "Organization Chart", permission: "organizationChart" },

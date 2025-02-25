@@ -81,6 +81,10 @@ import AddEmployeeManagerPage from "./Employeee Management/AddEmployee/AddEmploy
 import UpdateEmployeeManagerPage from "./Employeee Management/UpdateEmployee/UpdateEmployeeManagerPage";
 import CompanyPoliciesViewPage from "./Policies-Induction/CompanyPoliciesViewPage";
 import CompanyInductionViewPage from "./Policies-Induction/CompanyInductionViewPage";
+import TrainingMaterialsPage from "./Policies-Induction/TrainingMaterialsPage";
+import AdminPanelTrainingPage from "./Policies-Induction/AdminPanelTrainingPage";
+
+
 
 
 
@@ -154,5 +158,8 @@ export {
   UsersListForDisciplinaryPage,
   AllDisciplinaryActionsPage,
   CompanyPoliciesViewPage,
-  CompanyInductionViewPage
+  CompanyInductionViewPage,
+  TrainingMaterialsPage,
+  AdminPanelTrainingPage  ,
+
 };
