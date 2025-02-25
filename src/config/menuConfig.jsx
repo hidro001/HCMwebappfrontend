@@ -142,12 +142,12 @@ export const menuItems = [
       {
         name: "Take Disciplinary actions",
         link: "/dashboard/disciplinary-actions/all-users",
-        permission: "assignAssets",
+        permission: "takeDisciplinaryAction",
       },
       {
         name: "All disciplinary actions",
         link: "/dashboard/disciplinary-actions",
-        permission: "assignAssets",
+        permission: "viewDisciplinaryAction",
       },
 
       // {
@@ -620,6 +620,12 @@ export const menuItems = [
         permission: "companyPolicies",
         textAnimation: { x: 10 },
       },
+      {
+        name: "Training Material",
+        link: "/dashboard/training-material",
+        permission: "trainingMaterial",
+        textAnimation: { x: 10 },
+      },
     ],
   },
 
@@ -639,20 +645,20 @@ export const menuItems = [
   //   ],
   // },
 
-  // {
-  //   name: "Organization Chart",
-  //   tooltip: "",
-  //   icon: <RiOrganizationChart />,
-  //   color: "text-yellow-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Organization Chart",
-  //       link: "/dashboard/training-material",
-  //       permission: "trainingMaterial",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+  {
+    name: "Organization Chart",
+    tooltip: "",
+    icon: <RiOrganizationChart />,
+    color: "text-yellow-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Organization Chart",
+        link: "/dashboard/organization-chart",
+        permission: "organizationChart",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
 ];
