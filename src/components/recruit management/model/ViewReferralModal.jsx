@@ -10,7 +10,7 @@ export default function ViewReferralModal({ referral, onClose }) {
     <BaseModal isOpen={Boolean(referral)} onClose={onClose}>
       <motion.div
         className="bg-white dark:bg-gray-800 dark:text-gray-100
-                   rounded-lg shadow-lg w-full max-w-lg p-4 relative"
+                   rounded-lg shadow-lg w-full max-w-lg p-4 relative "
         initial={{ scale: 0.95 }}
         animate={{ scale: 1 }}
         exit={{ scale: 0.95 }}
