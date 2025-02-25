@@ -1,10 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
-import InfiniteScroll from "react-infinite-scroll-component";
 import { FaSearch, FaFilter } from "react-icons/fa";
 
 import useAnnouncementStore from "../../store/announcementStore";
-import AnnouncementDetailModal from "./model/AnnouncementDetailModal"; // path depends on your file structure
+import AnnouncementDetailModal from "./model/AnnouncementDetailModal"; // adjust path if needed
 
 const SkeletonPlaceholder = ({ className }) => (
   <div
@@ -24,8 +23,10 @@ const ViewAnnouncements = () => {
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
 
-  // Infinite Scroll
-  const [visibleCount, setVisibleCount] = useState(18); // initial # to display
+  // Pagination: Fixed 10 items per page
+  const itemsPerPage = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageInput, setPageInput] = useState(1);
 
   // Filters
   const [sortOrder, setSortOrder] = useState("Newest");
@@ -36,10 +37,8 @@ const ViewAnnouncements = () => {
     fetchAnnouncementsuser();
   }, [fetchAnnouncementsuser]);
 
-  // Search
-  const handleSearchQueryChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
+  // Update search query
+  const handleSearchQueryChange = (e) => setSearchQuery(e.target.value);
 
   // Clear Filters
   const handleClearFilters = () => {
@@ -47,18 +46,16 @@ const ViewAnnouncements = () => {
     setSearchQuery("");
   };
 
-  // Sort
-  const handleSortOrderChange = (e) => {
-    setSortOrder(e.target.value);
-  };
+  // Update sort order
+  const handleSortOrderChange = (e) => setSortOrder(e.target.value);
 
-  // Card Click => Show detail dialog
+  // Card click handler to show detail modal
   const handleCardClick = (announcement) => {
     setSelectedAnnouncement(announcement);
     setOpenDetailDialog(true);
   };
 
-  // Filter + Sort logic
+  // Filter and sort announcements
   const filteredAnnouncements = useMemo(() => {
     return announcements
       .filter((announcement) => {
@@ -78,18 +75,36 @@ const ViewAnnouncements = () => {
       });
   }, [announcements, searchQuery, sortOrder]);
 
-  // Infinite Scroll
-  const fetchMoreData = () => {
-    if (visibleCount >= filteredAnnouncements.length) return;
-    setTimeout(() => {
-      setVisibleCount((prev) => prev + 18);
-    }, 500);
+  // Pagination calculations
+  const totalResults = filteredAnnouncements.length;
+  const totalPages = Math.ceil(totalResults / itemsPerPage);
+  const paginatedAnnouncements = filteredAnnouncements.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // Handlers for pagination
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
   };
 
-  // Reset visibleCount when filters change
+  const handlePageInputChange = (e) => {
+    setPageInput(e.target.value);
+  };
+
+  const handleGoToPage = () => {
+    const pageNum = parseInt(pageInput, 10);
+    if (pageNum >= 1 && pageNum <= totalPages) {
+      setCurrentPage(pageNum);
+    }
+  };
+
+  // Keep pageInput in sync with currentPage
   useEffect(() => {
-    setVisibleCount(18);
-  }, [filteredAnnouncements, sortOrder, searchQuery]);
+    setPageInput(currentPage);
+  }, [currentPage]);
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-50 p-6">
@@ -132,10 +147,7 @@ const ViewAnnouncements = () => {
               id="sortOrder"
               value={sortOrder}
               onChange={handleSortOrderChange}
-              className="w-full bg-white dark:bg-gray-700 
-                   border border-gray-300 dark:border-gray-600 
-                   rounded-md px-3 py-2 text-sm
-                   focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="Newest">Newest First</option>
               <option value="Oldest">Oldest First</option>
@@ -144,17 +156,10 @@ const ViewAnnouncements = () => {
 
           {/* Clear Filters Button */}
           <div className="col-span-12 md:col-span-4 flex flex-col">
-            {/* Invisible label for consistent vertical spacing */}
-            <label className="invisible  text-sm font-medium">
-              Clear Filters
-            </label>
+            <label className="invisible text-sm font-medium">Clear Filters</label>
             <button
               onClick={handleClearFilters}
-              className="w-full bg-white dark:bg-gray-700 border border-gray-300 
-                   dark:border-gray-600 rounded-md px-4 py-2 text-gray-700 
-                   dark:text-gray-200 font-medium flex items-center 
-                   justify-center space-x-2 hover:bg-gray-100 
-                   dark:hover:bg-gray-600 text-sm"
+              className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2 text-gray-700 dark:text-gray-200 font-medium flex items-center justify-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm"
             >
               <FaFilter />
               <span>Clear Filters</span>
@@ -163,16 +168,12 @@ const ViewAnnouncements = () => {
         </div>
       </div>
 
-      {/* Announcements List with Infinite Scroll */}
+      {/* Announcements List */}
       <div>
         {announcementsLoading ? (
-          // Skeleton loading placeholders
           <div className="grid grid-cols-1 gap-4">
-            {Array.from(new Array(6)).map((_, index) => (
-              <div
-                key={index}
-                className="bg-white dark:bg-gray-800 p-4 rounded-md shadow"
-              >
+            {Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="bg-white dark:bg-gray-800 p-4 rounded-md shadow">
                 <SkeletonPlaceholder className="w-full h-24 mb-4" />
                 <SkeletonPlaceholder className="w-3/5 h-4 mb-2" />
                 <SkeletonPlaceholder className="w-4/5 h-4" />
@@ -186,75 +187,103 @@ const ViewAnnouncements = () => {
             No announcements found for the selected criteria.
           </p>
         ) : (
-          <InfiniteScroll
-            dataLength={visibleCount}
-            next={fetchMoreData}
-            hasMore={visibleCount < filteredAnnouncements.length}
-            loader={
-              <div className="flex justify-center my-4">
-                {/* Tailwind-based spinner */}
-                <div className="w-6 h-6 border-4 border-blue-500 dark:border-blue-300 border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            }
-            style={{ overflow: "visible" }}
-          >
-            {/* Wrap your cards in a grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredAnnouncements
-                .slice(0, visibleCount)
-                .map((announcement) => (
-                  <motion.div
-                    key={announcement._id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    onClick={() => handleCardClick(announcement)}
-                    className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 
-                             cursor-pointer transform transition-transform 
-                             hover:-translate-y-1 hover:shadow-lg"
-                  >
-                    {/* Top: Image */}
-                    <div className="w-full h-48 mb-3 rounded-md overflow-hidden">
-                      {announcement.announcementPostImg ? (
-                        <img
-                          src={announcement.announcementPostImg}
-                          alt={announcement.announcementSubject}
-                          className="w-full h-full object-contain"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <SkeletonPlaceholder className="w-full h-full" />
-                      )}
-                    </div>
-
-                    {/* Content */}
-                    <div>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                        {announcement.updatedAt
-                          ? new Date(
-                              announcement.updatedAt
-                            ).toLocaleString()
-                          : ""}
-                      </p>
-                      <h2 className="font-semibold text-green-600 dark:text-green-400 truncate mb-1">
-                        {announcement.announcementSubject}
-                      </h2>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
-                        {announcement.publish_for_all
-                          ? "Department: All"
-                          : `Department: ${announcement.department
-                              .map((dept) => dept.department)
-                              .join(", ")}`}
-                      </p>
-                    </div>
-                  </motion.div>
-                ))}
-            </div>
-          </InfiniteScroll>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {paginatedAnnouncements.map((announcement) => (
+              <motion.div
+                key={announcement._id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                onClick={() => handleCardClick(announcement)}
+                className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 cursor-pointer transform transition-transform hover:-translate-y-1 hover:shadow-lg"
+              >
+                <div className="w-full h-48 mb-3 rounded-md overflow-hidden">
+                  {announcement.announcementPostImg ? (
+                    <img
+                      src={announcement.announcementPostImg}
+                      alt={announcement.announcementSubject}
+                      className="w-full h-full object-contain"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <SkeletonPlaceholder className="w-full h-full" />
+                  )}
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                    {announcement.updatedAt
+                      ? new Date(announcement.updatedAt).toLocaleString()
+                      : ""}
+                  </p>
+                  <h2 className="font-semibold text-green-600 dark:text-green-400 truncate mb-1">
+                    {announcement.announcementSubject}
+                  </h2>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">
+                    {announcement.publish_for_all
+                      ? "Department: All"
+                      : `Department: ${announcement.department
+                          .map((dept) => dept.department)
+                          .join(", ")}`}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         )}
       </div>
 
-      {/* Modal: Use the separate AnnouncementDetailModal component */}
+      {/* Fixed Pagination Controls */}
+      {!announcementsLoading && !announcementsError && filteredAnnouncements.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between p-4 text-sm text-gray-600 dark:text-gray-300">
+          <div>
+            {totalResults > 0
+              ? `Showing ${
+                  (currentPage - 1) * itemsPerPage + 1
+                } to ${
+                  currentPage * itemsPerPage > totalResults
+                    ? totalResults
+                    : currentPage * itemsPerPage
+                } of ${totalResults} entries`
+              : "Showing 0 to 0 of 0 entries"}
+          </div>
+          <div className="flex items-center space-x-2 mt-2 sm:mt-0">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-3 py-1 rounded border transition-colors bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              Prev
+            </button>
+            <div className="flex items-center space-x-2">
+              <span>Page</span>
+              <input
+                type="number"
+                value={pageInput}
+                onChange={handlePageInputChange}
+                className="w-16 text-center border rounded px-2 py-1"
+                min="1"
+                max={totalPages}
+              />
+              <span>of {totalPages}</span>
+              <button
+                onClick={handleGoToPage}
+                className="px-3 py-1 rounded border transition-colors bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Go
+              </button>
+            </div>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 rounded border transition-colors bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Announcement Detail Modal */}
       <AnnouncementDetailModal
         isOpen={openDetailDialog}
         onClose={() => setOpenDetailDialog(false)}

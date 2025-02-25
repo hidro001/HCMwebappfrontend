@@ -870,10 +870,12 @@
 
 
 
+
+
+
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import InfiniteScroll from "react-infinite-scroll-component";
 import {
   FaEdit,
   FaTrash,
@@ -936,10 +938,13 @@ const MakeAnnouncement = () => {
   // Loader for Delete
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  // Infinite Scroll
-  const [visibleCount, setVisibleCount] = useState(18);
+  // -------------------- Pagination State --------------------
+  // Set itemsPerPage to 10 data items per page
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageInput, setPageInput] = useState(1);
 
-  // Filters
+  // -------------------- Filters --------------------
   const [filterDepartment, setFilterDepartment] = useState("All");
   const [sortOrder, setSortOrder] = useState("Newest");
   const [searchQuery, setSearchQuery] = useState("");
@@ -950,10 +955,15 @@ const MakeAnnouncement = () => {
     fetchAnnouncements();
   }, [fetchDepartments, fetchAnnouncements]);
 
-  // Reset visible count whenever filters change
+  // Reset currentPage when filters or itemsPerPage change
   useEffect(() => {
-    setVisibleCount(18);
-  }, [filterDepartment, sortOrder, searchQuery]);
+    setCurrentPage(1);
+  }, [filterDepartment, sortOrder, searchQuery, itemsPerPage]);
+
+  // Keep page input in sync with currentPage
+  useEffect(() => {
+    setPageInput(currentPage);
+  }, [currentPage]);
 
   // -------------------- Delete Handler --------------------
   const handleDelete = (id) => {
@@ -1021,7 +1031,7 @@ const MakeAnnouncement = () => {
         return ann.department?.some((dept) => dept._id === filterDepartment);
       })
       .filter((ann) => {
-        // Search
+        // Search filter
         if (!searchQuery.trim()) return true;
         const q = searchQuery.toLowerCase();
         return (
@@ -1030,7 +1040,7 @@ const MakeAnnouncement = () => {
         );
       })
       .sort((a, b) => {
-        // Sort by full date-time using updatedAt
+        // Sort by updatedAt (full date-time)
         if (sortOrder === "Newest") {
           return new Date(b.updatedAt) - new Date(a.updatedAt);
         } else {
@@ -1039,18 +1049,41 @@ const MakeAnnouncement = () => {
       });
   }, [announcements, filterDepartment, sortOrder, searchQuery]);
 
-  // -------------------- Infinite Scroll --------------------
-  const fetchMoreData = () => {
-    if (visibleCount >= filteredAnnouncements.length) return;
-    setTimeout(() => {
-      setVisibleCount((prev) => prev + 18);
-    }, 500);
+  // -------------------- Pagination Calculations --------------------
+  const totalResults = filteredAnnouncements.length;
+  const totalPages = Math.ceil(totalResults / itemsPerPage);
+  const paginatedAnnouncements = filteredAnnouncements.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  // -------------------- Handlers for Pagination --------------------
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
+
+  const handleItemsPerPageChange = (e) => {
+    setItemsPerPage(Number(e.target.value));
+    setCurrentPage(1);
+  };
+
+  const handlePageInputChange = (e) => {
+    setPageInput(e.target.value);
+  };
+
+  const handleGoToPage = () => {
+    const pageNum = parseInt(pageInput, 10);
+    if (pageNum >= 1 && pageNum <= totalPages) {
+      setCurrentPage(pageNum);
+    }
   };
 
   // -------------------- Render --------------------
   return (
     <div className="min-h-screen p-6 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-50 transition-colors">
-      {/* If currently deleting, show our full-screen loader */}
+      {/* Full-screen loader when deleting */}
       {deleteLoading && <FullScreenLoader />}
 
       {/* Header + Add Button */}
@@ -1062,8 +1095,7 @@ const MakeAnnouncement = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setOpenAddModal(true)}
-          className="flex items-center bg-yellow-600 text-indigo-800 
-                     px-4 py-2 rounded-md font-semibold hover:bg-yellow-500"
+          className="flex items-center bg-yellow-600 text-indigo-800 px-4 py-2 rounded-md font-semibold hover:bg-yellow-500"
         >
           <FaPlus className="mr-2" />
           Add Announcement
@@ -1073,7 +1105,6 @@ const MakeAnnouncement = () => {
       {/* Search & Filters */}
       <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-
           {/* Search */}
           <div className="col-span-12 md:col-span-4 flex flex-col">
             <label className="text-sm font-medium mb-1">Search</label>
@@ -1095,9 +1126,7 @@ const MakeAnnouncement = () => {
             <select
               value={filterDepartment}
               onChange={handleFilterDepartmentChange}
-              className="w-full bg-white dark:bg-gray-700 border border-gray-300 
-                         dark:border-gray-600 rounded-md px-3 py-2 text-sm 
-                         focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="All">All Departments</option>
               {departments.map((dept) => (
@@ -1114,9 +1143,7 @@ const MakeAnnouncement = () => {
             <select
               value={sortOrder}
               onChange={handleSortOrderChange}
-              className="w-full bg-white dark:bg-gray-700 border border-gray-300 
-                         dark:border-gray-600 rounded-md px-3 py-2 text-sm 
-                         focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="Newest">Newest First</option>
               <option value="Oldest">Oldest First</option>
@@ -1125,34 +1152,25 @@ const MakeAnnouncement = () => {
 
           {/* Clear Filters */}
           <div className="col-span-12 md:col-span-2 flex flex-col">
-            {/* Hidden label so spacing is consistent */}
             <label className="invisible">Clear</label>
             <button
               onClick={handleClearFilters}
-              className="w-full bg-white dark:bg-gray-700 border border-gray-300 
-                         dark:border-gray-600 rounded-md px-2 py-2 text-gray-700 
-                         dark:text-gray-200 font-medium flex items-center 
-                         justify-center space-x-2 hover:bg-gray-100 
-                         dark:hover:bg-gray-600 text-sm"
+              className="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md px-2 py-2 text-gray-700 dark:text-gray-200 font-medium flex items-center justify-center space-x-2 hover:bg-gray-100 dark:hover:bg-gray-600 text-sm"
             >
               <FaFilter />
               <span>Clear Filters</span>
             </button>
           </div>
-
         </div>
       </div>
 
-      {/* Announcements List + Infinite Scroll */}
+      {/* Announcements List */}
       <div>
         {/* Loading State */}
         {announcementsLoading && (
           <div className="grid grid-cols-1 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div
-                key={i}
-                className="bg-white dark:bg-gray-800 p-4 rounded-md shadow space-y-3"
-              >
+              <div key={i} className="bg-white dark:bg-gray-800 p-4 rounded-md shadow space-y-3">
                 <div className="w-full h-24 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
                 <div className="w-3/5 h-4 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
                 <div className="w-4/5 h-4 bg-gray-200 dark:bg-gray-700 animate-pulse rounded" />
@@ -1167,42 +1185,95 @@ const MakeAnnouncement = () => {
         )}
 
         {/* No Results */}
-        {!announcementsLoading &&
-          !announcementsError &&
-          filteredAnnouncements.length === 0 && (
-            <p className="text-center">No announcements found.</p>
-          )}
+        {!announcementsLoading && !announcementsError && filteredAnnouncements.length === 0 && (
+          <p className="text-center">No announcements found.</p>
+        )}
 
         {/* Data */}
-        {!announcementsLoading &&
-          !announcementsError &&
-          filteredAnnouncements.length > 0 && (
-            <InfiniteScroll
-              dataLength={visibleCount}
-              next={fetchMoreData}
-              hasMore={visibleCount < filteredAnnouncements.length}
-              loader={
-                <div className="flex justify-center my-4">
-                  <div className="w-6 h-6 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                </div>
-              }
-              style={{ overflow: "visible" }}
-            >
-              {filteredAnnouncements.slice(0, visibleCount).map((announcement) => (
-                <div key={announcement._id} className="mb-4">
-                  {/* ------------------ Mobile Layout (< md) ------------------ */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    onClick={() => handleCardClick(announcement)}
-                    className="block md:hidden bg-white dark:bg-gray-800 
-                               rounded-xl shadow-md p-4 flex flex-col 
-                               transform hover:-translate-y-1 hover:shadow-lg 
-                               transition cursor-pointer"
-                  >
-                    {/* Image */}
-                    <div className="w-full h-48 rounded-md overflow-hidden mb-4">
+        {!announcementsLoading && !announcementsError && filteredAnnouncements.length > 0 && (
+          <>
+            {paginatedAnnouncements.map((announcement) => (
+              <div key={announcement._id} className="mb-4">
+                {/* ------------------ Mobile Layout (< md) ------------------ */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  onClick={() => handleCardClick(announcement)}
+                  className="block md:hidden bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 flex flex-col transform hover:-translate-y-1 hover:shadow-lg transition cursor-pointer"
+                >
+                  {/* Image */}
+                  <div className="w-full h-48 rounded-md overflow-hidden mb-4">
+                    {announcement.announcementPostImg ? (
+                      <img
+                        src={announcement.announcementPostImg}
+                        alt={announcement.announcementSubject}
+                        className="w-full h-full object-contain"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                    )}
+                  </div>
+                  {/* Text */}
+                  <div className="flex-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                      {announcement.updatedAt
+                        ? new Date(announcement.updatedAt).toLocaleString()
+                        : ""}
+                    </p>
+                    <p className="font-semibold text-green-600 dark:text-green-400 mb-1">
+                      {announcement.announcementSubject}
+                    </p>
+                    <p className="text-sm text-gray-600 dark:text-gray-300">
+                      Department:{" "}
+                      {announcement.publish_for_all
+                        ? "All"
+                        : announcement.department
+                            .map((dept) => dept.department)
+                            .join(", ")}
+                    </p>
+                  </div>
+                  {/* Action Buttons */}
+                  <div className="mt-4 flex items-center justify-end space-x-2">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenEditModal(announcement);
+                      }}
+                      className="flex items-center bg-yellow-600 text-white px-3 py-2 rounded-md font-medium hover:bg-yellow-500"
+                    >
+                      <FaEdit className="mr-2" />
+                      Edit
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(announcement._id);
+                      }}
+                      className="flex items-center bg-red-600 text-white px-3 py-2 rounded-md font-medium hover:bg-red-500"
+                    >
+                      <FaTrash className="mr-2" />
+                      Delete
+                    </motion.button>
+                  </div>
+                </motion.div>
+
+                {/* ------------------ Desktop Layout (md+) ------------------ */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.3 }}
+                  onClick={() => handleCardClick(announcement)}
+                  className="hidden md:flex bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 items-start md:items-center justify-between transform hover:-translate-y-1 hover:shadow-lg transition cursor-pointer"
+                >
+                  {/* Left: Image + Subject */}
+                  <div className="flex items-start">
+                    <div className="w-40 h-20 flex-shrink-0 rounded-md overflow-hidden mr-4">
                       {announcement.announcementPostImg ? (
                         <img
                           src={announcement.announcementPostImg}
@@ -1214,18 +1285,16 @@ const MakeAnnouncement = () => {
                         <div className="w-full h-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
                       )}
                     </div>
-
-                    {/* Text */}
-                    <div className="flex-1">
+                    <div className="ml-10">
                       <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
                         {announcement.updatedAt
                           ? new Date(announcement.updatedAt).toLocaleString()
                           : ""}
                       </p>
-                      <p className="font-semibold text-green-600 dark:text-green-400 mb-1">
+                      <p className="font-semibold text-green-600 dark:text-green-400">
                         {announcement.announcementSubject}
                       </p>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">
+                      <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-1">
                         Department:{" "}
                         {announcement.publish_for_all
                           ? "All"
@@ -1234,118 +1303,91 @@ const MakeAnnouncement = () => {
                               .join(", ")}
                       </p>
                     </div>
-
-                    {/* Action Buttons */}
-                    <div className="mt-4 flex items-center justify-end space-x-2">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenEditModal(announcement);
-                        }}
-                        className="flex items-center bg-yellow-600 text-white
-                                   px-3 py-2 rounded-md font-medium hover:bg-yellow-500"
-                      >
-                        <FaEdit className="mr-2" />
-                        Edit
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(announcement._id);
-                        }}
-                        className="flex items-center bg-red-600 text-white
-                                   px-3 py-2 rounded-md font-medium hover:bg-red-500"
-                      >
-                        <FaTrash className="mr-2" />
-                        Delete
-                      </motion.button>
-                    </div>
-                  </motion.div>
-
-                  {/* ------------------ Desktop Layout (md+) ------------------ */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3 }}
-                    onClick={() => handleCardClick(announcement)}
-                    className="hidden md:flex bg-white dark:bg-gray-800 
-                               rounded-xl shadow-md p-4 items-start md:items-center 
-                               justify-between transform hover:-translate-y-1 
-                               hover:shadow-lg transition cursor-pointer"
-                  >
-                    {/* Left: Image + Subject */}
-                    <div className="flex items-start">
-                      <div className="w-40 h-20 flex-shrink-0 rounded-md overflow-hidden mr-4">
-                        {announcement.announcementPostImg ? (
-                          <img
-                            src={announcement.announcementPostImg}
-                            alt={announcement.announcementSubject}
-                            className="w-full h-full object-contain"
-                            loading="lazy"
-                          />
-                        ) : (
-                          <div className="w-full h-full bg-gray-200 dark:bg-gray-700 animate-pulse" />
-                        )}
-                      </div>
-                      <div className="ml-10">
-                        <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                          {announcement.updatedAt
-                            ? new Date(announcement.updatedAt).toLocaleString()
-                            : ""}
-                        </p>
-                        <p className="font-semibold text-green-600 dark:text-green-400">
-                          {announcement.announcementSubject}
-                        </p>
-                        <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-1">
-                          Department:{" "}
-                          {announcement.publish_for_all
-                            ? "All"
-                            : announcement.department
-                                .map((dept) => dept.department)
-                                .join(", ")}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Right: Edit / Delete */}
-                    <div className="flex mt-4 md:mt-0 space-x-2 md:space-x-4">
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenEditModal(announcement);
-                        }}
-                        className="flex items-center bg-yellow-600 text-white
-                                   px-3 py-2 rounded-md font-medium hover:bg-yellow-500"
-                      >
-                        <FaEdit className="mr-2" />
-                        Edit
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDelete(announcement._id);
-                        }}
-                        className="flex items-center bg-red-600 text-white
-                                   px-3 py-2 rounded-md font-medium hover:bg-red-500"
-                      >
-                        <FaTrash className="mr-2" />
-                        Delete
-                      </motion.button>
-                    </div>
-                  </motion.div>
-                </div>
-              ))}
-            </InfiniteScroll>
-          )}
+                  </div>
+                  {/* Right: Edit / Delete */}
+                  <div className="flex mt-4 md:mt-0 space-x-2 md:space-x-4">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpenEditModal(announcement);
+                      }}
+                      className="flex items-center bg-yellow-600 text-white px-3 py-2 rounded-md font-medium hover:bg-yellow-500"
+                    >
+                      <FaEdit className="mr-2" />
+                      Edit
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(announcement._id);
+                      }}
+                      className="flex items-center bg-red-600 text-white px-3 py-2 rounded-md font-medium hover:bg-red-500"
+                    >
+                      <FaTrash className="mr-2" />
+                      Delete
+                    </motion.button>
+                  </div>
+                </motion.div>
+              </div>
+            ))}
+          </>
+        )}
       </div>
+
+      {/* -------------------- Fixed Pagination Controls -------------------- */}
+      {!announcementsLoading && !announcementsError && filteredAnnouncements.length > 0 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between p-4 text-sm text-gray-600 dark:text-gray-300">
+          <div>
+            {totalResults > 0
+              ? `Showing ${
+                  (currentPage - 1) * itemsPerPage + 1
+                } to ${
+                  currentPage * itemsPerPage > totalResults
+                    ? totalResults
+                    : currentPage * itemsPerPage
+                } of ${totalResults} entries`
+              : "Showing 0 to 0 of 0 entries"}
+          </div>
+          <div className="flex items-center space-x-2 mt-2 sm:mt-0">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="px-3 py-1 rounded border transition-colors bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              Prev
+            </button>
+            <div className="flex items-center space-x-2">
+              <span>Page</span>
+              <input
+                type="number"
+                value={pageInput}
+                onChange={handlePageInputChange}
+                className="w-16 text-center border rounded px-2 py-1"
+                min="1"
+                max={totalPages}
+              />
+              <span>of {totalPages}</span>
+              <button
+                onClick={handleGoToPage}
+                className="px-3 py-1 rounded border transition-colors bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+              >
+                Go
+              </button>
+            </div>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 rounded border transition-colors bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
+            >
+              Next
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* --------------------------- Add Announcement Modal --------------------------- */}
       <AnnouncementAddModal

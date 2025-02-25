@@ -402,6 +402,7 @@
 
 // export default EmployeesMain;
 
+
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Line, Doughnut } from "react-chartjs-2";
@@ -447,6 +448,19 @@ const EmployeesMain = () => {
   const [activeTab, setActiveTab] = useState("active");
   const [chartRange, setChartRange] = useState("Monthly");
   const [overviewRange, setOverviewRange] = useState("Today");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [manualPage, setManualPage] = useState(1);
+  const employeesPerPage = 10;
+
+  // Reset page when switching between active and inactive
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [activeTab]);
+
+  // Sync manualPage with currentPage whenever currentPage changes
+  useEffect(() => {
+    setManualPage(currentPage);
+  }, [currentPage]);
 
   // 3) Fetch data on component mount
   useEffect(() => {
@@ -460,8 +474,6 @@ const EmployeesMain = () => {
   if (error) {
     return <p className="p-4 text-red-600">Error: {error}</p>;
   }
-
-  // If the store hasn't fetched or returned data yet
   if (!lineChartData || !overviewData) {
     return <p className="p-4">No data available.</p>;
   }
@@ -473,43 +485,19 @@ const EmployeesMain = () => {
   let chartCounts = [];
 
   if (chartRange === "Monthly") {
-    // The API gives an array of 12 numbers in lineChartData.monthly
     chartLabels = [
-      "Jan",
-      "Feb",
-      "Mar",
-      "Apr",
-      "May",
-      "Jun",
-      "Jul",
-      "Aug",
-      "Sep",
-      "Oct",
-      "Nov",
-      "Dec",
+      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
     ];
     chartCounts = lineChartData.monthly || [];
   } else if (chartRange === "Weekly") {
-    // The API gives an array of 12 numbers in lineChartData.weekly
     chartLabels = [
-      "W1",
-      "W2",
-      "W3",
-      "W4",
-      "W5",
-      "W6",
-      "W7",
-      "W8",
-      "W9",
-      "W10",
-      "W11",
-      "W12",
+      "W1", "W2", "W3", "W4", "W5", "W6",
+      "W7", "W8", "W9", "W10", "W11", "W12",
     ];
     chartCounts = lineChartData.weekly || [];
   } else {
-    // Yearly
-    // Our API returns { labels: [...], counts: [...] } for yearly
-    chartLabels = (lineChartData.yearly.labels || []).map(String); // convert years to strings
+    chartLabels = (lineChartData.yearly.labels || []).map(String);
     chartCounts = lineChartData.yearly.counts || [];
   }
 
@@ -532,20 +520,12 @@ const EmployeesMain = () => {
     maintainAspectRatio: false,
     animation: { duration: 800 },
     scales: { y: { beginAtZero: true } },
-    plugins: {
-      legend: { display: false },
-      tooltip: { enabled: true },
-    },
+    plugins: { legend: { display: false }, tooltip: { enabled: true } },
   };
 
   // ---------------------------------------------
   // DOUGHNUT (EMPLOYEE OVERVIEW)
   // ---------------------------------------------
-  // The API returns something like overviewData = {
-  //   Today: [activeCount, inactiveCount],
-  //   "This Week": [...],
-  //   "This Month": [...]
-  // }
   const [activeCount, inactiveCount] = overviewData[overviewRange] || [0, 0];
 
   const dynamicDoughnutData = {
@@ -564,28 +544,32 @@ const EmployeesMain = () => {
     responsive: true,
     cutout: "65%",
     animation: { duration: 800 },
-    plugins: {
-      legend: { display: false },
-      tooltip: { enabled: true },
-    },
+    plugins: { legend: { display: false }, tooltip: { enabled: true } },
   };
 
   // ---------------------------------------------
-  // TABLE DATA (Active / Inactive Employees)
+  // TABLE DATA (Active / Inactive Employees) with Pagination
   // ---------------------------------------------
-  // We already have two arrays from the API:
-  // - activeEmployees
-  // - inactiveEmployees
-  const displayedEmployees =
-    activeTab === "active" ? activeEmployees : inactiveEmployees;
+  const displayedEmployees = activeTab === "active" ? activeEmployees : inactiveEmployees;
+  const totalEmployees = displayedEmployees.length;
+  const totalPages = Math.ceil(totalEmployees / employeesPerPage);
+  const indexOfLastEmployee = currentPage * employeesPerPage;
+  const indexOfFirstEmployee = indexOfLastEmployee - employeesPerPage;
+  const currentEmployees = displayedEmployees.slice(indexOfFirstEmployee, indexOfLastEmployee);
+
+  // Handle manual "Go to page" navigation
+  const handleGoToPage = () => {
+    const page = Number(manualPage);
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-700 dark:text-gray-100">
-          Dashboard
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-700 dark:text-gray-100">Dashboard</h1>
       </div>
 
       {/* Top Row: LEFT (Line Chart) + RIGHT (Doughnut) */}
@@ -597,29 +581,21 @@ const EmployeesMain = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          {/* Card Header */}
           <div className="flex items-center justify-between mb-4">
             <div>
               <div className="flex items-center space-x-2">
-                {/* Example: total employees or some statistic */}
                 <p className="text-2xl font-bold text-gray-700 dark:text-gray-100">
                   {chartCounts.reduce((acc, val) => acc + val, 0)}
                 </p>
-                <p className="text-sm text-green-500 font-medium">
-                  +10% Total This Year
-                </p>
+                <p className="text-sm text-green-500 font-medium">+10% Total This Year</p>
               </div>
-              <h2 className="text-base text-gray-500 dark:text-gray-300 mt-1">
-                New Employee Added
-              </h2>
+              <h2 className="text-base text-gray-500 dark:text-gray-300 mt-1">New Employee Added</h2>
             </div>
-            {/* Chart Range Selector */}
             <div>
               <select
                 value={chartRange}
                 onChange={(e) => setChartRange(e.target.value)}
-                className="border text-sm rounded px-2 py-1 bg-gray-50 
-                           dark:bg-gray-700 dark:text-gray-200"
+                className="border text-sm rounded px-2 py-1 bg-gray-50 dark:bg-gray-700 dark:text-gray-200"
               >
                 <option>Monthly</option>
                 <option>Weekly</option>
@@ -627,8 +603,6 @@ const EmployeesMain = () => {
               </select>
             </div>
           </div>
-
-          {/* LINE CHART */}
           <div className="h-60">
             <Line data={dynamicLineChartData} options={lineChartOptions} />
           </div>
@@ -641,50 +615,37 @@ const EmployeesMain = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         >
-          {/* Card Header */}
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-semibold text-gray-700 dark:text-gray-100">
-              Employee Overview
-            </h3>
-            {/* Overview Range Selector */}
+            <h3 className="text-base font-semibold text-gray-700 dark:text-gray-100">Employee Overview</h3>
             <select
               value={overviewRange}
               onChange={(e) => setOverviewRange(e.target.value)}
-              className="border text-sm rounded px-2 py-1 bg-gray-50 
-                         dark:bg-gray-700 dark:text-gray-200"
+              className="border text-sm rounded px-2 py-1 bg-gray-50 dark:bg-gray-700 dark:text-gray-200"
             >
               <option>Today</option>
               <option>This Week</option>
               <option>This Month</option>
             </select>
           </div>
-
-          {/* DOUGHNUT CHART - Centered */}
           <div className="flex flex-col items-center justify-center relative mt-20">
             <div className="w-36 h-36">
               <Doughnut data={dynamicDoughnutData} options={doughnutOptions} />
             </div>
           </div>
-
-          {/* Legend / Info */}
           <div className="mt-10 flex justify-between space-x-6 text-lg">
             <div className="flex items-center space-x-1">
               <span
                 className="inline-block w-3 h-3 rounded-full"
                 style={{ backgroundColor: "#3b82f6" }}
               />
-              <span className="text-gray-600 dark:text-gray-200">
-                Active: {activeCount}
-              </span>
+              <span className="text-gray-600 dark:text-gray-200">Active: {activeCount}</span>
             </div>
             <div className="flex items-center space-x-1">
               <span
                 className="inline-block w-3 h-3 rounded-full"
                 style={{ backgroundColor: "#f97316" }}
               />
-              <span className="text-gray-600 dark:text-gray-200">
-                Inactive: {inactiveCount}
-              </span>
+              <span className="text-gray-600 dark:text-gray-200">Inactive: {inactiveCount}</span>
             </div>
           </div>
         </motion.div>
@@ -698,10 +659,7 @@ const EmployeesMain = () => {
         transition={{ duration: 0.5, delay: 0.2 }}
       >
         {/* Tabs header */}
-        <div
-          className="flex items-center justify-between border-b 
-                     border-gray-200 dark:border-gray-700 pb-2 mb-4"
-        >
+        <div className="flex items-center justify-between border-b border-gray-200 dark:border-gray-700 pb-2 mb-4">
           <div className="space-x-6">
             <button
               onClick={() => setActiveTab("active")}
@@ -739,10 +697,7 @@ const EmployeesMain = () => {
           transition={{ duration: 0.6 }}
         >
           <thead>
-            <tr
-              className="bg-gray-100 dark:bg-gray-700 text-sm uppercase 
-                         text-gray-600 dark:text-gray-200"
-            >
+            <tr className="bg-gray-100 dark:bg-gray-700 text-sm uppercase text-gray-600 dark:text-gray-200">
               <th className="px-4 py-2">Users</th>
               <th className="px-4 py-2">Join Date</th>
               <th className="px-4 py-2">Emp ID</th>
@@ -751,42 +706,29 @@ const EmployeesMain = () => {
             </tr>
           </thead>
           <tbody>
-            {displayedEmployees.map((emp, index) => (
+            {currentEmployees.map((emp, index) => (
               <tr
                 key={index}
-                className="border-b last:border-0 border-gray-200 
-                           dark:border-gray-700"
+                className="border-b last:border-0 border-gray-200 dark:border-gray-700"
               >
                 <td className="px-4 py-3">
                   <div className="flex items-center space-x-2">
-                    {/* Placeholder avatar */}
-                    <div className=" flex-shrink-0">
+                    <div className="flex-shrink-0">
                       <img
                         src={emp.userAvatar}
                         alt=""
-                        className="w-8 h-8 rounded-full bg-gray-300 "
+                        className="w-8 h-8 rounded-full bg-gray-300"
                       />
                     </div>
-
                     <div>
-                      <p className="font-medium text-gray-800 dark:text-gray-100">
-                        {emp.name}
-                      </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {emp.email}
-                      </p>
+                      <p className="font-medium text-gray-800 dark:text-gray-100">{emp.name}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">{emp.email}</p>
                     </div>
                   </div>
                 </td>
-                <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
-                  {emp.date}
-                </td>
-                <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
-                  {emp.empID}
-                </td>
-                <td className="px-4 py-3 text-gray-600 dark:text-gray-300">
-                  {emp.department}
-                </td>
+                <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{emp.date}</td>
+                <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{emp.empID}</td>
+                <td className="px-4 py-3 text-gray-600 dark:text-gray-300">{emp.department}</td>
                 <td className="px-4 py-3">
                   <span
                     className={`px-3 py-1 rounded-full text-sm font-medium ${
@@ -802,9 +744,47 @@ const EmployeesMain = () => {
             ))}
           </tbody>
         </motion.table>
+
+        {/* Right-Aligned Decorated Pagination Controls */}
+        <div className="flex items-center justify-end mt-6 text-sm font-light">
+  <button
+    onClick={() => setCurrentPage((prev) => prev - 1)}
+    disabled={currentPage === 1}
+    className="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors duration-200 disabled:opacity-50 disabled:bg-gray-400"
+  >
+    Prev
+  </button>
+  <span className="mx-2">
+    Page {currentPage} of {totalPages}
+  </span>
+  <button
+    onClick={() => setCurrentPage((prev) => prev + 1)}
+    disabled={currentPage === totalPages}
+    className="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors duration-200 disabled:opacity-50 disabled:bg-gray-400"
+  >
+    Next
+  </button>
+  <span className="mx-2">Go to page:</span>
+  <input
+    type="number"
+    min="1"
+    max={totalPages}
+    value={manualPage}
+    onChange={(e) => setManualPage(e.target.value)}
+    className="w-16 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-300 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
+  />
+  <button
+    onClick={handleGoToPage}
+    className="ml-2 px-2 py-1 bg-green-500 hover:bg-green-600 text-white rounded transition-colors duration-200"
+  >
+    Go
+  </button>
+</div>
+
       </motion.div>
     </div>
   );
 };
 
 export default EmployeesMain;
+
