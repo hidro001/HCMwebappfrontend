@@ -298,6 +298,9 @@
 // }
 
 
+
+
+
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { AiOutlineEye } from "react-icons/ai";
@@ -327,17 +330,15 @@ export default function AllVacancies() {
       const transformed = storeVacancies.map((job) => ({
         id: job._id,
         title: job.jobTitle || "Untitled",
-        // Use the first location (or fallback to "Remote")
         location:
           job.jobLocations && job.jobLocations.length
             ? job.jobLocations[0]
             : "Remote",
         department: job.jobDepartment || "Development",
         salary: job.salary || 0,
-        // Map the backend status ("Open", "Closed", "Draft", etc.) to our UI status
+        currency: job.currency || "INR",
         status: mapStatus(job.vacancyStatus),
         publication: new Date(job.createdAt).toDateString(),
-        // Use employmentType (an array) – we take the first value (or default)
         positionType:
           job.employmentType && job.employmentType.length
             ? job.employmentType[0]
@@ -357,11 +358,9 @@ export default function AllVacancies() {
     if (s === "open") return "OPEN";
     if (s === "closed") return "COMPLETED";
     if (s === "draft") return "DRAFT";
-    // You can add more mappings as needed.
     return "OPEN";
   }
 
-  // Tabs now include "DRAFT" instead of "IN PROGRESS" to match the API.
   const [selectedTab, setSelectedTab] = useState("ALL");
   const [filters, setFilters] = useState({
     department: "All Department",
@@ -414,26 +413,31 @@ export default function AllVacancies() {
     if (selectedTab === "OPEN" && vac.status !== "OPEN") return false;
     if (selectedTab === "COMPLETED" && vac.status !== "COMPLETED") return false;
     if (selectedTab === "DRAFT" && vac.status !== "DRAFT") return false;
-    if (filters.department !== "All Department" && vac.department !== filters.department) {
+    if (filters.department !== "All Department" && vac.department !== filters.department)
       return false;
-    }
-    if (filters.positionType !== "All Positions" && vac.positionType !== filters.positionType) {
+    if (filters.positionType !== "All Positions" && vac.positionType !== filters.positionType)
       return false;
-    }
     if (
       filters.workExperience !== "Any Experience" &&
       vac.workExperience !== filters.workExperience
-    ) {
+    )
       return false;
-    }
     if (
       filters.location !== "Any Location" &&
       !vac.location.toLowerCase().includes(filters.location.toLowerCase())
-    ) {
+    )
       return false;
-    }
     return true;
   });
+
+  // Helper function to format salary with the correct currency symbol
+  const formatSalary = (salary, currency) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: currency,
+      maximumFractionDigits: 0,
+    }).format(salary);
+  };
 
   return (
     <div className="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 ">
@@ -503,7 +507,7 @@ export default function AllVacancies() {
                         <td className="px-6 py-4">{vacancy.location}</td>
                         <td className="px-6 py-4">{vacancy.department}</td>
                         <td className="px-6 py-4">
-                          ${vacancy.salary.toLocaleString()}
+                          {formatSalary(vacancy.salary, vacancy.currency)}
                         </td>
                         <td className="px-6 py-4">
                           <span
