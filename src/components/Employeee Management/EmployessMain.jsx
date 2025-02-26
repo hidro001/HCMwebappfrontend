@@ -467,12 +467,32 @@ const EmployeesMain = () => {
     fetchDashboardData();
   }, [fetchDashboardData]);
 
-  // 4) Handle loading/error
+  // 4) Handle loading/error with Framer Motion animations
   if (loading) {
-    return <p className="p-4">Loading dashboard data...</p>;
+    return (
+      <motion.div
+        className="p-4 flex justify-center items-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <p>Loading dashboard data...</p>
+      </motion.div>
+    );
   }
   if (error) {
-    return <p className="p-4 text-red-600">Error: {error}</p>;
+    return (
+      <motion.div
+        className="p-4 text-red-600 flex justify-center items-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <p>Error: {error}</p>
+      </motion.div>
+    );
   }
   if (!lineChartData || !overviewData) {
     return <p className="p-4">No data available.</p>;
@@ -682,11 +702,6 @@ const EmployeesMain = () => {
               Inactive Emp ({inactiveEmployees.length})
             </button>
           </div>
-          <div>
-            <a href="#!" className="text-sm text-blue-500 hover:underline">
-              View All &rsaquo;
-            </a>
-          </div>
         </div>
 
         {/* TABLE */}
@@ -747,39 +762,39 @@ const EmployeesMain = () => {
 
         {/* Right-Aligned Decorated Pagination Controls */}
         <div className="flex items-center justify-end mt-6 text-sm font-light">
-  <button
-    onClick={() => setCurrentPage((prev) => prev - 1)}
-    disabled={currentPage === 1}
-    className="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors duration-200 disabled:opacity-50 disabled:bg-gray-400"
-  >
-    Prev
-  </button>
-  <span className="mx-2">
-    Page {currentPage} of {totalPages}
-  </span>
-  <button
-    onClick={() => setCurrentPage((prev) => prev + 1)}
-    disabled={currentPage === totalPages}
-    className="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors duration-200 disabled:opacity-50 disabled:bg-gray-400"
-  >
-    Next
-  </button>
-  <span className="mx-2">Go to page:</span>
-  <input
-    type="number"
-    min="1"
-    max={totalPages}
-    value={manualPage}
-    onChange={(e) => setManualPage(e.target.value)}
-    className="w-16 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-300 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
-  />
-  <button
-    onClick={handleGoToPage}
-    className="ml-2 px-2 py-1 bg-green-500 hover:bg-green-600 text-white rounded transition-colors duration-200"
-  >
-    Go
-  </button>
-</div>
+          <button
+            onClick={() => setCurrentPage((prev) => prev - 1)}
+            disabled={currentPage === 1}
+            className="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors duration-200 disabled:opacity-50 disabled:bg-gray-400"
+          >
+            Prev
+          </button>
+          <span className="mx-2">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage((prev) => prev + 1)}
+            disabled={currentPage === totalPages}
+            className="px-2 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded transition-colors duration-200 disabled:opacity-50 disabled:bg-gray-400"
+          >
+            Next
+          </button>
+          <span className="mx-2">Go to page:</span>
+          <input
+            type="number"
+            min="1"
+            max={totalPages}
+            value={manualPage}
+            onChange={(e) => setManualPage(e.target.value)}
+            className="w-16 px-2 py-1 border border-gray-300 rounded focus:outline-none focus:ring focus:ring-blue-300 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-gray-200"
+          />
+          <button
+            onClick={handleGoToPage}
+            className="ml-2 px-2 py-1 bg-green-500 hover:bg-green-600 text-white rounded transition-colors duration-200"
+          >
+            Go
+          </button>
+        </div>
 
       </motion.div>
     </div>
@@ -787,4 +802,3 @@ const EmployeesMain = () => {
 };
 
 export default EmployeesMain;
-

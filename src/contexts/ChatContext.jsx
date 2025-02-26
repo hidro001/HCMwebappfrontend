@@ -8,14 +8,14 @@ import {
   subscribeToMessages,
   disconnectSocket,
 } from '../service/socketService';
-import { fetchSubordinates, fetchBoth, fetchChatHistory } from '../service/chatService';
+import {  fetchChatHistory,fetchAllMember } from '../service/chatService';
 
 export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
   // Shared state
-  const [username, setUsername] = useState('Guest');
-  const [employeeId, setEmployeeId] = useState('EMP0001');
+  const [username, setUsername] = useState('');
+  const [employeeId, setEmployeeId] = useState('');
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState('');
   const [employees, setEmployees] = useState([]);
@@ -33,8 +33,8 @@ export const ChatProvider = ({ children }) => {
 
   // Load stored user info
   useEffect(() => {
-    setUsername(localStorage.getItem('userName') || 'Guest');
-    setEmployeeId(localStorage.getItem('employeeId') || 'EMP0001');
+    setUsername(localStorage.getItem('userName') );
+    setEmployeeId(localStorage.getItem('employeeId'));
   }, []);
 
   useEffect(() => {
@@ -72,13 +72,13 @@ export const ChatProvider = ({ children }) => {
   // Fetch employees (both subordinates and managers)
   const fetchEmployees = useCallback(async () => {
     try {
-      const [subsResponse, managersResponse] = await Promise.all([
-        fetchSubordinates(),
-        fetchBoth(),
+      const [subsResponse] = await Promise.all([
+        fetchAllMember(),
+        // fetchBoth(),
       ]);
       const subs = subsResponse.data?.data || [];
-      const managers = managersResponse.data?.data || [];
-      setEmployees([...subs, ...managers]);
+      // const managers = managersResponse.data?.data || [];
+      setEmployees([...subs]);
     } catch (err) {
       console.error(err);
       setError('Error fetching employees. Please try again later.');

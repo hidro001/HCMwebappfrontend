@@ -37,3 +37,28 @@ export const fetchChatHistory = async (employeeId, selectedUserId, accessToken) 
   });
   return response.data;
 };
+
+
+
+export const fetchAllMember = async () => {
+  try {
+    const response = await axiosInstance.get("/chat/member");
+    return response;
+  } catch (error) {
+    console.error("Error fetching subordinates:", error);
+    throw error;
+  }
+};
+
+
+
+export const fetchConversations = async (memberId) => {
+  try {
+    // Assuming your endpoint is set up to accept a memberId parameter in the URL
+    const response = await axios.get(`${SOCKET_SERVER_URL}/api/v1/chat/conversations/${memberId}`);
+    return response;
+  } catch (error) {
+    console.error("Error fetching conversations:", error);
+    throw error;
+  }
+};
