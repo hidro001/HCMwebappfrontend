@@ -260,7 +260,7 @@ const ViewAnnouncements = () => {
                 type="number"
                 value={pageInput}
                 onChange={handlePageInputChange}
-                className="w-16 text-center border rounded px-2 py-1"
+                className="w-16 text-center border rounded px-2 py-1 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                 min="1"
                 max={totalPages}
               />

@@ -1,12 +1,8 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import {
-  FaPrint,
-  FaFilePdf,
   FaUserAlt,
   FaCalendarAlt,
-  FaFileCsv,
-  FaFileExcel,
   FaCheckCircle,
   FaEye,
   FaEdit,
@@ -14,7 +10,8 @@ import {
 import LeaveDetailsModal from "./model/LeaveDetailsModal";
 import LeaveEdit from "./model/LeaveEdit";
 import useLeaveStore from "../../store/useLeaveStore";
-import ExportButtons from "../common/PdfExcel"; // Adjust path if needed
+import ExportButtons from "../common/PdfExcel";
+import { fetchSubordinateLeaveStats } from "../../service/leaveService.js";
 
 const tableContainerVariants = {
   hidden: { opacity: 0 },
@@ -30,8 +27,9 @@ const tableRowVariants = {
 };
 
 export default function ManageLeaves() {
-  const { leaves, isLoading, fetchAssignedLeaves, userProfile } =
-    useLeaveStore();
+  const { leaves, isLoading, fetchAssignedLeaves, userProfile } = useLeaveStore();
+
+  // Local states
   const [activeStatus, setActiveStatus] = useState("all");
   const [searchText, setSearchText] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
@@ -40,28 +38,72 @@ export default function ManageLeaves() {
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
-  // Fetch leaves whenever the activeStatus changes (or on mount)
+  // State to hold subordinate leave stats
+  const [stats, setStats] = useState({
+    pendingRequests: 0,
+    approvedThisMonth: 0,
+    rejectedThisMonth: 0,
+  });
+
+  // Fetch subordinate leave stats on mount
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const response = await fetchSubordinateLeaveStats();
+        if (response.success && response.data) {
+          setStats(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching subordinate leave stats:", error);
+      }
+    }
+    loadStats();
+  }, []);
+
+  // Fetch assigned leaves whenever activeStatus changes
   useEffect(() => {
     fetchAssignedLeaves(activeStatus);
   }, [activeStatus, fetchAssignedLeaves]);
 
-  // Client‐side filtering
+  // Filtering logic
   const filteredData = useMemo(() => {
     return leaves.filter((item) => {
+      // Employee info
+      const employeeId = item.employee?.employee_Id || "";
+      const employeeName = item.employee
+        ? `${item.employee.first_Name} ${item.employee.last_Name}`
+        : "";
+
+      // Case-insensitive search
+      const searchLower = searchText.toLowerCase();
+
+      // Match different fields
+      const matchLeaveType = item.leave_Type.toLowerCase().includes(searchLower);
+      const matchLeaveFrom = new Date(item.leave_From)
+        .toLocaleDateString()
+        .toLowerCase()
+        .includes(searchLower);
+      const matchLeaveTo = item.leave_To
+        ? new Date(item.leave_To)
+            .toLocaleDateString()
+            .toLowerCase()
+            .includes(searchLower)
+        : false;
+      const matchEmployeeId = employeeId.toLowerCase().includes(searchLower);
+      const matchEmployeeName = employeeName.toLowerCase().includes(searchLower);
+
       const matchSearch =
-        item.leave_Type.toLowerCase().includes(searchText.toLowerCase()) ||
-        new Date(item.leave_From)
-          .toLocaleDateString()
-          .toLowerCase()
-          .includes(searchText.toLowerCase()) ||
-        new Date(item.leave_To)
-          .toLocaleDateString()
-          .toLowerCase()
-          .includes(searchText.toLowerCase());
+        matchLeaveType ||
+        matchLeaveFrom ||
+        matchLeaveTo ||
+        matchEmployeeId ||
+        matchEmployeeName;
+
       const matchStatus =
         activeStatus.toLowerCase() === "all"
           ? true
           : item.leave_Status.toLowerCase() === activeStatus.toLowerCase();
+
       let matchMonth = true;
       if (selectedMonth) {
         const entryDate = new Date(item.leave_From);
@@ -70,10 +112,12 @@ export default function ManageLeaves() {
           entryDate.getFullYear() === parseInt(year, 10) &&
           entryDate.getMonth() + 1 === parseInt(month, 10);
       }
+
       return matchSearch && matchStatus && matchMonth;
     });
   }, [leaves, searchText, activeStatus, selectedMonth]);
 
+  // Pagination
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     return filteredData.slice(startIndex, startIndex + pageSize);
@@ -81,17 +125,18 @@ export default function ManageLeaves() {
 
   const totalPages = Math.ceil(filteredData.length / pageSize);
 
+  // Close modals
   const handleCloseModal = () => {
     setSelectedLeave(null);
     setShowEditModal(false);
   };
 
-  // Flatten the paginatedData for exporting
+  // Prepare data for export
   const exportData = paginatedData.map((entry, index) => {
     const serialNo = (currentPage - 1) * pageSize + (index + 1);
     return {
       sl: serialNo,
-      empID: entry.employee.employee_Id || "N/A",
+      empID: entry.employee?.employee_Id || "N/A",
       empName: entry.employee
         ? `${entry.employee.first_Name} ${entry.employee.last_Name}`
         : "Unknown",
@@ -117,7 +162,7 @@ export default function ManageLeaves() {
     };
   });
 
-  // Define columns
+  // Columns for PDF/Excel/CSV export
   const columns = [
     { header: "S.L", dataKey: "sl" },
     { header: "Emp ID", dataKey: "empID" },
@@ -137,34 +182,34 @@ export default function ManageLeaves() {
     <div className="mx-auto p-4 bg-bg-primary text-text-primary transition-colors">
       {/* Top Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {/* Pending Requests */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow relative overflow-hidden">
           <div className="flex flex-col">
             <span className="text-xl font-bold">Pending Request</span>
             <span className="text-3xl font-extrabold mt-2">
-              {userProfile ? userProfile.no_of_Paid_Leave : 0}
-            </span>
-            <span className="text-sm text-green-600 mt-1">
-              +5000 Last 30 days Employee
+              {stats.pendingRequests}
             </span>
           </div>
           <FaUserAlt className="text-4xl text-gray-300 absolute top-4 right-4" />
         </div>
+
+        {/* Approved This Month */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow relative overflow-hidden">
           <div className="flex flex-col">
             <span className="text-xl font-bold">Approved this month</span>
-            <span className="text-3xl font-extrabold mt-2">89</span>
-            <span className="text-sm text-red-600 mt-1">
-              -800 Last 30 days Active
+            <span className="text-3xl font-extrabold mt-2">
+              {stats.approvedThisMonth}
             </span>
           </div>
           <FaCalendarAlt className="text-4xl text-gray-300 absolute top-4 right-4" />
         </div>
+
+        {/* Rejected This Month */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow relative overflow-hidden">
           <div className="flex flex-col">
             <span className="text-xl font-bold">Reject this month</span>
-            <span className="text-3xl font-extrabold mt-2">212</span>
-            <span className="text-sm text-green-600 mt-1">
-              +200 Last 30 days Inactive
+            <span className="text-3xl font-extrabold mt-2">
+              {stats.rejectedThisMonth}
             </span>
           </div>
           <FaCheckCircle className="text-4xl text-gray-300 absolute top-4 right-4" />
@@ -177,6 +222,7 @@ export default function ManageLeaves() {
 
       {/* Controls */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-4 p-4 bg-white dark:bg-gray-800 rounded-md shadow">
+        {/* Page Size */}
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">Show</span>
           <select
@@ -196,6 +242,7 @@ export default function ManageLeaves() {
           <span className="text-sm font-medium">entries</span>
         </div>
 
+        {/* Search */}
         <div className="flex-1 max-w-sm">
           <input
             type="text"
@@ -209,6 +256,7 @@ export default function ManageLeaves() {
           />
         </div>
 
+        {/* Month Filter */}
         <div className="flex items-center gap-2">
           <div className="relative">
             <FaCalendarAlt className="absolute top-1/2 -translate-y-1/2 left-2 text-gray-400" />
@@ -224,6 +272,7 @@ export default function ManageLeaves() {
           </div>
         </div>
 
+        {/* Status Filter */}
         <select
           className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700"
           value={activeStatus}
@@ -238,21 +287,15 @@ export default function ManageLeaves() {
           <option value="rejected">Rejected</option>
         </select>
 
+        {/* Export Buttons */}
         <div className="flex items-center gap-2">
-          <ExportButtons
-            data={exportData}
-            columns={columns}
-            filename="ManageLeaves"
-          />
+          <ExportButtons data={exportData} columns={columns} filename="ManageLeaves" />
         </div>
       </div>
 
       {/* Table */}
       {isLoading ? (
-        <div
-          className="flex justify-center items-center"
-          style={{ height: "200px" }}
-        >
+        <div className="flex justify-center items-center" style={{ height: "200px" }}>
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
@@ -270,9 +313,7 @@ export default function ManageLeaves() {
                 <th className="p-3 text-sm font-semibold">S.L</th>
                 <th className="p-3 text-sm font-semibold">Emp ID</th>
                 <th className="p-3 text-sm font-semibold">Emp Name</th>
-                <th className="p-3 text-sm font-semibold">
-                  Paid Leave Balance
-                </th>
+                <th className="p-3 text-sm font-semibold">Leave Bank</th>
                 <th className="p-3 text-sm font-semibold">Leave Type</th>
                 <th className="p-3 text-sm font-semibold">From</th>
                 <th className="p-3 text-sm font-semibold">To</th>
@@ -280,7 +321,6 @@ export default function ManageLeaves() {
                 <th className="p-3 text-sm font-semibold">Reason for Leave</th>
                 <th className="p-3 text-sm font-semibold">Leave Category</th>
                 <th className="p-3 text-sm font-semibold">Processed By</th>
-
                 <th className="p-3 text-sm font-semibold">Status</th>
                 <th className="p-3 text-sm font-semibold">Action</th>
               </tr>
@@ -301,31 +341,25 @@ export default function ManageLeaves() {
                     {(currentPage - 1) * pageSize + index + 1}
                   </td>
                   <td className="p-3 text-sm">
-                    {entry.employee.employee_Id || "N/A"}
+                    {entry.employee?.employee_Id || "N/A"}
                   </td>
-
                   <td className="p-3 text-sm">
-                    {" "}
                     {entry.employee
                       ? `${entry.employee.first_Name} ${entry.employee.last_Name}`
                       : "Unknown"}
                   </td>
-
                   <td className="p-3 text-sm">
-                    {entry.employee.no_of_Paid_Leave || "N/A"}
+                    {entry.employee?.no_of_Paid_Leave || "N/A"}
                   </td>
-
                   <td className="p-3 text-sm">{entry.leave_Type}</td>
                   <td className="p-3 text-sm">
                     {new Date(entry.leave_From).toLocaleDateString()}
                   </td>
-
                   <td className="p-3 text-sm">
                     {entry.leave_To
                       ? new Date(entry.leave_To).toLocaleDateString()
                       : "N/A"}
                   </td>
-
                   <td className="p-3 text-sm">{entry.no_Of_Days}</td>
                   <td className="p-3 text-sm">
                     {entry.reason_For_Leave &&
@@ -350,7 +384,6 @@ export default function ManageLeaves() {
                       ? `Rejected by ${entry.rejected_By.first_Name} ${entry.rejected_By.last_Name}`
                       : "Pending"}
                   </td>
-
                   <td className="p-3 text-sm">
                     <span
                       className={`px-2 py-1 text-xs font-semibold rounded ${

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
+import { motion } from "framer-motion";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 // Import your service
 import { fetchBreakStats } from "../../../service/productLenseService";
@@ -60,8 +63,32 @@ const EmployeeBreakStatsTable = () => {
     }
   };
 
+  // Variants for the container animation
+  const containerVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5 } },
+  };
+
+  // Variants for the table rows with staggered children via the tbody
+  const tbodyVariants = {
+    visible: {
+      transition: { staggerChildren: 0.1 },
+    },
+    hidden: {},
+  };
+
+  const rowVariant = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 },
+  };
+
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 p-6">
+    <motion.div
+      className="bg-gray-50 dark:bg-gray-900 p-6"
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
       {/* Card Container */}
       <div className="max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700">
         {/* Header with Link */}
@@ -72,12 +99,12 @@ const EmployeeBreakStatsTable = () => {
               Overview of employee break details.
             </p>
           </div>
-          <Link
+          {/* <Link
             to="/dashboard/main-dashboard"
             className="mt-4 sm:mt-0 inline-flex items-center text-white hover:underline"
           >
             See More <FaArrowRight className="ml-2" />
-          </Link>
+          </Link> */}
         </div>
 
         {/* Filters & Show Count */}
@@ -99,7 +126,45 @@ const EmployeeBreakStatsTable = () => {
         {/* Table Container */}
         <div className="p-4 overflow-x-auto">
           {loading ? (
-            <div className="text-center py-4 text-gray-500">Loading...</div>
+            <table className="table-auto w-full text-left">
+              <thead className="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
+                <tr className="text-sm font-medium text-gray-600 dark:text-gray-200">
+                  <th className="px-4 py-3 uppercase">SRN</th>
+                  <th className="px-4 py-3 uppercase">EmpID</th>
+                  <th className="px-4 py-3 uppercase">Name</th>
+                  <th className="px-4 py-3 uppercase">Designation</th>
+                  <th className="px-4 py-3 uppercase">BreakTaken</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <tr
+                    key={index}
+                    className={`${
+                      index % 2 === 0
+                        ? "bg-blue-50 dark:bg-gray-800"
+                        : "bg-green-50 dark:bg-gray-900"
+                    }`}
+                  >
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <Skeleton />
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <Skeleton />
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <Skeleton />
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <Skeleton />
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      <Skeleton />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           ) : data.length === 0 ? (
             <div className="text-center py-4 text-gray-500">No data found.</div>
           ) : (
@@ -113,10 +178,11 @@ const EmployeeBreakStatsTable = () => {
                   <th className="px-4 py-3 uppercase">BreakTaken</th>
                 </tr>
               </thead>
-              <tbody>
+              <motion.tbody initial="hidden" animate="visible" variants={tbodyVariants}>
                 {data.map((item, index) => (
-                  <tr
+                  <motion.tr
                     key={item.srn}
+                    variants={rowVariant}
                     className={`${
                       index % 2 === 0
                         ? "bg-blue-50 dark:bg-gray-800"
@@ -130,14 +196,14 @@ const EmployeeBreakStatsTable = () => {
                     <td className="px-4 py-3 whitespace-nowrap">{item.name}</td>
                     <td className="px-4 py-3 whitespace-nowrap">{item.designation}</td>
                     <td className="px-4 py-3 whitespace-nowrap">{item.breaktaken}</td>
-                  </tr>
+                  </motion.tr>
                 ))}
-              </tbody>
+              </motion.tbody>
             </table>
           )}
         </div>
 
-        {/* Fixed Pagination Controls (Prev, Next, and Go to Page Input) */}
+        {/* Pagination Controls */}
         {!loading && data.length > 0 && pagination.totalPages && (
           <div className="flex flex-col sm:flex-row items-center justify-between p-4 text-sm text-gray-600 dark:text-gray-300">
             <div>
@@ -167,7 +233,7 @@ const EmployeeBreakStatsTable = () => {
                   type="number"
                   value={pageInput}
                   onChange={handlePageInputChange}
-                  className="w-16 text-center border rounded px-2 py-1"
+                  className="w-16 text-center border rounded px-2 py-1 dark:bg-gray-800 dark:border-gray-700 dark:text-white"
                   min="1"
                   max={pagination.totalPages}
                 />
@@ -190,7 +256,7 @@ const EmployeeBreakStatsTable = () => {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 };
 
