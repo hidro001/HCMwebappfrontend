@@ -69,6 +69,7 @@ export default function EmployeeFormTabs({
       permission: [],
       assigned_to: [],
       designation: "",
+      work_Mode: "",
       employee_Id: "",
       officeLocation: "",
       latitude: "",
@@ -213,30 +214,76 @@ export default function EmployeeFormTabs({
       //   }
       // });
 
-      Object.keys(formValues).forEach((key) => {
-        if (omitKeys.includes(key)) return;
+      // Object.keys(formValues).forEach((key) => {
+      //   if (omitKeys.includes(key)) return;
       
-        if (key === "officeLocation") {
-          if (formValues[key] !== null && formValues[key] !== "") {
-            formData.append("office_address", formValues[key]);
-          }
-        } else if (key === "permanent_Address") {
-          if (formValues[key] !== null && formValues[key] !== "") {
-            formData.append("user_Address", formValues[key]);
-          }
-        } else if (key === "break_Type") {
-          // Check if break_Type is an object; if so, stringify it.
-          if (formValues[key] && typeof formValues[key] === "object") {
-            formData.append("break_Type", JSON.stringify(formValues[key]));
-          } else {
-            formData.append("break_Type", formValues[key] || "");
-          }
-        } else {
-          if (formValues[key] !== null && formValues[key] !== "") {
-            formData.append(key, formValues[key]);
-          }
-        }
-      });
+      //   if (key === "officeLocation") {
+      //     if (formValues[key] !== null && formValues[key] !== "") {
+      //       formData.append("office_address", formValues[key]);
+      //     }
+      //   } else if (key === "permanent_Address") {
+      //     if (formValues[key] !== null && formValues[key] !== "") {
+      //       formData.append("user_Address", formValues[key]);
+      //     }
+      //   } else if (key === "break_Type") {
+      //     // Check if break_Type is an object; if so, stringify it.
+      //     if (formValues[key] && typeof formValues[key] === "object") {
+      //       formData.append("break_Type", JSON.stringify(formValues[key]));
+      //     } else {
+      //       formData.append("break_Type", formValues[key] || "");
+      //     }
+      //   } else {
+      //     if (formValues[key] !== null && formValues[key] !== "") {
+      //       formData.append(key, formValues[key]);
+      //     }
+      //   }
+        
+      // });
+
+      // Step A: Loop and handle everything except allowances_Provided
+  Object.keys(formValues).forEach((key) => {
+    if (omitKeys.includes(key)) return;
+
+    // example handle officeLocation, permanent_Address, etc...
+    if (key === "officeLocation") {
+      if (formValues[key]) {
+        formData.append("office_address", formValues[key]);
+      }
+    } else if (key === "permanent_Address") {
+      if (formValues[key]) {
+        formData.append("user_Address", formValues[key]);
+      }
+    } else if (key === "break_Type") {
+      // if break_Type is an object, JSON.stringify
+      if (formValues[key] && typeof formValues[key] === "object") {
+        formData.append("break_Type", JSON.stringify(formValues[key]));
+      } else {
+        formData.append("break_Type", formValues[key] || "");
+      }
+    }
+    // Step B: If it's allowances_Provided, join into a comma-separated string
+    else if (key === "allowances_Provided" && Array.isArray(formValues[key])) {
+      const joined = formValues[key].join(","); // "da,conveyance,medical"
+      formData.append("allowances_Provided", joined);
+    }
+    // otherwise append as normal
+    else {
+      if (formValues[key] !== null && formValues[key] !== "") {
+        formData.append(key, formValues[key]);
+      }
+
+    }
+    if (key === "languages_Known" && Array.isArray(formValues[key])) {
+      const joined = formValues[key].join(","); // e.g. "Spanish,Mandarin,Hindi"
+      formData.append("languages_Known", joined);
+    } else if (key === "allowances_Provided" && Array.isArray(formValues[key])) {
+      const joined = formValues[key].join(",");
+      formData.append("allowances_Provided", joined);
+    } 
+  });
+
+      
+
 
 
       // Append arrays:

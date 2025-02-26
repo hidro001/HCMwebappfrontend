@@ -1,10 +1,573 @@
+// import { useEffect, useState } from "react";
+// import { useAnimate } from "framer-motion";
+// import { useFormContext, useWatch } from "react-hook-form";
+// import FormField from "../common/FormField";
+// import FormSelect from "../common/FormSelect";
+
+// import FormTextArea from "../common/FormTextArea";
+// import FormMultiSelect from "../common/FormMultiSelect";
+// import useEmployeeStore from "../../../store/useEmployeeStore.js";
+// import PermissionModal from "../common/PermissionModal";
+// import { availablePermission } from "../../../service/availablePermissions";
+// import FormReactSelect from "../common/FormReactSelect.jsx";
+
+// const FILE_SIZE_LIMIT = 5 * 1024 * 1024;
+// const lettersOnlyRegex = /^[A-Za-z\s]+$/;
+
+// export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
+//   const [scope, animate] = useAnimate();
+//   const [avatarPreview, setAvatarPreview] = useState(null);
+//   const {
+//     handleSubmit,
+//     register,
+//     watch,
+//     setValue,
+//     formState: { errors },
+//   } = useFormContext();
+
+//   const addressOptions = useEmployeeStore((state) => state.addressOptions);
+//   const departments = useEmployeeStore((state) => state.departments);
+//   const shiftTimings = useEmployeeStore((state) => state.shiftTimings);
+//   const employmentTypes = useEmployeeStore((state) => state.employmentTypes);
+//   const permissionRoles = useEmployeeStore((state) => state.permissionRoles);
+//   const designations = useEmployeeStore((state) => state.designations);
+//   const allEmployees = useEmployeeStore((state) => state.allEmployees);
+
+//   const breakRecords = useEmployeeStore((state) => state.breakRecords);
+//   const loadingBreakRecords = useEmployeeStore(
+//     (state) => state.loadingBreakRecords
+//   );
+
+//   const loadingAddresses = useEmployeeStore((state) => state.loadingAddresses);
+//   const loadingDepartments = useEmployeeStore(
+//     (state) => state.loadingDepartments
+//   );
+//   const loadingShiftTimings = useEmployeeStore(
+//     (state) => state.loadingShiftTimings
+//   );
+//   const loadingEmploymentTypes = useEmployeeStore(
+//     (state) => state.loadingEmploymentTypes
+//   );
+//   const loadingPermissionRoles = useEmployeeStore(
+//     (state) => state.loadingPermissionRoles
+//   );
+//   const loadingDesignations = useEmployeeStore(
+//     (state) => state.loadingDesignations
+//   );
+//   const loadingAllEmployees = useEmployeeStore(
+//     (state) => state.loadingAllEmployees
+//   );
+
+//   useEffect(() => {
+//     animate([
+//       [".animatable-input", { opacity: 0, x: 20 }, { duration: 0 }],
+//       [
+//         ".animatable-input",
+//         { opacity: 1, x: 0 },
+//         { duration: 0.3, stagger: 0.05 },
+//       ],
+//     ]);
+//   }, [animate]);
+
+//   const watchOfficeLocation = watch("officeLocation");
+//   useEffect(() => {
+//     const selected = addressOptions?.find(
+//       (opt) => opt.value === watchOfficeLocation
+//     );
+//     if (selected) {
+//       setValue("latitude", selected.latitude || "");
+//       setValue("longitude", selected.longitude || "");
+//     } else {
+//       setValue("latitude", "");
+//       setValue("longitude", "");
+//     }
+//   }, [watchOfficeLocation, addressOptions, setValue]);
+
+//   const overtimeAllowed = useWatch({ name: "overtime_allowed" });
+
+//   const watchRole = watch("permission_role");
+//   useEffect(() => {
+//     const foundRole = permissionRoles?.find((r) => r.role_name === watchRole);
+//     if (foundRole?.permission) {
+//       const perms = foundRole.permission.map((p) => p.permission);
+//       setValue("permission", perms);
+//     } else {
+//       setValue("permission", []);
+//     }
+//   }, [watchRole, permissionRoles, setValue]);
+
+//   const handleProfileImageChange = (e) => {
+//     const file = e.target.files[0];
+//     if (file) {
+//       if (file.size > FILE_SIZE_LIMIT) {
+//         alert("Profile image must be <= 5MB");
+//         return;
+//       }
+//       if (!["image/png", "image/jpeg"].includes(file.type)) {
+//         alert("Unsupported file format. Only PNG/JPEG");
+//         return;
+//       }
+//       setValue("user_Avatar", file);
+//       setAvatarPreview(URL.createObjectURL(file));
+//     } else {
+//       setValue("user_Avatar", null);
+//       setAvatarPreview(null);
+//     }
+//   };
+
+//   const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false);
+//   const currentPermissions = useWatch({ name: "permission" });
+
+//   const openPermissionModal = () => setIsPermissionModalOpen(true);
+//   const closePermissionModal = () => setIsPermissionModalOpen(false);
+
+//   const handlePermissionSave = (selected) => {
+//     setValue("permission", selected);
+//     setIsPermissionModalOpen(false);
+//   };
+
+//   return (
+//     <form
+//       ref={scope}
+//       onSubmit={handleSubmit(onSubmitStep)}
+//       className=" mx-auto p-8 bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-colors duration-300"
+//     >
+//       <h2 className="text-3xl font-bold mb-6 border-b border-gray-300 dark:border-gray-700 pb-4">
+//         Employee Details
+//       </h2>
+//       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+//         <div className="flex flex-col items-center">
+//           <label className="block font-medium mb-2">Profile Image</label>
+//           <div
+//             className="w-32 h-32 rounded-full border relative mb-2 flex items-center justify-center overflow-hidden cursor-pointer dark:border-gray-600"
+//             onClick={() => document.getElementById("avatarInput")?.click()}
+//           >
+//             {avatarPreview ? (
+//               <img
+//                 src={avatarPreview}
+//                 alt="Profile"
+//                 className="object-cover w-full h-full"
+//               />
+//             ) : (
+//               <span className="text-gray-400 text-sm dark:text-gray-500">
+//                 No Image
+//               </span>
+//             )}
+//           </div>
+//           <input
+//             id="avatarInput"
+//             type="file"
+//             accept="image/png, image/jpeg"
+//             style={{ display: "none" }}
+//             onChange={handleProfileImageChange}
+//           />
+//           {errors.user_Avatar && (
+//             <p className="text-red-500 text-sm mt-1">
+//               {errors.user_Avatar.message}
+//             </p>
+//           )}
+//         </div>
+
+//         <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
+//           <FormField
+//             label="First Name"
+//             name="first_Name"
+//             placeholder="Enter First Name"
+//             registerOptions={{
+//               required: "First Name is required",
+//               pattern: {
+//                 value: lettersOnlyRegex,
+//                 message: "Can only contain letters and spaces",
+//               },
+//             }}
+//           />
+//           <FormField
+//             label="Last Name"
+//             name="last_Name"
+//             placeholder="Enter Last Name"
+//             registerOptions={{
+//               pattern: {
+//                 value: lettersOnlyRegex,
+//                 message: "Can only contain letters and spaces",
+//               },
+//             }}
+//           />
+//         </div>
+//       </div>
+
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+//         <FormField
+//           label="No. of Paid Leaves"
+//           name="no_of_Paid_Leave"
+//           placeholder="e.g. 12"
+//           type="number"
+//           registerOptions={{
+//             required: "No. of Paid Leaves is required",
+//             min: { value: 0, message: "Cannot be negative" },
+//           }}
+//         />
+//         <FormSelect
+//           label="Employee Type"
+//           name="employee_Type"
+//           loading={loadingEmploymentTypes}
+//           options={[
+//             { value: "", label: "Select Employee Type" },
+//             ...employmentTypes,
+//           ]}
+//           registerOptions={{ required: "Employee Type is required" }}
+//         />
+//       </div>
+
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+//         <FormField
+//           label="Phone"
+//           name="mobile_No"
+//           placeholder="Enter phone number"
+//           registerOptions={{
+//             required: "Phone Number is required",
+//             pattern: {
+//               value: /^\d{10}$/,
+//               message: "Must be exactly 10 digits",
+//             },
+//           }}
+//         />
+//         <FormSelect
+//           label="Gender"
+//           name="gender"
+//           options={[
+//             { value: "", label: "Select" },
+//             { value: "Male", label: "Male" },
+//             { value: "Female", label: "Female" },
+//             { value: "Other", label: "Other" },
+//           ]}
+//           registerOptions={{ required: "Gender is required" }}
+//         />
+//       </div>
+
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+//         <FormField
+//           label="Personal Email"
+//           name="personal_Email_Id"
+//           placeholder="test@gmail.com"
+//           type="email"
+//           registerOptions={{
+//             required: "Personal Email is required",
+//             pattern: { value: /\S+@\S+\.\S+/, message: "Invalid Email" },
+//           }}
+//         />
+//         <FormField
+//           label="DOB"
+//           name="dob"
+//           type="date"
+//           registerOptions={{
+//             required: "Date of Birth is required",
+//             validate: {
+//               isAdult: (value) => {
+//                 if (!value) return true;
+//                 const inputDate = new Date(value);
+//                 const today = new Date();
+//                 const eighteenYearsAgo = new Date(
+//                   today.getFullYear() - 18,
+//                   today.getMonth(),
+//                   today.getDate()
+//                 );
+//                 return (
+//                   inputDate <= eighteenYearsAgo ||
+//                   "You must be at least 18 years old"
+//                 );
+//               },
+//             },
+//           }}
+//         />
+//       </div>
+
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+//         <FormTextArea
+//           label="Permanent Address"
+//           name="permanent_Address"
+//           placeholder="Write Address..."
+//           registerOptions={{ required: "Permanent Address is required" }}
+//         />
+//         <FormTextArea
+//           label="Current Address"
+//           name="current_Address"
+//           placeholder="Write Address..."
+//           registerOptions={{ required: "Current Address is required" }}
+//         />
+//       </div>
+
+//       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+//         <FormField
+//           label="Work Email"
+//           name="working_Email_Id"
+//           placeholder="test@company.com"
+//           type="email"
+//           registerOptions={{
+//             required: "Work Email is required",
+//             pattern: { value: /\S+@\S+\.\S+/, message: "Invalid Work Email" },
+//           }}
+//         />
+//         <FormField
+//           label="Date Of Joining"
+//           name="date_of_Joining"
+//           type="date"
+//           registerOptions={{ required: "Date of Joining is required" }}
+//         />
+//         <FormField
+//           label="Date Of Conformation"
+//           name="date_of_Conformation"
+//           type="date"
+//           registerOptions={{ required: "Date of Conformation is required" }}
+//         />
+//         <FormSelect
+//           label="Department"
+//           name="departmentAllocated"
+//           loading={loadingDepartments}
+//           options={[{ value: "", label: "Select Department" }, ...departments]}
+//           registerOptions={{ required: "Department is required" }}
+//         />
+//       </div>
+
+//       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+//         <FormSelect
+//           label="Role"
+//           name="permission_role"
+//           loading={loadingPermissionRoles}
+//           options={[
+//             { value: "", label: "Select Role" },
+//             ...(permissionRoles || []).map((r) => ({
+//               value: r.role_name,
+//               label: r.role_name,
+//             })),
+//           ]}
+//           registerOptions={{ required: "Role is required" }}
+//         />
+//         <FormMultiSelect
+//           label="Assign Manager"
+//           name="assigned_to"
+//           loading={loadingAllEmployees}
+//           options={allEmployees}
+//           requiredMessage="At least one manager must be assigned"
+//         />
+//         <FormSelect
+//           label="Designation"
+//           name="designation"
+//           loading={loadingDesignations}
+//           options={[
+//             { value: "", label: "Select Designation" },
+//             ...designations,
+//           ]}
+//           registerOptions={{ required: "Designation is required" }}
+//         />
+//       </div>
+
+//       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+//         <FormField
+//           label="Employee ID"
+//           name="employee_Id"
+//           placeholder="R10004"
+//           registerOptions={{ required: "Employee ID is required" }}
+//         />
+//         <FormField
+//           label="Base Salary at Joining"
+//           name="Base_Salary_at_Joining"
+//           placeholder="Base Salary at Joining"
+//           type="number"
+//           registerOptions={{
+//             required: "Salary is required",
+//             min: { value: 0, message: "Salary cannot be negative" },
+//           }}
+//         />
+//         <FormField
+//           label="Current Base Salary"
+//           name="current_Base_Salary"
+//           placeholder="Current Base Salary"
+//           type="number"
+//           registerOptions={{
+//             required: "Salary is required",
+//             min: { value: 0, message: "Salary cannot be negative" },
+//           }}
+//         />
+//         <FormSelect
+//           label="OTP Required"
+//           name="otp"
+//           options={[
+//             { value: "", label: "Select" },
+//             { value: "no", label: "No" },
+//             { value: "yes", label: "Yes" },
+//           ]}
+//           registerOptions={{ required: "OTP selection is required" }}
+//         />
+
+//         <FormSelect
+//           label="Overtime Allowed"
+//           name="overtime_allowed" // Ensure the name matches your defaultValues
+//           options={[
+//             { value: "true", label: "Yes" },
+//             { value: "false", label: "No" },
+//           ]}
+//           registerOptions={{
+//             required: "Please select at least one",
+//           }}
+//         />
+//         {/* Conditionally render the overtime hours input if overtime is allowed */}
+//         {overtimeAllowed === "true" && (
+//           <div>
+//             <FormField
+//               label="Overtime Hours Allowed"
+//               name="overtime_hours"
+//               placeholder="Enter number of overtime hours"
+//               type="number"
+//               registerOptions={{
+//                 required: "Please specify overtime hours",
+//                 min: { value: 0, message: "Cannot be negative" },
+//               }}
+//             />
+//           </div>
+//         )}
+//             <FormSelect
+//                     label="Work Mode"
+//                     name="work_Mode"
+//                     options={[
+//                       { value: "", label: "Select Work Mode" },
+//                       { value: "work-from-office", label: "Work From Office" },
+//                       { value: "work-from-home", label: "Work From Home" },
+//                       { value: "hybrid", label: "Hybrid" },
+//                     ]}
+//                     className="animatable-input"
+//                   />
+//       </div>
+
+//       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+//         <FormSelect
+//           label="Office Location"
+//           name="officeLocation"
+//           loading={loadingAddresses}
+//           options={[{ value: "", label: "Select Office" }, ...addressOptions]}
+//           registerOptions={{ required: "Office Location is required" }}
+//         />
+//         <FormField
+//           label="Latitude"
+//           name="latitude"
+//           placeholder="Latitude"
+//           registerOptions={{
+//             required: "Latitude is required",
+//             pattern: {
+//               value: /^-?\d+(\.\d+)?$/,
+//               message: "Must be a valid number",
+//             },
+//           }}
+//         />
+//         <FormField
+//           label="Longitude"
+//           name="longitude"
+//           placeholder="Longitude"
+//           registerOptions={{
+//             required: "Longitude is required",
+//             pattern: {
+//               value: /^-?\d+(\.\d+)?$/,
+//               message: "Must be a valid number",
+//             },
+//           }}
+//         />
+//       </div>
+
+//       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+//         <FormSelect
+//           label="Shift Timing"
+//           name="shift_Timing"
+//           loading={loadingShiftTimings}
+//           options={[
+//             { value: "", label: "Select Shift Timings" },
+//             ...shiftTimings,
+//           ]}
+//           registerOptions={{ required: "Shift Timing is required" }}
+//         />
+
+//         <FormSelect
+//           label="Select Break Type"
+//           name="break_Type"
+//           loading={loadingBreakRecords}
+//           options={[{ value: "", label: "Select Break Type" }, ...breakRecords]}
+//           registerOptions={{ required: "Break Type is required" }}
+//         />
+//         <FormMultiSelect
+//           label="Allowances Provided"
+//           name="allowances_Provided"
+//           options={[
+//             { value: "hra", label: "House Rent Allowance (HRA)" },
+//             { value: "da", label: "Dearness Allowance (DA)" },
+//             { value: "conveyance", label: "Conveyance Allowance" },
+//             { value: "medical", label: "Medical Allowance" },
+//             { value: "lta", label: "Leave Travel Allowance (LTA)" },
+//             { value: "special", label: "Special Allowance" },
+//             { value: "performance", label: "Performance Bonus/Incentives" },
+//             { value: "mobile", label: "Mobile/Internet Allowance" },
+//             { value: "education", label: "Education Allowance" },
+//             { value: "uniform", label: "Uniform/Clothing Allowance" },
+//             { value: "travel", label: "Travel Allowance" },
+//             { value: "reimbursement", label: "Internet/Phone Reimbursement" },
+//             { value: "meal", label: "Meal Vouchers/Subsidies" },
+//             { value: "wellness", label: "Wellness Allowance" },
+//             { value: "relocation", label: "Relocation Allowance" },
+//             { value: "childcare", label: "Childcare Allowance" },
+//             { value: "training", label: "Education/Training Allowance" },
+//           ]}
+//         />
+//       </div>
+
+//       <div className="mt-6">
+//         <label className="block font-medium mb-1">Permissions</label>
+//         <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+//           Selected: {currentPermissions.join(", ") || "None"}
+//         </p>
+//         <button
+//           type="button"
+//           onClick={openPermissionModal}
+//           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+//         >
+//           Select Permissions
+//         </button>
+//         <PermissionModal
+//           isOpen={isPermissionModalOpen}
+//           onClose={closePermissionModal}
+//           availablePermissions={availablePermission}
+//           defaultSelected={currentPermissions}
+//           onSave={handlePermissionSave}
+//         />
+//       </div>
+
+//       <div className="flex items-center space-x-3 mt-6">
+//         <button
+//           type="button"
+//           className="px-4 py-2 bg-gray-300 text-black rounded dark:bg-gray-700 dark:text-white"
+//         >
+//           Cancel
+//         </button>
+//         <button
+//           type="submit"
+//           disabled={submitting}
+//           className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+//         >
+//           {submitting ? "Submitting..." : "Next"}
+//         </button>
+//       </div>
+//     </form>
+//   );
+// }
+
+/**
+ * src/components/Employeee Management/EmployeeFormTabs/Step1EmployeeDetails.jsx
+ */
+
+
 import { useEffect, useState } from "react";
 import { useAnimate } from "framer-motion";
 import { useFormContext, useWatch } from "react-hook-form";
+
 import FormField from "../common/FormField";
-import FormSelect from "../common/FormSelect";
 import FormTextArea from "../common/FormTextArea";
-import FormMultiSelect from "../common/FormMultiSelect";
+import FormReactSelect from "../common/FormReactSelect"; // <-- Our new react-select component
 import useEmployeeStore from "../../../store/useEmployeeStore.js";
 import PermissionModal from "../common/PermissionModal";
 import { availablePermission } from "../../../service/availablePermissions";
@@ -15,14 +578,17 @@ const lettersOnlyRegex = /^[A-Za-z\s]+$/;
 export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
   const [scope, animate] = useAnimate();
   const [avatarPreview, setAvatarPreview] = useState(null);
+
   const {
     handleSubmit,
     register,
     watch,
     setValue,
+    getValues,
     formState: { errors },
   } = useFormContext();
 
+  // --- Data from Store ---
   const addressOptions = useEmployeeStore((state) => state.addressOptions);
   const departments = useEmployeeStore((state) => state.departments);
   const shiftTimings = useEmployeeStore((state) => state.shiftTimings);
@@ -30,32 +596,29 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
   const permissionRoles = useEmployeeStore((state) => state.permissionRoles);
   const designations = useEmployeeStore((state) => state.designations);
   const allEmployees = useEmployeeStore((state) => state.allEmployees);
-
   const breakRecords = useEmployeeStore((state) => state.breakRecords);
-  const loadingBreakRecords = useEmployeeStore(
-    (state) => state.loadingBreakRecords
-  );
 
+  // --- Loading states ---
+  const loadingBreakRecords = useEmployeeStore((state) => state.loadingBreakRecords);
   const loadingAddresses = useEmployeeStore((state) => state.loadingAddresses);
-  const loadingDepartments = useEmployeeStore(
-    (state) => state.loadingDepartments
-  );
-  const loadingShiftTimings = useEmployeeStore(
-    (state) => state.loadingShiftTimings
-  );
-  const loadingEmploymentTypes = useEmployeeStore(
-    (state) => state.loadingEmploymentTypes
-  );
-  const loadingPermissionRoles = useEmployeeStore(
-    (state) => state.loadingPermissionRoles
-  );
-  const loadingDesignations = useEmployeeStore(
-    (state) => state.loadingDesignations
-  );
-  const loadingAllEmployees = useEmployeeStore(
-    (state) => state.loadingAllEmployees
-  );
+  const loadingDepartments = useEmployeeStore((state) => state.loadingDepartments);
+  const loadingShiftTimings = useEmployeeStore((state) => state.loadingShiftTimings);
+  const loadingEmploymentTypes = useEmployeeStore((state) => state.loadingEmploymentTypes);
+  const loadingPermissionRoles = useEmployeeStore((state) => state.loadingPermissionRoles);
+  const loadingDesignations = useEmployeeStore((state) => state.loadingDesignations);
+  const loadingAllEmployees = useEmployeeStore((state) => state.loadingAllEmployees);
 
+    // 1) On mount, set initial avatarPreview if user_Avatar is a string
+    useEffect(() => {
+      const initialAvatar = getValues("user_Avatar");
+      if (typeof initialAvatar === "string" && initialAvatar) {
+        setAvatarPreview(initialAvatar); 
+      }
+    }, [getValues]);
+
+    
+
+  // Animate
   useEffect(() => {
     animate([
       [".animatable-input", { opacity: 0, x: 20 }, { duration: 0 }],
@@ -67,6 +630,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
     ]);
   }, [animate]);
 
+  // Watchers
   const watchOfficeLocation = watch("officeLocation");
   useEffect(() => {
     const selected = addressOptions?.find(
@@ -82,9 +646,10 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
   }, [watchOfficeLocation, addressOptions, setValue]);
 
   const overtimeAllowed = useWatch({ name: "overtime_allowed" });
-
   const watchRole = watch("permission_role");
+
   useEffect(() => {
+    // Auto-fill permissions from role
     const foundRole = permissionRoles?.find((r) => r.role_name === watchRole);
     if (foundRole?.permission) {
       const perms = foundRole.permission.map((p) => p.permission);
@@ -94,6 +659,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
     }
   }, [watchRole, permissionRoles, setValue]);
 
+  // Handle profile image
   const handleProfileImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -113,6 +679,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
     }
   };
 
+  // Permission Modal
   const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false);
   const currentPermissions = useWatch({ name: "permission" });
 
@@ -124,15 +691,18 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
     setIsPermissionModalOpen(false);
   };
 
+  // Submit handler
   return (
     <form
       ref={scope}
       onSubmit={handleSubmit(onSubmitStep)}
-      className=" mx-auto p-8 bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-colors duration-300"
+      className="mx-auto p-8 bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-colors duration-300"
     >
       <h2 className="text-3xl font-bold mb-6 border-b border-gray-300 dark:border-gray-700 pb-4">
         Employee Details
       </h2>
+
+      {/* Profile Image */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="flex flex-col items-center">
           <label className="block font-medium mb-2">Profile Image</label>
@@ -166,6 +736,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           )}
         </div>
 
+        {/* Name Fields */}
         <div className="col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
           <FormField
             label="First Name"
@@ -193,6 +764,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         </div>
       </div>
 
+      {/* Leaves & EmployeeType */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <FormField
           label="No. of Paid Leaves"
@@ -204,7 +776,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
             min: { value: 0, message: "Cannot be negative" },
           }}
         />
-        <FormSelect
+        <FormReactSelect
           label="Employee Type"
           name="employee_Type"
           loading={loadingEmploymentTypes}
@@ -216,6 +788,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
+      {/* Phone & Gender */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <FormField
           label="Phone"
@@ -229,7 +802,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
             },
           }}
         />
-        <FormSelect
+        <FormReactSelect
           label="Gender"
           name="gender"
           options={[
@@ -242,6 +815,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
+      {/* Personal Email & DOB */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <FormField
           label="Personal Email"
@@ -279,6 +853,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
+      {/* Addresses */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
         <FormTextArea
           label="Permanent Address"
@@ -294,6 +869,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
+      {/* Work Email, DOJ, DOC, Department */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
         <FormField
           label="Work Email"
@@ -317,7 +893,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           type="date"
           registerOptions={{ required: "Date of Conformation is required" }}
         />
-        <FormSelect
+        <FormReactSelect
           label="Department"
           name="departmentAllocated"
           loading={loadingDepartments}
@@ -326,8 +902,9 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
+      {/* Role, Manager, Designation */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-        <FormSelect
+        <FormReactSelect
           label="Role"
           name="permission_role"
           loading={loadingPermissionRoles}
@@ -340,25 +917,26 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           ]}
           registerOptions={{ required: "Role is required" }}
         />
-        <FormMultiSelect
+
+        <FormReactSelect
           label="Assign Manager"
           name="assigned_to"
+          isMulti
           loading={loadingAllEmployees}
-          options={allEmployees}
+          options={allEmployees} // { value, label } array
           requiredMessage="At least one manager must be assigned"
         />
-        <FormSelect
+
+        <FormReactSelect
           label="Designation"
           name="designation"
           loading={loadingDesignations}
-          options={[
-            { value: "", label: "Select Designation" },
-            ...designations,
-          ]}
+          options={[{ value: "", label: "Select Designation" }, ...designations]}
           registerOptions={{ required: "Designation is required" }}
         />
       </div>
 
+      {/* Employee ID, Salaries, OTP */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
         <FormField
           label="Employee ID"
@@ -368,7 +946,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
         <FormField
           label="Base Salary at Joining"
-          name="Base_Salary_at_Joining"
+          name="salary"
           placeholder="Base Salary at Joining"
           type="number"
           registerOptions={{
@@ -378,7 +956,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
         <FormField
           label="Current Base Salary"
-          name="Current_Base_Salary"
+          name="current_Base_Salary"
           placeholder="Current Base Salary"
           type="number"
           registerOptions={{
@@ -386,7 +964,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
             min: { value: 0, message: "Salary cannot be negative" },
           }}
         />
-        <FormSelect
+        <FormReactSelect
           label="OTP Required"
           name="otp"
           options={[
@@ -396,48 +974,49 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           ]}
           registerOptions={{ required: "OTP selection is required" }}
         />
-
-        <FormSelect
-          label="Overtime Allowed"
-          name="overtime_allowed" // Ensure the name matches your defaultValues
-          options={[
-            { value: "true", label: "Yes" },
-            { value: "false", label: "No" },
-          ]}
-          registerOptions={{
-            required: "Please select at least one",
-          }}
-        />
-        {/* Conditionally render the overtime hours input if overtime is allowed */}
-        {overtimeAllowed === "true" && (
-          <div>
-            <FormField
-              label="Overtime Hours Allowed"
-              name="overtime_hours"
-              placeholder="Enter number of overtime hours"
-              type="number"
-              registerOptions={{
-                required: "Please specify overtime hours",
-                min: { value: 0, message: "Cannot be negative" },
-              }}
-            />
-          </div>
-        )}
-            <FormSelect
-                    label="Work Mode"
-                    name="work_Mode"
-                    options={[
-                      { value: "", label: "Select Work Mode" },
-                      { value: "work-from-office", label: "Work From Office" },
-                      { value: "work-from-home", label: "Work From Home" },
-                      { value: "hybrid", label: "Hybrid" },
-                    ]}
-                    className="animatable-input"
-                  />
       </div>
 
+      {/* Overtime Allowed */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-        <FormSelect
+        <FormReactSelect
+          label="Overtime Allowed"
+          name="overtime_allowed"
+          options={[
+            { value: "Yes", label: "Yes" },
+            { value: "No", label: "No" },
+          ]}
+          registerOptions={{ required: "Please select at least one" }}
+        />
+
+        {/* Conditionally show "Overtime Hours Allowed" */}
+        {overtimeAllowed === "Yes" && (
+          <FormField
+            label="Overtime Hours Allowed"
+            name="overtime_hours"
+            placeholder="Enter number of overtime hours"
+            type="number"
+            registerOptions={{
+              required: "Please specify overtime hours",
+              min: { value: 0, message: "Cannot be negative" },
+            }}
+          />
+        )}
+
+        <FormReactSelect
+          label="Work Mode"
+          name="work_Mode"
+          options={[
+            { value: "", label: "Select Work Mode" },
+            { value: "work-from-office", label: "Work From Office" },
+            { value: "work-from-home", label: "Work From Home" },
+            { value: "hybrid", label: "Hybrid" },
+          ]}
+        />
+      </div>
+
+      {/* Office Location, Lat, Long */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+        <FormReactSelect
           label="Office Location"
           name="officeLocation"
           loading={loadingAddresses}
@@ -470,8 +1049,9 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
+      {/* Shift, Break, Allowances */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-        <FormSelect
+        <FormReactSelect
           label="Shift Timing"
           name="shift_Timing"
           loading={loadingShiftTimings}
@@ -482,16 +1062,18 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
           registerOptions={{ required: "Shift Timing is required" }}
         />
 
-        <FormSelect
+        <FormReactSelect
           label="Select Break Type"
           name="break_Type"
           loading={loadingBreakRecords}
           options={[{ value: "", label: "Select Break Type" }, ...breakRecords]}
           registerOptions={{ required: "Break Type is required" }}
         />
-        <FormMultiSelect
+
+        <FormReactSelect
           label="Allowances Provided"
           name="allowances_Provided"
+          isMulti
           options={[
             { value: "hra", label: "House Rent Allowance (HRA)" },
             { value: "da", label: "Dearness Allowance (DA)" },
@@ -514,6 +1096,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
+      {/* Permissions */}
       <div className="mt-6">
         <label className="block font-medium mb-1">Permissions</label>
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
@@ -535,10 +1118,11 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
         />
       </div>
 
+      {/* Bottom Buttons */}
       <div className="flex items-center space-x-3 mt-6">
         <button
           type="button"
-          className="px-4 py-2 bg-gray-300 text-black rounded dark:bg-gray-700 dark:text-white"
+          className="px-4 py-2 bg-bg-secondary text-black rounded dark:bg-gray-700 dark:text-white"
         >
           Cancel
         </button>
