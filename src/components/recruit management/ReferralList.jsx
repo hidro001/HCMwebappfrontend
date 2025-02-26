@@ -126,9 +126,6 @@ export default function ReferralList() {
     <div className="px-4 py-6 bg-gray-50 text-gray-700 dark:bg-gray-900 dark:text-gray-100 transition-colors">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-semibold">Referral List</h1>
-        <button className="bg-blue-500 text-white text-sm px-4 py-2 rounded hover:bg-blue-600 transition-colors">
-          Import
-        </button>
       </div>
       <div className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow mb-4 transition-colors">
         <div className="flex items-center gap-4">

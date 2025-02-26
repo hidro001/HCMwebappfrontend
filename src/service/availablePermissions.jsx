@@ -1,4 +1,5 @@
 const availablePermission = [
+  // -- Original items (60) from availablePermission --
   { name: "Super Admin Dashboard", permission: "SuperDashboard" },
   { name: "Employee Dashboard", permission: "employeeDashboard" },
   { name: "Post Announcement", permission: "AddAnnouncement" },
@@ -13,7 +14,6 @@ const availablePermission = [
     permission: "active/InactiveEmployeeAdmin",
   },
   { name: "Delete Employeee", permission: "deleteEmployeeAdmin" },
-
   { name: "All Employees Management", permission: "updateEmployeeSuperAdmin" },
   { name: "Asset Management", permission: "assignAssets" },
   { name: "Attendance Dashboard", permission: "MainAttendance" },
@@ -29,7 +29,10 @@ const availablePermission = [
   { name: "Main Task Dashboard", permission: "ViewTaskManager" },
   { name: "Update Daily Task", permission: "updateTask" },
   { name: "Task Assignment Manager", permission: "ActionTrackerManager" },
-  { name: "Recruit Management Dashboard", permission: "MainRecruitManagement" },
+  {
+    name: "Recruit Management Dashboard",
+    permission: "MainRecruitManagement",
+  },
   { name: "View All Vacancies", permission: "viewVacancies" },
   { name: "Job Posting", permission: "jobPostingAdmin" },
   { name: "HR Referral Dashboard", permission: "HRreferralDashboard" },
@@ -65,7 +68,60 @@ const availablePermission = [
   { name: "Take Disciplinary actions", permission: "takeDisciplinaryAction" },
   { name: "All disciplinary actions", permission: "viewDisciplinaryAction" },
   { name: "Organization Chart", permission: "organizationChart" },
-  { name: "Request Hike Advance Reimbursement", permission: "requestHikeAdvanceReimbursement" },
+  {
+    name: "Request Hike Advance Reimbursement",
+    permission: "requestHikeAdvanceReimbursement",
+  },
+
+  // -- Newly added items (12) from availablePermissionManager that weren't in availablePermission --
+  {
+    name: "Manager Dashboard",
+    permission: "managerDashboard",
+  },
+  {
+    name: "View Policies",
+    permission: "viewPolicies",
+  },
+  {
+    name: "View Orientation",
+    permission: "viewInduction",
+  },
+  {
+    name: "Manager Update Employee",
+    permission: "updateEmployeeManager",
+  },
+  {
+    name: "View Employee",
+    permission: "viewEmployeeAdmin",
+  },
+  {
+    name: "Job Management",
+    permission: "jobVacancyAdmin",
+  },
+  {
+    name: "View Task Assigned",
+    permission: "actionTracker",
+  },
+  {
+    name: "Apply Leave Employee",
+    permission: "applyLeaves",
+  },
+  {
+    name: "View Subordinate Ratings",
+    permission: "viewSubordinateRatings",
+  },
+  {
+    name: "View Top Performers Employes",
+    permission: "viewTopPerformers",
+  },
+  {
+    name: "Submit Resignation",
+    permission: "submitResignation",
+  },
+  {
+    name: "Employee Referral Dashboard",
+    permission: "EmployeereferralDashboard",
+  },
 ];
 
 const availablePermissionManager = [

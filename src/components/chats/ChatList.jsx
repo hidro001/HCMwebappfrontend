@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { FaPhone, FaVideo, FaPaperclip, FaCommentDots } from 'react-icons/fa';
-import { IoSend } from 'react-icons/io5';
-import { PuffLoader } from 'react-spinners';
-import { toast } from 'react-hot-toast';
-import { useCall } from '../../contexts/CallContext';
+import React, { useEffect, useRef, useState } from "react";
+import { FaPhone, FaVideo, FaPaperclip, FaCommentDots } from "react-icons/fa";
+import { IoSend } from "react-icons/io5";
+import { PuffLoader } from "react-spinners";
+import { toast } from "react-hot-toast";
+import { useCall } from "../../contexts/CallContext";
 
 export default function ChatList({
   messages,
@@ -20,7 +20,7 @@ export default function ChatList({
 
   // Scroll to bottom on new messages
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleFileChange = (e) => {
@@ -28,24 +28,24 @@ export default function ChatList({
     if (file) {
       const maxSize = 10 * 1024 * 1024; // 10MB limit
       const allowedTypes = [
-        'image/png',
-        'image/jpeg',
-        'image/gif',
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-excel',
-        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'application/vnd.ms-powerpoint',
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+        "image/png",
+        "image/jpeg",
+        "image/gif",
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "application/vnd.ms-excel",
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "application/vnd.ms-powerpoint",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation",
       ];
 
       if (file.size > maxSize) {
-        toast.error('File size exceeds 10MB limit.');
+        toast.error("File size exceeds 10MB limit.");
         return;
       }
       if (!allowedTypes.includes(file.type)) {
-        toast.error('Unsupported file type.');
+        toast.error("Unsupported file type.");
         return;
       }
       sendFileWithLoading(file);
@@ -63,40 +63,41 @@ export default function ChatList({
         delete updated[uniqueId];
         return updated;
       });
-      toast.success('File sent successfully.');
+      toast.success("File sent successfully.");
     } catch (error) {
-      console.error('Error sending file:', error);
+      console.error("Error sending file:", error);
       setUploadingFiles((prev) => {
         const updated = { ...prev };
         delete updated[uniqueId];
         return updated;
       });
-      toast.error('Failed to send file.');
+      toast.error("Failed to send file.");
     }
   };
 
   const handleVideoCall = () => {
     if (!selectedUser) {
-      toast.error('Select a user to call.');
+      toast.error("Select a user to call.");
       return;
     }
-    initiateCall({ callType: 'video', participants: [selectedUser.employee_Id
-    ] });
-    console.log("Erfgdgdfgdfgd",selectedUser.employee_Id);
+    initiateCall({
+      callType: "video",
+      participants: [selectedUser.employee_Id],
+    });
+    console.log("Erfgdgdfgdfgd", selectedUser.employee_Id);
   };
 
   const handleVoiceCall = () => {
     if (!selectedUser) {
-      toast.error('Select a user to call.');
+      toast.error("Select a user to call.");
       return;
     }
-   
-   
-    
-    initiateCall({ callType: 'voice', participants: [selectedUser.employee_Id
-    ] });
-    console.log("Erfgdgdfgdfgd",selectedUser.employee_Id);
-    
+
+    initiateCall({
+      callType: "voice",
+      participants: [selectedUser.employee_Id],
+    });
+    console.log("Erfgdgdfgdfgd", selectedUser.employee_Id);
   };
 
   const handleSend = () => {
@@ -106,20 +107,22 @@ export default function ChatList({
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
     }
   };
 
   const renderFileMessage = (msg) => {
-    if (msg.fileType?.startsWith('image/') && msg.fileUrl) {
+    if (msg.fileType?.startsWith("image/") && msg.fileUrl) {
       return (
-        <img
-          src={msg.fileUrl}
-          alt={msg.fileName}
-          className="max-w-xs rounded-md"
-        />
+        <a href={msg.fileUrl} target="_blank" rel="noopener noreferrer">
+          <img
+            src={msg.fileUrl}
+            alt={msg.fileName}
+            className="max-w-xs rounded-md"
+          />
+        </a>
       );
     }
     return (
@@ -127,6 +130,8 @@ export default function ChatList({
         <a
           href={msg.fileUrl}
           download={msg.fileName}
+          target="_blank"
+          rel="noopener noreferrer"
           className="text-blue-500 underline break-all"
         >
           {msg.fileName}
@@ -136,13 +141,15 @@ export default function ChatList({
   };
 
   return (
-    <div className="flex flex-col bg-white dark:bg-gray-800 shadow-lg w-full" style={{ height: '80vh' }}>
+    <div
+      className="flex flex-col bg-white dark:bg-gray-800 shadow-lg w-full"
+      style={{ height: "80vh" }}
+    >
       <header className="flex flex-col sm:flex-row justify-between items-center p-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white">
         <h2 className="text-lg font-semibold mb-2 sm:mb-0">
-          {selectedUser 
+          {selectedUser
             ? `${selectedUser.first_Name} ${selectedUser.last_Name} (${selectedUser.employee_Id})`
-            : 'Select a User'
-          }
+            : "Select a User"}
         </h2>
         <div className="flex gap-4">
           <button
@@ -171,13 +178,17 @@ export default function ChatList({
                 key={index}
                 className={`max-w-xs p-3 rounded-lg break-words shadow-sm ${
                   isOwn
-                    ? 'bg-gray-100 dark:bg-gray-700 self-end'
-                    : 'bg-gray-200 dark:bg-gray-800 self-start'
+                    ? "bg-gray-100 dark:bg-gray-700 self-end"
+                    : "bg-gray-200 dark:bg-gray-800 self-start"
                 }`}
               >
-                {msg.type === 'file'
-                  ? renderFileMessage(msg)
-                  : <p className="text-gray-900 dark:text-gray-100">{msg.message}</p>}
+                {msg.type === "file" ? (
+                  renderFileMessage(msg)
+                ) : (
+                  <p className="text-gray-900 dark:text-gray-100">
+                    {msg.message}
+                  </p>
+                )}
                 <span className="block text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {msg.time}
                 </span>

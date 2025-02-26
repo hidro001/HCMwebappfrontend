@@ -8,7 +8,12 @@ import { fetchBreakStats } from "../../../service/productLenseService";
 const EmployeeBreakStatsTable = () => {
   // Data, pagination, and loading states
   const [data, setData] = useState([]);
-  const [pagination, setPagination] = useState({});
+  const [pagination, setPagination] = useState({
+    totalPages: 0,
+    totalResults: 0,
+    currentPage: 1,
+    limit: 10,
+  });
   const [loading, setLoading] = useState(true);
 
   // Pagination states
@@ -24,12 +29,37 @@ const EmployeeBreakStatsTable = () => {
   useEffect(() => {
     const getData = async () => {
       setLoading(true);
-      const result = await fetchBreakStats(interval, date, currentPage, showCount);
-      // Expected result structure:
-      // { data: [...], pagination: { totalResults, totalPages, currentPage, limit } }
-      setData(result.data);
-      setPagination(result.pagination);
-      setLoading(false);
+      try {
+        const result = await fetchBreakStats(
+          interval,
+          date,
+          currentPage,
+          showCount
+        );
+
+        // Safely set data (fallback to empty array if undefined)
+        setData(result?.data || []);
+
+        // Safely set pagination (provide defaults with nullish coalescing)
+        setPagination({
+          totalPages: result?.pagination?.totalPages ?? 0,
+          totalResults: result?.pagination?.totalResults ?? 0,
+          currentPage: result?.pagination?.currentPage ?? 1,
+          limit: result?.pagination?.limit ?? 10,
+        });
+      } catch (error) {
+        console.error("Error fetching break stats:", error);
+        // Optionally handle error state here
+        setData([]);
+        setPagination({
+          totalPages: 0,
+          totalResults: 0,
+          currentPage: 1,
+          limit: 10,
+        });
+      } finally {
+        setLoading(false);
+      }
     };
     getData();
   }, [currentPage, showCount, interval, date]);
@@ -41,7 +71,9 @@ const EmployeeBreakStatsTable = () => {
 
   // Handler functions
   const handlePageChange = (page) => {
-    setCurrentPage(page);
+    if (page >= 1 && page <= pagination.totalPages) {
+      setCurrentPage(page);
+    }
   };
 
   const handleShowCountChange = (e) => {
@@ -67,7 +99,9 @@ const EmployeeBreakStatsTable = () => {
         {/* Header with Link */}
         <div className="px-6 py-4 bg-gradient-to-r from-blue-500 to-teal-500 dark:from-gray-700 dark:to-gray-900 rounded-t-lg flex flex-col sm:flex-row items-center justify-between">
           <div>
-            <h3 className="text-3xl font-bold text-white">Productivity Lense</h3>
+            <h3 className="text-3xl font-bold text-white">
+              Productivity Lense
+            </h3>
             <p className="mt-2 text-sm text-white">
               Overview of employee break details.
             </p>
@@ -128,8 +162,12 @@ const EmployeeBreakStatsTable = () => {
                       {item.empid}
                     </td>
                     <td className="px-4 py-3 whitespace-nowrap">{item.name}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">{item.designation}</td>
-                    <td className="px-4 py-3 whitespace-nowrap">{item.breaktaken}</td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      {item.designation}
+                    </td>
+                    <td className="px-4 py-3 whitespace-nowrap">
+                      {item.breaktaken}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -137,8 +175,8 @@ const EmployeeBreakStatsTable = () => {
           )}
         </div>
 
-        {/* Fixed Pagination Controls (Prev, Next, and Go to Page Input) */}
-        {!loading && data.length > 0 && pagination.totalPages && (
+        {/* Pagination Controls */}
+        {!loading && data.length > 0 && pagination.totalPages > 0 && (
           <div className="flex flex-col sm:flex-row items-center justify-between p-4 text-sm text-gray-600 dark:text-gray-300">
             <div>
               {pagination.totalResults > 0
@@ -147,7 +185,8 @@ const EmployeeBreakStatsTable = () => {
                       ? 1
                       : (pagination.currentPage - 1) * pagination.limit + 1
                   } to ${
-                    pagination.currentPage * pagination.limit > pagination.totalResults
+                    pagination.currentPage * pagination.limit >
+                    pagination.totalResults
                       ? pagination.totalResults
                       : pagination.currentPage * pagination.limit
                   } of ${pagination.totalResults} entries`

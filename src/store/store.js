@@ -44,7 +44,7 @@ const useAuthStore = create(
           departmentAlocated,
           teams,
           userAvatar,
-          permissions,          
+          permissions,
           notifications, // Extract notifications from userData
           engagement_permission, // Extract engagement_permission from userData
         } = userData;
@@ -66,7 +66,7 @@ const useAuthStore = create(
           departmentAlocated,
           teams,
           userAvatar,
-          permissions, 
+          permissions,
         });
 
         // Persist to localStorage
@@ -86,6 +86,16 @@ const useAuthStore = create(
         localStorage.setItem("teams", JSON.stringify(teams));
         localStorage.setItem("userAvatar", userAvatar || "");
         localStorage.setItem("_id", _id || ""); // Store _id
+        const userPermissions = permissions || [];
+        if (userPermissions.includes("SuperDashboard")) {
+          window.location.href = "/dashboard";
+        } else if (userPermissions.includes("employeeDashboard")) {
+          window.location.href = "/dashboard/employee";
+        } else {
+          // fallback if user doesn't have either
+          window.location.href = "/dashboard";
+        }
+
         // Fetch notifications after login
         //  useNotificationStore.getState().fetchNotifications();
         // Initialize notifications in the notification store
@@ -96,8 +106,8 @@ const useAuthStore = create(
             .setUnreadCount(notifications.filter((n) => !n.isRead).length);
         }
         // Set engagement permissions in the engagement store
-     
-         if (
+
+        if (
           engagement_permission &&
           Array.isArray(engagement_permission.permissions)
         ) {

@@ -26,7 +26,7 @@ const ProductivityDashboard = () => {
   const [tableData, setTableData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchValue, setSearchValue] = useState("");
-  
+
   // Default interval is daily
   const [selectedInterval, setSelectedInterval] = useState("daily");
   // Default daily date using today's date in "YYYY-MM-DD" format
@@ -34,7 +34,7 @@ const ProductivityDashboard = () => {
     const now = new Date();
     return now.toISOString().split("T")[0];
   });
-  
+
   const [selectedStatus, setSelectedStatus] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
   const [currentPage, setCurrentPage] = useState(1);
@@ -48,7 +48,9 @@ const ProductivityDashboard = () => {
     if (selectedInterval === "daily" || selectedInterval === "weekly") {
       setSelectedDate(now.toISOString().split("T")[0]); // "YYYY-MM-DD"
     } else if (selectedInterval === "monthly") {
-      setSelectedDate(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`); // "YYYY-MM"
+      setSelectedDate(
+        `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`
+      ); // "YYYY-MM"
     } else if (selectedInterval === "yearly") {
       setSelectedDate(String(now.getFullYear())); // "YYYY"
     }
@@ -62,7 +64,10 @@ const ProductivityDashboard = () => {
   if (selectedInterval === "daily" || selectedInterval === "weekly") {
     maxValue = today.toISOString().split("T")[0]; // e.g., "2025-02-21"
   } else if (selectedInterval === "monthly") {
-    maxValue = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}`; // e.g., "2025-02"
+    maxValue = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}`; // e.g., "2025-02"
   } else if (selectedInterval === "yearly") {
     maxValue = String(today.getFullYear()); // e.g., "2025"
   }
@@ -84,9 +89,10 @@ const ProductivityDashboard = () => {
   // Filtering Data based on Search
   // --------------------------
   const filteredData = useMemo(() => {
-    return tableData.filter((row) =>
-      row.empName.toLowerCase().includes(searchValue.toLowerCase()) ||
-      row.empID.toLowerCase().includes(searchValue.toLowerCase())
+    return tableData.filter(
+      (row) =>
+        row.empName.toLowerCase().includes(searchValue.toLowerCase()) ||
+        row.empID.toLowerCase().includes(searchValue.toLowerCase())
     );
   }, [tableData, searchValue]);
 
@@ -143,14 +149,14 @@ const ProductivityDashboard = () => {
       { header: "Break Time", dataKey: "breakTime" },
       { header: "Unproductive", dataKey: "unproductiveTime" },
       { header: "Productive", dataKey: "productiveTime" },
-      { header: "Detection", dataKey: "detectionType" }
+      { header: "Detection", dataKey: "detectionType" },
     ];
     doc.autoTable({
       startY: 20,
       head: [columns.map((col) => col.header)],
       body: tableData.map((row) =>
         columns.map((col) => row[col.dataKey] ?? "")
-      )
+      ),
     });
     doc.save("EmployeeProductivity.pdf");
   };
@@ -169,7 +175,10 @@ const ProductivityDashboard = () => {
     const worksheet = XLSX.utils.json_to_sheet(tableData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Employee Productivity");
-    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
     const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
     saveAs(blob, "EmployeeProductivity.xlsx");
   };
@@ -203,7 +212,7 @@ const ProductivityDashboard = () => {
     { key: "designation", label: "Designation" },
     { key: "department", label: "Department" },
     { key: "unproductiveTime", label: "Unproductive Time" },
-    { key: "productiveTime", label: "Productive Time" }
+    { key: "productiveTime", label: "Productive Time" },
   ];
 
   // --------------------------
@@ -211,7 +220,7 @@ const ProductivityDashboard = () => {
   // --------------------------
   const rowVariants = {
     hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 }
+    visible: { opacity: 1, y: 0 },
   };
 
   // --------------------------
@@ -228,7 +237,9 @@ const ProductivityDashboard = () => {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
         {/* Show Entries */}
         <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 dark:text-gray-300">Show</label>
+          <label className="text-sm text-gray-600 dark:text-gray-300">
+            Show
+          </label>
           <select className="border border-gray-300 rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100">
             <option value="5">5</option>
             <option value="10" defaultValue>
@@ -254,7 +265,9 @@ const ProductivityDashboard = () => {
 
         {/* Interval Selector */}
         <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 dark:text-gray-300">Interval:</label>
+          <label className="text-sm text-gray-600 dark:text-gray-300">
+            Interval:
+          </label>
           <select
             value={selectedInterval}
             onChange={handleIntervalChange}
@@ -290,33 +303,34 @@ const ProductivityDashboard = () => {
           />
         </div>
 
-        {/* Status Dropdown */}
-        <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600 dark:text-gray-300">Status:</label>
-          <select
-            value={selectedStatus}
-            onChange={handleStatusChange}
-            className="border border-gray-300 text-sm rounded px-2 py-1 bg-white dark:bg-gray-700 dark:text-gray-100"
-          >
-            <option value="">All</option>
-            <option value="Active">Active</option>
-            <option value="On Leave">On Leave</option>
-            <option value="Sick Leave">Sick Leave</option>
-          </select>
-        </div>
-
         {/* Export Buttons */}
         <div className="flex items-center gap-2">
-          <button onClick={handleExportCSV} className="text-green-600 hover:text-green-800" title="Export CSV">
+          <button
+            onClick={handleExportCSV}
+            className="text-green-600 hover:text-green-800"
+            title="Export CSV"
+          >
             <FaFileCsv size={18} />
           </button>
-          <button onClick={handleExportPDF} className="text-pink-600 hover:text-pink-800" title="Export PDF">
+          <button
+            onClick={handleExportPDF}
+            className="text-pink-600 hover:text-pink-800"
+            title="Export PDF"
+          >
             <FaFilePdf size={18} />
           </button>
-          <button onClick={handlePrint} className="text-orange-500 hover:text-orange-600" title="Print">
+          <button
+            onClick={handlePrint}
+            className="text-orange-500 hover:text-orange-600"
+            title="Print"
+          >
             <FaPrint size={18} />
           </button>
-          <button onClick={handleExportExcel} className="text-blue-600 hover:text-blue-800" title="Export Excel">
+          <button
+            onClick={handleExportExcel}
+            className="text-blue-600 hover:text-blue-800"
+            title="Export Excel"
+          >
             <FaFileExcel size={18} />
           </button>
         </div>
@@ -329,7 +343,10 @@ const ProductivityDashboard = () => {
             <thead className="bg-gray-50 text-gray-600 text-sm dark:bg-gray-700 dark:text-gray-200">
               <tr>
                 {headers.map((header) => (
-                  <th key={header.key} className="px-4 py-2 border-b border-gray-200">
+                  <th
+                    key={header.key}
+                    className="px-4 py-2 border-b border-gray-200"
+                  >
                     <Skeleton width={60} />
                   </th>
                 ))}
@@ -339,9 +356,15 @@ const ProductivityDashboard = () => {
               {Array(entriesPerPage)
                 .fill(0)
                 .map((_, i) => (
-                  <tr key={i} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                  <tr
+                    key={i}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
                     {headers.map((_, j) => (
-                      <td key={j} className="px-4 py-2 border-b border-gray-200">
+                      <td
+                        key={j}
+                        className="px-4 py-2 border-b border-gray-200"
+                      >
                         <Skeleton />
                       </td>
                     ))}
@@ -371,9 +394,16 @@ const ProductivityDashboard = () => {
               className="text-gray-700 dark:text-gray-200"
             >
               {currentEntries.map((row) => (
-                <motion.tr key={row.sl} variants={rowVariants} className="hover:bg-gray-50 dark:hover:bg-gray-700">
+                <motion.tr
+                  key={row.sl}
+                  variants={rowVariants}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
                   {headers.map((header) => (
-                    <td key={header.key} className="px-4 py-2 border-b border-gray-200">
+                    <td
+                      key={header.key}
+                      className="px-4 py-2 border-b border-gray-200"
+                    >
                       {row[header.key]}
                     </td>
                   ))}
@@ -389,33 +419,45 @@ const ProductivityDashboard = () => {
       {/* Pagination */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
         <span className="text-sm text-gray-600 dark:text-gray-300">
-          Showing {totalEntries === 0 ? 0 : firstIndex + 1} to {lastIndex > totalEntries ? totalEntries : lastIndex} of {totalEntries} entries
+          Showing {totalEntries === 0 ? 0 : firstIndex + 1} to{" "}
+          {lastIndex > totalEntries ? totalEntries : lastIndex} of{" "}
+          {totalEntries} entries
         </span>
         <div className="flex gap-2">
           <button
             onClick={() => goToPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`px-3 py-1 border border-gray-300 rounded text-sm ${currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-100 dark:hover:bg-gray-700"}`}
+            className={`px-3 py-1 border border-gray-300 rounded text-sm ${
+              currentPage === 1
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-gray-100 dark:hover:bg-gray-700"
+            }`}
           >
             Prev
           </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-            <button
-              key={pageNum}
-              onClick={() => goToPage(pageNum)}
-              className={`px-3 py-1 border rounded text-sm ${
-                currentPage === pageNum
-                  ? "bg-[#1B6EB3] border-[#1B6EB3] text-white"
-                  : "border-gray-300 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
-              }`}
-            >
-              {pageNum}
-            </button>
-          ))}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+            (pageNum) => (
+              <button
+                key={pageNum}
+                onClick={() => goToPage(pageNum)}
+                className={`px-3 py-1 border rounded text-sm ${
+                  currentPage === pageNum
+                    ? "bg-[#1B6EB3] border-[#1B6EB3] text-white"
+                    : "border-gray-300 text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
+                }`}
+              >
+                {pageNum}
+              </button>
+            )
+          )}
           <button
             onClick={() => goToPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`px-3 py-1 border border-gray-300 rounded text-sm ${currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-100 dark:hover:bg-gray-700"}`}
+            className={`px-3 py-1 border border-gray-300 rounded text-sm ${
+              currentPage === totalPages
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-gray-100 dark:hover:bg-gray-700"
+            }`}
           >
             Next
           </button>
