@@ -122,6 +122,10 @@ const availablePermission = [
     name: "Employee Referral Dashboard",
     permission: "EmployeereferralDashboard",
   },
+  {
+    name: "All Dashlets",
+    permission: "superAdminRaciAllDashlets",
+  },
 ];
 
 const availablePermissionManager = [

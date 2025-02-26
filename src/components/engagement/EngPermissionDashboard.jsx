@@ -789,13 +789,13 @@ const EngPermissionDashboard = () => {
                       />
                     </ListItemIcon>
                     <ListItemText
-                      primary={`${userItem.first_Name} ${userItem.last_Name}`}
-                      secondary={`Role: ${
-                        userItem.permission_role || "N/A"
-                      } | Active: ${userItem.isActive ? "Yes" : "No"}`}
-                      primaryTypographyProps={{ color: "text.primary" }}
-                      secondaryTypographyProps={{ color: "text.secondary" }}
-                    />
+                       primary={`${userItem.first_Name} ${userItem.last_Name}`}
+                       secondary={`Synergy Role: ${userItem.roleId?.name || "N/A"} | Active: ${
+                         userItem.isActive ? "Yes" : "No"
+                       }`}
+                       primaryTypographyProps={{ color: "text.primary" }}
+                       secondaryTypographyProps={{ color: "text.secondary" }}
+                     />
                   </ListItem>
                 ))
               )}

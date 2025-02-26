@@ -264,29 +264,29 @@ export default function AllDashlets() {
             </div>
           )}
 
-          {shouldShow("ImpactOnPerformanceCard") && (
+          {/* {shouldShow("ImpactOnPerformanceCard") && (
             <div className="mt-3">
               <ImpactOnPerformanceCard />
             </div>
-          )}
+          )} */}
 
-          {shouldShow("CTCChartCard") && (
+          {/* {shouldShow("CTCChartCard") && (
             <div className="mt-3">
               <CTCChartCard />
             </div>
-          )}
+          )} */}
 
-          {shouldShow("HighPotentialEmployeesTrendsCard") && (
+          {/* {shouldShow("HighPotentialEmployeesTrendsCard") && (
             <div className="mt-3">
               <HighPotentialEmployeesTrendsCard />
             </div>
-          )}
+          )} */}
 
-          {shouldShow("OvertimeCostAnalysisCard") && (
+          {/* {shouldShow("OvertimeCostAnalysisCard") && (
             <div className="mt-3">
               <OvertimeCostAnalysisCard />
             </div>
-          )}
+          )} */}
        
         </div>
 
@@ -338,11 +338,11 @@ export default function AllDashlets() {
             </div>
           )}
 
-          {shouldShow("CorrelationTrainingPerformanceCard") && (
+          {/* {shouldShow("CorrelationTrainingPerformanceCard") && (
             <div className="mt-3">
               <CorrelationTrainingPerformanceCard />
             </div>
-          )}
+          )} */}
         </div>
       </div>
 
