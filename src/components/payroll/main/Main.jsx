@@ -228,12 +228,12 @@ export default function Main() {
         <div className="mt-8 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg">
           <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700">
             <h2 className="text-lg font-bold">Payroll list</h2>
-            <a
+            {/* <a
               href="#"
               className="flex items-center text-blue-600 dark:text-blue-300"
             >
               View All
-            </a>
+            </a> */}
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">

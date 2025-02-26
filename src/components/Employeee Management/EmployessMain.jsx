@@ -417,6 +417,7 @@ import {
   ArcElement,
   Legend,
 } from "chart.js";
+import { FaSpinner } from "react-icons/fa";
 
 import useDashboardStore from "../../store/useDashboardEmpStore"; // <-- import the Zustand store
 
@@ -471,14 +472,15 @@ const EmployeesMain = () => {
   if (loading) {
     return (
       <motion.div
-        className="p-4 flex justify-center items-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <p>Loading dashboard data...</p>
-      </motion.div>
+      className="p-8 flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-teal-500 rounded-lg shadow-xl"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.5 }}
+    >
+      <FaSpinner className="text-white text-4xl animate-spin mb-4" />
+      <p className="text-white text-xl font-bold">Please wait...</p>
+    </motion.div>
     );
   }
   if (error) {

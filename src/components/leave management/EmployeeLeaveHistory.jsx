@@ -15,6 +15,7 @@ import ApplyLeaveModal from "./model/ApplyLeaveModal";
 import LeaveDetailsModal from "./model/LeaveDetailsModal";
 import useLeaveStore from "../../store/leaveStore.js";
 import ExportButtons from "../common/PdfExcel"; // Adjust path if needed
+import { getEmployeeLeaveCount } from "../../service/leaveService.js";
 
 const tableContainerVariants = {
   hidden: { opacity: 0 },
@@ -48,12 +49,34 @@ export default function EmployeeLeaveHistory() {
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [showApplyModal, setShowApplyModal] = useState(false);
 
+  // New state to store the leave count stats returned from the API
+  const [leaveCount, setLeaveCount] = useState({
+    remainingPaidLeaves: 0,
+    totalLeavesTaken: 0,
+    approvedLeaves: 0,
+  });
+
   // On mount (and whenever activeStatus changes) initialize and fetch data.
   useEffect(() => {
     initializeData();
     fetchLeaves(activeStatus);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStatus]);
+
+  // Fetch the employee leave count stats when the component mounts.
+  useEffect(() => {
+    async function fetchLeaveCount() {
+      try {
+        const response = await getEmployeeLeaveCount();
+        if (response.success && response.data) {
+          setLeaveCount(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching leave count:", error);
+      }
+    }
+    fetchLeaveCount();
+  }, []);
 
   // Updated client-side filtering logic to correctly handle "all" status
   const filteredData = useMemo(() => {
@@ -142,10 +165,7 @@ export default function EmployeeLeaveHistory() {
           <div className="flex flex-col">
             <span className="text-xl font-bold">Remaining Paid Leaves</span>
             <span className="text-3xl font-extrabold mt-2">
-              {userProfile ? userProfile.no_of_Paid_Leave : 0}
-            </span>
-            <span className="text-sm text-green-600 mt-1">
-              +5000 Last 30 days Employee
+              {leaveCount.remainingPaidLeaves}
             </span>
           </div>
           <FaUserAlt className="text-4xl text-gray-300 absolute top-4 right-4" />
@@ -153,9 +173,8 @@ export default function EmployeeLeaveHistory() {
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow relative overflow-hidden">
           <div className="flex flex-col">
             <span className="text-xl font-bold">Total Leaves Taken</span>
-            <span className="text-3xl font-extrabold mt-2">89</span>
-            <span className="text-sm text-red-600 mt-1">
-              -800 Last 30 days Active
+            <span className="text-3xl font-extrabold mt-2">
+              {leaveCount.totalLeavesTaken}
             </span>
           </div>
           <FaCalendarAlt className="text-4xl text-gray-300 absolute top-4 right-4" />
@@ -163,9 +182,8 @@ export default function EmployeeLeaveHistory() {
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow relative overflow-hidden">
           <div className="flex flex-col">
             <span className="text-xl font-bold">Approved Leaves</span>
-            <span className="text-3xl font-extrabold mt-2">212</span>
-            <span className="text-sm text-green-600 mt-1">
-              +200 Last 30 days Inactive
+            <span className="text-3xl font-extrabold mt-2">
+              {leaveCount.approvedLeaves}
             </span>
           </div>
           <FaCheckCircle className="text-4xl text-gray-300 absolute top-4 right-4" />

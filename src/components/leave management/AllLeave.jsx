@@ -13,11 +13,7 @@ import {
 import LeaveDetailsModal from "./model/LeaveDetailsAllModal";
 import useLeaveStore from "../../store/allLeaveStore"; // Import the Zustand store
 import ExportButtons from "../common/PdfExcel"; // adjust path if needed
-
-// Dummy user profile data for top cards (you can later replace this with an API call if needed)
-const dummyUserProfile = {
-  no_of_Paid_Leave: 15,
-};
+import { fetchGlobalLeaveStats } from "../../service/leaveService.js";
 
 const tableContainerVariants = {
   hidden: { opacity: 0 },
@@ -33,6 +29,7 @@ const tableRowVariants = {
 };
 
 export default function AllLeave() {
+  // States for filters and pagination
   const [activeStatus, setActiveStatus] = useState("all");
   const [searchText, setSearchText] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
@@ -40,36 +37,61 @@ export default function AllLeave() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedLeave, setSelectedLeave] = useState(null);
 
-  // Get the leaves, loading state, and fetchLeaves function from the store
+  // State to hold global stats
+  const [globalStats, setGlobalStats] = useState({
+    pendingRequests: 0,
+    approvedThisMonth: 0,
+    rejectedThisMonth: 0,
+  });
+
+  // Zustand store for leaves
   const { leaves, isLoading, fetchLeaves } = useLeaveStore();
 
-  // When the activeStatus filter changes, trigger an API call
+  // 1. Fetch global stats on mount
+  useEffect(() => {
+    async function loadGlobalStats() {
+      try {
+        const response = await fetchGlobalLeaveStats();
+        if (response.success && response.data) {
+          setGlobalStats(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching global leave stats:", error);
+      }
+    }
+    loadGlobalStats();
+  }, []);
+
+  // 2. Fetch leaves from the store whenever activeStatus changes
   useEffect(() => {
     fetchLeaves(activeStatus);
   }, [activeStatus, fetchLeaves]);
 
-  // Filter the leaves based on search text and (optionally) a selected month.
-  // (Note: The API already filters by status, but we add extra filtering client‑side as needed.)
+  // 3. Filter the leaves client‑side based on search text and selected month
   const filteredData = useMemo(() => {
+    let searchRegex;
+    try {
+      // Create a case-insensitive regex from the search text
+      searchRegex = new RegExp(searchText, "i");
+    } catch (err) {
+      searchRegex = /a^/; // never matches
+    }
+
     return leaves.filter((item) => {
+      const employeeName = item.employee
+        ? `${item.employee.first_Name} ${item.employee.last_Name}`
+        : "";
+      const employeeId = item.employee?.employee_Id || "";
+
+      // Match either employee name or ID against the regex
       const matchSearch =
-        item.leave_Type.toLowerCase().includes(searchText.toLowerCase()) ||
-        new Date(item.leave_From)
-          .toLocaleDateString()
-          .toLowerCase()
-          .includes(searchText.toLowerCase()) ||
-        (item.leave_To &&
-          new Date(item.leave_To)
-            .toLocaleDateString()
-            .toLowerCase()
-            .includes(searchText.toLowerCase()));
+        searchRegex.test(employeeName) || searchRegex.test(employeeId);
 
-      // If activeStatus is "all", we show all statuses.
+      // Match status exactly if not "all"
       const matchStatus =
-        activeStatus.toLowerCase() === "all"
-          ? true
-          : item.leave_Status.toLowerCase() === activeStatus.toLowerCase();
+        activeStatus === "all" ? true : item.leave_Status === activeStatus;
 
+      // Match month if selected
       let matchMonth = true;
       if (selectedMonth) {
         const entryDate = new Date(item.leave_From);
@@ -78,11 +100,12 @@ export default function AllLeave() {
           entryDate.getFullYear() === parseInt(year, 10) &&
           entryDate.getMonth() + 1 === parseInt(month, 10);
       }
+
       return matchSearch && matchStatus && matchMonth;
     });
   }, [leaves, searchText, activeStatus, selectedMonth]);
 
-  // Pagination logic
+  // 4. Pagination
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     return filteredData.slice(startIndex, startIndex + pageSize);
@@ -90,14 +113,14 @@ export default function AllLeave() {
 
   const totalPages = Math.ceil(filteredData.length / pageSize);
 
+  // 5. Modal close handler
   const handleCloseModal = () => {
     setSelectedLeave(null);
   };
 
-  // Flatten the paginatedData for exporting
+  // 6. Prepare data for export
   const exportData = paginatedData.map((entry, index) => {
     const serialNo = (currentPage - 1) * pageSize + (index + 1);
-
     return {
       sl: serialNo,
       empID: entry.employee?.employee_Id || "N/A",
@@ -126,7 +149,7 @@ export default function AllLeave() {
     };
   });
 
-  // Define columns for PDF/Excel/CSV
+  // 7. Define columns for PDF/Excel/CSV
   const columns = [
     { header: "S.L", dataKey: "sl" },
     { header: "Emp ID", dataKey: "empID" },
@@ -146,34 +169,34 @@ export default function AllLeave() {
     <div className="mx-auto p-4 bg-bg-primary text-text-primary transition-colors">
       {/* Top Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        {/* Pending Requests */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow relative overflow-hidden">
           <div className="flex flex-col">
             <span className="text-xl font-bold">Pending Request</span>
             <span className="text-3xl font-extrabold mt-2">
-              {dummyUserProfile.no_of_Paid_Leave}
-            </span>
-            <span className="text-sm text-green-600 mt-1">
-              +5000 Last 30 days Employee
+              {globalStats.pendingRequests}
             </span>
           </div>
           <FaUserAlt className="text-4xl text-gray-300 absolute top-4 right-4" />
         </div>
+
+        {/* Approved this month */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow relative overflow-hidden">
           <div className="flex flex-col">
             <span className="text-xl font-bold">Approved this month</span>
-            <span className="text-3xl font-extrabold mt-2">89</span>
-            <span className="text-sm text-red-600 mt-1">
-              -800 Last 30 days Active
+            <span className="text-3xl font-extrabold mt-2">
+              {globalStats.approvedThisMonth}
             </span>
           </div>
           <FaCalendarAlt className="text-4xl text-gray-300 absolute top-4 right-4" />
         </div>
+
+        {/* Rejected this month */}
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow relative overflow-hidden">
           <div className="flex flex-col">
             <span className="text-xl font-bold">Reject this month</span>
-            <span className="text-3xl font-extrabold mt-2">212</span>
-            <span className="text-sm text-green-600 mt-1">
-              +200 Last 30 days Inactive
+            <span className="text-3xl font-extrabold mt-2">
+              {globalStats.rejectedThisMonth}
             </span>
           </div>
           <FaCheckCircle className="text-4xl text-gray-300 absolute top-4 right-4" />
@@ -186,6 +209,7 @@ export default function AllLeave() {
 
       {/* Controls */}
       <div className="flex flex-wrap items-center justify-between gap-4 mb-4 p-4 bg-white dark:bg-gray-800 rounded-md shadow">
+        {/* Page Size Selector */}
         <div className="flex items-center gap-2">
           <span className="text-sm font-medium">Show</span>
           <select
@@ -205,10 +229,11 @@ export default function AllLeave() {
           <span className="text-sm font-medium">entries</span>
         </div>
 
+        {/* Search Input */}
         <div className="flex-1 max-w-sm">
           <input
             type="text"
-            placeholder="Search"
+            placeholder="Search by Name or Emp ID"
             className="w-full border rounded px-3 py-2 text-sm bg-white dark:bg-gray-700"
             value={searchText}
             onChange={(e) => {
@@ -218,6 +243,7 @@ export default function AllLeave() {
           />
         </div>
 
+        {/* Month Filter */}
         <div className="flex items-center gap-2">
           <div className="relative">
             <FaCalendarAlt className="absolute top-1/2 -translate-y-1/2 left-2 text-gray-400" />
@@ -233,6 +259,7 @@ export default function AllLeave() {
           </div>
         </div>
 
+        {/* Status Filter */}
         <select
           className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700"
           value={activeStatus}
@@ -247,6 +274,7 @@ export default function AllLeave() {
           <option value="rejected">Rejected</option>
         </select>
 
+        {/* Export Buttons */}
         <div className="flex items-center gap-2">
           <ExportButtons
             data={exportData}
@@ -256,14 +284,13 @@ export default function AllLeave() {
         </div>
       </div>
 
-      {/* Loading Indicator */}
+      {/* Loading Indicator or Table */}
       {isLoading ? (
         <div className="text-center py-10">
           <p>Loading...</p>
         </div>
       ) : (
         <>
-          {/* Table */}
           {filteredData.length > 0 ? (
             <motion.div
               className="bg-bg-secondary rounded-md shadow overflow-x-auto"
@@ -277,9 +304,7 @@ export default function AllLeave() {
                     <th className="p-3 text-sm font-semibold">S.L</th>
                     <th className="p-3 text-sm font-semibold">Emp ID</th>
                     <th className="p-3 text-sm font-semibold">Emp Name</th>
-                    <th className="p-3 text-sm font-semibold">
-                      Paid Leave Balance
-                    </th>
+                    <th className="p-3 text-sm font-semibold">Leave Bank</th>
                     <th className="p-3 text-sm font-semibold">Leave Type</th>
                     <th className="p-3 text-sm font-semibold">From</th>
                     <th className="p-3 text-sm font-semibold">To</th>
@@ -304,7 +329,7 @@ export default function AllLeave() {
                       className="cursor-pointer border-b last:border-b-0 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                     >
                       <td className="p-3 text-sm">
-                        {(currentPage - 1) * pageSize + index + 1}
+                        {(currentPage - 1) * pageSize + (index + 1)}
                       </td>
                       <td className="p-3 text-sm">
                         {entry.employee?.employee_Id || "N/A"}
@@ -381,6 +406,7 @@ export default function AllLeave() {
                 </tbody>
               </motion.table>
 
+              {/* Pagination */}
               <div className="flex justify-between items-center p-3 gap-2 text-sm">
                 <div>
                   Showing {paginatedData.length} of {filteredData.length}{" "}

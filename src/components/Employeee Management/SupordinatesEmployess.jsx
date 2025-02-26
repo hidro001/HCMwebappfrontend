@@ -297,6 +297,7 @@ function SupordinatesEmployess() {
                 </div>
                 <div className="pt-10 px-4 pb-4 flex flex-col flex-grow justify-between text-center">
                   <div>
+                    <p>{user.employee_Id}</p>
                     <h2 className="font-semibold text-gray-800 dark:text-gray-50 text-sm sm:text-base md:text-lg">
                       {fullName || "No Name"}
                     </h2>
