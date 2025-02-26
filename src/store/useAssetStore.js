@@ -146,7 +146,7 @@ const useAssetStore = create((set, get) => ({
   // -----------------------------
   // 6) Assign an Asset
   // -----------------------------
-  assignAsset: async (employeeId, assetData, onSuccess) => {
+  assignAsset: async (employeeId, assetData, onSuccess,) => {
     try {
       // assetData is typically a FormData or an object
       const formData = new FormData();
@@ -155,10 +155,19 @@ const useAssetStore = create((set, get) => ({
       });
       formData.append('assignedTo', employeeId);
 
-      const response = await axiosInstance.post('/superadmin/asset/add', formData);
+      const response = await axiosInstance.post('/superadmin/asset/add', formData,
+
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+
+      );
+
       if (response.data?.success) {
         toast.success('Asset assigned successfully!');
-        // Refresh assigned assets
+     
         await get().fetchAssignedAssets(employeeId);
         if (onSuccess) onSuccess();
       } else {

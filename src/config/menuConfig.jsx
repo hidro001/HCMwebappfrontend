@@ -142,12 +142,12 @@ export const menuItems = [
       {
         name: "Take Disciplinary actions",
         link: "/dashboard/disciplinary-actions/all-users",
-        permission: "assignAssets",
+        permission: "takeDisciplinaryAction",
       },
       {
         name: "All disciplinary actions",
         link: "/dashboard/disciplinary-actions",
-        permission: "assignAssets",
+        permission: "viewDisciplinaryAction",
       },
 
       // {
@@ -191,6 +191,12 @@ export const menuItems = [
         name: "All Employee Attendance",
         link: "/dashboard/all-employee-attendance",
         permission: "viewallAttendance",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Request Hike Advance Reimbursement",
+        link: "/dashboard/request-hike-advance-reimbursement",
+        permission: "requestHikeAdvanceReimbursement",
         textAnimation: { x: 10 },
       },
     ],
@@ -609,6 +615,12 @@ export const menuItems = [
     textAnimation: { x: 10 },
     options: [
       {
+        name: "Admin Panel Training",
+        link: "/dashboard/admin-panel-training",
+        permission: "adminPanelTraining",
+        textAnimation: { x: 10 },
+      },
+      {
         name: "Induction PPT's",
         link: "/dashboard/induction-ppt",
         permission: "inductionPPT",
@@ -618,6 +630,12 @@ export const menuItems = [
         name: "Company Policies",
         link: "/dashboard/company-policies",
         permission: "companyPolicies",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Training Material",
+        link: "/dashboard/training-material",
+        permission: "trainingMaterial",
         textAnimation: { x: 10 },
       },
     ],
@@ -639,20 +657,20 @@ export const menuItems = [
   //   ],
   // },
 
-  // {
-  //   name: "Organization Chart",
-  //   tooltip: "",
-  //   icon: <RiOrganizationChart />,
-  //   color: "text-yellow-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Organization Chart",
-  //       link: "/dashboard/training-material",
-  //       permission: "trainingMaterial",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+  {
+    name: "Organization Chart",
+    tooltip: "",
+    icon: <RiOrganizationChart />,
+    color: "text-yellow-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Organization Chart",
+        link: "/dashboard/organization-chart",
+        permission: "organizationChart",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
 ];
