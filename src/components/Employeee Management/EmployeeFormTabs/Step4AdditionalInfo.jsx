@@ -1,15 +1,20 @@
 
+
 import React, { useEffect } from "react";
 import { useAnimate } from "framer-motion";
 import { useFormContext, useWatch } from "react-hook-form";
+
 import FormField from "../common/FormField";
-import FormSelect from "../common/FormSelect";
+// Remove or comment out this import:
+// import FormSelect from "../common/FormSelect";
+import FormReactSelect from "../common/FormReactSelect";
 import FormTextArea from "../common/FormTextArea";
 
 export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
   const [scope, animate] = useAnimate();
   const { handleSubmit } = useFormContext();
 
+  // Watch health_benefits to conditionally render fields
   const healthBenefits = useWatch({ name: "health_benefits" });
 
   useEffect(() => {
@@ -27,13 +32,13 @@ export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
     <form
       ref={scope}
       onSubmit={handleSubmit(onSubmitStep)}
-      className=" mx-auto p-8 bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-colors duration-300"
+      className="mx-auto p-8 bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-colors duration-300"
     >
       <h2 className="text-3xl font-bold mb-6 border-b pb-4">Additional Info</h2>
+
+      {/* Personal & Employment Details */}
       <section className="mb-8">
-        <h3 className="text-2xl font-semibold mb-4">
-          Personal & Employment Details
-        </h3>
+        <h3 className="text-2xl font-semibold mb-4">Personal & Employment Details</h3>
         <div className="space-y-6">
           <FormTextArea
             label="Gratuity Eligibility & Details"
@@ -41,28 +46,29 @@ export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
             placeholder="Enter gratuity details"
             className="animatable-input"
           />
-          <FormSelect
+
+          {/* Replace FormSelect with FormReactSelect */}
+          <FormReactSelect
             label="Medical Insurance / Health Benefits"
-            name="health_benefits" // Ensure the name matches your defaultValues
+            name="health_benefits"
             options={[
-            
               { value: "", label: "Please Select " },
-              { value: "true", label: "Yes" },
-              { value: "false", label: "No" },
+              { value: "Yes", label: "Yes" },
+              { value: "No", label: "No" },
             ]}
             registerOptions={{
               required: "Please select at least one",
             }}
           />
-          {healthBenefits === "true" && (
-            <div>
-              <FormTextArea
-                label="Medical Insurance / Health Benefits"
-                name="medical_Insurance"
-                placeholder="Enter medical/health benefits"
-                className="animatable-input"
-              />
-            </div>
+
+          {/* Conditional field if health_benefits === "true" */}
+          {healthBenefits === "Yes" && (
+            <FormTextArea
+              label="Medical Insurance / Health Benefits"
+              name="medical_Insurance"
+              placeholder="Enter medical/health benefits"
+              className="animatable-input"
+            />
           )}
 
           <FormTextArea
@@ -71,7 +77,8 @@ export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
             placeholder="Enter other benefits"
             className="animatable-input"
           />
-          <FormSelect
+
+          <FormReactSelect
             label="Background Verification Status"
             name="background_Verification_Status"
             options={[
@@ -86,12 +93,12 @@ export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
           />
         </div>
       </section>
+
+      {/* Verification & Certifications */}
       <section className="mb-8">
-        <h3 className="text-2xl font-semibold mb-4">
-          Verification & Certifications
-        </h3>
+        <h3 className="text-2xl font-semibold mb-4">Verification & Certifications</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <FormSelect
+          <FormReactSelect
             label="Police Verification"
             name="police_Verification"
             options={[
@@ -101,7 +108,8 @@ export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
             ]}
             className="animatable-input"
           />
-          <FormSelect
+
+          <FormReactSelect
             label="Training Status"
             name="trainingStatus"
             options={[
@@ -112,7 +120,8 @@ export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
             ]}
             className="animatable-input"
           />
-          <FormSelect
+
+          <FormReactSelect
             label="compliance Training Status"
             name="complianceTrainingStatus"
             options={[
@@ -123,8 +132,8 @@ export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
             ]}
             className="animatable-input"
           />
-      
         </div>
+
         <div className="space-y-6">
           <FormTextArea
             label="Legal or Regulatory Certifications"
@@ -140,6 +149,8 @@ export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
           />
         </div>
       </section>
+
+      {/* Exit Details */}
       <section className="mb-8">
         <h3 className="text-2xl font-semibold mb-4">Exit Details</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -156,6 +167,7 @@ export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
             className="animatable-input"
           />
         </div>
+
         <div className="space-y-6">
           <FormField
             label="Notice Period Served"
@@ -183,8 +195,10 @@ export default function Step4AdditionalInfo({ onSubmitStep, submitting }) {
           />
         </div>
       </section>
+
+      {/* Bottom Buttons */}
       <div className="flex justify-end space-x-4">
-        <button type="button" className="px-6 py-3 bg-gray-200 rounded">
+        <button type="button" className="px-6 py-3 bg-bg-secondary rounded">
           Cancel
         </button>
         <button

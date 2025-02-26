@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import useEmployeeStore from "../../../store/useEmployeeStore.js";
@@ -9,7 +6,8 @@ import EmployeeFormTabs from "../../../components/Employeee Management/EmployeeF
 
 export default function UpdateEmployeePage() {
   const { id: employeeId } = useParams();
-  const { loadEmployeeById, selectedEmployee, loadingSelectedEmployee } = useEmployeeStore();
+  const { loadEmployeeById, selectedEmployee, loadingSelectedEmployee } =
+    useEmployeeStore();
   const [defaultValues, setDefaultValues] = useState(null);
 
   useEffect(() => {
@@ -47,11 +45,54 @@ export default function UpdateEmployeePage() {
 }
 
 function mapEmployeeToFormDefaults(employeeData) {
+  // Step A: Prepare a parsed array
+  let parsedAllowances = [];
+
+  // If the backend sends something like "da,conveyance,medical" directly:
+  if (typeof employeeData.allowances_Provided === "string") {
+    parsedAllowances = employeeData.allowances_Provided.split(",");
+  }
+  // OR if the backend sends ["da,conveyance,medical"] as an array of length 1
+  else if (
+    Array.isArray(employeeData.allowances_Provided) &&
+    employeeData.allowances_Provided.length > 0 &&
+    typeof employeeData.allowances_Provided[0] === "string"
+  ) {
+    parsedAllowances = employeeData.allowances_Provided[0].split(",");
+  }
+  // If the backend is already sending an array like ["da","conveyance","medical"], then:
+  else if (Array.isArray(employeeData.allowances_Provided)) {
+    parsedAllowances = employeeData.allowances_Provided;
+  }
+
+  // Step A: parse the languages_Known
+  let parsedLanguages = [];
+
+  // If backend sends an array with a single comma-separated string
+  // e.g. ["Spanish,Mandarin,Hindi"]
+  if (
+    Array.isArray(employeeData.languages_Known) &&
+    employeeData.languages_Known.length > 0 &&
+    typeof employeeData.languages_Known[0] === "string"
+  ) {
+    parsedLanguages = employeeData.languages_Known[0].split(",");
+  }
+  // Or if backend sends a plain string e.g. "Spanish,Mandarin,Hindi"
+  else if (typeof employeeData.languages_Known === "string") {
+    parsedLanguages = employeeData.languages_Known.split(",");
+  }
+  // Or if it's already an array like ["Spanish","Mandarin","Hindi"]
+  else if (Array.isArray(employeeData.languages_Known)) {
+    parsedLanguages = employeeData.languages_Known;
+  }
+
   return {
+  
     first_Name: employeeData.first_Name || "",
     last_Name: employeeData.last_Name || "",
     designation: employeeData.designation || "",
     employee_Type: employeeData.employee_Type || "",
+    departmentAllocated: employeeData.department || "",
     no_of_Paid_Leave: employeeData.no_of_Paid_Leave || 0,
     employee_Id: employeeData.employee_Id || "",
     mobile_No: employeeData.mobile_No || "",
@@ -95,7 +136,8 @@ function mapEmployeeToFormDefaults(employeeData) {
           }))
         : [{ name: "", file: null }],
     qualifications:
-      Array.isArray(employeeData.qualifications) && employeeData.qualifications.length > 0
+      Array.isArray(employeeData.qualifications) &&
+      employeeData.qualifications.length > 0
         ? employeeData.qualifications.map((qual) => ({
             qualificationName: qual.qualificationName || "",
             universityBoard: qual.universityBoard || "",
@@ -117,7 +159,8 @@ function mapEmployeeToFormDefaults(employeeData) {
             },
           ],
     experiences:
-      Array.isArray(employeeData.experiences) && employeeData.experiences.length > 0
+      Array.isArray(employeeData.experiences) &&
+      employeeData.experiences.length > 0
         ? employeeData.experiences.map((exp) => ({
             companyName: exp.companyName || "",
             designation: exp.designation || "",
@@ -143,11 +186,15 @@ function mapEmployeeToFormDefaults(employeeData) {
     passport_Number: employeeData.passport_Number || "",
     emergency_Contact_Person: employeeData.emergency_Contact_Person || "",
     emergency_Contact_Number: employeeData.emergency_Contact_Number || "",
-    emergency_Contact_Blood_Group: employeeData.emergency_Contact_Blood_Group || "",
-    languages_Known: employeeData.languages_Known || [],
-    allowances_Provided: employeeData.allowances_Provided || "",
+    emergency_Contact_Blood_Group:
+      employeeData.emergency_Contact_Blood_Group || "",
+    // languages_Known: employeeData.languages_Known || [],
+    languages_Known: parsedLanguages,
+    // allowances_Provided: employeeData.allowances_Provided || "",
+    allowances_Provided: parsedAllowances,
     current_Base_Salary: employeeData.current_Base_Salary || "",
     pf_Details: employeeData.pf_Details || "",
+    work_Mode: employeeData.work_Mode || "",
     esi_Details: employeeData.esi_Details || "",
     gratuity_Details: employeeData.gratuity_Details || "",
     medical_Insurance: employeeData.medical_Insurance || "",
@@ -155,7 +202,8 @@ function mapEmployeeToFormDefaults(employeeData) {
     other_Benefits: employeeData.other_Benefits || "",
     overtime_allowed: employeeData.overtime_allowed || "",
     overtime_hours: employeeData.overtime_hours || "",
-    background_Verification_Status: employeeData.background_Verification_Status || "",
+    background_Verification_Status:
+      employeeData.background_Verification_Status || "",
     police_Verification: employeeData.police_Verification || "",
     trainingStatus: employeeData.trainingStatus || "",
     complianceTrainingStatus: employeeData.complianceTrainingStatus || "",
@@ -176,4 +224,3 @@ function mapEmployeeToFormDefaults(employeeData) {
     disability_Status: employeeData.disability_Status || "",
   };
 }
-

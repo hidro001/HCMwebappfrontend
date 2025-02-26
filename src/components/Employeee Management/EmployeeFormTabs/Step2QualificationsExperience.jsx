@@ -2,8 +2,12 @@
 import React, { useEffect } from "react";
 import { useAnimate } from "framer-motion";
 import { useFormContext } from "react-hook-form";
+
 import FormField from "../common/FormField";
-import FormMultiSelect from "../common/FormMultiSelect";
+// Remove or comment out this old import:
+// import FormMultiSelect from "../common/FormMultiSelect";
+// Import our new FormReactSelect:
+import FormReactSelect from "../common/FormReactSelect";
 
 const lettersOnlyRegex = /^[A-Za-z\s]+$/;
 
@@ -35,11 +39,13 @@ export default function Step2QualificationsExperience({
     <form
       ref={scope}
       onSubmit={handleSubmit(onSubmitStep)}
-      className=" mx-auto p-8 bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-colors duration-300"
+      className="mx-auto p-8 bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 rounded-xl shadow-lg transition-colors duration-300"
     >
       <h2 className="text-3xl font-bold mb-6 border-b pb-4">
         Qualifications & Experience
       </h2>
+
+      {/* --- QUALIFICATIONS Section --- */}
       <h2 className="text-xl font-semibold mb-4">Qualifications</h2>
       {qualificationFields.map((item, index) => (
         <div key={item.id} className="border rounded-md p-4 mb-6">
@@ -116,7 +122,6 @@ export default function Step2QualificationsExperience({
                       universityBoard: "",
                       certifications: "",
                       specialization: "",
-
                       totalMarks: "",
                       passingYear: "",
                       percentageCgpa: "",
@@ -130,24 +135,17 @@ export default function Step2QualificationsExperience({
           </div>
         </div>
       ))}
+
+      {/* --- ADDITIONAL INFO Section --- */}
       <div className="border rounded-md p-4 mb-6">
         <h2 className="text-xl font-semibold mb-4">Additional info</h2>
         <div className="flex justify-between w-full">
           <div className="w-1/2 pr-4">
-            {/* <FormMultiSelect
+            {/* Replace FormMultiSelect with FormReactSelect isMulti */}
+            <FormReactSelect
               label="Languages Known"
               name="languages_Known"
-              options={[
-                { value: "English", label: "English" },
-                { value: "Spanish", label: "Spanish" },
-                // … add more languages as needed
-              ]}
-              requiredMessage="Please select at least one language"
-            /> */}
-
-            <FormMultiSelect
-              label="Languages Known"
-              name="languages_Known"
+              isMulti
               options={[
                 { value: "English", label: "English" },
                 { value: "Spanish", label: "Spanish" },
@@ -208,7 +206,7 @@ export default function Step2QualificationsExperience({
 
           <FormField
             label="Total Years of Experience"
-            name={"total_Experience"}
+            name="total_Experience"
             placeholder="e.g., 3"
             type="number"
             registerOptions={{
@@ -217,6 +215,8 @@ export default function Step2QualificationsExperience({
           />
         </div>
       </div>
+
+      {/* --- EXPERIENCE Section --- */}
       <h2 className="text-xl font-semibold mb-4">Experience</h2>
       {experienceFields.map((item, index) => (
         <div key={item.id} className="border rounded-md p-4 mb-6">
@@ -292,8 +292,10 @@ export default function Step2QualificationsExperience({
           </div>
         </div>
       ))}
+
+      {/* --- BOTTOM BUTTONS --- */}
       <div className="flex items-center space-x-3 mt-6">
-        <button type="button" className="px-4 py-2 bg-gray-300 rounded">
+        <button type="button" className="px-4 py-2 bg-bg-secondary rounded">
           Cancel
         </button>
         <button

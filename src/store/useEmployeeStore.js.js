@@ -84,6 +84,7 @@ const useEmployeeStore = create((set, get) => ({
       const data = await fetchEmploymentTypes();
       // Convert to { label, value } if needed
       const types = data.map((t) => ({ label: t.name, value: t.name }));
+      console.log("Employment Types:", types);
       set({ employmentTypes: types });
     } catch (error) {
       console.error("Error fetching employment types:", error);
