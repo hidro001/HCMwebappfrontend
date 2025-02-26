@@ -72,6 +72,10 @@ import {
   AddEmployeeManagerPage,
   CompanyPoliciesViewPage,
   CompanyInductionViewPage,
+  TrainingMaterialsPage,
+  AdminPanelTrainingPage,
+  EmployeeTreemapPage,
+  RequestDashboardPage,
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -392,6 +396,22 @@ const router = createBrowserRouter([
       {
         path: "company-policies",
         element: <CompanyPoliciesViewPage />,
+      },
+      {
+        path: "training-material",
+        element: <TrainingMaterialsPage />,
+      },
+      {
+        path: "admin-panel-training",
+        element: <AdminPanelTrainingPage />,
+      },
+      {
+        path: "organization-chart",
+        element: <EmployeeTreemapPage />,
+      },
+      {
+        path: "request-hike-advance-reimbursement",
+        element: <RequestDashboardPage />,
       },
     ],
   },

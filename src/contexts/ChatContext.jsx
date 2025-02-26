@@ -1,5 +1,11 @@
-import React, { createContext, useState, useEffect, useRef, useCallback } from 'react';
-import { toast } from 'react-hot-toast';
+import React, {
+  createContext,
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
+import { toast } from "react-hot-toast";
 import {
   initSocket,
   joinRoom,
@@ -7,17 +13,17 @@ import {
   sendFileMessage,
   subscribeToMessages,
   disconnectSocket,
-} from '../service/socketService';
-import {  fetchChatHistory,fetchAllMember } from '../service/chatService';
+} from "../service/socketService";
+import { fetchChatHistory, fetchAllMember } from "../service/chatService";
 
 export const ChatContext = createContext();
 
 export const ChatProvider = ({ children }) => {
   // Shared state
-  const [username, setUsername] = useState('');
-  const [employeeId, setEmployeeId] = useState('');
+  const [username, setUsername] = useState("");
+  const [employeeId, setEmployeeId] = useState("");
   const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [employees, setEmployees] = useState([]);
   // Store the whole user object in selectedUser
   const [selectedUser, setSelectedUser] = useState(null);
@@ -33,8 +39,8 @@ export const ChatProvider = ({ children }) => {
 
   // Load stored user info
   useEffect(() => {
-    setUsername(localStorage.getItem('userName') );
-    setEmployeeId(localStorage.getItem('employeeId'));
+    setUsername(localStorage.getItem("userName"));
+    setEmployeeId(localStorage.getItem("employeeId"));
   }, []);
 
   useEffect(() => {
@@ -81,7 +87,7 @@ export const ChatProvider = ({ children }) => {
       setEmployees([...subs]);
     } catch (err) {
       console.error(err);
-      setError('Error fetching employees. Please try again later.');
+      setError("Error fetching employees. Please try again later.");
     }
   }, []);
 
@@ -91,26 +97,28 @@ export const ChatProvider = ({ children }) => {
 
   // When a user is selected, join their chat room and clear unread count.
   // The function now accepts a complete user object.
-// In src/contexts/ChatContext.js
-const selectUser = useCallback(
-  (user) => {
-    if (user.employee_Id !== selectedUserId) {
-      setMessages([]);
-    }
-    setSelectedUser(user);
-    setSelectedUserId(user.employee_Id);
-    setUnreadCounts((prev) => {
-      const newState = { ...prev };
-      delete newState[user.employee_Id];
-      return newState;
-    });
-    // Use employee_Id for the payload instead of _id
-    joinRoom(socketRef.current, employeeId, user.employee_Id);
-    socketRef.current.emit('markRead', { sender: employeeId, receiver: user.employee_Id });
-  },
-  [employeeId, selectedUserId]
-);
-
+  // In src/contexts/ChatContext.js
+  const selectUser = useCallback(
+    (user) => {
+      if (user.employee_Id !== selectedUserId) {
+        setMessages([]);
+      }
+      setSelectedUser(user);
+      setSelectedUserId(user.employee_Id);
+      setUnreadCounts((prev) => {
+        const newState = { ...prev };
+        delete newState[user.employee_Id];
+        return newState;
+      });
+      // Use employee_Id for the payload instead of _id
+      joinRoom(socketRef.current, employeeId, user.employee_Id);
+      socketRef.current.emit("markRead", {
+        sender: employeeId,
+        receiver: user.employee_Id,
+      });
+    },
+    [employeeId, selectedUserId]
+  );
 
   // Send a text message
   const sendMessageHandler = useCallback(
@@ -124,7 +132,7 @@ const selectUser = useCallback(
         time: new Date().toISOString(),
       };
       sendPrivateMessage(socketRef.current, msgData);
-      setMessage('');
+      setMessage("");
     },
     [employeeId, message, selectedUserId]
   );
@@ -142,7 +150,7 @@ const selectUser = useCallback(
   const sendFileHandler = useCallback(
     async (file) => {
       if (!selectedUserId) {
-        toast.error('Select a user first.');
+        toast.error("Select a user first.");
         return;
       }
       try {
@@ -162,8 +170,8 @@ const selectUser = useCallback(
           {
             id: uniqueId,
             sender: employeeId,
-            type: 'file',
-            fileUrl: '',
+            type: "file",
+            fileUrl: "",
             fileName: file.name,
             fileType: file.type,
             time: new Date().toLocaleTimeString(),
@@ -171,8 +179,8 @@ const selectUser = useCallback(
           },
         ]);
       } catch (error) {
-        console.error('Error sending file:', error);
-        toast.error('Failed to send file.');
+        console.error("Error sending file:", error);
+        toast.error("Failed to send file.");
       }
     },
     [employeeId, selectedUserId]
@@ -181,13 +189,17 @@ const selectUser = useCallback(
   // Fetch chat history for the selected conversation
   const fetchMessages = useCallback(async () => {
     if (!selectedUserId) return;
-    const accessToken = localStorage.getItem('accessToken');
+    const accessToken = localStorage.getItem("accessToken");
     if (!accessToken) {
-      setError('Access token not found. Please log in.');
+      setError("Access token not found. Please log in.");
       return;
     }
     try {
-      const data = await fetchChatHistory(employeeId, selectedUserId, accessToken);
+      const data = await fetchChatHistory(
+        employeeId,
+        selectedUserId,
+        accessToken
+      );
       if (data?.success) {
         setMessages(
           data.data.map((m) => ({
@@ -196,11 +208,11 @@ const selectUser = useCallback(
           }))
         );
       } else {
-        setError(data.message || 'Failed to fetch chat history.');
+        setError(data.message || "Failed to fetch chat history.");
       }
     } catch (err) {
       console.error(err);
-      setError('Error fetching chat history. Please try again later.');
+      setError("Error fetching chat history. Please try again later.");
     }
   }, [employeeId, selectedUserId]);
 

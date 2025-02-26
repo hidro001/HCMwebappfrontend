@@ -1,8 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { FaUserCircle } from 'react-icons/fa';
+import React, { useEffect, useState } from "react";
+import { FaUserCircle } from "react-icons/fa";
 
-export default function ChatMember({ employees, currentUser, onSelectUser, unreadCounts }) {
-  const [searchTerm, setSearchTerm] = useState('');
+export default function ChatMember({
+  employees,
+  currentUser,
+  onSelectUser,
+  unreadCounts,
+}) {
+  const [searchTerm, setSearchTerm] = useState("");
   const [memberList, setMemberList] = useState([]);
 
   useEffect(() => {
@@ -35,7 +40,7 @@ export default function ChatMember({ employees, currentUser, onSelectUser, unrea
   return (
     <div
       className="w-full md:w-1/4 bg-gradient-to-b from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 flex flex-col shadow-xl rounded-lg overflow-hidden"
-      style={{ height: '80vh' }}
+      style={{ height: "80vh" }}
     >
       <h2 className="text-xl font-bold text-purple-700 dark:text-purple-400 p-4 border-b border-gray-300 dark:border-gray-700">
         Your Team Members
@@ -76,9 +81,9 @@ export default function ChatMember({ employees, currentUser, onSelectUser, unrea
                     </p>
                     <p
                       className={`text-xs ${
-                        member.status === 'Online'
-                          ? 'text-green-500'
-                          : 'text-gray-400 dark:text-gray-500'
+                        member.status === "Online"
+                          ? "text-green-500"
+                          : "text-gray-400 dark:text-gray-500"
                       }`}
                     >
                       {member.status}

@@ -63,14 +63,22 @@ export default function ReferralModal({ isOpen, onClose, vacancy }) {
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-gray-800 w-full max-w-md rounded shadow-lg p-6 relative">
+      <div
+        className="bg-white dark:bg-gray-800 w-full max-w-md rounded shadow-lg p-6 relative max-h-[70vh] overflow-x-auto [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600"
+      >
         <button
           onClick={onClose}
           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
         >
           ✕
         </button>
-        <h2 className="text-xl font-semibold mb-4">Refer Candidate for: {vacancy.title}</h2>
+        <h2 className="text-xl font-semibold mb-4">
+          Refer Candidate for: {vacancy.title}
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-1">Name</label>
@@ -125,7 +133,9 @@ export default function ReferralModal({ isOpen, onClose, vacancy }) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">LinkedIn Profile</label>
+            <label className="block text-sm font-medium mb-1">
+              LinkedIn Profile
+            </label>
             <input
               type="text"
               name="linkedIn"
@@ -145,7 +155,9 @@ export default function ReferralModal({ isOpen, onClose, vacancy }) {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Additional Notes</label>
+            <label className="block text-sm font-medium mb-1">
+              Additional Notes
+            </label>
             <textarea
               name="notes"
               value={referralData.notes}

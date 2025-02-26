@@ -1,88 +1,5 @@
-// const availablePermission = [
-//     { name: "Super Admin Dashboard", permission: "SuperDashboard" },
-//     { name: "Manager Dashboard", permission: "managerDashboard" },
-//     { name: "Employee Dashboard", permission: "employeeDashboard" },
-//     { name: "View Policies", permission: "viewPolicies" },
-//     { name: "Update Policies", permission: "PolicySystem" },
-//     { name: "Post Orientation", permission: "postInduction" },
-//     { name: "View Orientation", permission: "viewInduction" },
-//     { name: "Super Admin Add Employee", permission: "addEmployeeAdmin" },
-//     { name: "Manager Add Employee", permission: "addEmployeeManager" },
-//     {
-//       name: "Super Admin Update Employee",
-//       permission: "updateEmployeeAdmin",
-//     },
-//     { name: "Manager Update Employee", permission: "updateEmployeeManager" },
-//     { name: "Delete Employee", permission: "deleteEmployeeAdmin" },
-//     { name: "View Employee", permission: "viewEmployeeAdmin" },
-//     {
-//       name: "Active/Inactive Employee",
-//       permission: "active/InactiveEmployeeAdmin",
-//     },
-//     { name: "Organization Chart", permission: "organizationChart" },
-//     { name: "View Daily Tasks", permission: "ViewTaskManager" },
-//     { name: "Update Daily Tasks", permission: "updateTask" },
-//     { name: "Job Posting", permission: "jobPostingAdmin" },
-//     { name: "Job Management", permission: "jobVacancyAdmin" },
-//     { name: "View Job Vacanies", permission: "viewVacancies" },
-//     { name: "View All Issue", permission: "IssueManagementSuperAdmin" },
-//     { name: "Raise A Issue", permission: "getSupport" },
-//     { name: "Issues Management", permission: "manageIssuesAdmin" },
-//     { name: "Assign Task", permission: "ActionTrackerManager" },
-//     { name: "View Task Assigned", permission: "actionTracker" },
-//     { name: "RACI Business", permission: "Raci2" },
-//     { name: "RACI OPS", permission: "superAdminRaci" },
-//     { name: "Payroll Management", permission: "payroll" },
-//     { name: "View My Profile", permission: "viewProfile" },
-//     { name: "Post Announcement", permission: "AddAnnouncement" },
-//     { name: "View Attendance & Payroll", permission: "myAttendance" },
-//     { name: "Training Material", permission: "trainingMaterial" },
-//     {
-//       name: "Add Department ",
-//       permission: "superAdminDepartmentDesignation",
-//     },
-//     { name: "Company Overview", permission: "CompanySettings" },
-//     { name: "Apply Leave Employee", permission: "applyLeaves" },
-//     { name: "Apply Leave Manager", permission: "acceptandrejectleave" },
-//     { name: "Employee Leave History", permission: "viewLeaves" },
-//     { name: "Attendance View", permission: "viewAttendance" },
-//     { name: "All Employes", permission: "updateEmployeeSuperAdmin" },
-//     { name: "Rate Subordinate", permission: "rateSubordinate" },
-//     {
-//       name: "View Subordinate Ratings",
-//       permission: "viewSubordinateRatings",
-//     },
-//     { name: "All Employes Rating", permission: "viewAllEmployeeRatings" },
-//     { name: "Post Top Performer", permission: "postTopPerformer" },
-//     { name: "View Top Performers Employes", permission: "viewTopPerformers" },
-//     { name: "Company Info", permission: "companyInfo" },
-//     { name: "Add Role", permission: "addRole" },
-//     { name: "Add Designation", permission: "addDesignation" },
-//     { name: "Set KPIs", permission: "setKPIs" },
-//     { name: "Asset", permission: "assignAssets" },
-//     { name: "Submit Resignation", permission: "submitResignation" },
-//     { name: "Resignation Dashboard", permission: "employeeResignationDashboard" },
-//     { name: "Resignation Approvals", permission: "hrResignationDashboard" },
-//     { name: "HR FNF Approvals", permission: "FNFAprroval" },
-//     { name: "All Resignation History", permission: "viewAllResignation" },
-//     { name: "POSH Employee", permission: "poshEmployee" },
-//     { name: "POSH Manager", permission: "poshManager" },
-//     { name: "HR Referral Dashboard", permission: "HRreferralDashboard" },
-//     {
-//       name: "Employee Referral Dashboard",
-//       permission: "EmployeereferralDashboard",
-//     },
-//     {
-//       name: "View Engagement Dashboard",
-//       permission: "engagement",
-//     },
-//     {
-//       name: "Engagement Permission Dashboard",
-//       permission: "engagementManager",
-//     },
-//   ];
-
 const availablePermission = [
+  // -- Original items (60) from availablePermission --
   { name: "Super Admin Dashboard", permission: "SuperDashboard" },
   { name: "Employee Dashboard", permission: "employeeDashboard" },
   { name: "Post Announcement", permission: "AddAnnouncement" },
@@ -97,7 +14,6 @@ const availablePermission = [
     permission: "active/InactiveEmployeeAdmin",
   },
   { name: "Delete Employeee", permission: "deleteEmployeeAdmin" },
-
   { name: "All Employees Management", permission: "updateEmployeeSuperAdmin" },
   { name: "Asset Management", permission: "assignAssets" },
   { name: "Attendance Dashboard", permission: "MainAttendance" },
@@ -113,7 +29,10 @@ const availablePermission = [
   { name: "Main Task Dashboard", permission: "ViewTaskManager" },
   { name: "Update Daily Task", permission: "updateTask" },
   { name: "Task Assignment Manager", permission: "ActionTrackerManager" },
-  { name: "Recruit Management Dashboard", permission: "MainRecruitManagement" },
+  {
+    name: "Recruit Management Dashboard",
+    permission: "MainRecruitManagement",
+  },
   { name: "View All Vacancies", permission: "viewVacancies" },
   { name: "Job Posting", permission: "jobPostingAdmin" },
   { name: "HR Referral Dashboard", permission: "HRreferralDashboard" },
@@ -143,6 +62,66 @@ const availablePermission = [
   { name: "HR FNF Approvals", permission: "FNFAprroval" },
   { name: "Training Material", permission: "trainingMaterial" },
   { name: "User Profile", permission: "viewProfile" },
+  { name: "Induction PPT's", permission: "inductionPPT" },
+  { name: "Company Policies", permission: "companyPolicies" },
+  { name: "Admin Panel Training", permission: "adminPanelTraining" },
+  { name: "Take Disciplinary actions", permission: "takeDisciplinaryAction" },
+  { name: "All disciplinary actions", permission: "viewDisciplinaryAction" },
+  { name: "Organization Chart", permission: "organizationChart" },
+  {
+    name: "Request Hike Advance Reimbursement",
+    permission: "requestHikeAdvanceReimbursement",
+  },
+
+  // -- Newly added items (12) from availablePermissionManager that weren't in availablePermission --
+  {
+    name: "Manager Dashboard",
+    permission: "managerDashboard",
+  },
+  {
+    name: "View Policies",
+    permission: "viewPolicies",
+  },
+  {
+    name: "View Orientation",
+    permission: "viewInduction",
+  },
+  {
+    name: "Manager Update Employee",
+    permission: "updateEmployeeManager",
+  },
+  {
+    name: "View Employee",
+    permission: "viewEmployeeAdmin",
+  },
+  {
+    name: "Job Management",
+    permission: "jobVacancyAdmin",
+  },
+  {
+    name: "View Task Assigned",
+    permission: "actionTracker",
+  },
+  {
+    name: "Apply Leave Employee",
+    permission: "applyLeaves",
+  },
+  {
+    name: "View Subordinate Ratings",
+    permission: "viewSubordinateRatings",
+  },
+  {
+    name: "View Top Performers Employes",
+    permission: "viewTopPerformers",
+  },
+  {
+    name: "Submit Resignation",
+    permission: "submitResignation",
+  },
+  {
+    name: "Employee Referral Dashboard",
+    permission: "EmployeereferralDashboard",
+  },
 ];
 
 const availablePermissionManager = [

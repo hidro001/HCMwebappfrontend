@@ -1,4 +1,4 @@
-// src/config/menuConfig.js (new file)
+// src/config/menuConfig.js
 
 import {
   FaHome,
@@ -20,14 +20,13 @@ import {
 } from "react-icons/fa";
 import { TiSocialTwitter } from "react-icons/ti";
 import { GrDocumentPerformance } from "react-icons/gr";
-import { MdTrackChanges } from "react-icons/md";
-import { MdModelTraining } from "react-icons/md";
+import { MdTrackChanges, MdModelTraining } from "react-icons/md";
 import { RiOrganizationChart } from "react-icons/ri";
 import { LuFileCheck2 } from "react-icons/lu";
 import { ChatBubble } from "@mui/icons-material";
 
 export const menuItems = [
-  // dashboard
+  // ------------------------------ Dashboard ------------------------------
   {
     name: "Dashboard",
     tooltip: "",
@@ -40,7 +39,6 @@ export const menuItems = [
         link: "/dashboard",
         permission: "SuperDashboard",
       },
-
       {
         name: "Dashboard",
         link: "/dashboard/employee",
@@ -49,18 +47,17 @@ export const menuItems = [
     ],
   },
 
-  //Announcements
+  // ------------------------------ Announcements ------------------------------
   {
     name: "Announcements",
     tooltip:
-      "Stay up to date! Click here to view important news and announcements ",
+      "Stay up to date! Click here to view important news and announcements",
     icon: <FaBullhorn />,
     color: "text-yellow-400",
     iconAnimation: { x: 7 },
     options: [
       {
         name: "Create Announcement",
-
         link: "/dashboard/add-announcement",
         permission: "AddAnnouncement",
       },
@@ -72,7 +69,7 @@ export const menuItems = [
     ],
   },
 
-  //Engagement
+  // ------------------------------ Synergy (Engagement) ------------------------------
   {
     name: "Synergy",
     tooltip:
@@ -94,7 +91,7 @@ export const menuItems = [
     ],
   },
 
-  //Manage Employees
+  // ------------------------------ Manage Employees ------------------------------
   {
     name: "Manage Employees",
     tooltip: "Organize and oversee all employee details in one place",
@@ -127,7 +124,6 @@ export const menuItems = [
         permission: "updateEmployeeAdmin",
         textAnimation: { x: 10 },
       },
-
       {
         name: "All Employees",
         link: "/dashboard/all-employess",
@@ -142,25 +138,17 @@ export const menuItems = [
       {
         name: "Take Disciplinary actions",
         link: "/dashboard/disciplinary-actions/all-users",
-        permission: "assignAssets",
+        permission: "takeDisciplinaryAction",
       },
       {
         name: "All disciplinary actions",
         link: "/dashboard/disciplinary-actions",
-        permission: "assignAssets",
+        permission: "viewDisciplinaryAction",
       },
-
-      // {
-      //   name: "Asset",
-      //   link: "/dashboard/asset",
-      //   permission: "assignAssets",
-      //   textAnimation: { x: 10 },
-      // },
     ],
   },
 
-  //Attendence
-
+  // ------------------------------ Attendance ------------------------------
   {
     name: "Attendence",
     tooltip: "Track and manage employee presence and punctuality with ease",
@@ -193,10 +181,16 @@ export const menuItems = [
         permission: "viewallAttendance",
         textAnimation: { x: 10 },
       },
+      {
+        name: "Request Hike Advance Reimbursement",
+        link: "/dashboard/request-hike-advance-reimbursement",
+        permission: "requestHikeAdvanceReimbursement",
+        textAnimation: { x: 10 },
+      },
     ],
   },
 
-  // Ticket Management
+  // ------------------------------ Ticket Management ------------------------------
   {
     name: "Ticket Management",
     tooltip:
@@ -239,7 +233,7 @@ export const menuItems = [
     ],
   },
 
-  // Payroll
+  // ------------------------------ Payroll ------------------------------
   {
     name: "Payroll",
     tooltip:
@@ -250,28 +244,30 @@ export const menuItems = [
     textAnimation: { x: 10 },
     options: [
       {
+        // renamed from 'payroll' to make it unique
         name: "Main",
         link: "/dashboard/main",
-        permission: "payroll",
+        permission: "payrollMain", // NEW
         textAnimation: { x: 10 },
       },
       {
+        // renamed from 'payroll' to make it unique
         name: "Manage Payroll",
         link: "/dashboard/manage-payroll",
-        permission: "payroll",
+        permission: "payrollManage", // NEW
         textAnimation: { x: 10 },
       },
       {
+        // previously using 'myAttendance'—made unique
         name: "Manage Claims",
         link: "/dashboard/manage-claims",
-        permission: "myAttendance",
+        permission: "payrollManageClaims", // NEW
         textAnimation: { x: 10 },
       },
     ],
   },
 
-  //Task Management
-
+  // ------------------------------ Task Management ------------------------------
   {
     name: "Task Management ",
     tooltip:
@@ -300,21 +296,23 @@ export const menuItems = [
         textAnimation: { x: 10 },
       },
       {
+        // Previously also "ViewTaskManager"; made unique
         name: "Assigned Task",
         link: "/dashboard/assigned-task/employee",
-        permission: "ViewTaskManager",
+        permission: "ViewTaskManagerEmployee", // NEW
         textAnimation: { x: 10 },
       },
       {
+        // Previously also "ActionTrackerManager"; made unique
         name: "Daily Task",
         link: "/dashboard/daily-task",
-        permission: "ActionTrackerManager",
+        permission: "ActionTrackerManagerDaily", // NEW
         textAnimation: { x: 10 },
       },
     ],
   },
 
-  //Recruit Management
+  // ------------------------------ Recruit Management ------------------------------
   {
     name: "Recruit Management",
     tooltip:
@@ -349,22 +347,16 @@ export const menuItems = [
         textAnimation: { x: 10 },
       },
       {
+        // Repeated "HRreferralDashboard"; now unique
         name: "Vacancies List",
         link: "/dashboard/vancancies-list",
-        permission: "HRreferralDashboard",
+        permission: "HRreferralDashboardVacancies", // NEW
         textAnimation: { x: 10 },
       },
-
-      // {
-      //   name: "Employee Referral Tracker",
-      //   link: "/dashboard/my-referral-dashboard",
-      //   permission: "employeeReferralDashboard",
-      //   textAnimation: { x: 10 },
-      // },
     ],
   },
 
-  //Performance management
+  // ------------------------------ Performance Management ------------------------------
   {
     name: "Performance management",
     tooltip:
@@ -404,8 +396,7 @@ export const menuItems = [
     ],
   },
 
-  //Analytics
-
+  // ------------------------------ Analytics ------------------------------
   {
     name: "Analytics",
     tooltip:
@@ -434,16 +425,16 @@ export const menuItems = [
         textAnimation: { x: 10 },
       },
       {
+        // repeated "superAdminRaci" => made unique
         name: "All Dashlets",
         link: "/dashboard/all-dashlets",
-        permission: "superAdminRaci",
+        permission: "superAdminRaciAllDashlets", // NEW
         textAnimation: { x: 10 },
       },
     ],
   },
 
-  //Company Settings
-
+  // ------------------------------ Company Settings ------------------------------
   {
     name: "Company Settings",
     tooltip:
@@ -492,7 +483,7 @@ export const menuItems = [
     ],
   },
 
-  // Productivity Lenses
+  // ------------------------------ Productivity Lenses ------------------------------
   {
     name: "Productivity Lenses",
     tooltip:
@@ -503,25 +494,27 @@ export const menuItems = [
     textAnimation: { x: 10 },
     options: [
       {
+        // replaced "postTopPerformer" to avoid duplication
         name: "Main",
         link: "/dashboard/main-dashboard",
-        permission: "postTopPerformer",
+        permission: "postTopPerformerMain", // NEW
       },
       {
+        // replaced "postTopPerformer" to avoid duplication
         name: "Productivity Dashboard",
         link: "/dashboard/productivity-dashboard",
-        permission: "postTopPerformer",
+        permission: "postTopPerformerDashboard", // NEW
       },
       {
+        // replaced "postTopPerformer" to avoid duplication
         name: "Team Productivity",
         link: "/dashboard/team-productivity",
-        permission: "postTopPerformer",
+        permission: "postTopPerformerTeam", // NEW
       },
     ],
   },
 
-  // Productivity Lenses Ended
-
+  // ------------------------------ Chats ------------------------------
   {
     name: "Chats",
     tooltip: "Chats With Team Mates",
@@ -539,6 +532,7 @@ export const menuItems = [
     ],
   },
 
+  // ------------------------------ Leaves Management ------------------------------
   {
     name: "Leaves Management",
     icon: <FaListAlt />,
@@ -559,14 +553,16 @@ export const menuItems = [
         textAnimation: { x: 10 },
       },
       {
+        // repeated "viewLeaves" => made unique
         name: " All Leaves ",
         link: "/dashboard/all-leave-history",
-        permission: "viewLeaves",
+        permission: "viewAllLeaves", // NEW
         textAnimation: { x: 10 },
       },
     ],
   },
 
+  // ------------------------------ Resignation & FNF ------------------------------
   {
     name: "Resignation & FNF Dashboard",
     icon: <LuFileCheck2 />,
@@ -601,6 +597,7 @@ export const menuItems = [
     ],
   },
 
+  // ------------------------------ Policies & Induction ------------------------------
   {
     name: "Policies & Induction",
     icon: <FaFileSignature />,
@@ -608,6 +605,12 @@ export const menuItems = [
     iconAnimation: { scale: 1.2 },
     textAnimation: { x: 10 },
     options: [
+      {
+        name: "Admin Panel Training",
+        link: "/dashboard/admin-panel-training",
+        permission: "adminPanelTraining",
+        textAnimation: { x: 10 },
+      },
       {
         name: "Induction PPT's",
         link: "/dashboard/induction-ppt",
@@ -620,39 +623,30 @@ export const menuItems = [
         permission: "companyPolicies",
         textAnimation: { x: 10 },
       },
+      {
+        name: "Training Material",
+        link: "/dashboard/training-material",
+        permission: "trainingMaterial",
+        textAnimation: { x: 10 },
+      },
     ],
   },
 
-  // {
-  //   name: "User Profile",
-  //   icon: <FaUserCircle />,
-  //   color: "text-orange-400",
-  //   iconAnimation: { scale: 1.3 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "My Profile",
-  //       link: "/dashboard/my-profile",
-  //       permission: "viewProfile",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
-
-  // {
-  //   name: "Organization Chart",
-  //   tooltip: "",
-  //   icon: <RiOrganizationChart />,
-  //   color: "text-yellow-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Organization Chart",
-  //       link: "/dashboard/training-material",
-  //       permission: "trainingMaterial",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+  // ------------------------------ Organization Chart ------------------------------
+  {
+    name: "Organization Chart",
+    tooltip: "",
+    icon: <RiOrganizationChart />,
+    color: "text-yellow-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Organization Chart",
+        link: "/dashboard/organization-chart",
+        permission: "organizationChart",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
 ];

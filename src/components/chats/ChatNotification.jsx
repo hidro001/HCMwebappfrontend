@@ -1,6 +1,6 @@
-import { useState, useEffect, useContext } from 'react';
-import { ChatContext } from '../../contexts/ChatContext';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useContext } from "react";
+import { ChatContext } from "../../contexts/ChatContext";
+import { useNavigate } from "react-router-dom";
 
 export default function ChatNotification() {
   const { unreadCounts, employees, selectUser } = useContext(ChatContext);
@@ -22,19 +22,19 @@ export default function ChatNotification() {
   // For demonstration, pick the first unread notification.
   const [firstSenderId, count] = notificationEntries[0];
   const employee = employees.find((emp) => emp.employee_Id === firstSenderId);
-  const userName = employee ? `${employee.first_Name} ${employee.last_Name}` : firstSenderId;
+  const userName = employee
+    ? `${employee.first_Name} ${employee.last_Name}`
+    : firstSenderId;
   const userAvatar = employee ? employee.avatar : null;
 
   const handleNotificationClick = () => {
     // Hide the notification.
     setVisible(false);
     // Open the chat for the sender.
-    if (selectUser) {
-      selectUser(userName, firstSenderId);
-    }
+
     // Navigate to the chat page after a short delay.
     setTimeout(() => {
-      navigate('/dashboard/chats');
+      navigate("/dashboard/chats");
     }, 100);
   };
 
@@ -52,7 +52,12 @@ export default function ChatNotification() {
           className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           aria-label="Close Notification"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -76,9 +81,7 @@ export default function ChatNotification() {
               fill="currentColor"
               viewBox="0 0 24 24"
             >
-              <path
-                d="M12 12c2.209 0 4-1.791 4-4s-1.791-4-4-4-4 1.791-4 4 1.791 4 4 4zm0 2c-2.67 0-8 1.337-8 4v2h16v-2c0-2.663-5.33-4-8-4z"
-              />
+              <path d="M12 12c2.209 0 4-1.791 4-4s-1.791-4-4-4-4 1.791-4 4 1.791 4 4 4zm0 2c-2.67 0-8 1.337-8 4v2h16v-2c0-2.663-5.33-4-8-4z" />
             </svg>
           )}
         </div>
@@ -92,7 +95,7 @@ export default function ChatNotification() {
             </span>
           </div>
           <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-            You have received {count} new message{count > 1 ? 's' : ''}.
+            You have received {count} new message{count > 1 ? "s" : ""}.
           </p>
         </div>
       </div>
