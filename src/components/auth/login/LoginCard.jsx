@@ -1037,7 +1037,7 @@ const LoginCard = () => {
       />
 
       {/* Toast Notifications */}
-      <Toaster />
+
     </GlassCard>
   );
 };

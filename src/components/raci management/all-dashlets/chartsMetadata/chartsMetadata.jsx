@@ -1,6 +1,4 @@
-// src/components/dashboard/chartsMetadata..js
 
-// Import your chart components
 import DemographicAgeGender from "../DemographicAgeGender";
 import DemographicNationalMarital from "../DemographicNationalMarital";
 import SkillGapAnalysisCard from "../SkillGapAnalysisCard";
@@ -66,36 +64,36 @@ export const CHARTS_METADATA = [
     label: "Internal Mobility Trends",
     component: InternalMobilityTrendsCard,
   },
-  {
-    id: "ImpactOnPerformanceCard",
-    label: "Impact on Performance",
-    component: ImpactOnPerformanceCard,
-  },
-  {
-    id: "CTCChartCard",
-    label: "CTC Chart",
-    component: CTCChartCard,
-  },
+  // {
+  //   id: "ImpactOnPerformanceCard",
+  //   label: "Impact on Performance",
+  //   component: ImpactOnPerformanceCard,
+  // },
+  // {
+  //   id: "CTCChartCard",
+  //   label: "CTC Chart",
+  //   component: CTCChartCard,
+  // },
   {
     id: "PerformanceTrendsCard",
     label: "Performance Trends",
     component: PerformanceTrendsCard,
   },
-  {
-    id: "HighPotentialEmployeesTrendsCard",
-    label: "High Potential Employees",
-    component: HighPotentialEmployeesTrendsCard,
-  },
+  // {
+  //   id: "HighPotentialEmployeesTrendsCard",
+  //   label: "High Potential Employees",
+  //   component: HighPotentialEmployeesTrendsCard,
+  // },
   {
     id: "AbsenteeismPatternsCard",
     label: "Absenteeism Patterns",
     component: AbsenteeismPatternsCard,
   },
-  {
-    id: "OvertimeCostAnalysisCard",
-    label: "Overtime Cost Analysis",
-    component: OvertimeCostAnalysisCard,
-  },
+  // {
+  //   id: "OvertimeCostAnalysisCard",
+  //   label: "Overtime Cost Analysis",
+  //   component: OvertimeCostAnalysisCard,
+  // },
   {
     id: "StaffingOptimizationCard",
     label: "Staffing Optimization",
@@ -141,11 +139,11 @@ export const CHARTS_METADATA = [
     label: "Performance Overview",
     component: PerformanceCard,
   },
-  {
-    id: "CorrelationTrainingPerformanceCard",
-    label: "Correlation: Training & Performance",
-    component: CorrelationTrainingPerformanceCard,
-  },
+  // {
+  //   id: "CorrelationTrainingPerformanceCard",
+  //   label: "Correlation: Training & Performance",
+  //   component: CorrelationTrainingPerformanceCard,
+  // },
   {
     id: "GrievanceResolutionChart",
     label: "Grievance Resolution",

@@ -40,6 +40,13 @@ export const menuItems = [
         permission: "SuperDashboard",
       },
       {
+        // repeated "superAdminRaci" => made unique
+        name: "All Dashlets",
+        link: "/dashboard/all-dashlets",
+        permission: "superAdminRaciAllDashlets", // NEW
+        textAnimation: { x: 10 },
+      },
+      {
         name: "Dashboard",
         link: "/dashboard/employee",
         permission: "employeeDashboard",
@@ -422,13 +429,6 @@ export const menuItems = [
         name: "RACI Operations",
         link: "/dashboard/raci-operations",
         permission: "superAdminRaci",
-        textAnimation: { x: 10 },
-      },
-      {
-        // repeated "superAdminRaci" => made unique
-        name: "All Dashlets",
-        link: "/dashboard/all-dashlets",
-        permission: "superAdminRaciAllDashlets", // NEW
         textAnimation: { x: 10 },
       },
     ],
