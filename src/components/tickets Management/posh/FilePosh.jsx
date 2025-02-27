@@ -174,7 +174,7 @@ export default function FilePosh() {
               setCurrentPage(1);
             }}
           >
-            <option value="All">All Statuses</option>
+            <option value="All">All Status</option>
             <option value="Pending">Pending</option>
             <option value="Resolved">Resolved</option>
             <option value="Under Review">Under Review</option>

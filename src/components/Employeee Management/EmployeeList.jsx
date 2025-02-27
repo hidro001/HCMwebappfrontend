@@ -180,9 +180,9 @@ export default function EmployeeList() {
           <div className="mt-2 text-2xl font-bold text-gray-800 dark:text-gray-100">
             {totalEmployeeCount}
           </div>
-          <div className="text-xs text-green-500 mt-1">
-            +5000 Last 30 days Employee
-          </div>
+            {/* <div className="text-xs text-green-500 mt-1">
+              +5000 Last 30 days Employee
+            </div> */}
         </div>
 
         {/* Total Active Card */}
@@ -204,9 +204,9 @@ export default function EmployeeList() {
           <div className="mt-2 text-2xl font-bold text-gray-800 dark:text-gray-100">
             {totalActive}
           </div>
-          <div className="text-xs text-red-500 mt-1">
+          {/* <div className="text-xs text-red-500 mt-1">
             -800 Last 30 days Active
-          </div>
+          </div> */}
         </div>
 
         {/* Total Inactive Card */}
@@ -228,9 +228,9 @@ export default function EmployeeList() {
           <div className="mt-2 text-2xl font-bold text-gray-800 dark:text-gray-100">
             {totalInactive}
           </div>
-          <div className="text-xs text-green-500 mt-1">
+          {/* <div className="text-xs text-green-500 mt-1">
             +200 Last 30 days Inactive
-          </div>
+          </div> */}
         </div>
       </div>
 
