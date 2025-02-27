@@ -88,7 +88,7 @@ export default function BreakSettingsModal({
               required
             />
           </div>
-          <div className="mb-4">
+          {/* <div className="mb-4">
             <label className="block text-gray-700 dark:text-gray-200 mb-1">
               Detection Type
             </label>
@@ -116,7 +116,7 @@ export default function BreakSettingsModal({
                 Monitor Track
               </label>
             </div>
-          </div>
+          </div> */}
           <div className="flex justify-end mt-6">
             <button
               type="button"
