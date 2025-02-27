@@ -270,7 +270,7 @@ export default function AllTickets() {
               setCurrentPage(1);
             }}
           >
-            <option value="All">All Statuses</option>
+            <option value="All">All Status</option>
             <option value="Pending">Pending</option>
             <option value="In Progress">In Progress</option>
             <option value="Resolved">Resolved</option>

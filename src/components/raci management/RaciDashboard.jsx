@@ -342,9 +342,9 @@ export default function RaciDashboard() {
             </table>
           </div>
           <div className="mt-2 text-right">
-            <button className="text-blue-600 dark:text-blue-400 hover:underline">
+            {/* <button className="text-blue-600 dark:text-blue-400 hover:underline">
               See All
-            </button>
+            </button> */}
           </div>
         </motion.div>
 
@@ -413,9 +413,9 @@ export default function RaciDashboard() {
             </table>
           </div>
           <div className="mt-2 text-right">
-            <button className="text-blue-600 dark:text-blue-400 hover:underline">
+            {/* <button className="text-blue-600 dark:text-blue-400 hover:underline">
               See All
-            </button>
+            </button> */}
           </div>
         </motion.div>
       </div>

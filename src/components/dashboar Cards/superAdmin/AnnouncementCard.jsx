@@ -221,7 +221,7 @@ function AnnouncementCard() {
   });
 
   // Show the latest 10 announcements
-  const latestAnnouncements = processedAnnouncements.slice(0, 10);
+  const latestAnnouncements = processedAnnouncements.slice(0, 5);
 
   return (
     <>
