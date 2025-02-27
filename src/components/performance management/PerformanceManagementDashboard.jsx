@@ -37,7 +37,7 @@ ChartJS.register(
 );
 
 export default function PerformanceManagementDashboard() {
-  const [selectedRange, setSelectedRange] = useState("Monthly");
+  const [selectedRange, setSelectedRange] = useState("Yearly");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -167,7 +167,7 @@ export default function PerformanceManagementDashboard() {
     scales: {
       y: {
         type: "linear",
-        display: true,
+        display: false,
         position: "left",
         ticks: { color: "#6B7280" },
         grid: { color: "rgba(107,114,128,0.1)" },
@@ -175,7 +175,7 @@ export default function PerformanceManagementDashboard() {
       y2: {
         type: "linear",
         display: true,
-        position: "right",
+        position: "left",
         grid: { drawOnChartArea: false },
         ticks: { color: "#3B82F6" },
       },
@@ -319,8 +319,8 @@ export default function PerformanceManagementDashboard() {
               "
             >
               <option value="Yearly">Yearly</option>
-              <option value="Monthly">Monthly</option>
-              <option value="Weekly">Weekly</option>
+              {/* <option value="Monthly">Monthly</option> */}
+              {/* <option value="Weekly">Weekly</option> */}
             </select>
             <div className="pointer-events-none absolute top-1/2 right-2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
               ▼
