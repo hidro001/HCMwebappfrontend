@@ -133,9 +133,9 @@ export default function PerformanceManagementDashboard() {
 
       // 4) Fetch Top Performer List
       const now = new Date();
-      const month = now.getMonth() + 1;
+      const month = now.getMonth() + 0;
       const year = now.getFullYear();
-      const limit = 4;
+      const limit = 400;
 
       const topListRes = await fetchTopPerformerList(month, year, limit);
       if (topListRes?.data) {
@@ -254,9 +254,7 @@ export default function PerformanceManagementDashboard() {
               <h2 className="text-md font-semibold">Top Performer</h2>
             </div>
             <p className="text-2xl font-bold my-3">{topPerformerCount}</p>
-            <p className="text-sm font-medium text-green-600 dark:text-green-300">
-              Increase by 200 this Month
-            </p>
+          
           </motion.div>
 
           {/* Average Performer */}
@@ -275,9 +273,7 @@ export default function PerformanceManagementDashboard() {
               <h2 className="text-md font-semibold">Average Performer</h2>
             </div>
             <p className="text-2xl font-bold my-3">{avgPerformerCount}</p>
-            <p className="text-sm font-medium text-red-600 dark:text-red-300">
-              Decrease by 200 this Month
-            </p>
+        
           </motion.div>
 
           {/* Below Average Performer */}
@@ -293,9 +289,7 @@ export default function PerformanceManagementDashboard() {
               <h2 className="text-md font-semibold">Below Average Performer</h2>
             </div>
             <p className="text-2xl font-bold my-3">{belowAvgPerformerCount}</p>
-            <p className="text-sm font-medium text-green-600 dark:text-green-300">
-              Increase by 200 this Month
-            </p>
+        
           </motion.div>
         </div>
       )}
@@ -344,7 +338,7 @@ export default function PerformanceManagementDashboard() {
       </motion.div>
 
       {/* --- Bottom row: Table (2/3) + Donut (1/3) --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className=" ">
         {/* Top Performer Table */}
         <motion.div
           variants={cardVariants}
@@ -353,7 +347,7 @@ export default function PerformanceManagementDashboard() {
           className="col-span-2 bg-white dark:bg-gray-800 rounded-lg p-4 shadow"
         >
           <h3 className="font-semibold text-lg mb-4">Top Performer List</h3>
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto ">
             <table className="min-w-full text-sm text-left">
               <thead className="bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 uppercase text-xs font-bold">
                 <tr>
@@ -390,50 +384,7 @@ export default function PerformanceManagementDashboard() {
           </div>
         </motion.div>
 
-        {/* Donut Chart (Male vs Female) */}
-        <motion.div
-          variants={cardVariants}
-          initial="hidden"
-          animate="visible"
-          className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow"
-        >
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="font-semibold text-lg">Performance</h3>
-            <span className="text-sm text-gray-500 dark:text-gray-400">
-              {selectedRange}
-            </span>
-          </div>
-
-          <div className="flex flex-col items-center justify-center">
-            <div className="w-40 h-40 mb-2 flex items-center justify-center">
-              {hasDonutData ? (
-                <Doughnut data={donutData} options={donutOptions} />
-              ) : (
-                <p className="text-gray-500">No donut data available.</p>
-              )}
-            </div>
-
-            {/* placeholders for % changes (optional) */}
-            {hasDonutData && (
-              <div className="flex space-x-4 mt-2 text-sm font-medium">
-                <div className="flex flex-col items-center">
-                  <span className="text-blue-500 dark:text-blue-400">+15%</span>
-                  <span className="text-gray-600 dark:text-gray-200">
-                    Male: {maleCount}
-                  </span>
-                </div>
-                <div className="flex flex-col items-center">
-                  <span className="text-orange-500 dark:text-orange-300">
-                    +20%
-                  </span>
-                  <span className="text-gray-600 dark:text-gray-200">
-                    Female: {femaleCount}
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        </motion.div>
+     
       </div>
     </div>
   );
