@@ -329,12 +329,12 @@ export const menuItems = [
     iconAnimation: { scale: 1.2 },
     textAnimation: { x: 10 },
     options: [
-      {
-        name: "Main",
-        link: "/dashboard/recruitment-main",
-        permission: "MainRecruitManagement",
-        textAnimation: { x: 10 },
-      },
+      // {
+      //   name: "Main",
+      //   link: "/dashboard/recruitment-main",
+      //   permission: "MainRecruitManagement",
+      //   textAnimation: { x: 10 },
+      // },
       {
         name: "All Vacancies",
         link: "/dashboard/all-vacancies",
@@ -357,7 +357,7 @@ export const menuItems = [
         // Repeated "HRreferralDashboard"; now unique
         name: "Vacancies List",
         link: "/dashboard/vancancies-list",
-        permission: "HRreferralDashboardVacancies", // NEW
+        permission: "HRDashboardVacancies", // NEW
         textAnimation: { x: 10 },
       },
     ],

@@ -171,16 +171,16 @@ export default function RecruitDashboard() {
     }
   }
 
-  // For the "Top Hiring Sources" bar chart
-  const topHiringOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: { grid: { display: false } },
-      y: { beginAtZero: true, max: 100 },
-    },
-    plugins: { legend: { position: "bottom" } },
-  };
+  // // For the "Top Hiring Sources" bar chart
+  // const topHiringOptions = {
+  //   responsive: true,
+  //   maintainAspectRatio: false,
+  //   scales: {
+  //     x: { grid: { display: false } },
+  //     y: { beginAtZero: true, max: 100 },
+  //   },
+  //   plugins: { legend: { position: "bottom" } },
+  // };
 
   // ---------------
   // NO DATA CHECKS
@@ -203,14 +203,14 @@ export default function RecruitDashboard() {
         {error && <p className="text-red-500">Error: {error}</p>}
 
         {/* ------------- TOP ROW: 4 big squares + Bar Chart ------------- */}
-        <div className="grid grid-cols-1 xl:grid-cols-[2fr,1fr] gap-6 mb-6">
+        <div className="  mb-6 ">
           {/* Left: 4 squares */}
           {!hasOverviewData && !loading && !error ? (
             <p className="col-span-2 text-gray-500">
               No overview data available.
             </p>
           ) : (
-            <div className="grid grid-cols-2 grid-rows-2 gap-6">
+            <div className="grid grid-cols-2 grid-rows-2 gap-6 ">
               {/* 1) Open Positions */}
               <div className="rounded-lg p-4 bg-green-50 dark:bg-green-900 shadow flex flex-col justify-center">
                 <div className="text-3xl font-bold mb-1">{openPositions}</div>
@@ -246,7 +246,7 @@ export default function RecruitDashboard() {
           )}
 
           {/* Right: Top Hiring Sources (Bar Chart) */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
+          {/* <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
             <div className="flex items-center justify-between mb-2">
               <h2 className="font-semibold text-gray-800 dark:text-gray-100">
                 Top Hiring Sources
@@ -262,7 +262,7 @@ export default function RecruitDashboard() {
                 <p className="text-gray-500">No hiring sources data.</p>
               )}
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* ------------- BOTTOM ROW: Vacancies Table + Departments ------------- */}

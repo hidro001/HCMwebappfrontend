@@ -42,7 +42,7 @@ const useEmployeeStore = create((set, get) => ({
       if (response.data.success) {
         // Map the break data into { label, value } format
         const breakOptions = response.data.data.map((b) => ({
-          label: `${b.breakType} (${b.detectionType})`,
+          label: `${b.breakType} `,
           // value: b, // storing the full object if needed later
           value: JSON.stringify(b), // <-- Change here to store a JSON string
         }));

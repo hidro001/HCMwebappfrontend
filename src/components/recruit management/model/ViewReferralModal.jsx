@@ -42,11 +42,13 @@ export default function ViewReferralModal({ referral, onClose }) {
               <strong>Candidate Email:</strong> {referral.candidateEmail}
             </div>
             <div>
-              <strong>Candidate Phone Number:</strong> {referral.candidatePhone}
+              <strong>Candidate Phone Number:</strong> {referral.candidatephone}
             </div>
+
             <div>
               <strong>Candidate Location:</strong> {referral.candidateLocation}
             </div>
+
             <div>
               <strong>Status:</strong> {referral.status}
             </div>
@@ -62,21 +64,19 @@ export default function ViewReferralModal({ referral, onClose }) {
                 </a>
               </span>
             </div>
-          </div>
-          <div className="flex-1 flex items-center justify-center">
-            <svg
-              width="80"
-              height="80"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1"
-              viewBox="0 0 24 24"
-              className="text-green-300"
-            >
-              <circle cx="8" cy="12" r="3"></circle>
-              <circle cx="16" cy="12" r="3"></circle>
-              <line x1="10.5" y1="12" x2="13.5" y2="12"></line>
-            </svg>
+
+            <div>
+              <strong>Candidate Linkdin Profile:</strong>{" "}
+              <span className="text-blue-600 cursor-pointer">
+                <a
+                  href={referral.candidatelinkedIn}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <button>View</button>
+                </a>
+              </span>
+            </div>
           </div>
         </div>
         <div className="mt-4 text-right">
