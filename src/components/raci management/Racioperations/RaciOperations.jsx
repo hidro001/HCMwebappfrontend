@@ -1,87 +1,40 @@
-// import React from "react";
-// import { motion } from "framer-motion";
-// import IndustryPerformanceTable from "./IndustryPerformanceTable";
-// import BusinessPerformanceTable from "./BusinessPerformanceTable";
-// import KeyPerformanceMetrics from "./KeyPerformanceMetrics";
-// import RaciBusinessChart from "./RACIChart";
-// import PreviousScores from "./PreviousScores";
-
-// const RaciOperations = () => {
-//   return (
-//     <div className="bg-gray-100 dark:bg-gray-900 p-4">
-//       <h1 className="font-black text-3xl py-2">RACI Operational KPI Assessment</h1>
-   
-//       <motion.div
-//         className="container mx-auto 
-//                    grid grid-cols-1 gap-4 
-//                    sm:grid-cols-2 
-//                    lg:grid-cols-3"
-//         initial={{ opacity: 0 }}
-//         animate={{ opacity: 1 }}
-//       >
-//         <div className="col-span-1 sm:col-span-2 lg:col-span-2 space-y-4">
-//           <div className="overflow-x-auto">
-//             <IndustryPerformanceTable />
-//           </div>
-
-//           <div className="overflow-x-auto">
-//             <BusinessPerformanceTable />
-//           </div>
-
-//           <div className="overflow-x-auto">
-//             <RaciBusinessChart />
-//           </div>
-//         </div>
-
-//         <div className="sm:col-span-2 lg:col-span-1 space-y-4">
-//           <div className="overflow-x-auto">
-//             <KeyPerformanceMetrics />
-//           </div>
-
-//           <div className="overflow-x-auto">
-//             <PreviousScores />
-//           </div>
-//         </div>
-//       </motion.div>
-//     </div>
-//   );
-// };
-
-// export default RaciOperations;
-
-
 // import { useState, useEffect } from "react";
 // import axiosInstance from "../../../service/axiosInstance";
 
-// // Recharts
+// // CHART.JS and react-chartjs-2
 // import {
-//   BarChart,
-//   Bar,
-//   XAxis,
-//   YAxis,
-//   CartesianGrid,
+//   Chart as ChartJS,
+//   CategoryScale,
+//   LinearScale,
+//   BarElement,
+//   Title,
 //   Tooltip,
 //   Legend,
-//   ResponsiveContainer,
-// } from "recharts";
+// } from "chart.js";
+// import { Bar } from "react-chartjs-2";
+
+// // Register Chart.js components
+// ChartJS.register(
+//   CategoryScale,
+//   LinearScale,
+//   BarElement,
+//   Title,
+//   Tooltip,
+//   Legend
+// );
 
 // // Sub-components
 // import AssessmentForm from "./AssessmentForm";
 // import KeySuccessFactorsTable from "./KeySuccessFactorsTable";
 // import PreviousScoresTable from "./PreviousScoresTable";
-// import ScoreDetailsModal from "./ScoreDetailsModal";
-
-// // Tailwind classes for table & modal are in separate CSS or index.css
-// // We'll inline a bit at the bottom.
+// import ScoreDetailsModal from "./OperationsScoreDetailsModal";
 
 // function RaciOperations() {
 //   // Optional dark mode
-//   const [isDarkMode, setIsDarkMode] = useState(false);
 
-//   // If you have Redux storing employeeId:
-//   const employeeIdFromRedux = localStorage.getItem("employeeId")
+//   const employeeIdFromRedux = localStorage.getItem("employeeId");
 
-//   // We store metrics and key success factors in state
+//   // Metrics & Key Success Factors
 //   const initialMetrics = [
 //     {
 //       id: 1,
@@ -128,7 +81,8 @@
 //     },
 //     {
 //       id: 11,
-//       metric: "The quality of the documentation of our standard operating procedures?",
+//       metric:
+//         "The quality of the documentation of our standard operating procedures?",
 //       score: 0,
 //     },
 //     {
@@ -144,12 +98,14 @@
 //     { id: 14, metric: "The control of business inefficiencies?", score: 0 },
 //     {
 //       id: 15,
-//       metric: "Our ability to check at any time profit, sales, expenses and cash flow?",
+//       metric:
+//         "Our ability to check at any time profit, sales, expenses and cash flow?",
 //       score: 0,
 //     },
 //     {
 //       id: 16,
-//       metric: "Our understanding of the needs and perceptions of our Customers?",
+//       metric:
+//         "Our understanding of the needs and perceptions of our Customers?",
 //       score: 0,
 //     },
 //     { id: 17, metric: "Our database of customers and prospects?", score: 0 },
@@ -160,22 +116,26 @@
 //     },
 //     {
 //       id: 19,
-//       metric: "Our ability to deliver on time, on budget and with specified quality?",
+//       metric:
+//         "Our ability to deliver on time, on budget and with specified quality?",
 //       score: 0,
 //     },
 //     {
 //       id: 20,
-//       metric: "Our documentation of a clear vision and competitive advantage for the business?",
+//       metric:
+//         "Our documentation of a clear vision and competitive advantage for the business?",
 //       score: 0,
 //     },
 //     {
 //       id: 21,
-//       metric: "Our mechanism for benchmarking our systems against best practice?",
+//       metric:
+//         "Our mechanism for benchmarking our systems against best practice?",
 //       score: 0,
 //     },
 //     {
 //       id: 22,
-//       metric: "Our ability to record our sales per product, per market segment?",
+//       metric:
+//         "Our ability to record our sales per product, per market segment?",
 //       score: 0,
 //     },
 //     {
@@ -246,13 +206,53 @@
 //     customerService: [1, 4, 10, 16, 17, 19],
 //   };
 
-//   // Chart data for the Key Success Factors
+//   // Build chartData array (as you did for Recharts)
 //   const chartData = Object.keys(keySuccessFactors).map((factor) => ({
 //     name: factor,
-//     score: keySuccessFactors[factor] * 10, // convert to a 0-100 scale
+//     score: keySuccessFactors[factor] * 10, // convert factor (0-10) to (0-100) scale
 //   }));
 
-//   // Update metrics when user changes a dropdown
+//   // Construct Chart.js data and options
+//   const chartJsData = {
+//     labels: chartData.map((item) => item.name),
+//     datasets: [
+//       {
+//         label: "Score",
+//         data: chartData.map((item) => item.score),
+//         backgroundColor: "#8cc01d",
+//       },
+//     ],
+//   };
+
+//   const chartJsOptions = {
+//     responsive: true,
+//     scales: {
+//       y: {
+//         min: 0,
+//         max: 100,
+//       },
+//       x: {
+//         ticks: {
+//           // Rotate labels if desired
+//           maxRotation: 45,
+//           minRotation: 45,
+//         },
+//       },
+//     },
+//     plugins: {
+//       legend: {
+//         display: true,
+//       },
+//       tooltip: {
+//         // You can customize the tooltip if needed
+//       },
+//       title: {
+//         display: false, // or true if you'd like a title
+//       },
+//     },
+//   };
+
+//   // Handle dropdown changes in the assessment form
 //   const handleDropdownChange = (id, newScore) => {
 //     setMetrics((prev) =>
 //       prev.map((metric) =>
@@ -261,7 +261,7 @@
 //     );
 //   };
 
-//   // Calculate Key Success Factors whenever metrics change
+//   // Calculate Key Success Factors and overall score
 //   const calculateKeySuccessFactors = () => {
 //     const scoreById = {};
 //     metrics.forEach((m) => {
@@ -271,6 +271,10 @@
 
 //     const calcFactor = (sum, totalWeight) =>
 //       totalWeight === 0 ? 0 : sum / totalWeight;
+
+//     // -----------------------------
+//     // Example weighting logic below
+//     // -----------------------------
 
 //     // Business Planning
 //     const businessPlanningSum =
@@ -344,12 +348,7 @@
 
 //     // Reduction in Inefficiencies
 //     const reductionInInefficienciesSum =
-//       val(2) +
-//       val(5) +
-//       val(11) +
-//       val(14) * 1.5 +
-//       val(21) +
-//       val(23) * 1.5;
+//       val(2) + val(5) + val(11) + val(14) * 1.5 + val(21) + val(23) * 1.5;
 //     const reductionInInefficienciesTotalWeight = 7;
 //     const reductionInInefficiencies = calcFactor(
 //       reductionInInefficienciesSum,
@@ -365,6 +364,7 @@
 //       customerServiceTotalWeight
 //     );
 
+//     // Set updated factors
 //     const newFactors = {
 //       businessPlanning,
 //       leadership,
@@ -404,7 +404,8 @@
 //   // Save current scores to backend
 //   const saveScores = async () => {
 //     try {
-//       const employeeId = employeeIdFromRedux || localStorage.getItem("employeeId");
+//       const employeeId =
+//         employeeIdFromRedux || localStorage.getItem("employeeId");
 //       if (!employeeId) {
 //         alert("Employee ID is missing.");
 //         return;
@@ -433,7 +434,8 @@
 //   // Fetch previous scores from backend
 //   const fetchPreviousScores = async () => {
 //     try {
-//       const employeeId = localStorage.getItem("employeeId") || employeeIdFromRedux;
+//       const employeeId =
+//         localStorage.getItem("employeeId") || employeeIdFromRedux;
 //       if (!employeeId) {
 //         console.error("Employee ID is missing.");
 //         return;
@@ -457,11 +459,9 @@
 //   }, []);
 
 //   return (
-//     <div >
+//     <div>
 //       {/* Main container with tailwind classes for dark mode support */}
 //       <div className="min-h-screen bg-gray-100 dark:bg-gray-900 dark:text-white p-4">
-      
-
 //         <h1 className="text-2xl font-bold mb-6">
 //           RACI Operational KPI Assessment
 //         </h1>
@@ -479,7 +479,7 @@
 //           </div>
 
 //           {/* Right: Key Success Factors */}
-//           <div>
+//           <div className="sticky top-4">
 //             <KeySuccessFactorsTable keySuccessFactors={keySuccessFactors} />
 //           </div>
 //         </div>
@@ -504,20 +504,9 @@
 //             </select>
 //           </div>
 
+//           {/* CHART.JS Bar Chart */}
 //           <div style={{ width: "100%", height: 400 }}>
-//             <ResponsiveContainer>
-//               <BarChart
-//                 data={chartData}
-//                 margin={{ top: 5, right: 30, left: 20, bottom: 80 }}
-//               >
-//                 <CartesianGrid strokeDasharray="3 3" />
-//                 <XAxis dataKey="name" angle={-45} textAnchor="end" interval={0} />
-//                 <YAxis domain={[0, 100]} />
-//                 <Tooltip />
-//                 <Legend />
-//                 <Bar dataKey="score" fill="#8cc01d" />
-//               </BarChart>
-//             </ResponsiveContainer>
+//             <Bar data={chartJsData} options={chartJsOptions} />
 //           </div>
 //         </div>
 
@@ -556,6 +545,8 @@
 // export default RaciOperations;
 
 
+
+
 import { useState, useEffect } from "react";
 import axiosInstance from "../../../service/axiosInstance";
 
@@ -572,24 +563,16 @@ import {
 import { Bar } from "react-chartjs-2";
 
 // Register Chart.js components
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 // Sub-components
 import AssessmentForm from "./AssessmentForm";
 import KeySuccessFactorsTable from "./KeySuccessFactorsTable";
 import PreviousScoresTable from "./PreviousScoresTable";
-import ScoreDetailsModal from "./ScoreDetailsModal";
+import ScoreDetailsModal from "./OperationsScoreDetailsModal";
 
 function RaciOperations() {
   // Optional dark mode
-
   const employeeIdFromRedux = localStorage.getItem("employeeId");
 
   // Metrics & Key Success Factors
@@ -687,12 +670,14 @@ function RaciOperations() {
     },
     {
       id: 21,
-      metric: "Our mechanism for benchmarking our systems against best practice?",
+      metric:
+        "Our mechanism for benchmarking our systems against best practice?",
       score: 0,
     },
     {
       id: 22,
-      metric: "Our ability to record our sales per product, per market segment?",
+      metric:
+        "Our ability to record our sales per product, per market segment?",
       score: 0,
     },
     {
@@ -749,7 +734,7 @@ function RaciOperations() {
     { label: "Perfect", value: 10 },
   ];
 
-  // For highlighting certain rows if selectedFactor is chosen
+  // Highlight certain rows if selectedFactor is chosen
   const keySuccessFactorsMapping = {
     businessPlanning: [10, 11, 15, 16, 19, 20],
     leadership: [6, 8, 9, 16, 20, 21, 24],
@@ -763,10 +748,10 @@ function RaciOperations() {
     customerService: [1, 4, 10, 16, 17, 19],
   };
 
-  // Build chartData array (as you did for Recharts)
+  // Build chartData array
   const chartData = Object.keys(keySuccessFactors).map((factor) => ({
     name: factor,
-    score: keySuccessFactors[factor] * 10, // convert factor (0-10) to (0-100) scale
+    score: keySuccessFactors[factor] * 10, // convert (0-10) to (0-100)
   }));
 
   // Construct Chart.js data and options
@@ -790,7 +775,6 @@ function RaciOperations() {
       },
       x: {
         ticks: {
-          // Rotate labels if desired
           maxRotation: 45,
           minRotation: 45,
         },
@@ -800,16 +784,13 @@ function RaciOperations() {
       legend: {
         display: true,
       },
-      tooltip: {
-        // You can customize the tooltip if needed
-      },
       title: {
-        display: false, // or true if you'd like a title
+        display: false,
       },
     },
   };
 
-  // Handle dropdown changes in the assessment form
+  // Handle dropdown changes
   const handleDropdownChange = (id, newScore) => {
     setMetrics((prev) =>
       prev.map((metric) =>
@@ -828,10 +809,6 @@ function RaciOperations() {
 
     const calcFactor = (sum, totalWeight) =>
       totalWeight === 0 ? 0 : sum / totalWeight;
-
-    // -----------------------------
-    // Example weighting logic below
-    // -----------------------------
 
     // Business Planning
     const businessPlanningSum =
@@ -859,13 +836,7 @@ function RaciOperations() {
 
     // Marketing
     const marketingSum =
-      val(1) +
-      val(4) +
-      val(7) +
-      val(12) +
-      val(16) +
-      val(17) * 1.5 +
-      val(22);
+      val(1) + val(4) + val(7) + val(12) + val(16) + val(17) * 1.5 + val(22);
     const marketingTotalWeight = 7.5;
     const marketing = calcFactor(marketingSum, marketingTotalWeight);
 
@@ -911,12 +882,7 @@ function RaciOperations() {
 
     // Reduction in Inefficiencies
     const reductionInInefficienciesSum =
-      val(2) +
-      val(5) +
-      val(11) +
-      val(14) * 1.5 +
-      val(21) +
-      val(23) * 1.5;
+      val(2) + val(5) + val(11) + val(14) * 1.5 + val(21) + val(23) * 1.5;
     const reductionInInefficienciesTotalWeight = 7;
     const reductionInInefficiencies = calcFactor(
       reductionInInefficienciesSum,
@@ -925,19 +891,14 @@ function RaciOperations() {
 
     // Customer Service
     const customerServiceSum =
-      val(1) +
-      val(4) +
-      val(10) +
-      val(16) * 1.5 +
-      val(17) +
-      val(19) * 1.5;
+      val(1) + val(4) + val(10) + val(16) * 1.5 + val(17) + val(19) * 1.5;
     const customerServiceTotalWeight = 7;
     const customerService = calcFactor(
       customerServiceSum,
       customerServiceTotalWeight
     );
 
-    // Set updated factors
+    // Update all factors
     const newFactors = {
       businessPlanning,
       leadership,
@@ -1030,87 +991,90 @@ function RaciOperations() {
   }, []);
 
   return (
-    <div>
-      {/* Main container with tailwind classes for dark mode support */}
-      <div className="min-h-screen bg-gray-100 dark:bg-gray-900 dark:text-white p-4">
-        <h1 className="text-2xl font-bold mb-6">
-          RACI Operational KPI Assessment
-        </h1>
+    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 dark:text-white p-4">
+      <h1 className="text-2xl font-bold mb-6">
+        RACI Operational KPI Assessment
+      </h1>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* Left: AssessmentForm */}
-          <div className="col-span-2">
-            <AssessmentForm
-              metrics={metrics}
-              scoreOptions={scoreOptions}
-              handleDropdownChange={handleDropdownChange}
-              selectedFactor={selectedFactor}
-              keySuccessFactorsMapping={keySuccessFactorsMapping}
-            />
-          </div>
+      {/* Main 3-column layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* Left/Center: Assessment Form (col-span-2) */}
+        <div className="col-span-2">
+          <AssessmentForm
+            metrics={metrics}
+            scoreOptions={scoreOptions}
+            handleDropdownChange={handleDropdownChange}
+            selectedFactor={selectedFactor}
+            keySuccessFactorsMapping={keySuccessFactorsMapping}
+          />
+        </div>
 
-          {/* Right: Key Success Factors */}
-          <div>
+        {/* Right: Sticky Key Success Factors */}
+        <div className="space-y-4">
+          <div className="sticky top-4">
             <KeySuccessFactorsTable keySuccessFactors={keySuccessFactors} />
           </div>
         </div>
-
-        {/* Chart + Factor Selection */}
-        <div className="mt-8 p-4 border rounded dark:border-gray-700 dark:bg-gray-800">
-          <h2 className="text-xl font-semibold mb-4">
-            Key Success Factors Graph
-          </h2>
-          <div className="mb-4">
-            <select
-              className="border px-2 py-1 rounded dark:bg-gray-700"
-              value={selectedFactor}
-              onChange={(e) => setSelectedFactor(e.target.value)}
-            >
-              <option value="">--Select a Key Success Factor--</option>
-              {Object.keys(keySuccessFactors).map((factor) => (
-                <option key={factor} value={factor}>
-                  {factor}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* CHART.JS Bar Chart */}
-          <div style={{ width: "100%", height: 400 }}>
-            <Bar data={chartJsData} options={chartJsOptions} />
-          </div>
-        </div>
-
-        {/* Overall Score */}
-        <h2 className="mt-6 text-lg font-medium">
-          Overall Score: {(overallScore * 10).toFixed(2)}%
-        </h2>
-
-        {/* Save Scores Button & Previous Scores */}
-        <div className="my-6">
-          <button
-            onClick={saveScores}
-            className="px-4 py-2 bg-green-500 text-white rounded mr-4"
-          >
-            Save Scores
-          </button>
-        </div>
-
-        <PreviousScoresTable
-          previousScores={previousScores}
-          setSelectedScore={setSelectedScore}
-        />
-
-        {/* Modal for Score Details */}
-        {selectedScore && (
-          <ScoreDetailsModal
-            selectedScore={selectedScore}
-            onClose={() => setSelectedScore(null)}
-          />
-        )}
       </div>
+
+      {/* Chart + Factor Selection */}
+      <div className="mt-8 p-4 border rounded dark:border-gray-700 dark:bg-gray-800">
+        <h2 className="text-xl font-semibold mb-4">
+          Key Success Factors Graph
+        </h2>
+        <div className="mb-4">
+          <select
+            className="border px-2 py-1 rounded dark:bg-gray-700"
+            value={selectedFactor}
+            onChange={(e) => setSelectedFactor(e.target.value)}
+          >
+            <option value="">--Select a Key Success Factor--</option>
+            {Object.keys(keySuccessFactors).map((factor) => (
+              <option key={factor} value={factor}>
+                {factor}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* CHART.JS Bar Chart */}
+        <div style={{ width: "100%", height: 400 }}>
+          <Bar data={chartJsData} options={chartJsOptions} />
+        </div>
+      </div>
+
+      {/* Overall Score */}
+      <h2 className="mt-6 text-lg font-medium">
+        Overall Score: {(overallScore * 10).toFixed(2)}%
+      </h2>
+
+      {/* Save Scores Button */}
+      <div className="my-6">
+        <button
+          onClick={saveScores}
+          className="px-4 py-2 bg-green-500 text-white rounded mr-4"
+        >
+          Save Scores
+        </button>
+      </div>
+
+      {/* Previous Scores Table */}
+      <PreviousScoresTable
+        previousScores={previousScores}
+        setSelectedScore={setSelectedScore}
+      />
+
+      {/* Modal for Score Details */}
+      {selectedScore && (
+        <ScoreDetailsModal
+          selectedScore={selectedScore}
+          onClose={() => setSelectedScore(null)}
+        />
+      )}
     </div>
   );
 }
 
 export default RaciOperations;
+
+
