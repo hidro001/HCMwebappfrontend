@@ -268,23 +268,7 @@ export default function RecruitDashboard() {
           )}
 
           {/* Right: Top Hiring Sources (Bar Chart) */}
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 flex flex-col">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="font-semibold text-gray-800 dark:text-gray-100">
-                Top Hiring Sources
-              </h2>
-              {/* <span className="text-sm text-gray-500 dark:text-gray-400">
-                Nov. 01 – 07
-              </span> */}
-            </div>
-            <div className="flex-grow relative h-56 flex items-center justify-center">
-              {hasHiringData ? (
-                <Bar data={topHiringData} options={topHiringOptions} />
-              ) : (
-                <p className="text-gray-500">No hiring sources data.</p>
-              )}
-            </div>
-          </div>
+        
         </div>
 
         {/* ------------- BOTTOM ROW: Vacancies Table + Departments ------------- */}
