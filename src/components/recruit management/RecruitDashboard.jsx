@@ -35,6 +35,28 @@ ChartJS.register(
 
 /* ---------------- STYLES FOR DEPARTMENTS ---------------- */
 const departmentStyles = {
+  IT: {
+    bg: "bg-indigo-50 dark:bg-indigo-900",
+    text: "text-gray-800 dark:text-gray-100",
+    circle: "bg-gray-200 dark:bg-gray-700",
+    pillBg: "bg-indigo-500 dark:bg-indigo-500",
+    pillText: "text-white",
+  },
+  Sales: {
+    bg: "bg-orange-50 dark:bg-orange-900",
+    text: "text-gray-800 dark:text-gray-100",
+    circle: "bg-gray-200 dark:bg-gray-700",
+    pillBg: "bg-green-500 dark:bg-green-500",
+    pillText: "text-white",
+  },
+  Hr: {
+    bg: "bg-cyan-50 dark:bg-cyan-900",
+    text: "text-gray-800 dark:text-gray-100",
+    circle: "bg-gray-200 dark:bg-gray-700",
+    pillBg: "bg-cyan-500 dark:bg-cyan-500",
+    pillText: "text-white",
+  },
+  // Optional: retain the other mappings if needed
   Development: {
     bg: "bg-purple-50 dark:bg-purple-900",
     text: "text-gray-800 dark:text-gray-100",
@@ -138,11 +160,11 @@ export default function RecruitDashboard() {
       // 1) Overview
       const overviewRes = await fetchOverview();
       if (overviewRes?.data) {
-        const { openPositions, applicants, outstandingOffers, onboarding } =
+        const { openPositions, applicants, pendingPositions, onboarding } =
           overviewRes.data;
         setOpenPositions(openPositions || 0);
         setApplicants(applicants || 0);
-        setOutstandingOffers(outstandingOffers || 0);
+        setOutstandingOffers(pendingPositions || 0);
         setOnboarding(onboarding || 0);
       }
 
@@ -231,7 +253,7 @@ export default function RecruitDashboard() {
               <div className="rounded-lg p-4 bg-blue-50 dark:bg-blue-900 shadow flex flex-col justify-center">
                 <div className="text-3xl font-bold mb-1">{outstandingOffers}</div>
                 <div className="text-gray-600 dark:text-gray-300">
-                  Outstanding Offers
+                  Pending Position
                 </div>
               </div>
 
@@ -251,9 +273,9 @@ export default function RecruitDashboard() {
               <h2 className="font-semibold text-gray-800 dark:text-gray-100">
                 Top Hiring Sources
               </h2>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
+              {/* <span className="text-sm text-gray-500 dark:text-gray-400">
                 Nov. 01 – 07
-              </span>
+              </span> */}
             </div>
             <div className="flex-grow relative h-56 flex items-center justify-center">
               {hasHiringData ? (
@@ -273,9 +295,9 @@ export default function RecruitDashboard() {
               <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                 Recent Vacancies
               </h2>
-              <button className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
+              {/* <button className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
                 All Vacancies
-              </button>
+              </button> */}
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-gray-700 dark:text-gray-200">
@@ -309,12 +331,12 @@ export default function RecruitDashboard() {
                           <MiniSparkline data={vac.sparkData || []} />
                         </td>
                         <td className="py-3 text-right">
-                          <button
+                          {/* <button
                             className="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 p-1"
                             title="More actions"
                           >
                             <BsThreeDotsVertical />
-                          </button>
+                          </button> */}
                         </td>
                       </tr>
                     ))
@@ -332,57 +354,58 @@ export default function RecruitDashboard() {
 
           {/* Departments List */}
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="font-semibold text-gray-800 dark:text-gray-100">
-                Departments
-              </h2>
-              <span className="text-sm text-gray-500 dark:text-gray-400">
-                Sep. 01 – 07
-              </span>
-            </div>
-            {hasDepartmentsData ? (
-              <div className="space-y-3">
-                {departments.map((dept, i) => {
-                  const styles = departmentStyles[dept.name] || {
-                    bg: "bg-gray-100 dark:bg-gray-800",
-                    text: "text-gray-800 dark:text-gray-100",
-                    circle: "bg-gray-200 dark:bg-gray-600",
-                    pillBg: "bg-gray-300 dark:bg-gray-700",
-                    pillText: "text-gray-700 dark:text-gray-100",
-                  };
-                  return (
-                    <div
-                      key={i}
-                      className={`flex items-center justify-between p-4 rounded-xl ${styles.bg}`}
-                    >
-                      <span className={`font-medium ${styles.text}`}>
-                        {dept.name}
-                      </span>
-                      <div className="flex items-center space-x-2">
-                        <div className="relative w-10 h-7">
-                          <div
-                            className={`absolute w-7 h-7 rounded-full top-0 left-0 ${styles.circle}`}
-                          />
-                          <div
-                            className={`absolute w-7 h-7 rounded-full top-0 left-3 ${styles.circle}`}
-                          />
-                        </div>
-                        {dept.newCount > 0 && (
-                          <span
-                            className={`px-2 py-1 text-xs font-medium rounded-full ${styles.pillBg} ${styles.pillText}`}
-                          >
-                            +{dept.newCount} new
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
+  <div className="flex items-center justify-between mb-3">
+    <h2 className="font-semibold text-gray-800 dark:text-gray-100">
+      Departments
+    </h2>
+    {/* <span className="text-sm text-gray-500 dark:text-gray-400">
+      Sep. 01 – 07
+    </span> */}
+  </div>
+  {hasDepartmentsData ? (
+    <div className="space-y-3">
+      {departments.map((dept, i) => {
+        const styles = departmentStyles[dept.department] || {
+          bg: "bg-gray-100 dark:bg-gray-800",
+          text: "text-gray-800 dark:text-gray-100",
+          circle: "bg-gray-200 dark:bg-gray-600",
+          pillBg: "bg-gray-300 dark:bg-gray-700",
+          pillText: "text-gray-700 dark:text-gray-100",
+        };
+        return (
+          <div
+            key={i}
+            className={`flex items-center justify-between p-4 rounded-xl ${styles.bg}`}
+          >
+            <span className={`font-medium ${styles.text}`}>
+              {dept.department}
+            </span>
+            <div className="flex items-center space-x-2">
+              <div className="relative w-10 h-7">
+                <div
+                  className={`absolute w-7 h-7 rounded-full top-0 left-0 ${styles.circle}`}
+                />
+                <div
+                  className={`absolute w-7 h-7 rounded-full top-0 left-3 ${styles.circle}`}
+                />
               </div>
-            ) : (
-              <p className="text-gray-500">No departments data found.</p>
-            )}
+              {dept.count > 0 && (
+                <span
+                  className={`px-2 py-1 text-xs font-medium rounded-full ${styles.pillBg} ${styles.pillText}`}
+                >
+                  +{dept.count} new
+                </span>
+              )}
+            </div>
           </div>
+        );
+      })}
+    </div>
+  ) : (
+    <p className="text-gray-500">No departments data found.</p>
+  )}
+</div>
+
         </div>
       </div>
     </div>
