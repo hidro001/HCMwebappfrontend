@@ -121,14 +121,14 @@ export default function CreateVacancy() {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-6">
           <h1 className="text-2xl font-semibold mb-4 md:mb-0 dark:text-white">Create Vacancy</h1>
           <div className="space-x-2">
-            <button
+            {/* <button
               type="button"
               className="px-4 py-2 rounded border border-gray-300 text-gray-700
                        hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200
                        dark:hover:bg-gray-800"
             >
               Cancel
-            </button>
+            </button> */}
             <button
               type="submit"
               form="createVacancyForm"
