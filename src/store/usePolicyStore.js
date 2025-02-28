@@ -64,6 +64,34 @@ const usePolicyStore = create((set, get) => ({
       toast.error("Failed to delete policy.");
     }
   },
+
+   // Update existing policy
+   updatePolicy: async (id, updatedData) => {
+    set({ loading: true });
+    try {
+      const formData = new FormData();
+      Object.keys(updatedData).forEach((key) => {
+        if (updatedData[key] !== undefined && updatedData[key] !== null) {
+          formData.append(key, updatedData[key]);
+        }
+      });
+      const response = await axiosInstance.put(`/policy-new/${id}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      set((state) => ({
+        policies: state.policies.map((p) =>
+          p._id === id ? response.data : p
+        ),
+        loading: false,
+      }));
+      toast.success("Policy updated successfully!");
+    } catch (error) {
+      set({ error: error.message, loading: false });
+      toast.error("Failed to update policy.");
+    }
+  },
+
 }));
 
 export default usePolicyStore;

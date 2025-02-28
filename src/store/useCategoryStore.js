@@ -74,6 +74,7 @@ const useCategoryStore = create(
           set({ loading: false });
         }
       },
+      
     }),
     {
       name: "category-storage",

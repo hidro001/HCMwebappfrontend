@@ -1,37 +1,17 @@
-
-
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import { FiPlus, FiDownload, FiTrash } from "react-icons/fi";
 import useInductionPPTStore from "../../store/useInductionPPTStore";
 
-
 export default function CompanyInductionView() {
-  // Local state for the PPT modal
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [pptName, setPptName] = useState("");
-  const [department, setDepartment] = useState("");
-  const [file, setFile] = useState(null);
-  const [coverImage, setCoverImage] = useState(null);
-
-  // Local state for the delete confirmation dialog
-  const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false);
-  const [pptToDelete, setPptToDelete] = useState(null);
-
   // Use the induction PPT store
-  const { pptList, fetchPPTsUser, createPPT, deletePPT } = useInductionPPTStore();
+  const { pptList, fetchPPTsUser,  } =
+    useInductionPPTStore();
 
   useEffect(() => {
     fetchPPTsUser();
   }, []);
-
-  // Submit handler for the modal form
- 
-
-  // Instead of using window.confirm, we set the PPT ID to delete and open the confirmation dialog
- 
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-8">
@@ -40,7 +20,6 @@ export default function CompanyInductionView() {
         <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
           All Induction PPT&apos;s
         </h1>
-    
       </div>
 
       {/* Grid of PPT cards */}
@@ -61,7 +40,7 @@ export default function CompanyInductionView() {
                 {item.pptName}
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-300 mb-4">
-                {item.department}
+                {item.department && item.allDepartment===false ? item.department : "All Departments"}
               </p>
               <div className="flex justify-between">
                 <motion.button
@@ -77,14 +56,11 @@ export default function CompanyInductionView() {
                     View PPT
                   </a>
                 </motion.button>
-          
               </div>
             </div>
           </motion.div>
         ))}
       </div>
-
-    
     </div>
   );
 }
