@@ -863,7 +863,7 @@ export default function EmployeeFullAttendance() {
           </div>
 
           {/* Example filter dropdown */}
-          <div>
+          {/* <div>
             <select
               className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700
                          dark:text-gray-200 rounded-md py-1 px-2 text-sm focus:outline-none"
@@ -872,7 +872,7 @@ export default function EmployeeFullAttendance() {
               <option>Late</option>
               <option>Early Out</option>
             </select>
-          </div>
+          </div> */}
         </div>
 
         {/* Right group: Search + ExportButtons */}
