@@ -46,9 +46,9 @@ import CompanyPoliciesPage from "./company setting/CompanyPoliciesPage";
 import CompanyInductionPage from "./company setting/CompanyInductionPage";
 import BreakSettingsPage from "./company setting/BreakSettingsPage";
 import PerformanceManagementDashboardPage from "./performance management/PerformanceManagementDashboardPage";
-import PostAndViewPerformersPage from "./performance management/PostAndViewPerformersPage";
 import SetKpiForDesignationPage from "./performance management/SetKpiForDesignationPage";
 import TeamsPerformancePage from "./performance management/TeamsPerformancePage";
+
 import AllEmpRatingsPage from "./performance management/AllEmpRatingsPage";
 import RaciDashboardPage from "./raci management/RaciDashboardPage";
 import RaciBusinessPage from "./raci management/RaciBusinessPage";
@@ -85,6 +85,9 @@ import TrainingMaterialsPage from "./Policies-Induction/TrainingMaterialsPage";
 import AdminPanelTrainingPage from "./Policies-Induction/AdminPanelTrainingPage";
 import EmployeeTreemapPage from "./Org Chart/EmployeeTreemapPage";
 import RequestDashboardPage from "./attendence management/RequestDashboardPage";
+import PostPerformerPage from "./performance management/PostPerformerPage";
+import ViewPerformerPage from "./performance management/ViewPerformerPage";
+
 
 
 export {
@@ -133,8 +136,10 @@ export {
   CompanyInductionPage,
   BreakSettingsPage,
   PerformanceManagementDashboardPage,
-  PostAndViewPerformersPage,
+ 
   SetKpiForDesignationPage,
+  PostPerformerPage,
+  ViewPerformerPage,
   TeamsPerformancePage,
   AllEmpRatingsPage,
   RaciDashboardPage,

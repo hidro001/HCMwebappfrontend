@@ -379,9 +379,14 @@ export const menuItems = [
         permission: "MainPerformanceManagement",
       },
       {
-        name: "Top Performers",
-        link: "/dashboard/top-performers",
+        name: "Post Top Performer",
+        link: "/dashboard/post-top-performers",
         permission: "postTopPerformer",
+      },
+      {
+        name: "View Top Performers",
+        link: "/dashboard/top-performers",
+        permission: "viewTopPerformers",
       },
       {
         name: "Set KPIs",
