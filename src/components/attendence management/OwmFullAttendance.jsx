@@ -1,5 +1,3 @@
-
-
 // import React, { useEffect, useState } from "react";
 // import { motion } from "framer-motion";
 // import {
@@ -15,7 +13,7 @@
 // // 1) Pull in relevant parts of your Zustand store:
 // import { useOwnFullAttendanceStore } from "../../store/useOwnFullAttendanceStore";
 
-// /* 
+// /*
 //   2) Local helper: getAllDaysInMonth pinned to midday to avoid time-zone drift.
 //      This returns an array of Date objects for every day in the specified year-month.
 // */
@@ -30,7 +28,7 @@
 //   return days;
 // }
 
-// /* 
+// /*
 //   3) Local helpers for converting 12-hour times and calculating hours worked.
 // */
 // function convertTo24Hour(timeString) {
@@ -335,7 +333,7 @@
 
 //       {/* Top controls row */}
 //       <motion.div
-//         className="flex flex-col md:flex-row items-start md:items-center justify-between 
+//         className="flex flex-col md:flex-row items-start md:items-center justify-between
 //                    bg-white dark:bg-gray-800 rounded-md shadow px-4 py-3 mb-6 gap-4"
 //         initial={{ scale: 0.8, opacity: 0 }}
 //         animate={{ scale: 1, opacity: 1 }}
@@ -365,7 +363,7 @@
 //               type="month"
 //               value={selectedMonth}
 //               onChange={handleMonthChange}
-//               className="border border-gray-300 dark:border-gray-600 rounded-md py-1 px-2 text-sm 
+//               className="border border-gray-300 dark:border-gray-600 rounded-md py-1 px-2 text-sm
 //                          text-gray-700 dark:text-gray-200
 //                          bg-white dark:bg-gray-700 focus:outline-none"
 //             />
@@ -397,7 +395,7 @@
 //                          rounded-md py-1 px-3 pr-8 text-sm focus:outline-none"
 //             />
 //             <FiSearch
-//               className="absolute right-2 top-1/2 -translate-y-1/2 
+//               className="absolute right-2 top-1/2 -translate-y-1/2
 //                          text-gray-400 dark:text-gray-400"
 //               size={16}
 //             />
@@ -486,7 +484,7 @@
 
 //           {/* Pagination */}
 //           <motion.div
-//             className="flex flex-col sm:flex-row items-center justify-between mt-3 text-sm 
+//             className="flex flex-col sm:flex-row items-center justify-between mt-3 text-sm
 //                        text-gray-500 dark:text-gray-400"
 //             initial={{ opacity: 0, y: 10 }}
 //             animate={{ opacity: 1, y: 0 }}
@@ -499,7 +497,7 @@
 //             <div className="space-x-1">
 //               <button
 //                 onClick={() => goToPage(safeCurrentPage - 1)}
-//                 className="py-1 px-2 border border-gray-300 dark:border-gray-600 rounded 
+//                 className="py-1 px-2 border border-gray-300 dark:border-gray-600 rounded
 //                            text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
 //               >
 //                 &lt;
@@ -508,7 +506,7 @@
 //                 <button
 //                   key={i}
 //                   onClick={() => goToPage(i + 1)}
-//                   className={`py-1 px-2 border border-gray-300 dark:border-gray-600 rounded 
+//                   className={`py-1 px-2 border border-gray-300 dark:border-gray-600 rounded
 //                     ${
 //                       safeCurrentPage === i + 1
 //                         ? "bg-blue-500 text-white"
@@ -520,7 +518,7 @@
 //               ))}
 //               <button
 //                 onClick={() => goToPage(safeCurrentPage + 1)}
-//                 className="py-1 px-2 border border-gray-300 dark:border-gray-600 rounded 
+//                 className="py-1 px-2 border border-gray-300 dark:border-gray-600 rounded
 //                            text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
 //               >
 //                 &gt;
@@ -552,8 +550,8 @@
 //               >
 //                 <div className="flex items-center space-x-2">
 //                   <span
-//                     className={`inline-flex items-center justify-center 
-//                       w-6 h-6 text-xs font-bold rounded-full 
+//                     className={`inline-flex items-center justify-center
+//                       w-6 h-6 text-xs font-bold rounded-full
 //                       ${item.bg} ${item.text}`}
 //                   >
 //                     {item.short}
@@ -603,8 +601,6 @@
 //   ];
 //   return monthNames[m - 1] || "Unknown";
 // }
-
-
 
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -706,11 +702,15 @@ export default function OwmFullAttendance() {
   // ----------------------------------------------------
   // Grab needed data/actions from the store (Unchanged):
   // ----------------------------------------------------
-  const fetchAttendanceData = useOwnFullAttendanceStore((s) => s.fetchAttendanceData);
+  const fetchAttendanceData = useOwnFullAttendanceStore(
+    (s) => s.fetchAttendanceData
+  );
   const attendanceData = useOwnFullAttendanceStore((s) => s.attendanceData);
   const approvedLeaves = useOwnFullAttendanceStore((s) => s.approvedLeaves);
   const companySettings = useOwnFullAttendanceStore((s) => s.companySettings);
-  const leaveSystemDetails = useOwnFullAttendanceStore((s) => s.leaveSystemDetails);
+  const leaveSystemDetails = useOwnFullAttendanceStore(
+    (s) => s.leaveSystemDetails
+  );
   const getSummaryStats = useOwnFullAttendanceStore((s) => s.getSummaryStats);
   const generatePDF = useOwnFullAttendanceStore((s) => s.generatePDF);
   const userProfileData = useOwnFullAttendanceStore((s) => s.userProfileData);
@@ -770,7 +770,8 @@ export default function OwmFullAttendance() {
     const isHoliday = companySettings?.holidays?.some(
       (h) => new Date(h.date).toISOString().split("T")[0] === formatted
     );
-    const isWorkingDay = leaveSystemDetails?.workingDays?.includes(dayName) ?? false;
+    const isWorkingDay =
+      leaveSystemDetails?.workingDays?.includes(dayName) ?? false;
     const isApprovedLeave = approvedLeaveDates.has(formatted);
 
     if (isApprovedLeave) {
@@ -823,7 +824,9 @@ export default function OwmFullAttendance() {
 
   // Filter by search (Unchanged)
   const filteredData = finalAttendanceData.filter((item) => {
-    const combined = `${item.date} ${item.day} ${item.status}`.toLowerCase().trim();
+    const combined = `${item.date} ${item.day} ${item.status}`
+      .toLowerCase()
+      .trim();
     return combined.includes(searchText.toLowerCase().trim());
   });
 
@@ -879,8 +882,9 @@ export default function OwmFullAttendance() {
   }
 
   const empName =
-    `${userProfileData?.first_Name || ""} ${userProfileData?.last_Name || ""}`.trim() ||
-    "Unknown Name";
+    `${userProfileData?.first_Name || ""} ${
+      userProfileData?.last_Name || ""
+    }`.trim() || "Unknown Name";
   const empCode = userProfileData?.employee_Id || "N/A";
 
   // Status badge styling (Unchanged)
@@ -916,7 +920,9 @@ export default function OwmFullAttendance() {
       }
     }
     return (
-      <span className={`px-2 py-1 text-sm rounded-md font-medium ${bgColor} ${textColor}`}>
+      <span
+        className={`px-2 py-1 text-sm rounded-md font-medium ${bgColor} ${textColor}`}
+      >
         {status || "------"}
       </span>
     );
@@ -1014,22 +1020,20 @@ export default function OwmFullAttendance() {
             className="p-2 rounded bg-green-100 dark:bg-green-900 hover:bg-green-200 dark:hover:bg-green-800"
             onClick={() => window.print()}
           >
-            <FiPrinter className="text-green-600 dark:text-green-100" size={16} />
+            <FiPrinter
+              className="text-green-600 dark:text-green-100"
+              size={16}
+            />
           </button>
 
           <button
             className="p-2 rounded bg-pink-100 dark:bg-pink-900 hover:bg-pink-200 dark:hover:bg-pink-800"
             onClick={onRequestPDF}
           >
-            <FiDownload className="text-pink-600 dark:text-pink-100" size={16} />
-          </button>
-
-          <button className="p-2 rounded bg-purple-100 dark:bg-purple-900 hover:bg-purple-200 dark:hover:bg-purple-800">
-            <FiFileText className="text-purple-600 dark:text-purple-100" size={16} />
-          </button>
-
-          <button className="p-2 rounded bg-orange-100 dark:bg-orange-900 hover:bg-orange-200 dark:hover:bg-orange-800">
-            <FiSettings className="text-orange-600 dark:text-orange-100" size={16} />
+            <FiDownload
+              className="text-pink-600 dark:text-pink-100"
+              size={16}
+            />
           </button>
         </div>
       </motion.div>
@@ -1075,7 +1079,9 @@ export default function OwmFullAttendance() {
                     <td className="py-3 px-4">{item.logInTime}</td>
                     <td className="py-3 px-4">{item.logOutTime}</td>
                     <td className="py-3 px-4">{item.totalBreak}</td>
-                    <td className="py-3 px-4">{renderStatusBadge(item.status)}</td>
+                    <td className="py-3 px-4">
+                      {renderStatusBadge(item.status)}
+                    </td>
                   </tr>
                 ))}
                 {displayedData.length === 0 && (
