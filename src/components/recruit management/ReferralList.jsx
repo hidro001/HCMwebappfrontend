@@ -1,7 +1,8 @@
+
+
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaEye, FaEdit, FaTrash, FaPrint, FaFilePdf } from "react-icons/fa";
-import { MdOutlineFileDownload } from "react-icons/md";
+import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { Skeleton } from "@mui/material";
@@ -40,9 +41,13 @@ export default function ReferralList() {
     fetchAllReferrals();
   }, [fetchAllReferrals]);
 
+  // -----------------------------------------
+  // Filter logic to match month-year + search + department
+  // -----------------------------------------
   const filteredReferrals = useMemo(() => {
     if (!referrals) return [];
     return referrals.filter((item) => {
+      // 1) Match search text
       if (searchText) {
         const matchDesignation = item.designation
           .toLowerCase()
@@ -50,20 +55,36 @@ export default function ReferralList() {
         const matchCandidate = item.candidateName
           .toLowerCase()
           .includes(searchText.toLowerCase());
+        // If neither matches, exclude
         if (!matchDesignation && !matchCandidate) return false;
       }
+
+      // 2) Match department
       if (department !== "All" && item.department !== department) return false;
+
+      // 3) Match selected month-year from DatePicker
+      //    We'll compare only the month & year of `item.createdAt` to selectedDate
       if (selectedDate) {
-        const itemDate = new Date(2025, 0, 1).setHours(0, 0, 0, 0);
-        const filterDate = selectedDate.setHours(0, 0, 0, 0);
-        if (itemDate !== filterDate) return false;
+        const createdAt = new Date(item.createdAt);
+        const selectedMonth = selectedDate.getMonth();
+        const selectedYear = selectedDate.getFullYear();
+
+        if (
+          createdAt.getMonth() !== selectedMonth ||
+          createdAt.getFullYear() !== selectedYear
+        ) {
+          return false;
+        }
       }
+
       return true;
     });
   }, [referrals, searchText, department, selectedDate]);
 
+  // -----------------------------------------
+  // Pagination
+  // -----------------------------------------
   const totalPages = Math.ceil(filteredReferrals.length / pageSize);
-
   const currentTableData = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
     return filteredReferrals.slice(startIndex, startIndex + pageSize);
@@ -73,6 +94,9 @@ export default function ReferralList() {
     setCurrentPage(page);
   };
 
+  // -----------------------------------------
+  // Modals
+  // -----------------------------------------
   const handleOpenViewModal = (referral) => {
     setSelectedReferral(referral);
     setIsViewModalOpen(true);
@@ -95,7 +119,9 @@ export default function ReferralList() {
     }
   };
 
-  // Flatten currentTableData for export
+  // -----------------------------------------
+  // Data for PDF/Excel/CSV exports
+  // -----------------------------------------
   const exportData = currentTableData.map((item, index) => {
     const rowIndex = (currentPage - 1) * pageSize + (index + 1);
     return {
@@ -107,10 +133,15 @@ export default function ReferralList() {
       candidateEmail: item.candidateEmail,
       candidateLocation: item.candidateLocation,
       status: item.status,
+      // If you want to include the date in your export as well:
+      createdAt: new Date(item.createdAt).toLocaleDateString("en-US", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
     };
   });
 
-  // Define columns for PDF/Excel/CSV
   const columns = [
     { header: "S.L", dataKey: "sl" },
     { header: "Designation", dataKey: "designation" },
@@ -120,6 +151,7 @@ export default function ReferralList() {
     { header: "Candidate Email", dataKey: "candidateEmail" },
     { header: "Candidate Location", dataKey: "candidateLocation" },
     { header: "Status", dataKey: "status" },
+    { header: "Created On", dataKey: "createdAt" }, // optional in your export
   ];
 
   return (
@@ -127,12 +159,13 @@ export default function ReferralList() {
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-semibold">Referral List</h1>
       </div>
+
+      {/* Filters */}
       <div className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-gray-800 p-4 rounded-md shadow mb-4 transition-colors">
         <div className="flex items-center gap-4">
+          {/* Page Size */}
           <div className="flex items-center gap-2">
-            <label className="text-sm font-semibold whitespace-nowrap">
-              Show
-            </label>
+            <label className="text-sm font-semibold whitespace-nowrap">Show</label>
             <select
               className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
               value={pageSize}
@@ -146,6 +179,8 @@ export default function ReferralList() {
               <option value={20}>20</option>
             </select>
           </div>
+
+          {/* Search */}
           <div>
             <input
               type="text"
@@ -159,7 +194,10 @@ export default function ReferralList() {
             />
           </div>
         </div>
+
+        {/* Date + Dept + Export */}
         <div className="flex flex-wrap items-center gap-4">
+          {/* Month-Year Picker */}
           <DatePicker
             selected={selectedDate}
             onChange={(date) => {
@@ -168,9 +206,11 @@ export default function ReferralList() {
             }}
             dateFormat="MMM yyyy"
             showMonthYearPicker
-            placeholderText="JAN 2025"
+            placeholderText="Select Month, Year"
             className="border rounded px-3 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
           />
+
+          {/* Department */}
           <select
             className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
             value={department}
@@ -183,6 +223,8 @@ export default function ReferralList() {
             <option value="IT">IT</option>
             <option value="Marketing">Marketing</option>
           </select>
+
+          {/* Export Buttons (PDF, CSV, Excel) */}
           <div className="flex items-center gap-2 text-gray-500 dark:text-gray-300">
             <ExportButtons
               data={exportData}
@@ -192,9 +234,13 @@ export default function ReferralList() {
           </div>
         </div>
       </div>
+
+      {/* Error handling */}
       {error && (
         <div className="bg-red-100 text-red-800 p-3 rounded mb-4">{error}</div>
       )}
+
+      {/* Table */}
       {loading ? (
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow transition-colors">
           {Array.from({ length: pageSize }).map((_, index) => (
@@ -221,6 +267,10 @@ export default function ReferralList() {
                     <th className="p-3 text-sm font-semibold">S.L</th>
                     <th className="p-3 text-sm font-semibold">Designation</th>
                     <th className="p-3 text-sm font-semibold">Department</th>
+
+                    {/* NEW COLUMN: "Referral Date" */}
+                    <th className="p-3 text-sm font-semibold">Created On</th>
+
                     <th className="p-3 text-sm font-semibold">Referred By</th>
                     <th className="p-3 text-sm font-semibold">
                       Candidate Name
@@ -238,6 +288,8 @@ export default function ReferralList() {
                 <tbody>
                   {currentTableData.map((item, index) => {
                     const rowIndex = (currentPage - 1) * pageSize + (index + 1);
+
+                    // Status classes for styling
                     let statusClasses =
                       "bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-100 border border-gray-200 dark:border-gray-500 px-2 py-1 rounded text-xs font-semibold";
                     if (item.status === "Onboard") {
@@ -253,6 +305,7 @@ export default function ReferralList() {
                       statusClasses =
                         "bg-orange-50 dark:bg-orange-700 text-orange-600 dark:text-orange-100 border border-orange-200 dark:border-orange-600 px-2 py-1 rounded text-xs font-semibold";
                     }
+
                     return (
                       <motion.tr
                         key={item.id}
@@ -264,12 +317,20 @@ export default function ReferralList() {
                         </td>
                         <td className="p-3 text-sm">{item.designation}</td>
                         <td className="p-3 text-sm">{item.department}</td>
+
+                        {/* SHOW CREATED DATE */}
+                        <td className="p-3 text-sm">
+                          {new Date(item.createdAt).toLocaleDateString("en-US", {
+                            day: "2-digit",
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </td>
+
                         <td className="p-3 text-sm">{item.referredBy}</td>
                         <td className="p-3 text-sm">{item.candidateName}</td>
                         <td className="p-3 text-sm">{item.candidateEmail}</td>
-                        <td className="p-3 text-sm">
-                          {item.candidateLocation}
-                        </td>
+                        <td className="p-3 text-sm">{item.candidateLocation}</td>
                         <td className="p-3 text-sm">
                           <span className={statusClasses}>{item.status}</span>
                         </td>
@@ -302,6 +363,8 @@ export default function ReferralList() {
                   })}
                 </tbody>
               </motion.table>
+
+              {/* Pagination Footer */}
               <div className="flex flex-col md:flex-row justify-between items-center p-3 gap-2 text-sm text-gray-600 dark:text-gray-200 transition-colors">
                 <div>
                   Showing {currentTableData.length} of{" "}
@@ -331,6 +394,8 @@ export default function ReferralList() {
           )}
         </>
       )}
+
+      {/* Modals */}
       <AnimatePresence>
         {isViewModalOpen && selectedReferral && (
           <ViewReferralModal

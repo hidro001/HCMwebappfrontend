@@ -1,9 +1,16 @@
+
 import React, { useState } from "react";
 import useVacancyStore from "../../../store/useVacancyStore";
 import BaseModal from "../../common/BaseModal";
+import FullScreenLoader from "../../common/FullScreenLoader";
+// 1) Import toast
+import { toast } from "react-hot-toast";
 
 export default function ReferralModal({ isOpen, onClose, vacancy }) {
   const { createReferral } = useVacancyStore();
+  
+  const [isLoading, setIsLoading] = useState(false);
+
   const [referralData, setReferralData] = useState({
     name: "",
     email: "",
@@ -26,7 +33,10 @@ export default function ReferralModal({ isOpen, onClose, vacancy }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
+      setIsLoading(true);
+
       const formData = new FormData();
       formData.append("jobId", vacancy.id);
       formData.append("name", referralData.name);
@@ -36,12 +46,18 @@ export default function ReferralModal({ isOpen, onClose, vacancy }) {
       formData.append("location", referralData.location);
       formData.append("linkedIn", referralData.linkedIn);
       formData.append("notes", referralData.notes);
+
       if (referralData.resume) {
         formData.append("resume", referralData.resume);
       }
+
       const response = await createReferral(formData);
       console.log("Referral submitted successfully:", response);
-      alert("Referral submitted successfully!");
+
+      // 2) Toast success
+      toast.success("Referral submitted successfully!");
+
+      // Reset form
       setReferralData({
         name: "",
         email: "",
@@ -55,133 +71,143 @@ export default function ReferralModal({ isOpen, onClose, vacancy }) {
       onClose();
     } catch (err) {
       console.error("Error creating referral:", err);
-      alert("Failed to create referral. Check console.");
+      // 3) Toast error
+      toast.error("Failed to create referral. Check console.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   if (!isOpen || !vacancy) return null;
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose}>
-      <div
-        className="bg-white dark:bg-gray-800 w-full max-w-md rounded shadow-lg p-6 relative max-h-[70vh] overflow-x-auto [&::-webkit-scrollbar]:w-2
+    <>
+      {isLoading && <FullScreenLoader />}
+      <BaseModal isOpen={isOpen} onClose={onClose}>
+        <div
+          className="bg-white dark:bg-gray-800 w-full max-w-md rounded shadow-lg p-6 relative max-h-[70vh] overflow-x-auto [&::-webkit-scrollbar]:w-2
                 [&::-webkit-scrollbar-track]:rounded-full
                 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
                 [&::-webkit-scrollbar-thumb]:rounded-full
                 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600"
-      >
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
         >
-          ✕
-        </button>
-        <h2 className="text-xl font-semibold mb-4">
-          Refer Candidate for: {vacancy.title}
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
-            <input
-              type="text"
-              name="name"
-              value={referralData.name}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={referralData.email}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Phone</label>
-            <input
-              type="tel"
-              name="phone"
-              value={referralData.phone}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Address</label>
-            <input
-              type="text"
-              name="address"
-              value={referralData.address}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Location</label>
-            <input
-              type="text"
-              name="location"
-              value={referralData.location}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              LinkedIn Profile
-            </label>
-            <input
-              type="text"
-              name="linkedIn"
-              value={referralData.linkedIn}
-              onChange={handleChange}
-              placeholder="e.g. https://linkedin.com/in/username"
-              className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Resume</label>
-            <input
-              type="file"
-              name="resume"
-              onChange={handleChange}
-              className="block w-full text-sm text-gray-900 border rounded dark:bg-gray-700 dark:border-gray-600"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">
-              Additional Notes
-            </label>
-            <textarea
-              name="notes"
-              value={referralData.notes}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-            />
-          </div>
-          <div className="mt-4 flex justify-end">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 mr-2 border rounded hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-            >
-              Submit Referral
-            </button>
-          </div>
-        </form>
-      </div>
-    </BaseModal>
+          <button
+            onClick={onClose}
+            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+          >
+            ✕
+          </button>
+          <h2 className="text-xl font-semibold mb-4">
+            Refer Candidate for: {vacancy.title}
+          </h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Name</label>
+              <input
+                type="text"
+                name="name"
+                value={referralData.name}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={referralData.email}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Phone</label>
+              <input
+                type="tel"
+                name="phone"
+                value={referralData.phone}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Address</label>
+              <input
+                type="text"
+                name="address"
+                value={referralData.address}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Location</label>
+              <input
+                type="text"
+                name="location"
+                value={referralData.location}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                LinkedIn Profile
+              </label>
+              <input
+                type="text"
+                name="linkedIn"
+                value={referralData.linkedIn}
+                onChange={handleChange}
+                placeholder="e.g. https://linkedin.com/in/username"
+                className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Resume</label>
+              <input
+                type="file"
+                name="resume"
+                onChange={handleChange}
+                className="block w-full text-sm text-gray-900 border rounded dark:bg-gray-700 dark:border-gray-600"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">
+                Additional Notes
+              </label>
+              <textarea
+                name="notes"
+                value={referralData.notes}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+              />
+            </div>
+            <div className="mt-4 flex justify-end">
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2 mr-2 border rounded hover:bg-gray-100 dark:border-gray-600 dark:hover:bg-gray-700"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                disabled={isLoading}
+              >
+                Submit Referral
+              </button>
+            </div>
+          </form>
+        </div>
+      </BaseModal>
+    </>
   );
 }
+
+
+
