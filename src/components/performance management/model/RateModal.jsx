@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiX } from "react-icons/fi";
@@ -19,7 +18,7 @@ export default function RateModal({ show, onClose, selectedMember }) {
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
   const [comment, setComment] = useState("");
-  const [ratings, setRatings] = useState({}); 
+  const [ratings, setRatings] = useState({});
 
   // Fetch KPIs whenever the subordinate changes
   useEffect(() => {
@@ -84,7 +83,11 @@ export default function RateModal({ show, onClose, selectedMember }) {
       <AnimatePresence>
         {show && (
           <motion.div
-            className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg w-full max-w-md relative"
+            className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg w-full max-w-md relative h-[82%] overflow-y-auto [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600"
             variants={modalVariant}
             initial="hidden"
             animate="visible"

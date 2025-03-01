@@ -156,7 +156,12 @@ const AnnouncementEditModal = ({
 
       <motion.div
         className="relative bg-white dark:bg-gray-800 rounded-lg shadow-lg 
-                   w-full max-w-2xl mx-4 p-4 md:p-6"
+                   w-full max-w-2xl mx-4 p-4 md:p-6 h-[70vh] overflow-y-auto
+                   [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600"
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
@@ -229,15 +234,16 @@ const AnnouncementEditModal = ({
             )}
 
             {/* Show existing image preview if no new file selected */}
-            {!formData.announcementPostImg && formData.announcementPostImgUrl && (
-              <div className="mt-2 w-full h-24 rounded-md overflow-hidden">
-                <img
-                  src={formData.announcementPostImgUrl}
-                  alt={formData.announcementSubject}
-                  className="w-full h-full object-contain"
-                />
-              </div>
-            )}
+            {!formData.announcementPostImg &&
+              formData.announcementPostImgUrl && (
+                <div className="mt-2 w-full h-24 rounded-md overflow-hidden">
+                  <img
+                    src={formData.announcementPostImgUrl}
+                    alt={formData.announcementSubject}
+                    className="w-full h-full object-contain"
+                  />
+                </div>
+              )}
           </div>
 
           {/* Description */}

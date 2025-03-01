@@ -77,7 +77,11 @@ const PostPerformerModal = ({ isOpen, onClose }) => {
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-md w-full max-w-md relative shadow-lg">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-md w-full max-w-md relative shadow-lg h-[90vh] overflow-y-auto [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600">
         {/* Close Button */}
         <button
           className="absolute top-2 right-2 text-gray-600 dark:text-gray-100 

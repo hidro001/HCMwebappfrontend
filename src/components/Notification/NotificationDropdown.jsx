@@ -207,7 +207,7 @@ const NotificationDropdown = ({ notifications, loading, error, onClose,  }) => {
         )}
       </div>
 
-      {notifications.length > 5 && (
+      
         <div className="p-4">
           <button
             onClick={handleShowMore}
@@ -216,7 +216,7 @@ const NotificationDropdown = ({ notifications, loading, error, onClose,  }) => {
             Show More
           </button>
         </div>
-      )}
+    
     </motion.div>
   );
 };
