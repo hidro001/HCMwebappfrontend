@@ -1,4 +1,6 @@
-import { useState, useEffect } from 'react';
+// ReimbursementRequests.jsx
+
+import { useState, useEffect } from "react";
 import {
   FaRegEye,
   FaPen,
@@ -9,46 +11,53 @@ import {
   FaSearch,
   FaCalendarAlt,
   FaFileAlt,
-} from 'react-icons/fa';
+} from "react-icons/fa";
 import toast from "react-hot-toast";
-import { deleteRequests } from '../../../../service/payrollService';
-import ConfirmationDialog from '../../../common/ConfirmationDialog';
-import ReimbursementViewModal from './ReimbursementViewModal';
-import ReimbursementEditModal from './ReimbursementEditModal';
+import {
+  deleteRequests,
+  updateReimbursementRequest, // ← Import the update function
+} from "../../../../service/payrollService";
+import ConfirmationDialog from "../../../common/ConfirmationDialog";
+import ReimbursementViewModal from "./ReimbursementViewModal";
+import ReimbursementEditModal from "./ReimbursementEditModal";
 
-export default function ReimbursementRequests({ requests: parentRequests = [], onSaveRequest }) {
-  // Local state to manage requests independently
+export default function ReimbursementRequests({
+  requests: parentRequests = [],
+  onSaveRequest,
+}) {
+  // Local state to manage the request list
   const [requests, setRequests] = useState(parentRequests);
 
-  // Sync local state when parent state updates
+  // Sync local requests state if parent updates it
   useEffect(() => {
     setRequests(parentRequests);
   }, [parentRequests]);
 
+  // State for modals
   const [viewRequest, setViewRequest] = useState(null);
   const [editRequest, setEditRequest] = useState(null);
+
+  // State for delete confirmations
   const [deleteRequest, setDeleteRequest] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  // Handle delete action
+  // Handle deleting a request
   const handleDeleteClick = (req) => {
     setDeleteRequest(req);
     setIsDeleteDialogOpen(true);
   };
 
-  // Confirm delete and update state
+  // Confirm the delete
   const handleConfirmDelete = async () => {
     if (!deleteRequest) return;
-
     try {
       await deleteRequests(deleteRequest._id);
-
-      // Update local state
-      const updatedRequests = requests.filter(req => req._id !== deleteRequest._id);
+      const updatedRequests = requests.filter(
+        (r) => r._id !== deleteRequest._id
+      );
       setRequests(updatedRequests);
       toast.success("Reimbursement request deleted successfully!");
 
-      // Notify parent to update its state
       if (onSaveRequest) {
         onSaveRequest(updatedRequests);
       }
@@ -61,10 +70,33 @@ export default function ReimbursementRequests({ requests: parentRequests = [], o
     }
   };
 
-  // Cancel delete
+  // Cancel the delete
   const handleCancelDelete = () => {
     setIsDeleteDialogOpen(false);
     setDeleteRequest(null);
+  };
+
+  // Handle approving or rejecting a request
+  const handleProcessReimbursement = async (updatedRequest) => {
+    try {
+      // 1) Update the backend with new status ("Approved" / "Rejected") and remarks
+      await updateReimbursementRequest(updatedRequest._id, {
+        status: updatedRequest.status, // must be exactly "Approved" or "Rejected"
+        remarks: updatedRequest.remarks,
+      });
+
+      // 2) Update local UI state
+      const updatedList = requests.map((req) =>
+        req._id === updatedRequest._id ? { ...req, ...updatedRequest } : req
+      );
+      setRequests(updatedList);
+
+      // Optional: Show success message
+      toast.success(`Request ${updatedRequest.status} successfully!`);
+    } catch (error) {
+      toast.error("Failed to process request.");
+      console.error("Error updating reimbursement request:", error);
+    }
   };
 
   return (
@@ -72,11 +104,13 @@ export default function ReimbursementRequests({ requests: parentRequests = [], o
       {/* Table */}
       <div className="overflow-x-auto px-4">
         <table className="min-w-full bg-white border text-sm rounded-md overflow-hidden dark:bg-gray-800">
-          <thead className="bg-gray-100 dark:bg-gray-700 ">
+          <thead className="bg-gray-100 dark:bg-gray-700">
             <tr>
               <th className="px-4 py-2 text-left font-semibold">#</th>
               <th className="px-4 py-2 text-left font-semibold">Emp ID</th>
-              <th className="px-4 py-2 text-left font-semibold">Requested At</th>
+              <th className="px-4 py-2 text-left font-semibold">
+                Requested At
+              </th>
               <th className="px-4 py-2 text-left font-semibold">Amount</th>
               <th className="px-4 py-2 text-left font-semibold">Status</th>
               <th className="px-4 py-2 text-left font-semibold">Action</th>
@@ -87,18 +121,22 @@ export default function ReimbursementRequests({ requests: parentRequests = [], o
               <tr key={req._id}>
                 <td className="px-4 py-2">{idx + 1}</td>
                 <td className="px-4 py-2 text-blue-600">{req.employeeId}</td>
-                <td className="px-4 py-2">{new Date(req.requestedAt).toLocaleString()}</td>
-                <td className="px-4 py-2">{req.amount ? req.amount.toLocaleString() : '--'}</td>
                 <td className="px-4 py-2">
-                  {req.status === 'Approved' ? (
+                  {new Date(req.requestedAt).toLocaleString()}
+                </td>
+                <td className="px-4 py-2">
+                  {req.amount ? req.amount.toLocaleString() : "--"}
+                </td>
+                <td className="px-4 py-2">
+                  {req.status === "Approved" ? (
                     <span className="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-md">
                       Approved
                     </span>
-                  ) : req.status === 'Pending' ? (
+                  ) : req.status === "Pending" ? (
                     <span className="inline-block px-2 py-1 text-xs font-semibold text-orange-800 bg-orange-100 rounded-md dark:bg-orange-900 dark:text-orange-100">
                       Pending
                     </span>
-                  ) : req.status === 'Rejected' ? (
+                  ) : req.status === "Rejected" ? (
                     <span className="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-md">
                       Rejected
                     </span>
@@ -147,10 +185,17 @@ export default function ReimbursementRequests({ requests: parentRequests = [], o
       </div>
 
       {/* View Modal */}
-      <ReimbursementViewModal request={viewRequest} onClose={() => setViewRequest(null)} />
+      <ReimbursementViewModal
+        request={viewRequest}
+        onClose={() => setViewRequest(null)}
+      />
 
       {/* Edit Modal */}
-      <ReimbursementEditModal request={editRequest} onClose={() => setEditRequest(null)} />
+      <ReimbursementEditModal
+        request={editRequest}
+        onClose={() => setEditRequest(null)}
+        onProcess={handleProcessReimbursement} // <-- Important for Approve/Reject
+      />
 
       {/* Delete Confirmation */}
       <ConfirmationDialog
