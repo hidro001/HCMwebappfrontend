@@ -19,9 +19,9 @@ export default function LoanRequestEditModal({ request, onClose, onProcess }) {
         remarks: remarks.trim(),
       };
       // Call the API to update the loan request
-      const response = await updateLoanRequest(request._id, updatedRequest);
-      // Notify the parent component with the updated request
-      onProcess(response.data);
+      const updatedData = await updateLoanRequest(request._id, updatedRequest);
+      // Call the parent's update handler with the updated request object
+      onProcess(updatedData);
       toast.success("Loan request updated successfully!");
       onClose();
     } catch (error) {
@@ -31,7 +31,7 @@ export default function LoanRequestEditModal({ request, onClose, onProcess }) {
   };
 
   // Destructure dynamic values from request
-  const { empId, name, requestedAt, amount, tenure, interestRate, status, description, attachment } = request;
+  const { employeeId, name, requestedAt, amount, tenure, interestRate, status, description, attachment } = request;
 
   // Render status with a colored bullet
   const renderStatusDot = () => {
@@ -58,20 +58,22 @@ export default function LoanRequestEditModal({ request, onClose, onProcess }) {
         </button>
 
         <h2 className="text-xl md:text-2xl font-semibold mb-4">
-          Loan Request of {name} ({empId})
+          Loan Request of {name} ({employeeId})
         </h2>
 
         {/* Requested At */}
         <div className="mb-3">
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Requested At</p>
-          <p className="text-sm">{new Date(requestedAt).toLocaleString("en-IN", {
-            timeZone: "Asia/Kolkata",
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-            hour: "2-digit",
-            minute: "2-digit",
-          })}</p>
+          <p className="text-sm">
+            {new Date(requestedAt).toLocaleString("en-IN", {
+              timeZone: "Asia/Kolkata",
+              day: "2-digit",
+              month: "short",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            })}
+          </p>
         </div>
 
         {/* Amount */}
