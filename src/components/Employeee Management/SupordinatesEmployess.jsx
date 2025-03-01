@@ -633,14 +633,14 @@ function SupordinatesEmployess() {
         >
           {sortOrder === "asc" ? "Sort: A-Z" : "Sort: Z-A"}
         </button>
-        {!hasOnlyEmployeeView && (
+        {/* {!hasOnlyEmployeeView && (
           <button
             className="bg-blue-500 hover:bg-blue-600 text-white text-xs sm:text-sm px-3 sm:px-4 py-2 rounded"
             onClick={() => navigate(`/dashboard/add-employee`)}
           >
             + Add New User
           </button>
-        )}
+        )} */}
       </div>
       <div className="max-w-7xl mx-auto px-4 mt-6">
         <h2 className="mb-4 text-lg font-bold dark:text-white">
