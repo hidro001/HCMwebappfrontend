@@ -84,7 +84,7 @@ export default function RateModal({ show, onClose, selectedMember }) {
       <AnimatePresence>
         {show && (
           <motion.div
-            className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg w-full max-w-md relative"
+            className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg w-full max-w-md relative h-[82%] overflow-y-auto"
             variants={modalVariant}
             initial="hidden"
             animate="visible"
