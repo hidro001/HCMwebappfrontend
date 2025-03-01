@@ -1,10 +1,269 @@
-import { useState, useEffect, useMemo } from "react";
+
+
+// import React, { useState, useEffect, useMemo } from "react";
+// import DatePicker from "react-datepicker";
+// import "react-datepicker/dist/react-datepicker.css";
+// import Select from "react-select";
+// import { motion, AnimatePresence } from "framer-motion";
+// import { usePoshStore } from "../../../../store/poshStore";
+// import BaseModal from "../../../common/BaseModal";
+
+// export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
+//   const [accusedId, setAccusedId] = useState("");
+//   const [complaintType, setComplaintType] = useState("");
+//   const [incidentDate, setIncidentDate] = useState(null);
+//   const [description, setDescription] = useState("");
+//   const [fileAttachment, setFileAttachment] = useState(null);
+
+//   const { employees, fetchAllEmployees, createPoshAct, updatePoshAct } = usePoshStore();
+//   const isEdit = Boolean(ticket && ticket.id);
+
+//   // Only fetch employees if the modal is open
+//   useEffect(() => {
+//     if (isOpen) {
+//       fetchAllEmployees();
+//     }
+//   }, [isOpen, fetchAllEmployees]);
+
+//   // When ticket changes (or employees update), prefill the form for editing
+//   useEffect(() => {
+//     if (ticket) {
+//       const foundEmp = employees.find(
+//         (emp) => emp._id === ticket.accusedId || emp.employee_Id === ticket.accusedId
+//       );
+//       setAccusedId(foundEmp ? foundEmp._id : ticket.accusedId || "");
+//       setComplaintType(ticket.type || "");
+//       setIncidentDate(ticket.incidentDate ? new Date(ticket.incidentDate) : null);
+//       setDescription(ticket.description || "");
+//       setFileAttachment(null);
+//     } else {
+//       // reset fields if there's no ticket
+//       setAccusedId("");
+//       setComplaintType("");
+//       setIncidentDate(null);
+//       setDescription("");
+//       setFileAttachment(null);
+//     }
+//   }, [ticket, employees]);
+
+//   // If you're using a ThemeContext, you can read from that instead.
+//   // For a quick check, we'll see if <html> has the "dark" class:
+//   const isDarkMode = typeof document !== "undefined" 
+//     && document.documentElement.classList.contains("dark");
+
+//   // Custom styles for React-Select that *only* change the dropdown background 
+//   // (and option hover) based on light/dark mode.
+//   const customSelectStyles = {
+//     control: (base) => ({
+//       ...base,
+//       borderColor: "#d1d5db",
+//       backgroundColor: isDarkMode ? "#1f2937" : base.backgroundColor,
+//       color: isDarkMode ? "#fff" : "#000",
+//     }),
+//     menu: (base) => ({
+//       ...base,
+//       backgroundColor: isDarkMode ? "#1f2937" : "#fff",
+//       zIndex: 9999,
+//     }),
+//     menuList: (base) => ({
+//       ...base,
+//       backgroundColor: isDarkMode ? "#1f2937" : "#fff",
+//     }),
+//     option: (base, state) => ({
+//       ...base,
+//       backgroundColor: state.isFocused
+//         ? isDarkMode
+//           ? "#374151" // dark hover color
+//           : "#f5f5f5" // light hover color
+//         : isDarkMode
+//         ? "#1f2937"  // dark normal
+//         : "#fff",     // light normal
+//       color: isDarkMode ? "#fff" : "#000",
+//     }),
+//     singleValue: (base) => ({
+//       ...base,
+//       color: isDarkMode ? "#fff" : "#000",
+//     }),
+//   };
+
+//   // Transform employees into options for React-Select
+//   const employeeOptions = useMemo(
+//     () =>
+//       employees.map((emp) => ({
+//         value: emp._id,
+//         label: `${emp.first_Name} ${emp.last_Name} (${emp.employee_Id})`,
+//       })),
+//     [employees]
+//   );
+
+//   // Find the currently selected employee
+//   const selectedEmployeeOption = useMemo(
+//     () => employeeOptions.find((option) => option.value === accusedId) || null,
+//     [accusedId, employeeOptions]
+//   );
+
+//   // Submit form data (create or update)
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     try {
+//       const formData = new FormData();
+//       formData.append("accusedId", accusedId);
+//       formData.append("type", complaintType);
+
+//       if (incidentDate) {
+//         // pass incident date as YYYY-MM-DD
+//         formData.append("dateOfIncident", incidentDate.toISOString().split("T")[0]);
+//       }
+//       formData.append("description", description);
+
+//       if (fileAttachment) {
+//         formData.append("attachments", fileAttachment);
+//       }
+
+//       // If editing, update existing record; otherwise create new
+//       if (isEdit && ticket?.id) {
+//         await updatePoshAct(ticket.id, formData);
+//       } else {
+//         await createPoshAct(formData);
+//       }
+
+//       if (onSave) onSave();
+//       onClose();
+//     } catch (err) {
+//       console.error("Error saving POSH Act:", err);
+//     }
+//   };
+
+//   // Hide if not open
+//   if (!isOpen) return null;
+
+//   return (
+//     <BaseModal isOpen={isOpen} onClose={onClose}>
+//       <AnimatePresence>
+//         {isOpen && (
+//           <motion.div
+//             className="w-full max-w-md p-6 rounded bg-white dark:bg-gray-800 shadow-lg"
+//             initial={{ opacity: 0, scale: 0.95 }}
+//             animate={{ opacity: 1, scale: 1 }}
+//             exit={{ opacity: 0, scale: 0.95 }}
+//           >
+//             <h2 className="text-xl font-semibold mb-4 dark:text-gray-100">
+//               {isEdit ? "Edit POSH Issue" : "File a POSH Issue"}
+//             </h2>
+
+//             <form onSubmit={handleSubmit} className="space-y-4">
+//               {/* Accused Employee Select */}
+//               <div>
+//                 <label className="block font-medium text-sm mb-1 dark:text-gray-100">
+//                   Accused Employee
+//                 </label>
+//                 <Select
+//                   options={employeeOptions}
+//                   value={selectedEmployeeOption}
+//                   onChange={(selected) => setAccusedId(selected?.value || "")}
+//                   isDisabled={isEdit}
+//                   isSearchable={!isEdit}
+//                   placeholder="Select or search an employee..."
+//                   styles={customSelectStyles} // Apply dark/light dropdown background
+//                 />
+//               </div>
+
+//               {/* Complaint Type */}
+//               <div>
+//                 <label className="block font-medium text-sm mb-1 dark:text-gray-100">
+//                   Type of Complaint
+//                 </label>
+//                 <select
+//                   className="w-full border rounded px-3 py-1 focus:outline-none dark:bg-gray-700 dark:text-gray-100"
+//                   value={complaintType}
+//                   onChange={(e) => setComplaintType(e.target.value)}
+//                   required
+//                 >
+//                   <option value="">Select Type</option>
+//                   <option value="Sexual Harassment">Sexual Harassment</option>
+//                   <option value="Abuse">Abuse</option>
+//                   <option value="Discrimination">Discrimination</option>
+//                   <option value="Other">Other</option>
+//                 </select>
+//               </div>
+
+//               {/* Incident Date */}
+//               <div>
+//                 <label className="block font-medium text-sm mb-1 dark:text-gray-100">
+//                   Incident Date
+//                 </label>
+//                 <DatePicker
+//                   selected={incidentDate}
+//                   onChange={(date) => setIncidentDate(date)}
+//                   dateFormat="dd/MM/yyyy"
+//                   className="w-full border rounded px-3 py-1 dark:bg-gray-700 dark:text-gray-100 focus:outline-none"
+//                   placeholderText="DD/MM/YYYY"
+//                 />
+//               </div>
+
+//               {/* Description */}
+//               <div>
+//                 <label className="block font-medium text-sm mb-1 dark:text-gray-100">
+//                   Description
+//                 </label>
+//                 <textarea
+//                   className="w-full border rounded px-3 py-1 h-24 dark:bg-gray-700 dark:text-gray-100 focus:outline-none"
+//                   value={description}
+//                   onChange={(e) => setDescription(e.target.value)}
+//                   required
+//                 />
+//               </div>
+
+//               {/* File Attachment */}
+//               <div>
+//                 <label className="block font-medium text-sm mb-1 dark:text-gray-100">
+//                   Proof / Attachment
+//                 </label>
+//                 <input
+//                   type="file"
+//                   className="block w-full text-sm text-gray-900
+//                              file:mr-4 file:py-2 file:px-4 file:rounded 
+//                              file:border-0 file:text-sm file:font-semibold
+//                              file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
+//                              dark:bg-gray-700 dark:text-gray-100 dark:file:bg-gray-600 
+//                              dark:file:text-gray-100"
+//                   onChange={(e) => setFileAttachment(e.target.files?.[0] || null)}
+//                 />
+//               </div>
+
+//               {/* Action Buttons */}
+//               <div className="flex justify-end space-x-3">
+//                 <button
+//                   type="button"
+//                   onClick={onClose}
+//                   className="px-4 py-2 rounded bg-gray-300 dark:bg-gray-600 text-sm font-semibold hover:bg-gray-400 dark:hover:bg-gray-500"
+//                 >
+//                   Cancel
+//                 </button>
+//                 <button
+//                   type="submit"
+//                   className="px-4 py-2 rounded bg-blue-600 text-white text-sm font-semibold hover:bg-blue-700"
+//                 >
+//                   {isEdit ? "Update Posh" : "Submit Posh"}
+//                 </button>
+//               </div>
+//             </form>
+//           </motion.div>
+//         )}
+//       </AnimatePresence>
+//     </BaseModal>
+//   );
+// }
+
+
+import React, { useState, useEffect, useMemo } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Select from "react-select";
 import { motion, AnimatePresence } from "framer-motion";
 import { usePoshStore } from "../../../../store/poshStore";
 import BaseModal from "../../../common/BaseModal";
+import FullScreenLoader from "../../../common/FullScreenLoader";
 
 export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
   const [accusedId, setAccusedId] = useState("");
@@ -12,12 +271,15 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
   const [incidentDate, setIncidentDate] = useState(null);
   const [description, setDescription] = useState("");
   const [fileAttachment, setFileAttachment] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false); // <-- NEW state
 
   const { employees, fetchAllEmployees, createPoshAct, updatePoshAct } = usePoshStore();
   const isEdit = Boolean(ticket && ticket.id);
 
   useEffect(() => {
-    if (isOpen) fetchAllEmployees();
+    if (isOpen) {
+      fetchAllEmployees();
+    }
   }, [isOpen, fetchAllEmployees]);
 
   useEffect(() => {
@@ -39,29 +301,40 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
     }
   }, [ticket, employees]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const formData = new FormData();
-      formData.append("accusedId", accusedId);
-      formData.append("type", complaintType);
-      if (incidentDate) {
-        formData.append("dateOfIncident", incidentDate.toISOString().split("T")[0]);
-      }
-      formData.append("description", description);
-      if (fileAttachment) {
-        formData.append("attachments", fileAttachment);
-      }
-      if (isEdit && ticket?.id) {
-        await updatePoshAct(ticket.id, formData);
-      } else {
-        await createPoshAct(formData);
-      }
-      if (onSave) onSave();
-      onClose();
-    } catch (err) {
-      console.error("Error saving POSH Act:", err);
-    }
+  const isDarkMode =
+    typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+
+  const customSelectStyles = {
+    control: (base) => ({
+      ...base,
+      borderColor: "#d1d5db",
+      backgroundColor: isDarkMode ? "#1f2937" : base.backgroundColor,
+      color: isDarkMode ? "#fff" : "#000",
+    }),
+    menu: (base) => ({
+      ...base,
+      backgroundColor: isDarkMode ? "#1f2937" : "#fff",
+      zIndex: 9999,
+    }),
+    menuList: (base) => ({
+      ...base,
+      backgroundColor: isDarkMode ? "#1f2937" : "#fff",
+    }),
+    option: (base, state) => ({
+      ...base,
+      backgroundColor: state.isFocused
+        ? isDarkMode
+          ? "#374151"
+          : "#f5f5f5"
+        : isDarkMode
+        ? "#1f2937"
+        : "#fff",
+      color: isDarkMode ? "#fff" : "#000",
+    }),
+    singleValue: (base) => ({
+      ...base,
+      color: isDarkMode ? "#fff" : "#000",
+    }),
   };
 
   const employeeOptions = useMemo(
@@ -78,12 +351,48 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
     [accusedId, employeeOptions]
   );
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true); // Start loading spinner
+    try {
+      const formData = new FormData();
+      formData.append("accusedId", accusedId);
+      formData.append("type", complaintType);
+
+      if (incidentDate) {
+        formData.append("dateOfIncident", incidentDate.toISOString().split("T")[0]);
+      }
+      formData.append("description", description);
+
+      if (fileAttachment) {
+        formData.append("attachments", fileAttachment);
+      }
+
+      if (isEdit && ticket?.id) {
+        await updatePoshAct(ticket.id, formData);
+      } else {
+        await createPoshAct(formData);
+      }
+
+      if (onSave) onSave();
+      onClose();
+    } catch (err) {
+      console.error("Error saving POSH Act:", err);
+      // You might show an error message in your UI here
+    } finally {
+      setIsSubmitting(false); // End loading spinner
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
+      {/* Show fullscreen loader when isSubmitting */}
+      {isSubmitting && <FullScreenLoader />}
+
       <AnimatePresence>
-        {isOpen && (
+        {isOpen && !isSubmitting && (
           <motion.div
             className="w-full max-w-md p-6 rounded bg-white dark:bg-gray-800 shadow-lg"
             initial={{ opacity: 0, scale: 0.95 }}
@@ -93,6 +402,7 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
             <h2 className="text-xl font-semibold mb-4 dark:text-gray-100">
               {isEdit ? "Edit POSH Issue" : "File a POSH Issue"}
             </h2>
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block font-medium text-sm mb-1 dark:text-gray-100">
@@ -105,16 +415,10 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
                   isDisabled={isEdit}
                   isSearchable={!isEdit}
                   placeholder="Select or search an employee..."
-                  className="dark:bg-gray-700 dark:text-gray-100 "
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      borderColor: "#d1d5db",
-                      backgroundColor: "var(--tw-bg-opacity)",
-                    }),
-                  }}
+                  styles={customSelectStyles}
                 />
               </div>
+
               <div>
                 <label className="block font-medium text-sm mb-1 dark:text-gray-100">
                   Type of Complaint
@@ -132,6 +436,7 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
                   <option value="Other">Other</option>
                 </select>
               </div>
+
               <div>
                 <label className="block font-medium text-sm mb-1 dark:text-gray-100">
                   Incident Date
@@ -144,6 +449,7 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
                   placeholderText="DD/MM/YYYY"
                 />
               </div>
+
               <div>
                 <label className="block font-medium text-sm mb-1 dark:text-gray-100">
                   Description
@@ -155,16 +461,23 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
                   required
                 />
               </div>
+
               <div>
                 <label className="block font-medium text-sm mb-1 dark:text-gray-100">
                   Proof / Attachment
                 </label>
                 <input
                   type="file"
-                  className="block w-full text-sm text-gray-900 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:bg-gray-700 dark:text-gray-100 dark:file:bg-gray-600 dark:file:text-gray-100"
+                  className="block w-full text-sm text-gray-900
+                             file:mr-4 file:py-2 file:px-4 file:rounded 
+                             file:border-0 file:text-sm file:font-semibold
+                             file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100
+                             dark:bg-gray-700 dark:text-gray-100 dark:file:bg-gray-600 
+                             dark:file:text-gray-100"
                   onChange={(e) => setFileAttachment(e.target.files?.[0] || null)}
                 />
               </div>
+
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"
