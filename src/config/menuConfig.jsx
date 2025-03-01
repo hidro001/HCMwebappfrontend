@@ -559,7 +559,7 @@ export const menuItems = [
       },
       {
         // repeated "viewLeaves" => made unique
-        name: " All Leaves ",
+        name: "Subordinates Leaves",
         link: "/dashboard/all-leave-history",
         permission: "viewAllLeaves", // NEW
         textAnimation: { x: 10 },
