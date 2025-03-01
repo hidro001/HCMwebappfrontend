@@ -17,24 +17,13 @@ export default function ReimbursementEditModal({ request, onClose, onProcess }) 
     onClose();
   };
 
-  const {
-    empId = 'RI0023',
-    name = 'Riya Mishra',
-    requestedAt = '25 Jan 2024, 10:30AM',
-    amount = 10000,
-    status = 'Pending',
-    description = 'Lorem ipsum dolor sit amet...',
-    attachment = {
-      fileName: 'Transcend.zip',
-      size: '1.8MB',
-      url: '/path/to/Transcend.zip',
-    },
-  } = request;
+  // Destructure dynamic values from request without static fallbacks
+  const { empId, name, requestedAt, amount, status, description, attachment } = request;
 
   const renderStatusDot = () => {
     let dotColor = 'bg-yellow-500';
-    if (status === 'Approve') dotColor = 'bg-green-500';
-    if (status === 'Reject') dotColor = 'bg-red-500';
+    if (status === 'Approved') dotColor = 'bg-green-500';
+    if (status === 'Rejected') dotColor = 'bg-red-500';
     return (
       <div className="flex items-center gap-2">
         <span className={`inline-block w-2 h-2 rounded-full ${dotColor}`} />
@@ -45,21 +34,7 @@ export default function ReimbursementEditModal({ request, onClose, onProcess }) 
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div
-        className="
-          relative
-          w-full
-          max-w-md
-          mx-2
-          bg-white
-          dark:bg-gray-800
-          rounded-md
-          shadow-lg
-          p-6
-          max-h-[90vh]
-          overflow-y-auto
-        "
-      >
+      <div className="relative w-full max-w-md mx-2 bg-white dark:bg-gray-800 rounded-md shadow-lg p-6 max-h-[90vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -74,48 +49,36 @@ export default function ReimbursementEditModal({ request, onClose, onProcess }) 
 
         {/* Requested At */}
         <div className="mb-3">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Requested At
-          </p>
-          <p className="text-sm">{requestedAt}</p>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Requested At</p>
+          <p className="text-sm">{new Date(requestedAt).toLocaleString()}</p>
         </div>
 
         {/* Amount */}
         <div className="mb-3">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Amount
-          </p>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Amount</p>
           <p className="text-sm">{amount}</p>
         </div>
 
         {/* Status */}
         <div className="mb-3">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Status
-          </p>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Status</p>
           <div className="text-sm">{renderStatusDot()}</div>
         </div>
 
         {/* Description */}
         <div className="mb-4">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            Description
-          </p>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Description</p>
           <p className="text-sm mt-1">{description}</p>
         </div>
 
         {/* Attachment */}
-        <div className="mb-4">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-            View Attachment
-          </p>
-          {attachment && (
+        {attachment && (
+          <div className="mb-4">
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">View Attachment</p>
             <div className="mt-2 inline-flex items-center gap-2 rounded-md border border-gray-200 dark:border-gray-600 px-3 py-2">
               <div className="text-sm">
                 <p className="font-semibold">{attachment.fileName}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  {attachment.size}
-                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">{attachment.size}</p>
               </div>
               <a
                 href={attachment.url}
@@ -125,8 +88,8 @@ export default function ReimbursementEditModal({ request, onClose, onProcess }) 
                 <FaDownload />
               </a>
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Process Request */}
         <h3 className="text-xl font-semibold text-blue-600 dark:text-blue-300 mb-3">
@@ -142,31 +105,20 @@ export default function ReimbursementEditModal({ request, onClose, onProcess }) 
             value={remarks}
             onChange={(e) => setRemarks(e.target.value)}
             rows={3}
-            className="
-              w-full
-              border
-              border-gray-300
-              dark:border-gray-700
-              rounded-md
-              p-2
-              text-sm
-              focus:outline-none
-              dark:bg-gray-900
-              dark:text-gray-100
-            "
+            className="w-full border border-gray-300 dark:border-gray-700 rounded-md p-2 text-sm focus:outline-none dark:bg-gray-900 dark:text-gray-100"
           />
         </div>
 
         {/* Buttons */}
         <div className="flex justify-end gap-3">
           <button
-            onClick={() => handleAction('Reject')}
+            onClick={() => handleAction('Rejected')}
             className="px-4 py-2 border border-red-600 text-red-600 rounded-md hover:bg-red-50 dark:hover:bg-red-900"
           >
             Reject
           </button>
           <button
-            onClick={() => handleAction('Approve')}
+            onClick={() => handleAction('Approved')}
             className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
           >
             Accept

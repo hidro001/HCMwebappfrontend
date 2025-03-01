@@ -69,9 +69,6 @@ export default function ReimbursementRequests({ requests: parentRequests = [], o
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col">
-
-
-    
       {/* Table */}
       <div className="overflow-x-auto px-4">
         <table className="min-w-full bg-white border text-sm rounded-md overflow-hidden dark:bg-gray-800">
@@ -87,31 +84,51 @@ export default function ReimbursementRequests({ requests: parentRequests = [], o
           </thead>
           <tbody>
             {requests.map((req, idx) => (
-              <tr key={req._id} >
+              <tr key={req._id}>
                 <td className="px-4 py-2">{idx + 1}</td>
                 <td className="px-4 py-2 text-blue-600">{req.employeeId}</td>
                 <td className="px-4 py-2">{new Date(req.requestedAt).toLocaleString()}</td>
                 <td className="px-4 py-2">{req.amount ? req.amount.toLocaleString() : '--'}</td>
                 <td className="px-4 py-2">
                   {req.status === 'Approved' ? (
-                    <span className="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-md">Approved</span>
+                    <span className="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-md">
+                      Approved
+                    </span>
                   ) : req.status === 'Pending' ? (
-                    <span className="inline-block px-2 py-1 text-xs font-semibold text-orange-800 bg-orange-100 rounded-md dark:bg-orange-900 dark:text-orange-100">Pending</span>
+                    <span className="inline-block px-2 py-1 text-xs font-semibold text-orange-800 bg-orange-100 rounded-md dark:bg-orange-900 dark:text-orange-100">
+                      Pending
+                    </span>
                   ) : req.status === 'Rejected' ? (
-                    <span className="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-md">Rejected</span>
+                    <span className="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-md">
+                      Rejected
+                    </span>
                   ) : (
-                    <span className="px-2 py-1 text-xs font-semibold text-gray-700 bg-gray-100 rounded-md">{req.status}</span>
+                    <span className="px-2 py-1 text-xs font-semibold text-gray-700 bg-gray-100 rounded-md">
+                      {req.status}
+                    </span>
                   )}
                 </td>
                 <td className="px-4 py-2">
                   <div className="flex items-center gap-2 text-lg">
-                    <button title="View" onClick={() => setViewRequest(req)} className="text-blue-500 hover:text-blue-700">
+                    <button
+                      title="View"
+                      onClick={() => setViewRequest(req)}
+                      className="text-blue-500 hover:text-blue-700"
+                    >
                       <FaRegEye />
                     </button>
-                    <button title="Edit" onClick={() => setEditRequest(req)} className="text-green-500 hover:text-green-700">
+                    <button
+                      title="Edit"
+                      onClick={() => setEditRequest(req)}
+                      className="text-green-500 hover:text-green-700"
+                    >
                       <FaPen />
                     </button>
-                    <button title="Delete" onClick={() => handleDeleteClick(req)} className="text-red-500 hover:text-red-700">
+                    <button
+                      title="Delete"
+                      onClick={() => handleDeleteClick(req)}
+                      className="text-red-500 hover:text-red-700"
+                    >
                       <FaTrash />
                     </button>
                   </div>
@@ -120,7 +137,9 @@ export default function ReimbursementRequests({ requests: parentRequests = [], o
             ))}
             {requests.length === 0 && (
               <tr>
-                <td colSpan={6} className="px-4 py-4 text-center text-gray-500">No reimbursement requests found.</td>
+                <td colSpan={6} className="px-4 py-4 text-center text-gray-500">
+                  No reimbursement requests found.
+                </td>
               </tr>
             )}
           </tbody>
@@ -134,9 +153,15 @@ export default function ReimbursementRequests({ requests: parentRequests = [], o
       <ReimbursementEditModal request={editRequest} onClose={() => setEditRequest(null)} />
 
       {/* Delete Confirmation */}
-      <ConfirmationDialog open={isDeleteDialogOpen} title="Delete Confirmation" 
+      <ConfirmationDialog
+        open={isDeleteDialogOpen}
+        title="Delete Confirmation"
         message={`Delete reimbursement request for Employee: ${deleteRequest?.employeeId}?`}
-        confirmText="Yes, Delete" cancelText="Cancel" onConfirm={handleConfirmDelete} onCancel={handleCancelDelete} />
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   );
 }

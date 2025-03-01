@@ -1,3 +1,4 @@
+// DailyTaskModal.jsx
 import React, { useEffect } from "react";
 import { FaTimes, FaFileAlt } from "react-icons/fa";
 
@@ -14,14 +15,19 @@ const DailyTaskModal = ({ task, onClose }) => {
 
   return (
     <div className="fixed inset-0 flex justify-end z-50">
-      {/* Dark Transparent Background (No Blur) */}
-      <div className="absolute inset-0 bg-black bg-opacity-50" onClick={onClose}></div>
+      {/* Dark Transparent Background */}
+      <div
+        className="absolute inset-0 bg-black bg-opacity-50"
+        onClick={onClose}
+      ></div>
 
       {/* Slide-in Panel */}
       <div className="bg-white dark:bg-gray-800 w-full max-w-md h-full shadow-lg transform transition-transform duration-300 p-6 relative z-50">
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-3">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">View Task Details</h2>
+          <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+            View Task Details
+          </h2>
           <button onClick={onClose} className="text-gray-500 hover:text-red-600">
             <FaTimes size={18} />
           </button>
@@ -29,33 +35,85 @@ const DailyTaskModal = ({ task, onClose }) => {
 
         {/* Task Info */}
         <div className="mt-4 space-y-2 text-sm">
-          <p><span className="font-semibold">Title:</span> {task.name}</p>
-          <p><span className="font-semibold">Assigned Date:</span> {task.date}</p>
-          <p><span className="font-semibold">Department:</span> {task.department}</p>
-          <p><span className="font-semibold">Priority:</span> 
-            <span className={`ml-2 px-2 py-1 rounded text-white text-xs ${
-              task.priority === "High" ? "bg-red-500" : task.priority === "Medium" ? "bg-yellow-500" : "bg-green-500"
-            }`}>
-              {task.priority}
-            </span>
-          </p>
-          <p><span className="font-semibold">Assign To:</span> <span className="text-blue-600 cursor-pointer">{task.assignee}</span></p>
-        </div>
-
-        {/* Description */}
-        <div className="mt-4 border p-3 rounded-md bg-gray-100 dark:bg-gray-700">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Description</h3>
-          <p className="text-gray-600 dark:text-gray-300 mt-1">{task.description}</p>
-        </div>
-
-        {/* Attachment */}
-        <div className="mt-4">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Attachment</h3>
-          <div className="mt-2 flex items-center gap-2 bg-gray-200 dark:bg-gray-700 p-2 rounded">
-            <FaFileAlt className="text-gray-500 dark:text-gray-300" />
-            <span className="text-gray-700 dark:text-white text-sm cursor-pointer">Transcend.zip (1.2MB)</span>
+          {/* Task Boxes */}
+          <div>
+            <span className="font-semibold">Task:</span>
+            <div className="mt-1 flex flex-wrap gap-2">
+              {Array.isArray(task.task)
+                ? task.task.map((item, index) => (
+                    <span
+                      key={index}
+                      className="bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-xs"
+                    >
+                      {item}
+                    </span>
+                  ))
+                : (
+                    <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-md text-xs">
+                      {task.task}
+                    </span>
+                  )}
+            </div>
           </div>
+          <p>
+            <span className="font-semibold">Assigned Date:</span>{" "}
+            {task.task_Date}
+          </p>
+          <p>
+            <span className="font-semibold">Department:</span>{" "}
+            {task.department}
+          </p>
+          <p>
+            <span className="font-semibold">Designation:</span>{" "}
+            {task.designation}
+          </p>
+          <p>
+            <span className="font-semibold">Employee ID:</span>{" "}
+            {task.employee_Id}
+          </p>
+          <p>
+            <span className="font-semibold">Full Name:</span>{" "}
+            {task.full_Name}
+          </p>
+          <p>
+            <span className="font-semibold">Created At:</span>{" "}
+            {new Date(task.createdAt).toLocaleString("en-IN", {
+              timeZone: "Asia/Kolkata",
+            })}
+          </p>
+          {task.teams && task.teams.trim() !== "" && (
+            <p>
+              <span className="font-semibold">Teams:</span> {task.teams}
+            </p>
+          )}
         </div>
+
+        {/* Optional Description */}
+        {task.description && (
+          <div className="mt-4 border p-3 rounded-md bg-gray-100 dark:bg-gray-700">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+              Description
+            </h3>
+            <p className="text-gray-600 dark:text-gray-300 mt-1">
+              {task.description}
+            </p>
+          </div>
+        )}
+
+        {/* Optional Attachment */}
+        {task.attachment && (
+          <div className="mt-4">
+            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+              Attachment
+            </h3>
+            <div className="mt-2 flex items-center gap-2 bg-gray-200 dark:bg-gray-700 p-2 rounded">
+              <FaFileAlt className="text-gray-500 dark:text-gray-300" />
+              <span className="text-gray-700 dark:text-white text-sm cursor-pointer">
+                {task.attachment.name} ({task.attachment.size})
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

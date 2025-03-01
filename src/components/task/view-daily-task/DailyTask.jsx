@@ -2,10 +2,6 @@
 import React, { useState, useEffect } from "react";
 import {
   FaSearch,
-  FaFileAlt,
-  FaFileExcel,
-  FaFilePdf,
-  FaPrint,
   FaEye,
   FaTrash,
   FaCommentDots,
@@ -13,7 +9,7 @@ import {
 import CommentModal from "./CommentModal";
 import DailyTaskModal from "./DailyTaskModal";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
-import { fetchManagerTasks } from "../../../service/taskService";
+import { fetchManagerTasks, getSubordinateDepartments } from "../../../service/taskService";
 import { Toaster, toast } from "react-hot-toast";
 
 const DailyTask = () => {
@@ -22,17 +18,51 @@ const DailyTask = () => {
   const [selectedTask, setSelectedTask] = useState(null);
   const [commentTask, setCommentTask] = useState(null);
   const [deleteTask, setDeleteTask] = useState(null);
-  // New state variable for selected date (default "2025-02-04").
-  const [selectedDate, setSelectedDate] = useState("2025-02-04");
+  
+  // Set default date to today's date in YYYY-MM-DD format.
+  const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
+  
+  // States for search, department filter and pagination.
+  const [searchTerm, setSearchTerm] = useState("");
+  const [departments, setDepartments] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState("All Departments");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   // Fetch tasks for the selected date.
   useEffect(() => {
     const loadTasks = async () => {
       const fetchedTasks = await fetchManagerTasks(selectedDate);
       setTasks(fetchedTasks);
+      setCurrentPage(1); // Reset page on date change.
     };
     loadTasks();
   }, [selectedDate]);
+
+  // Fetch subordinate departments on component mount.
+  useEffect(() => {
+    const loadDepartments = async () => {
+      const deptData = await getSubordinateDepartments();
+      setDepartments(deptData);
+    };
+    loadDepartments();
+  }, []);
+
+  // Filter tasks based on search input (by Employee ID, Name) and department.
+  const filteredTasks = tasks.filter((task) => {
+    const matchesSearch =
+      task.employee_Id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      task.full_Name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesDepartment =
+      selectedDepartment === "All Departments" || task.department === selectedDepartment;
+    return matchesSearch && matchesDepartment;
+  });
+
+  const totalPages = Math.ceil(filteredTasks.length / pageSize) || 1;
+  const paginatedTasks = filteredTasks.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
 
   // Handle task deletion.
   const handleDelete = (taskId) => {
@@ -52,17 +82,29 @@ const DailyTask = () => {
 
       {/* Controls */}
       <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4 px-4 mb-4">
-        {/* Show select */}
+        {/* Data Per Page Select */}
         <div className="flex items-center">
           <label className="mr-2 text-sm font-medium text-gray-700 dark:text-gray-300">
             Show
           </label>
           <select
+            value={pageSize}
+            onChange={(e) => {
+              setPageSize(Number(e.target.value));
+              setCurrentPage(1);
+            }}
             className="border border-gray-300 dark:border-gray-700 rounded-md px-2 py-1 text-sm bg-white dark:bg-gray-800"
-            disabled
           >
-            <option>10</option>
+            <option value={5}>5</option>
+            <option value={10}>10</option>
+            <option value={15}>15</option>
+            <option value={20}>20</option>
+            <option value={50}>50</option>
+            <option value={100}>100</option>
           </select>
+          <span className="ml-1 text-sm text-gray-700 dark:text-gray-300">
+            per page
+          </span>
         </div>
 
         {/* Search */}
@@ -70,14 +112,17 @@ const DailyTask = () => {
           <FaSearch className="text-gray-400 mr-2" />
           <input
             type="text"
-            placeholder="Search by Employee ID"
+            placeholder="Search by Employee ID or Name"
             className="w-full focus:outline-none dark:bg-gray-900"
-            disabled
-            value=""
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setCurrentPage(1);
+            }}
           />
         </div>
 
-        {/* Date Picker & Department */}
+        {/* Date Picker & Department Filter */}
         <div className="flex items-center gap-2 ml-auto">
           {/* Date Picker */}
           <div className="flex items-center">
@@ -91,47 +136,28 @@ const DailyTask = () => {
               className="border border-gray-300 dark:border-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none dark:bg-gray-900"
             />
           </div>
-
-          {/* Department (disabled) */}
-          <select
-            className="border border-gray-300 dark:border-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none dark:bg-gray-900"
-            disabled
-          >
-            <option>All Departments</option>
-          </select>
+          {/* Department Filter */}
+          <div className="flex items-center">
+            <label className="mr-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+              Department
+            </label>
+            <select
+              value={selectedDepartment}
+              onChange={(e) => {
+                setSelectedDepartment(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="border border-gray-300 dark:border-gray-700 rounded-md px-2 py-1 text-sm focus:outline-none dark:bg-gray-900"
+            >
+              <option value="All Departments">All Departments</option>
+              {departments.map((dept, index) => (
+                <option key={index} value={dept}>
+                  {dept}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-
-        {/* Export Buttons */}
-        {/* <div className="flex items-center gap-2">
-          <button
-            title="Export CSV"
-            className="w-10 h-10 flex items-center justify-center rounded-md bg-green-100 text-green-600 dark:bg-green-900 dark:text-green-200"
-            disabled
-          >
-            <FaFileAlt className="w-4 h-4" />
-          </button>
-          <button
-            title="Export Excel"
-            className="w-10 h-10 flex items-center justify-center rounded-md bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-200"
-            disabled
-          >
-            <FaFileExcel className="w-4 h-4" />
-          </button>
-          <button
-            title="Export PDF"
-            className="w-10 h-10 flex items-center justify-center rounded-md bg-red-100 text-red-600 dark:bg-red-900 dark:text-red-200"
-            disabled
-          >
-            <FaFilePdf className="w-4 h-4" />
-          </button>
-          <button
-            title="Print"
-            className="w-10 h-10 flex items-center justify-center rounded-md bg-orange-100 text-orange-600 dark:bg-orange-900 dark:text-orange-200"
-            disabled
-          >
-            <FaPrint className="w-4 h-4" />
-          </button>
-        </div> */}
       </div>
 
       {/* Task Table */}
@@ -144,45 +170,42 @@ const DailyTask = () => {
                 <th className="p-3">Emp ID</th>
                 <th className="p-3">Name</th>
                 <th className="p-3">Assigned Date</th>
-                {/* <th className="p-3">Status</th> */}
                 <th className="p-3">Action</th>
               </tr>
             </thead>
             <tbody>
-              {tasks.length === 0 ? (
+              {paginatedTasks.length === 0 ? (
                 <tr>
                   <td colSpan="6" className="p-3 text-center">
                     No data available.
                   </td>
                 </tr>
               ) : (
-                tasks.map((task, index) => (
-                  <tr key={task.id} className="border-b hover:bg-gray-50 dark:hover:bg-gray-700 transition">
-                    <td className="p-3">{index + 1}</td>
-                    <td className="p-3 text-blue-500 cursor-pointer">{task.employee_Id}</td>
-                    <td className="p-3">{task.full_Name}</td>
-                    <td className="p-3">{new Date(task.createdAt || "N/A").toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}
+                paginatedTasks.map((task, index) => (
+                  <tr
+                    key={task.id}
+                    className="border-b hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                  >
+                    <td className="p-3">
+                      {(currentPage - 1) * pageSize + index + 1}
                     </td>
-                    {/* <td className="p-3">
-                      <span
-                        className={`px-3 py-1 rounded text-xs font-semibold ${
-                          task.status === "Done"
-                            ? "bg-green-100 dark:bg-green-700 text-green-600 dark:text-green-200"
-                            : task.status === "On Hold"
-                            ? "bg-yellow-100 dark:bg-yellow-700 text-yellow-600 dark:text-yellow-200"
-                            : "bg-red-100 dark:bg-red-700 text-red-600 dark:text-red-200"
-                        }`}
-                      >
-                        {task.status}
-                      </span>
-                    </td> */}
+                    <td className="p-3 text-blue-500 cursor-pointer">
+                      {task.employee_Id}
+                    </td>
+                    <td className="p-3">{task.full_Name}</td>
+                    <td className="p-3">
+                      {new Date(task.createdAt || "N/A").toLocaleDateString("en-IN", {
+                        timeZone: "Asia/Kolkata",
+                      })}
+                    </td>
                     <td className="p-3 flex gap-3">
                       <FaEye
                         size={20}
                         className="text-blue-500 cursor-pointer"
                         onClick={() => setSelectedTask(task)}
                       />
-                      <FaCommentDots
+                      {/* Uncomment below for additional actions */}
+                      {/* <FaCommentDots
                         size={20}
                         className="text-gray-500 cursor-pointer"
                         onClick={() => setCommentTask(task)}
@@ -191,7 +214,7 @@ const DailyTask = () => {
                         size={20}
                         className="text-red-500 cursor-pointer"
                         onClick={() => setDeleteTask(task)}
-                      />
+                      /> */}
                     </td>
                   </tr>
                 ))
@@ -199,13 +222,51 @@ const DailyTask = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Pagination Controls */}
+        <div className="flex flex-col md:flex-row items-center justify-between mt-4">
+          <div className="mb-2 md:mb-0">
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              Page {currentPage} of {totalPages}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1 border rounded text-sm text-gray-700 dark:text-gray-300 disabled:opacity-50"
+            >
+              Prev
+            </button>
+            <button
+              onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1 border rounded text-sm text-gray-700 dark:text-gray-300 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-sm text-gray-700 dark:text-gray-300">Go to page:</label>
+            <input
+              type="number"
+              min="1"
+              max={totalPages}
+              value={currentPage}
+              onChange={(e) => {
+                let page = Number(e.target.value);
+                if (page > totalPages) page = totalPages;
+                if (page < 1) page = 1;
+                setCurrentPage(page);
+              }}
+              className="w-16 border rounded px-2 py-1 text-sm text-gray-700 dark:text-gray-300"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Modals */}
-      <DailyTaskModal
-        task={selectedTask}
-        onClose={() => setSelectedTask(null)}
-      />
+      <DailyTaskModal task={selectedTask} onClose={() => setSelectedTask(null)} />
       <CommentModal task={commentTask} onClose={() => setCommentTask(null)} />
       <ConfirmationDialog
         open={!!deleteTask}

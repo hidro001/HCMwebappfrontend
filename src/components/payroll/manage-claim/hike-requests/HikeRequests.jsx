@@ -1,4 +1,4 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   FaRegEye,
   FaPen,
@@ -17,18 +17,29 @@ import ConfirmationDialog from '../../../common/ConfirmationDialog';
 import { deleteRequests } from '../../../../service/payrollService';
 
 export default function HikeRequests({ requests: parentRequests = [], onSaveRequest }) {
-  // Local state to manage requests
-  const [requests, setRequests] = useState(parentRequests);
+  // Ensure requests is always an array
+  const [requests, setRequests] = useState(Array.isArray(parentRequests) ? parentRequests : []);
 
   // Sync local state when parent state updates
   useEffect(() => {
-    setRequests(parentRequests);
+    setRequests(Array.isArray(parentRequests) ? parentRequests : []);
   }, [parentRequests]);
 
   const [viewRequest, setViewRequest] = useState(null);
   const [editRequest, setEditRequest] = useState(null);
   const [deleteRequest, setDeleteRequest] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  // Update a request in the local state array
+  const handleUpdateRequest = (updatedRequest) => {
+    setRequests(prev =>
+      prev.map(req => req._id === updatedRequest._id ? updatedRequest : req)
+    );
+    // Optionally, notify the parent as well
+    if (onSaveRequest) {
+      onSaveRequest(updatedRequest);
+    }
+  };
 
   // Handle delete action
   const handleDeleteClick = (req) => {
@@ -39,16 +50,11 @@ export default function HikeRequests({ requests: parentRequests = [], onSaveRequ
   // Confirm delete and update state
   const handleConfirmDelete = async () => {
     if (!deleteRequest) return;
-
     try {
       await deleteRequests(deleteRequest._id);
-
-      // Update local state
       const updatedRequests = requests.filter(req => req._id !== deleteRequest._id);
       setRequests(updatedRequests);
       toast.success("Hike request deleted successfully!");
-
-      // Notify parent to update its state
       if (onSaveRequest) {
         onSaveRequest(updatedRequests);
       }
@@ -69,8 +75,6 @@ export default function HikeRequests({ requests: parentRequests = [], onSaveRequ
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col">
-    
-
       {/* Table */}
       <div className="overflow-x-auto px-4">
         <table className="min-w-full bg-white border text-sm rounded-md overflow-hidden dark:bg-gray-800">
@@ -87,7 +91,7 @@ export default function HikeRequests({ requests: parentRequests = [], onSaveRequ
           </thead>
           <tbody>
             {requests.map((req, idx) => (
-              <tr key={req._id} >
+              <tr key={req._id}>
                 <td className="px-4 py-2">{idx + 1}</td>
                 <td className="px-4 py-2 text-blue-600">{req.employeeId}</td>
                 <td className="px-4 py-2">{new Date(req.requestedAt).toLocaleString()}</td>
@@ -121,7 +125,9 @@ export default function HikeRequests({ requests: parentRequests = [], onSaveRequ
             ))}
             {requests.length === 0 && (
               <tr>
-                <td colSpan={7} className="px-4 py-4 text-center text-gray-500">No hike requests found.</td>
+                <td colSpan={7} className="px-4 py-4 text-center text-gray-500">
+                  No hike requests found.
+                </td>
               </tr>
             )}
           </tbody>
@@ -132,12 +138,18 @@ export default function HikeRequests({ requests: parentRequests = [], onSaveRequ
       <HikeRequestViewModal request={viewRequest} onClose={() => setViewRequest(null)} />
 
       {/* Edit Modal */}
-      <HikeRequestEditModal request={editRequest} onClose={() => setEditRequest(null)} onSave={setRequests} />
+      <HikeRequestEditModal request={editRequest} onClose={() => setEditRequest(null)} onSave={handleUpdateRequest} />
 
       {/* Delete Confirmation */}
-      <ConfirmationDialog open={isDeleteDialogOpen} title="Delete Confirmation" 
+      <ConfirmationDialog
+        open={isDeleteDialogOpen}
+        title="Delete Confirmation"
         message={`Delete hike request for Employee: ${deleteRequest?.employeeId}?`}
-        confirmText="Yes, Delete" cancelText="Cancel" onConfirm={handleConfirmDelete} onCancel={handleCancelDelete} />
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   );
 }

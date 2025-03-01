@@ -39,16 +39,13 @@ export default function LoanRequests({ requests: parentRequests = [], onSaveRequ
   // Confirm delete and update state
   const handleConfirmDelete = async () => {
     if (!deleteRequest) return;
-
     try {
       await deleteRequests(deleteRequest._id);
-
       // Update local state
       const updatedRequests = requests.filter(req => req._id !== deleteRequest._id);
       setRequests(updatedRequests);
       toast.success("Loan request deleted successfully!");
-
-      // Notify parent to update its state (ensures changes persist on refresh)
+      // Notify parent to update its state
       if (onSaveRequest) {
         onSaveRequest(updatedRequests);
       }
@@ -69,9 +66,6 @@ export default function LoanRequests({ requests: parentRequests = [], onSaveRequ
 
   return (
     <div className="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 flex flex-col">
-     
-
-
       {/* Table */}
       <div className="overflow-x-auto px-4">
         <table className="min-w-full bg-white border text-sm rounded-md overflow-hidden dark:bg-gray-800">
@@ -96,28 +90,50 @@ export default function LoanRequests({ requests: parentRequests = [], onSaveRequ
                 <td className="px-4 py-2">{new Date(loan.requestedAt).toLocaleString()}</td>
                 <td className="px-4 py-2">{loan.amount?.toLocaleString() ?? '--'}</td>
                 <td className="px-4 py-2">{loan.tenure ?? '--'}</td>
-                <td className="px-4 py-2">{loan.interestRate ? `${loan.interestRate}%` : '--'}</td>
+                <td className="px-4 py-2">
+                  {loan.interestRate ? `${loan.interestRate}%` : '--'}
+                </td>
                 <td className="px-4 py-2">{loan.monthlyRepayment?.toLocaleString() ?? '--'}</td>
                 <td className="px-4 py-2">
                   {loan.status === 'Approved' ? (
-                    <span className="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-md">Approved</span>
+                    <span className="px-2 py-1 text-xs font-semibold text-green-800 bg-green-100 rounded-md">
+                      Approved
+                    </span>
                   ) : loan.status === 'Pending' ? (
-                    <span className="inline-block px-2 py-1 text-xs font-semibold text-orange-800 bg-orange-100 rounded-md dark:bg-orange-900 dark:text-orange-100">Pending</span>
+                    <span className="inline-block px-2 py-1 text-xs font-semibold text-orange-800 bg-orange-100 rounded-md dark:bg-orange-900 dark:text-orange-100">
+                      Pending
+                    </span>
                   ) : loan.status === 'Rejected' ? (
-                    <span className="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-md">Rejected</span>
+                    <span className="px-2 py-1 text-xs font-semibold text-red-800 bg-red-100 rounded-md">
+                      Rejected
+                    </span>
                   ) : (
-                    <span className="px-2 py-1 text-xs font-semibold text-gray-700 bg-gray-100 rounded-md">{loan.status}</span>
+                    <span className="px-2 py-1 text-xs font-semibold text-gray-700 bg-gray-100 rounded-md">
+                      {loan.status}
+                    </span>
                   )}
                 </td>
                 <td className="px-4 py-2">
                   <div className="flex items-center gap-2 text-lg">
-                    <button title="View" onClick={() => setViewRequest(loan)} className="text-blue-500 hover:text-blue-700">
+                    <button
+                      title="View"
+                      onClick={() => setViewRequest(loan)}
+                      className="text-blue-500 hover:text-blue-700"
+                    >
                       <FaRegEye />
                     </button>
-                    <button title="Edit" onClick={() => setEditRequest(loan)} className="text-green-500 hover:text-green-700">
+                    <button
+                      title="Edit"
+                      onClick={() => setEditRequest(loan)}
+                      className="text-green-500 hover:text-green-700"
+                    >
                       <FaPen />
                     </button>
-                    <button title="Delete" onClick={() => handleDeleteClick(loan)} className="text-red-500 hover:text-red-700">
+                    <button
+                      title="Delete"
+                      onClick={() => handleDeleteClick(loan)}
+                      className="text-red-500 hover:text-red-700"
+                    >
                       <FaTrash />
                     </button>
                   </div>
@@ -126,7 +142,9 @@ export default function LoanRequests({ requests: parentRequests = [], onSaveRequ
             ))}
             {requests.length === 0 && (
               <tr>
-                <td colSpan={9} className="px-4 py-4 text-center text-gray-500">No loan requests found.</td>
+                <td colSpan={9} className="px-4 py-4 text-center text-gray-500">
+                  No loan requests found.
+                </td>
               </tr>
             )}
           </tbody>
@@ -140,9 +158,15 @@ export default function LoanRequests({ requests: parentRequests = [], onSaveRequ
       <LoanRequestEditModal request={editRequest} onClose={() => setEditRequest(null)} />
 
       {/* Delete Confirmation */}
-      <ConfirmationDialog open={isDeleteDialogOpen} title="Delete Confirmation" 
+      <ConfirmationDialog
+        open={isDeleteDialogOpen}
+        title="Delete Confirmation"
         message={`Delete loan request for Employee: ${deleteRequest?.employeeId}?`}
-        confirmText="Yes, Delete" cancelText="Cancel" onConfirm={handleConfirmDelete} onCancel={handleCancelDelete} />
+        confirmText="Yes, Delete"
+        cancelText="Cancel"
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCancelDelete}
+      />
     </div>
   );
 }

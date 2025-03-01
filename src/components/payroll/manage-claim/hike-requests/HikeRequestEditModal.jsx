@@ -1,27 +1,37 @@
-import  { useState } from 'react';
+import { useState } from 'react';
+import toast from "react-hot-toast";
+import { updateHikeRequest } from '../../../../service/payrollService';
 
 export default function HikeRequestEditModal({ request, onClose, onSave }) {
-  // If no request is passed, don't render anything
   if (!request) return null;
 
-  // Local state for remarks or any other fields you want to edit
+  // Local state for remarks
   const [remarks, setRemarks] = useState('');
 
-  // Handler for "Accept" or "Reject"
-  const handleAction = (newStatus) => {
-    // Optionally, send the data to your API or parent
-    onSave({
-      ...request,
-      status: newStatus,
-      remarks: remarks.trim(),
-    });
-    // Then close the modal
-    onClose();
+  // Handler for Accept or Reject action that calls the API
+  const handleAction = async (newStatus) => {
+    try {
+      // Create updated object with new status and remarks
+      const updatedRequest = {
+        ...request,
+        status: newStatus,
+        remarks: remarks.trim(),
+      };
+      // Call the API to update the hike request
+      const response = await updateHikeRequest(request._id, updatedRequest);
+      // Call onSave with the updated request so that the parent can update its array
+      onSave(response.data);
+      toast.success("Hike request updated successfully!");
+      onClose();
+    } catch (error) {
+      console.error("Error updating hike request:", error);
+      toast.error("Failed to update hike request");
+    }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      {/* Modal content */}
+      {/* Modal Content */}
       <div className="bg-white dark:bg-gray-800 rounded-md shadow-lg w-full max-w-md p-6 relative mx-2">
         {/* Close Button */}
         <button
@@ -32,15 +42,23 @@ export default function HikeRequestEditModal({ request, onClose, onSave }) {
         </button>
 
         <h2 className="text-lg md:text-xl font-semibold mb-3">
-          Hike Request of {request.name} ({request.empId})
+          Hike Request of {request.name} ({request.employeeId})
         </h2>
         
-        {/* Basic details */}
+        {/* Basic Details */}
         <div className="mb-2">
-          <strong>Requested At:</strong> {request.requestedAt}
-        </div>
-        <div className="mb-2">
-          <strong>Salary Hike (%):</strong> {request.salaryHike}
+  <strong>Requested At:</strong>{" "}
+  {new Date(request.requestedAt).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })}
+</div>
+<div className="mb-2">
+          <strong>Salary Hike (%):</strong> {request.salaryHikePercentage}
         </div>
         <div className="mb-2">
           <strong>Status:</strong> {request.status}
@@ -48,11 +66,11 @@ export default function HikeRequestEditModal({ request, onClose, onSave }) {
         <div className="mb-4">
           <strong>Description:</strong>
           <p className="mt-1">
-            {request.description || 'No description provided.'}
+            {request.reason || 'No description provided.'}
           </p>
         </div>
 
-        {/* Edit/Process Section */}
+        {/* Process Request Section */}
         <h3 className="font-semibold mb-2">Process Request</h3>
         <div className="mb-3">
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -67,16 +85,16 @@ export default function HikeRequestEditModal({ request, onClose, onSave }) {
           />
         </div>
 
-        {/* Buttons */}
+        {/* Action Buttons */}
         <div className="flex justify-end gap-2">
           <button
-            onClick={() => handleAction('Reject')}
+            onClick={() => handleAction('Rejected')}
             className="px-4 py-2 border border-red-600 text-red-600 rounded-md hover:bg-red-50 dark:hover:bg-red-900"
           >
             Reject
           </button>
           <button
-            onClick={() => handleAction('Approve')}
+            onClick={() => handleAction('Approved')}
             className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
           >
             Accept
