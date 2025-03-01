@@ -183,8 +183,6 @@ export const updateHikeRequest = async (id, data) => {
   }
 };
 
-
-
 export const updateLoanRequest = async (id, data) => {
   try {
     const response = await axiosInstance.put(`/request/loan/${id}`, data);
@@ -230,3 +228,14 @@ export const updateReimbursementRequest = async (req, res) => {
     });
   }
 };
+
+export async function updateAdvanceRequest(id, data) {
+  try {
+    // Call the route you already created: /v1/request/advance/:id
+    const response = await axiosInstance.put(`/v1/request/advance/${id}`, data);
+    return response.data?.data || [];
+  } catch (error) {
+    console.error("Error updating Advance request:", error);
+    throw new Error("Failed to update the Advance request.");
+  }
+}

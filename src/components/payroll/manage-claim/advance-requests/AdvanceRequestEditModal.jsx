@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 
-export default function AdvanceRequestEditModal({ request, onClose, onProcess }) {
+export default function AdvanceRequestEditModal({
+  request,
+  onClose,
+  onProcess,
+}) {
   if (!request) return null;
 
   // Local state for remarks
-  const [remarks, setRemarks] = useState('');
+  const [remarks, setRemarks] = useState("");
 
   const handleAction = (newStatus) => {
     if (onProcess) {
@@ -18,13 +22,13 @@ export default function AdvanceRequestEditModal({ request, onClose, onProcess })
   };
 
   // Destructure dynamic values from request (no static defaults)
-  const { empId, name, requestedAt, advanceAmount, status, description } = request;
+  const { empId, name, requestedAt, amount, status, description } = request;
 
   // Render status with colored bullet
   const renderStatus = () => {
-    let dotColor = 'bg-yellow-500'; // default "Pending"
-    if (status === 'Approved') dotColor = 'bg-green-500';
-    else if (status === 'Rejected') dotColor = 'bg-red-500';
+    let dotColor = "bg-yellow-500"; // default "Pending"
+    if (status === "Approved") dotColor = "bg-green-500";
+    else if (status === "Rejected") dotColor = "bg-red-500";
     return (
       <div className="flex items-center gap-2">
         <span className={`inline-block w-2 h-2 rounded-full ${dotColor}`} />
@@ -101,13 +105,13 @@ export default function AdvanceRequestEditModal({ request, onClose, onProcess })
         {/* Buttons */}
         <div className="flex justify-end gap-3">
           <button
-            onClick={() => handleAction('Rejected')}
+            onClick={() => handleAction("Rejected")}
             className="px-4 py-2 border border-red-600 text-red-600 rounded-md hover:bg-red-50 dark:hover:bg-red-900"
           >
             Reject
           </button>
           <button
-            onClick={() => handleAction('Approved')}
+            onClick={() => handleAction("Approved")}
             className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"
           >
             Accept
