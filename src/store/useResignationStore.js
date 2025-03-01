@@ -138,6 +138,7 @@
 
 
 
+// useResignationStore.js
 import { create } from 'zustand';
 import axiosInstance from '../service/axiosInstance';
 import { toast } from 'react-toastify';
@@ -148,11 +149,9 @@ const useResignationStore = create((set, get) => ({
   loading: false,
   error: null,
 
-  // Employee-specific state: latest resignation record
+  // Employee-specific state
   resignation: null,
-
-  // ===== NEW: hold the FNF details for the currently logged-in user =====
-  employeeFnf: null,
+  employeeFnf: null, // <-- FNF record for the employee
 
   // Superadmin-specific state
   chartData: null,
@@ -166,9 +165,9 @@ const useResignationStore = create((set, get) => ({
   },
   currentPage: 1,
 
-  // ---------------------------
+  //------------------------------------------
   // Employee Methods
-  // ---------------------------
+  //------------------------------------------
 
   // Fetch resignation history for an employee
   fetchEmployeeResignations: async () => {
@@ -190,12 +189,11 @@ const useResignationStore = create((set, get) => ({
     }
   },
 
-  // ===== NEW: fetch employee FNF details =====
+  // Fetch the employee's FNF details
   fetchEmployeeFnf: async () => {
     set({ loading: true, error: null });
     try {
       const res = await axiosInstance.get('/fnf/status');
-      // If there's no FNF record yet, API might return an empty object or null
       set({
         employeeFnf: res.data?.fnf || null,
         loading: false,
@@ -209,7 +207,7 @@ const useResignationStore = create((set, get) => ({
     }
   },
 
-  // Submit resignation with date validation
+  // Submit a new resignation
   submitResignation: async ({ resignationDate, lastWorkingDay, comments }) => {
     if (new Date(resignationDate) > new Date(lastWorkingDay)) {
       toast.error("Last working day must be after resignation date.");
@@ -222,7 +220,6 @@ const useResignationStore = create((set, get) => ({
         comments,
       });
       toast.success(res.data.message);
-      // Refresh employee resignation data after submission
       await get().fetchEmployeeResignations();
       return res.data;
     } catch (error) {
@@ -231,7 +228,7 @@ const useResignationStore = create((set, get) => ({
     }
   },
 
-  // Withdraw resignation
+  // Withdraw a resignation
   withdrawResignation: async () => {
     try {
       const res = await axiosInstance.delete('/resignation/withdraw');
@@ -246,12 +243,12 @@ const useResignationStore = create((set, get) => ({
     }
   },
 
-  // Request FNF (Full and Final Settlement)
+  // Request FNF
   requestFNF: async () => {
     try {
       const res = await axiosInstance.post('/fnf/request', {});
       toast.success(res.data.message);
-      // Refresh both resignation & fnf
+      // Refresh resignation & FNF details after requesting
       await get().fetchEmployeeResignations();
       await get().fetchEmployeeFnf();
       return res.data;
@@ -261,9 +258,9 @@ const useResignationStore = create((set, get) => ({
     }
   },
 
-  // ---------------------------
-  // Superadmin Methods
-  // ---------------------------
+  //------------------------------------------
+  // Superadmin Methods (Optional)
+  //------------------------------------------
   fetchSuperadminResignations: async () => {
     set({ loading: true });
     const { filters, currentPage } = get();
@@ -282,15 +279,16 @@ const useResignationStore = create((set, get) => ({
         loading: false,
       });
     } catch (error) {
-      console.error("Error fetching resignations", error);
       toast.error(error.response?.data?.message || "Error fetching resignations");
       set({ loading: false });
     }
   },
 
+  // Set or update filters for superadmin usage
   setFilters: (newFilters) =>
     set((state) => ({ filters: { ...state.filters, ...newFilters } })),
 
+  // Set current page for pagination
   setCurrentPage: (page) => set({ currentPage: page }),
 }));
 

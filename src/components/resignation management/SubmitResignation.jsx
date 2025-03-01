@@ -246,18 +246,20 @@
 // }
 
 
-
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 import SubmitResignationModal from "./model/SubmitResignationModal";
-import ConfirmationDialog from "../../components/common/ConfirmationDialog"; 
+import ConfirmationDialog from "../../components/common/ConfirmationDialog";
 import useResignationStore from "../../store/useResignationStore";
 
-// ----- Example modal to show FNF details -----
+// ----------------------------------
+// Modal to show FNF details
+// ----------------------------------
 function FnfDetailsModal({ isOpen, onClose, fnf }) {
-  if (!isOpen || !fnf) return null;
+  if (!isOpen) return null;
 
+  // If fnf is null, we can show a message that no details exist yet.
   return (
     <div className="fixed z-50 inset-0 flex items-center justify-center p-4">
       {/* Modal backdrop */}
@@ -268,38 +270,43 @@ function FnfDetailsModal({ isOpen, onClose, fnf }) {
 
       <div className="relative bg-white dark:bg-gray-800 p-6 rounded shadow-lg w-full max-w-md">
         <h2 className="text-xl font-bold mb-4">FNF Details</h2>
-        <p>
-          <strong>Status:</strong> {fnf.status}
-        </p>
-        <p>
-          <strong>FNF Amount:</strong> {fnf.fnfAmount}
-        </p>
-        <p>
-          <strong>Deductions:</strong> {fnf.deductions}
-        </p>
-        <p>
-          <strong>Net Payable:</strong> {fnf.netPayable}
-        </p>
-
-        {fnf.processedBy && (
-          <div className="mt-2">
+        {fnf ? (
+          <>
             <p>
-              <strong>Processed By:</strong>{" "}
-              {fnf.processedBy.first_Name} {fnf.processedBy.last_Name} (
-              {fnf.processedBy.employee_Id})
+              <strong>Status:</strong> {fnf.status}
             </p>
             <p>
-              <strong>Processed At:</strong>{" "}
-              {fnf.processedAt
-                ? new Date(fnf.processedAt).toLocaleString()
-                : "N/A"}
+              <strong>FNF Amount:</strong> {fnf.fnfAmount}
             </p>
-          </div>
+            <p>
+              <strong>Deductions:</strong> {fnf.deductions}
+            </p>
+            <p>
+              <strong>Net Payable:</strong> {fnf.netPayable}
+            </p>
+            {fnf.processedBy && (
+              <div className="mt-2">
+                <p>
+                  <strong>Processed By:</strong>{" "}
+                  {fnf.processedBy.first_Name} {fnf.processedBy.last_Name} (
+                  {fnf.processedBy.employee_Id})
+                </p>
+                <p>
+                  <strong>Processed At:</strong>{" "}
+                  {fnf.processedAt
+                    ? new Date(fnf.processedAt).toLocaleString()
+                    : "N/A"}
+                </p>
+              </div>
+            )}
+          </>
+        ) : (
+          <p>No FNF record found yet.</p>
         )}
 
         <button
           onClick={onClose}
-          className="mt-4 px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded-lg"
+          className="mt-4 px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-800"
         >
           Close
         </button>
@@ -308,32 +315,37 @@ function FnfDetailsModal({ isOpen, onClose, fnf }) {
   );
 }
 
+// ----------------------------------
+// Main SubmitResignation component
+// ----------------------------------
 export default function SubmitResignation() {
   const {
     resignations,
     resignation,
+    employeeFnf,
     loading,
     error,
-    employeeFnf,           // ---- NEW: FNF details from store
     fetchEmployeeResignations,
-    fetchEmployeeFnf,      // ---- NEW: fetch FNF method
+    fetchEmployeeFnf,
     withdrawResignation,
     requestFNF,
   } = useResignationStore();
 
+  // Local states
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [showWithdrawConfirm, setShowWithdrawConfirm] = useState(false);
   const [showRequestFNFConfirm, setShowRequestFNFConfirm] = useState(false);
 
-  // ---- NEW: FNF modal ----
+  // Control whether we show the FNF modal
   const [showFnfModal, setShowFnfModal] = useState(false);
 
+  // Fetch data on mount
   useEffect(() => {
-    // Fetch both resignation(s) and FNF details on load:
     fetchEmployeeResignations();
     fetchEmployeeFnf();
   }, [fetchEmployeeResignations, fetchEmployeeFnf]);
 
+  // Handlers
   const handleWithdrawResignation = async () => {
     try {
       await withdrawResignation();
@@ -350,19 +362,20 @@ export default function SubmitResignation() {
       await requestFNF();
       toast.success("FNF requested successfully!");
     } catch (err) {
-      toast.error("Error requesting FNF.");
+      toast.error(err.response?.data?.message || "Error requesting FNF.");
     } finally {
       setShowRequestFNFConfirm(false);
     }
   };
 
-  // Refresh the resignation list after submission
   const handleResignationSubmit = async () => {
     setIsModalOpen(false);
+    // Refresh data
     await fetchEmployeeResignations();
     await fetchEmployeeFnf();
   };
 
+  // Loading / Error states
   if (loading) {
     return <p className="text-center p-4">Loading...</p>;
   }
@@ -386,6 +399,7 @@ export default function SubmitResignation() {
 
       {/* Resignation Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Left column: current resignation */}
         {resignation ? (
           <div className="border border-green-500 p-5 rounded-lg bg-white dark:bg-gray-800 shadow">
             <h2 className="text-xl font-bold text-blue-600 dark:text-blue-400">
@@ -420,8 +434,7 @@ export default function SubmitResignation() {
               <p className="mt-2">Your resignation has been rejected.</p>
             )}
             <p className="mt-2 font-semibold">
-              Requested At:{" "}
-              {new Date(resignation.createdAt).toLocaleString()}
+              Requested At: {new Date(resignation.createdAt).toLocaleString()}
             </p>
             {resignation.status === "Pending" && (
               <button
@@ -436,66 +449,64 @@ export default function SubmitResignation() {
           <p>No recent resignations found.</p>
         )}
 
-        {/* FNF Details */}
+        {/* Right column: FNF Details */}
         <div className="border border-green-500 p-5 rounded-lg bg-white dark:bg-gray-800 shadow">
           <h2 className="text-xl font-bold text-blue-600 dark:text-blue-400">
             FNF Details
           </h2>
 
-          {/* 
-            If there's no resignation, or it is not approved yet, 
-            we often can't request FNF. Adjust logic as needed.
-          */}
-          {(!resignation || resignation.status !== "Approved") && (
+          {resignation && resignation.status === "Approved" ? (
+            <>
+              <p className="mt-2">
+                <span className="font-semibold">Status: </span>
+                <span className="px-2 py-1 text-sm font-medium bg-yellow-100 dark:bg-yellow-800 text-yellow-700 dark:text-yellow-300 rounded-md">
+                  {/* If we have an FNF record, display its status; otherwise fallback */}
+                  {employeeFnf?.status || "No FNF record yet"}
+                </span>
+              </p>
+
+              {/* If FNF record exists, you can show more info or a small message */}
+              {employeeFnf ? (
+                <>
+                  {employeeFnf.status === "Processed" ? (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                      FNF is processed. View details below.
+                    </p>
+                  ) : (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                      FNF request is in progress or pending.
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                  You haven’t requested FNF yet.
+                </p>
+              )}
+
+              {/* Always show BOTH buttons */}
+              <div className="mt-4 space-x-4">
+                {/* Request FNF button */}
+                <button
+                  onClick={() => setShowRequestFNFConfirm(true)}
+                  className="px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-800"
+                >
+                  Request FNF
+                </button>
+
+                {/* View FNF Details button */}
+                <button
+                  onClick={() => setShowFnfModal(true)}
+                  className="px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-800"
+                >
+                  View FNF Details
+                </button>
+              </div>
+            </>
+          ) : (
             <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
               FNF is only available once your resignation is approved.
             </p>
-          )}
-
-          {/* If the user has an approved resignation, check if we have an existing FNF record */}
-          {resignation && resignation.status === "Approved" && (
-            <>
-              {employeeFnf ? (
-                // If we already have an FNF record
-                <>
-                  <p className="mt-2">
-                    <span className="font-semibold">Status: </span>
-                    <span className="px-2 py-1 text-sm font-medium bg-yellow-100 dark:bg-yellow-800 text-yellow-700 dark:text-yellow-300 rounded-md">
-                      {employeeFnf.status}
-                    </span>
-                  </p>
-                  {employeeFnf.status === "Processed" && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                      Your FNF is processed. Click below to view details.
-                    </p>
-                  )}
-                  {employeeFnf.status !== "Processed" && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
-                      Your FNF request is in progress.
-                    </p>
-                  )}
-                  <button
-                    onClick={() => setShowFnfModal(true)}
-                    className="mt-4 px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-800"
-                  >
-                    View FNF Details
-                  </button>
-                </>
-              ) : (
-                // No existing FNF record, so let user request FNF
-                <>
-                  <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-                    You haven&apos;t requested FNF yet.
-                  </p>
-                  <button
-                    onClick={() => setShowRequestFNFConfirm(true)}
-                    className="mt-4 px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-800"
-                  >
-                    Request FNF
-                  </button>
-                </>
-              )}
-            </>
           )}
         </div>
       </div>
@@ -566,7 +577,7 @@ export default function SubmitResignation() {
         onSubmit={handleResignationSubmit}
       />
 
-      {/* Confirmation Dialog for Withdrawing Resignation */}
+      {/* Confirmation Dialog for Withdraw */}
       <ConfirmationDialog
         open={showWithdrawConfirm}
         title="Withdraw Resignation"
@@ -577,7 +588,7 @@ export default function SubmitResignation() {
         cancelText="Cancel"
       />
 
-      {/* Confirmation Dialog for FNF Request */}
+      {/* Confirmation Dialog for Request FNF */}
       <ConfirmationDialog
         open={showRequestFNFConfirm}
         title="Request FNF"
