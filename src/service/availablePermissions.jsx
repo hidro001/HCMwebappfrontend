@@ -127,6 +127,10 @@ const availablePermission = [
     name: "All Dashlets",
     permission: "superAdminRaciAllDashlets",
   },
+  {
+    name: "Only Employee View",
+    permission: "OnlyEmployeeView",
+  },
 ];
 
 const availablePermissionManager = [
