@@ -248,23 +248,23 @@ export default function AllDashlets() {
               <StreamliningVerificationChart />
             </div>
           )}
-          {shouldShow("SkillGapAnalysisCard") && (
+          {/* {shouldShow("SkillGapAnalysisCard") && (
             <div className="mt-3">
               <SkillGapAnalysisCard />
             </div>
-          )}
+          )} */}
 
-          {shouldShow("TrainingEffectivenessCard") && (
+          {/* {shouldShow("TrainingEffectivenessCard") && (
             <div className="mt-3">
               <TrainingEffectivenessCard />
             </div>
-          )}
+          )} */}
 
-          {shouldShow("InternalMobilityTrendsCard") && (
+          {/* {shouldShow("InternalMobilityTrendsCard") && (
             <div className="mt-3">
               <InternalMobilityTrendsCard />
             </div>
-          )}
+          )} */}
 
           {/* {shouldShow("ImpactOnPerformanceCard") && (
             <div className="mt-3">
