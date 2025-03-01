@@ -820,7 +820,7 @@ export default function NotificationsPage() {
                       <FaEnvelopeOpenText />
                     </button>
                   )}
-                  <button
+                  {/* <button
                     onClick={(e) => {
                       e.stopPropagation();
                       handleDelete(notification.id);
@@ -829,7 +829,7 @@ export default function NotificationsPage() {
                     className="p-2 text-red-500 hover:text-red-700"
                   >
                     <FaTrash />
-                  </button>
+                  </button> */}
                 </div>
               </li>
             ))}

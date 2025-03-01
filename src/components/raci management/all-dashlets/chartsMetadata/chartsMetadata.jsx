@@ -44,26 +44,26 @@ export const CHARTS_METADATA = [
     label: "Nationality & Marital Status",
     component: DemographicNationalMarital,
   },
-  {
-    id: "SkillGapAnalysisCard",
-    label: "Skill Gap Analysis",
-    component: SkillGapAnalysisCard,
-  },
+  // {
+  //   id: "SkillGapAnalysisCard",
+  //   label: "Skill Gap Analysis",
+  //   component: SkillGapAnalysisCard,
+  // },
   {
     id: "CompensationBenchmarkingCard",
     label: "Compensation Benchmarking",
     component: CompensationBenchmarkingCard,
   },
-  {
-    id: "TrainingEffectivenessCard",
-    label: "Training Effectiveness",
-    component: TrainingEffectivenessCard,
-  },
-  {
-    id: "InternalMobilityTrendsCard",
-    label: "Internal Mobility Trends",
-    component: InternalMobilityTrendsCard,
-  },
+  // {
+  //   id: "TrainingEffectivenessCard",
+  //   label: "Training Effectiveness",
+  //   component: TrainingEffectivenessCard,
+  // },
+  // {
+  //   id: "InternalMobilityTrendsCard",
+  //   label: "Internal Mobility Trends",
+  //   component: InternalMobilityTrendsCard,
+  // },
   // {
   //   id: "ImpactOnPerformanceCard",
   //   label: "Impact on Performance",
