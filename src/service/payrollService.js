@@ -176,17 +176,19 @@ export async function getPayrollCount() {
 export const updateHikeRequest = async (id, data) => {
   try {
     const response = await axiosInstance.put(`/request/hike/${id}`, data);
-    return response;
+    return response.data;
   } catch (error) {
     console.error("Error updating hike request:", error);
     throw error;
   }
 };
 
+
+
 export const updateLoanRequest = async (id, data) => {
   try {
     const response = await axiosInstance.put(`/request/loan/${id}`, data);
-    return response;
+    return response.data;
   } catch (error) {
     console.error("Error updating loan request:", error);
     throw error;

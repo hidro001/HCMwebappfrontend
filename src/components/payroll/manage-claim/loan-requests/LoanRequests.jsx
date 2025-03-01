@@ -17,18 +17,28 @@ import LoanRequestViewModal from './LoanRequestViewModal';
 import LoanRequestEditModal from './LoanRequestEditModal';
 
 export default function LoanRequests({ requests: parentRequests = [], onSaveRequest }) {
-  // Local state to manage loan requests
-  const [requests, setRequests] = useState(parentRequests);
+  // Ensure the local state is an array
+  const [requests, setRequests] = useState(Array.isArray(parentRequests) ? parentRequests : []);
 
   // Sync local state when parent state updates
   useEffect(() => {
-    setRequests(parentRequests);
+    setRequests(Array.isArray(parentRequests) ? parentRequests : []);
   }, [parentRequests]);
 
   const [viewRequest, setViewRequest] = useState(null);
   const [editRequest, setEditRequest] = useState(null);
   const [deleteRequest, setDeleteRequest] = useState(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  // Update handler: update the loan request in the local state array
+  const handleUpdateRequest = (updatedRequest) => {
+    setRequests(prev =>
+      prev.map(req => (req._id === updatedRequest._id ? updatedRequest : req))
+    );
+    if (onSaveRequest) {
+      onSaveRequest(requests);
+    }
+  };
 
   // Handle delete action
   const handleDeleteClick = (req) => {
@@ -41,11 +51,9 @@ export default function LoanRequests({ requests: parentRequests = [], onSaveRequ
     if (!deleteRequest) return;
     try {
       await deleteRequests(deleteRequest._id);
-      // Update local state
       const updatedRequests = requests.filter(req => req._id !== deleteRequest._id);
       setRequests(updatedRequests);
       toast.success("Loan request deleted successfully!");
-      // Notify parent to update its state
       if (onSaveRequest) {
         onSaveRequest(updatedRequests);
       }
@@ -155,7 +163,7 @@ export default function LoanRequests({ requests: parentRequests = [], onSaveRequ
       <LoanRequestViewModal request={viewRequest} onClose={() => setViewRequest(null)} />
 
       {/* Edit Modal */}
-      <LoanRequestEditModal request={editRequest} onClose={() => setEditRequest(null)} />
+      <LoanRequestEditModal request={editRequest} onClose={() => setEditRequest(null)} onProcess={handleUpdateRequest} />
 
       {/* Delete Confirmation */}
       <ConfirmationDialog
