@@ -21,8 +21,10 @@ export default function LoanRequestEditModal({ request, onClose, onProcess }) {
       // Call the API to update the loan request
       const updatedData = await updateLoanRequest(request._id, updatedRequest);
       // Call the parent's update handler with the updated request object
-      onProcess(updatedData);
       toast.success("Loan request updated successfully!");
+
+      onProcess(updatedData);
+   
       onClose();
     } catch (error) {
       console.error("Error updating loan request:", error);
