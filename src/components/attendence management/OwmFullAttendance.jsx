@@ -609,6 +609,15 @@ import { toast } from "react-hot-toast";
 import ConfirmationDialog from "../common/ConfirmationDialog";
 // If your store has a PDF method, import that from your Zustand store
 import { useOwnFullAttendanceStore } from "../../store/useOwnFullAttendanceStore";
+import {
+  FiBriefcase,
+  FiCalendar,
+  FiAlertTriangle,
+  FiSun,
+  FiMoon,
+  FiCheckCircle,
+  FiLogOut,
+} from "react-icons/fi";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
@@ -1648,33 +1657,61 @@ export default function OwmFullAttendance() {
           <h2 className="font-semibold text-gray-700 dark:text-gray-200 mb-3 text-lg">
             Employee Overview
           </h2>
+
           <div className="space-y-3 text-sm">
             <div className="flex items-center justify-between">
-              <span>Total Shifts</span>
+              <span>
+                <FiBriefcase className="inline-block mr-1 text-blue-500 animate-bounce" />
+                Total Shifts
+              </span>
               <span className="font-medium">{totalShifts}</span>
             </div>
+
             <div className="flex items-center justify-between">
-              <span>Total Leaves</span>
+              <span>
+                <FiCalendar className="inline-block mr-1 text-red-500 animate-pulse" />
+                Total Leaves
+              </span>
               <span className="font-medium">{totalLeaves}</span>
             </div>
+
             <div className="flex items-center justify-between">
-              <span>Total Lates</span>
+              <span>
+                <FiAlertTriangle className="inline-block mr-1 text-yellow-500 animate-ping" />
+                Total Lates
+              </span>
               <span className="font-medium">{totalLates}</span>
             </div>
+
             <div className="flex items-center justify-between">
-              <span>Half Days</span>
+              <span>
+                <FiSun className="inline-block mr-1 text-purple-500 animate-bounce" />
+                Half Days
+              </span>
               <span className="font-medium">{halfDays}</span>
             </div>
+
             <div className="flex items-center justify-between">
-              <span>Not Even Half Days</span>
+              <span>
+                <FiMoon className="inline-block mr-1 text-pink-500 animate-spin" />
+                Not Even Half Days
+              </span>
               <span className="font-medium">{notEvenHalfDays}</span>
             </div>
+
             <div className="flex items-center justify-between">
-              <span>Completed Shifts</span>
+              <span>
+                <FiCheckCircle className="inline-block mr-1 text-green-500 animate-pulse" />
+                Completed Shifts
+              </span>
               <span className="font-medium">{totalCompletedDays}</span>
             </div>
+
             <div className="flex items-center justify-between">
-              <span>Not Logged Out</span>
+              <span>
+                <FiLogOut className="inline-block mr-1 text-orange-500 animate-bounce" />
+                Not Logged Out
+              </span>
               <span className="font-medium">{notLoggedOut}</span>
             </div>
           </div>
