@@ -1,55 +1,150 @@
 const availablePermission = [
-  // -- Original items (60) from availablePermission --
+  // ------------------------------ Dashboard Permissions ------------------------------
   { name: "Super Admin Dashboard", permission: "SuperDashboard" },
   { name: "Employee Dashboard", permission: "employeeDashboard" },
+
+  // ------------------------------ Announcement Management Permissions ------------------------------
+
   { name: "Post Announcement", permission: "AddAnnouncement" },
   { name: "View Announcements", permission: "ViewAnnouncement" },
+
+  // ------------------------------ Engagement Management Permissions ------------------------------
+
   { name: "View Engagement Dashboard", permission: "engagement" },
   { name: "Engagement Permission Dashboard", permission: "engagementManager" },
-  { name: "Manage Employees (Main)", permission: "mainmanageemployees" },
-  { name: "Super Admin Add Employee", permission: "addEmployeeAdmin" },
-  { name: "Super Admin Update Employee", permission: "updateEmployeeAdmin" },
+
+  // ------------------------------ Employee Management Permissions ------------------------------
+
   {
-    name: "Active Inactive Employee",
+    name: "Employee Management Main Dashboard",
+    permission: "mainmanageemployees",
+  },
+  {
+    name: "Super Admin Add Employee Have AlL Permission",
+    permission: "addEmployeeAdmin",
+  },
+
+  {
+    name: "Manager Add Employee Have Limited Permisiions ",
+    permission: "addEmployeeManager",
+  },
+  { name: "See All Subordinate Employess ", permission: "updateEmployeeAdmin" },
+
+  {
+    name: "Give Permission To Change Subordinate Employeee Status (active/inactive)",
     permission: "active/InactiveEmployeeAdmin",
   },
-  { name: "Delete Employeee", permission: "deleteEmployeeAdmin" },
-  { name: "All Employees Management", permission: "updateEmployeeSuperAdmin" },
+  {
+    name: "Give Permission To View Subordinate Employee ",
+    permission: "OnlyEmployeeView",
+  },
+  {
+    name: "Give Permission To Update Subordinate Employee",
+    permission: "updateEmployeeManager",
+  },
+  {
+    name: "Give Permission To Delete Subordinate Employeee",
+    permission: "deleteEmployeeAdmin",
+  },
+  {
+    name: "Super Admin See All Employess and Update,delete,change status,delete of any employee",
+    permission: "updateEmployeeSuperAdmin",
+  },
+
+  // ------------------------------ Asset Management Permissions ------------------------------
   { name: "Asset Management", permission: "assignAssets" },
-  { name: "Attendance Dashboard", permission: "MainAttendance" },
-  { name: "Subordinates Attendance", permission: "viewAttendance" },
-  { name: "View My Attendance", permission: "myAttendance" },
-  { name: "All Employee Attendance", permission: "viewallAttendance" },
-  { name: "Manage Tickets", permission: "manageIssuesAdmin" },
-  { name: "Raise Ticket", permission: "getSupport" },
-  { name: "All Tickets", permission: "IssueManagementSuperAdmin" },
-  { name: "POSH Manager", permission: "poshManager" },
-  { name: "POSH Employee", permission: "poshEmployee" },
-  { name: "Payroll Management", permission: "payroll" },
+
+  //Disciplinary Actions Permissions
+  { name: "Take Disciplinary actions", permission: "takeDisciplinaryAction" },
+  { name: "All disciplinary actions", permission: "viewDisciplinaryAction" },
+
+  // ------------------------------ Attendance ------------------------------
+  {
+    name: "Attendance Management Main Dashboard",
+    permission: "MainAttendance",
+  },
+  {
+    name: "View Subordinates Employess Attendance",
+    permission: "viewAttendance",
+  },
+  { name: "View Own Attendance", permission: "myAttendance" },
+  {
+    name: "Superadmin View All Employee Attendance",
+    permission: "viewallAttendance",
+  },
+  {
+    name: "Employee Can Request Hike, Advance, Loan, Reimbursement",
+    permission: "requestHikeAdvanceReimbursement",
+  },
+
+  // ------------------------------ Issue Management Permissions ------------------------------
+  {
+    name: "Managed Raised Ticket Own Department",
+    permission: "manageIssuesAdmin",
+  },
+  { name: "Raise Ticket Permission", permission: "getSupport" },
+  {
+    name: "SuperAdmin View All Raised Tickets Any Department",
+    permission: "IssueManagementSuperAdmin",
+  },
+  { name: "Managed Raised POSH Tickets", permission: "poshManager" },
+  { name: "Permission To File POSH ", permission: "poshEmployee" },
+
+  // ------------------------------ Payroll Management Permissions ------------------------------
+  { name: "Payroll Management", permission: "payrollMain" },
+  { name: "Manage Payroll", permission: "payrollManage" },
+  { name: "Manage Claims", permission: "payrollManageClaims" },
+
+  //----------------------------- Task Management Permissions ------------------------------
   { name: "Main Task Dashboard", permission: "ViewTaskManager" },
   { name: "Update Daily Task", permission: "updateTask" },
   { name: "Task Assignment Manager", permission: "ActionTrackerManager" },
+  { name: "Assigned Task", permission: "ViewTaskManagerEmployee" },
+  { name: "Daily Task", permission: "ActionTrackerManagerDaily" },
+
+  //----------------------------- Recruit Management Permissions ------------------------------
   {
-    name: "Recruit Management Dashboard",
+    name: "Recruit Management Main Dashboard",
     permission: "MainRecruitManagement",
   },
-  { name: "View All Vacancies", permission: "viewVacancies" },
-  { name: "Job Posting", permission: "jobPostingAdmin" },
-  { name: "HR Referral Dashboard", permission: "HRreferralDashboard" },
   {
-    name: "Performance Management Dashboard",
+    name: "View All Created Vacancies For All Employess and Also Can Reffer",
+    permission: "viewVacancies",
+  },
+  { name: "Create Job Posting", permission: "jobPostingAdmin" },
+  { name: "HR View All Referral Vancies", permission: "HRreferralDashboard" },
+  {
+    name: "HR View All Created Vancies And Assign Budget Update Statues Etc",
+    permission: "HRDashboardVacancies",
+  },
+
+
+
+  //----------------------------- Performance Management Permissions ------------------------------
+  {
+    name: "Performance Management Main Dashboard",
     permission: "MainPerformanceManagement",
   },
-  { name: "Post Top Performer", permission: "postTopPerformer" },
-  { name: "Set KPIs", permission: "setKPIs" },
-  { name: "Rate Subordinate", permission: "rateSubordinate" },
-  { name: "All Employee Ratings", permission: "viewAllEmployeeRatings" },
-  { name: "RACI Dashboard", permission: "RaciMain" },
+  { name: "Post Top Performer Employee", permission: "postTopPerformer" },
+  {
+    name: "View Top Performers Employes",
+    permission: "viewTopPerformers",
+  },
+  { name: "Set KPIs For Performance", permission: "setKPIs" },
+  { name: "Rate Subordinate Employess According to Performance ", permission: "rateSubordinate" },
+  { name: "SuperAdmin View All Employee Ratings", permission: "viewAllEmployeeRatings" },
+
+
+  //----------------------------- RACI Management Permissions ------------------------------
+  { name: "RACI Management Main Dashboard", permission: "RaciMain" },
   { name: "RACI Business", permission: "Raci2" },
   { name: "RACI Operations", permission: "superAdminRaci" },
-  { name: "Company Info", permission: "companyInfo" },
-  { name: "Company Settings", permission: "CompanySettings" },
-  { name: "Add Hierarchy / Role", permission: "addRole" },
+
+
+
+  { name: "Add Company Info (Address,Branch,logo,p.no etc )", permission: "companyInfo" },
+  { name: "Add Company Settings (Attendance Plocies,shift timing,Holiday,Payroll Cycle etc )", permission: "CompanySettings" },
+  { name: "Add Hierarchy (", permission: "addRole" },
   { name: "Update Policies", permission: "PolicySystem" },
   { name: "Update Induction", permission: "postInduction" },
   { name: "Break Settings", permission: "addBreak" },
@@ -65,14 +160,9 @@ const availablePermission = [
   { name: "Induction PPT's", permission: "inductionPPT" },
   { name: "Company Policies", permission: "companyPolicies" },
   { name: "Admin Panel Training", permission: "adminPanelTraining" },
-  { name: "Take Disciplinary actions", permission: "takeDisciplinaryAction" },
-  { name: "All disciplinary actions", permission: "viewDisciplinaryAction" },
+
   { name: "Organization Chart", permission: "organizationChart" },
   { name: "Vacancies List", permission: "HRDashboardVacancies" },
-  {
-    name: "Request Hike Advance Reimbursement",
-    permission: "requestHikeAdvanceReimbursement",
-  },
 
   // -- Newly added items (12) from availablePermissionManager that weren't in availablePermission --
   {
@@ -87,10 +177,7 @@ const availablePermission = [
     name: "View Orientation",
     permission: "viewInduction",
   },
-  {
-    name: "Manager Update Employee",
-    permission: "updateEmployeeManager",
-  },
+
   {
     name: "View Employee",
     permission: "viewEmployeeAdmin",
@@ -111,10 +198,7 @@ const availablePermission = [
     name: "View Subordinate Ratings",
     permission: "viewSubordinateRatings",
   },
-  {
-    name: "View Top Performers Employes",
-    permission: "viewTopPerformers",
-  },
+
   {
     name: "Submit Resignation",
     permission: "submitResignation",
