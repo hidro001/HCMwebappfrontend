@@ -374,6 +374,8 @@ export default function SubmitResignation() {
     return <p className="text-center p-4">Loading...</p>;
   }
 
+
+
   return (
     <div className="dark:bg-gray-900 bg-gray-100 text-gray-900 dark:text-gray-100 p-6 min-h-screen">
       {/* Header */}
