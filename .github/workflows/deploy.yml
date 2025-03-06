@@ -1,6 +1,10 @@
 # File: .github/workflows/deploy.yml
 name: Build and Deploy React App
 
+# Give write permission to contents
+permissions:
+  contents: write
+
 on:
   push:
     branches: ["build"] # triggers on every push to the "build" branch
