@@ -1,0 +1,61 @@
+# File: .github/workflows/deploy.yml
+name: Build and Deploy React App
+
+on:
+  push:
+    branches: ["build"] # triggers on every push to the "build" branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the existing repo code
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # ensures we can push to another branch if needed
+
+      # 2. Set up Node environment (choose a Node version that works with pnpm)
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
+      # 3. Install pnpm
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      # 4. Install project dependencies using pnpm
+      - name: Install dependencies
+        run: pnpm install
+
+      # (Test step removed as requested)
+
+      # 5. Build the React app using pnpm
+      - name: Build
+        run: pnpm run build
+
+      # 6. Deploy to the 'deploy' branch
+      - name: Deploy to deploy branch
+        run: |
+          # Configure Git
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+          # Remove the .gitignore so we can push the build folder easily
+          rm -rf .gitignore
+          echo "*" > .gitignore
+
+          # Copy the build contents to the root of our current workspace
+          cp -r build/* .
+
+          # Stage all files
+          git add .
+          git commit -m "Deploy build from build branch"
+
+          # Delete the old 'deploy' branch on remote if it exists, ignoring errors
+          git push origin :deploy || true
+
+          # Push the current commit to create (or overwrite) the 'deploy' branch
+          git push origin HEAD:deploy
