@@ -1,7 +1,73 @@
+# # File: .github/workflows/deploy.yml
+# name: Build and Deploy React App
+
+# # Give write permission to contents
+# permissions:
+#   contents: write
+
+# on:
+#   push:
+#     branches: ["build"] # triggers on every push to the "build" branch
+
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       # 1. Check out the existing repo code
+#       - name: Check out code
+#         uses: actions/checkout@v2
+#         with:
+#           fetch-depth: 0 # ensures we can push to another branch if needed
+
+#       # 2. Set up Node environment (choose a Node version that works with pnpm)
+#       - name: Set up Node
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: 18
+
+#       # 3. Install pnpm
+#       - name: Install pnpm
+#         run: npm install -g pnpm
+
+#       # 4. Install project dependencies using pnpm
+#       - name: Install dependencies
+#         run: pnpm install
+
+#       # (Test step removed as requested)
+
+#       # 5. Build the React app using pnpm
+#       - name: Build
+#         run: pnpm run build
+
+#       # 6. Deploy to the 'deploy' branch
+#       - name: Deploy to deploy branch
+#         run: |
+#           # Configure Git
+#           git config user.name "GitHub Actions"
+#           git config user.email "actions@github.com"
+
+#           # Remove the .gitignore so we can push the build folder easily
+#           rm -rf .gitignore
+#           echo "*" > .gitignore
+
+#           # Copy the build contents to the root of our current workspace
+#           cp -r dist/* .
+
+#           # Stage all files
+#           git add .
+#           git commit -m "Deploy build from build branch"
+
+#           # Delete the old 'deploy' branch on remote if it exists, ignoring errors
+#           git push origin :deploy || true
+
+#           # Push the current commit to create (or overwrite) the 'deploy' branch
+#           git push origin HEAD:deploy
+
 # File: .github/workflows/deploy.yml
 name: Build and Deploy React App
 
-# Give write permission to contents
+# Give write permission to contents so we can push changes back to the repo
 permissions:
   contents: write
 
@@ -18,15 +84,15 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0 # ensures we can push to another branch if needed
+          fetch-depth: 0 # ensures we can push to another branch
 
-      # 2. Set up Node environment (choose a Node version that works with pnpm)
+      # 2. Set up Node environment (Node 18 to be compatible with latest pnpm)
       - name: Set up Node
         uses: actions/setup-node@v2
         with:
           node-version: 18
 
-      # 3. Install pnpm
+      # 3. Install pnpm globally
       - name: Install pnpm
         run: npm install -g pnpm
 
@@ -34,9 +100,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # (Test step removed as requested)
-
-      # 5. Build the React app using pnpm
+      # 5. Build the React (Vite) app
       - name: Build
         run: pnpm run build
 
@@ -47,11 +111,15 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-          # Remove the .gitignore so we can push the build folder easily
-          rm -rf .gitignore
+          # Remove everything except the .git directory
+          # so the workspace is entirely cleaned out
+          rm -rf ./*
+          rm -rf .[^.]*
+
+          # Recreate a .gitignore so we can commit files easily
           echo "*" > .gitignore
 
-          # Copy the build contents to the root of our current workspace
+          # Copy the dist contents (Vite build) into the cleaned workspace root
           cp -r dist/* .
 
           # Stage all files
@@ -61,5 +129,5 @@ jobs:
           # Delete the old 'deploy' branch on remote if it exists, ignoring errors
           git push origin :deploy || true
 
-          # Push the current commit to create (or overwrite) the 'deploy' branch
+          # Now create (or overwrite) the 'deploy' branch with our new build
           git push origin HEAD:deploy
