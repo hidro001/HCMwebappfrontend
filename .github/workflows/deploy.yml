@@ -1,6 +1,7 @@
+# File: .github/workflows/deploy.yml
 name: Build and Deploy React App
 
-# Allow this workflow to push changes to the repository
+# Give write permission to contents
 permissions:
   contents: write
 
@@ -19,13 +20,13 @@ jobs:
         with:
           fetch-depth: 0 # ensures we can push to another branch if needed
 
-      # 2. Set up Node environment (Node 18 is compatible with the latest pnpm)
+      # 2. Set up Node environment (choose a Node version that works with pnpm)
       - name: Set up Node
         uses: actions/setup-node@v2
         with:
           node-version: 18
 
-      # 3. Install pnpm globally
+      # 3. Install pnpm
       - name: Install pnpm
         run: npm install -g pnpm
 
@@ -33,44 +34,32 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      # (Optional) If you want to run tests, add them here
+      # (Test step removed as requested)
 
-      # 5. Build the React (Vite) app
+      # 5. Build the React app using pnpm
       - name: Build
         run: pnpm run build
 
       # 6. Deploy to the 'deploy' branch
       - name: Deploy to deploy branch
         run: |
-          # Configure Git identity
+          # Configure Git
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-          # 1) Create a temp directory *outside* the current workspace
-          mkdir -p ../temp-dist
-
-          # 2) Move the entire dist folder out of this workspace
-          mv dist ../temp-dist/dist
-
-          # 3) Remove everything except .git from the workspace
-          #    This ensures the final commit is a clean set of files
-          find . -mindepth 1 -maxdepth 1 ! -name ".git" -exec rm -rf {} +
-
-          # 4) Move dist back into the workspace
-          mv ../temp-dist/dist ./
-
-          # 5) Remove the temp directory
-          rm -rf ../temp-dist
-
-          # 6) Create a fresh .gitignore so we can commit files easily
+          # Remove the .gitignore so we can push the build folder easily
+          rm -rf .gitignore
           echo "*" > .gitignore
 
-          # 7) Stage and commit the cleaned workspace
+          # Copy the build contents to the root of our current workspace
+          cp -r dist/* .
+
+          # Stage all files
           git add .
           git commit -m "Deploy build from build branch"
 
-          # 8) Delete the old 'deploy' branch on remote if it exists (ignore errors)
+          # Delete the old 'deploy' branch on remote if it exists, ignoring errors
           git push origin :deploy || true
 
-          # 9) Now create (or overwrite) the 'deploy' branch with our new build commit
+          # Push the current commit to create (or overwrite) the 'deploy' branch
           git push origin HEAD:deploy
