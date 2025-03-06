@@ -119,7 +119,7 @@ jobs:
           # Recreate a .gitignore so we can commit files easily
           echo "*" > .gitignore
 
-          # Copy the dist contents (Vite build) into the cleaned workspace root
+          # Copyall the dist contents (Vite build) into the cleaned workspace root
           cp -r dist/* .
 
           # Stage all files
