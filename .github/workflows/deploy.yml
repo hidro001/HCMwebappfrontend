@@ -1,82 +1,3 @@
-# name: Build and Deploy React App
-
-# permissions:
-#   contents: write
-
-# on:
-#   push:
-#     branches: ["build"] # triggers on every push to the "build" branch
-
-# jobs:
-#   build-and-deploy:
-#     runs-on: ubuntu-latest
-
-#     steps:
-#       # 1. Check out the existing repo code
-#       - name: Check out code
-#         uses: actions/checkout@v2
-#         with:
-#           fetch-depth: 0 # ensures we can push to another branch if needed
-
-#       # 2. Set up Node environment (Node 18 is compatible with the latest pnpm)
-#       - name: Set up Node
-#         uses: actions/setup-node@v2
-#         with:
-#           node-version: 18
-
-#       # 3. Install pnpm globally
-#       - name: Install pnpm
-#         run: npm install -g pnpm
-
-#       # 4. Install project dependencies using pnpm
-#       - name: Install dependencies
-#         run: pnpm install
-
-#       # (Optional) If you want to run tests, add them here
-
-#       # 5. Build the React (Vite) app
-#       - name: Build
-#         run: pnpm run build
-
-#       # 6. Deploy to the 'deploy' branch
-#       - name: Deploy to deploy branch
-#         run: |
-#           # Configure Git identity
-#           git config user.name "GitHub Actions"
-#           git config user.email "actions@github.com"
-
-#           # 1) Create a temp directory outside the current workspace
-#           mkdir -p ../temp-dist
-
-#           # 2) Move the entire dist folder out of this workspace
-#           mv dist ../temp-dist/dist
-
-#           # 3) Remove everything except .git from the workspace
-#           find . -mindepth 1 -maxdepth 1 ! -name ".git" -exec rm -rf {} +
-
-#           # 4) Move the *contents* of dist back into the workspace root
-#           mv ../temp-dist/dist/* ./
-
-#           # 5) Remove the temp directory
-#           rm -rf ../temp-dist
-
-#           # 6) Optionally remove or overwrite .gitignore so it doesn't ignore our files
-#           # If you want no .gitignore at all, just remove it:
-#           rm -f .gitignore
-#           # OR if you prefer having a minimal .gitignore:
-#           # echo 'node_modules/' > .gitignore
-#           # echo '.DS_Store' >> .gitignore
-
-#           # 7) Stage and commit the cleaned workspace (now containing only the built files)
-#           git add .
-#           git commit -m "Deploy build from build branch" || echo "No changes to commit"
-
-#           # 8) Delete the old 'deploy' branch on remote if it exists (ignore errors)
-#           git push origin :deploy || true
-
-#           # 9) Create (or overwrite) the 'deploy' branch with our new build commit
-#           git push origin HEAD:deploy
-
 name: Build and Deploy React App
 
 permissions:
@@ -95,9 +16,9 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
         with:
-          fetch-depth: 0 # Ensures we can push to another branch if needed
+          fetch-depth: 0 # ensures we can push to another branch if needed
 
-      # 2. Set up Node environment (Node 18 is compatible with latest pnpm)
+      # 2. Set up Node environment (Node 18 is compatible with the latest pnpm)
       - name: Set up Node
         uses: actions/setup-node@v2
         with:
@@ -124,27 +45,34 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
 
-          # 1) Make a temporary directory *outside* the current workspace
+          # 1) Create a temp directory outside the current workspace
+          mkdir -p ../temp-dist
+
+          # 2) Move the entire dist folder out of this workspace
+          mv dist ../temp-dist/dist
+
+          # 3) Remove everything except .git from the workspace
+          find . -mindepth 1 -maxdepth 1 ! -name ".git" -exec rm -rf {} +
+
+          # 4) Move the *contents* of dist back into the workspace root
+          mv ../temp-dist/dist/* ./
+
+          # 5) Remove the temp directory
           rm -rf ../temp-dist
-          mkdir ../temp-dist
 
-          # 2) Copy the build artifacts (dist folder) into temp-dist
-          cp -r dist/* ../temp-dist/
+          # 6) Optionally remove or overwrite .gitignore so it doesn't ignore our files
+          # If you want no .gitignore at all, just remove it:
+          rm -f .gitignore
+          # OR if you prefer having a minimal .gitignore:
+          # echo 'node_modules/' > .gitignore
+          # echo '.DS_Store' >> .gitignore
 
-          # 3) Switch into that folder
-          cd ../temp-dist
-
-          # 4) Initialize a brand-new Git repo (so .git from the original repo is never used)
-          git init
-          git checkout -b deploy
-
-          # 5) Add and commit the production build files
+          # 7) Stage and commit the cleaned workspace (now containing only the built files)
           git add .
-          git commit -m "Deploy build from build branch"
+          git commit -m "Deploy build from build branch" || echo "No changes to commit"
 
-          # 6) Add your GitHub repo as the remote
-          git remote add origin "https://github.com/${{ github.repository }}.git"
+          # 8) Delete the old 'deploy' branch on remote if it exists (ignore errors)
+          git push origin :deploy || true
 
-          # 7) Overwrite the remote deploy branch with this new commit
-          # (this removes any old history and ensures only dist files are present)
-          git push --force origin deploy
+          # 9) Create (or overwrite) the 'deploy' branch with our new build commit
+          git push origin HEAD:deploy
