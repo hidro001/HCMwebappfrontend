@@ -37,19 +37,19 @@ export const menuItems = [
       {
         name: "Dashboard",
         link: "/dashboard",
-        permission: "SuperDashboard",
+        permission: "dashboard-super",
       },
       {
         // repeated "superAdminRaci" => made unique
         name: "All Dashlets",
         link: "/dashboard/all-dashlets",
-        permission: "superAdminRaciAllDashlets", // NEW
+        permission: "dashboard-all-dashlets", 
         textAnimation: { x: 10 },
       },
       {
         name: "Dashboard",
         link: "/dashboard/employee",
-        permission: "employeeDashboard",
+        permission: "dashboard-employee",
       },
     ],
   },
@@ -66,12 +66,12 @@ export const menuItems = [
       {
         name: "Create Announcement",
         link: "/dashboard/add-announcement",
-        permission: "AddAnnouncement",
+        permission: "announcement-create",
       },
       {
         name: "View Announcement",
         link: "/dashboard/view-announcement",
-        permission: "ViewAnnouncement",
+        permission: "announcement-view",
       },
     ],
   },
@@ -88,12 +88,12 @@ export const menuItems = [
       {
         name: "Engagement Feed",
         link: "/dashboard/engagement-feed",
-        permission: "engagement",
+        permission: "engagement-view",
       },
       {
         name: "permission dashboard",
         link: "/dashboard/engagement-permission-dashboard",
-        permission: "engagementManager",
+        permission: "engagement-manage",
       },
     ],
   },
@@ -110,47 +110,47 @@ export const menuItems = [
       {
         name: "Main",
         link: "/dashboard/employees/management",
-        permission: "mainmanageemployees",
+        permission: "employee-main",
         textAnimation: { x: 10 },
       },
       {
         name: "Add Employee",
         link: "/dashboard/add-employee",
-        permission: "addEmployeeAdmin",
+        permission: "employee-create-super",
         textAnimation: { x: 10 },
       },
       {
         name: "Add Employee Manager",
         link: "/dashboard/add-employee-manager",
-        permission: "addEmployeeManager",
+        permission: "employee-create-manager",
         textAnimation: { x: 10 },
       },
       {
         name: "Subordinates",
         link: "/dashboard/supordinates-employees",
-        permission: "updateEmployeeAdmin",
+        permission: "employee-view-subordinate",
         textAnimation: { x: 10 },
       },
       {
         name: "All Employees",
         link: "/dashboard/all-employess",
-        permission: "updateEmployeeSuperAdmin",
+        permission: "employee-manage-super",
         textAnimation: { x: 10 },
       },
       {
         name: "Asset Management",
         link: "/dashboard/assign-assets",
-        permission: "assignAssets",
+        permission: "asset-manage",
       },
       {
         name: "Take Disciplinary actions",
         link: "/dashboard/disciplinary-actions/all-users",
-        permission: "takeDisciplinaryAction",
+        permission: "disciplinary-create",
       },
       {
         name: "All disciplinary actions",
         link: "/dashboard/disciplinary-actions",
-        permission: "viewDisciplinaryAction",
+        permission: "disciplinary-view",
       },
     ],
   },
@@ -167,31 +167,31 @@ export const menuItems = [
       {
         name: "Main",
         link: "/dashboard/attendance-dashboard",
-        permission: "MainAttendance",
+        permission: "attendance-main",
         textAnimation: { x: 10 },
       },
       {
         name: "Subordinates Attendance",
         link: "/dashboard/subordinates-attendance",
-        permission: "viewAttendance",
+        permission: "attendance-view-subordinate",
         textAnimation: { x: 10 },
       },
       {
         name: "View Attendance",
         link: "/dashboard/view-attendance",
-        permission: "myAttendance",
+        permission: "attendance-view-own",
         textAnimation: { x: 10 },
       },
       {
         name: "All Employee Attendance",
         link: "/dashboard/all-employee-attendance",
-        permission: "viewallAttendance",
+        permission: "attendance-view-all",
         textAnimation: { x: 10 },
       },
       {
         name: "Request Hike Advance Reimbursement",
         link: "/dashboard/request-hike-advance-reimbursement",
-        permission: "requestHikeAdvanceReimbursement",
+        permission: "employee-request-financial",
         textAnimation: { x: 10 },
       },
     ],
@@ -210,31 +210,31 @@ export const menuItems = [
       {
         name: "Manage Tickets",
         link: "/dashboard/manage-tickets",
-        permission: "manageIssuesAdmin",
+        permission: "ticket-manage-department",
         textAnimation: { x: 10 },
       },
       {
         name: "Raise Ticket ",
         link: "/dashboard/raise-ticket",
-        permission: "getSupport",
+        permission: "ticket-create",
         textAnimation: { x: 10 },
       },
       {
         name: "All Tickets",
         link: "/dashboard/all-tickets",
-        permission: "IssueManagementSuperAdmin",
+        permission: "ticket-manage-all",
         textAnimation: { x: 10 },
       },
       {
         name: "Posh Manage",
         link: "/dashboard/posh-manage",
-        permission: "poshManager",
+        permission: "ticket-manage-posh",
         textAnimation: { x: 10 },
       },
       {
         name: "File Posh",
         link: "/dashboard/file-posh",
-        permission: "poshEmployee",
+        permission: "ticket-create-posh",
         textAnimation: { x: 10 },
       },
     ],
@@ -251,24 +251,22 @@ export const menuItems = [
     textAnimation: { x: 10 },
     options: [
       {
-        // renamed from 'payroll' to make it unique
+        
         name: "Main",
         link: "/dashboard/main",
-        permission: "payrollMain", // NEW
+        permission: "payroll-main", // NEW
         textAnimation: { x: 10 },
       },
       {
-        // renamed from 'payroll' to make it unique
         name: "Manage Payroll",
         link: "/dashboard/manage-payroll",
-        permission: "payrollManage", // NEW
+        permission: "payroll-manage-calculations", 
         textAnimation: { x: 10 },
       },
       {
-        // previously using 'myAttendance'—made unique
         name: "Manage Claims",
         link: "/dashboard/manage-claims",
-        permission: "payrollManageClaims", // NEW
+        permission: "payroll-manage-claims", 
         textAnimation: { x: 10 },
       },
     ],
@@ -287,33 +285,31 @@ export const menuItems = [
       {
         name: "Main",
         link: "/dashboard/main-task",
-        permission: "ViewTaskManager",
+        permission: "task-main",
         textAnimation: { x: 10 },
       },
       {
         name: "View Daily Task",
         link: "/dashboard/view-daily-task",
-        permission: "updateTask",
+        permission: "update-own-task-daily",
         textAnimation: { x: 10 },
       },
       {
         name: "Assigned Task",
         link: "/dashboard/assigned-task",
-        permission: "ActionTrackerManager",
+        permission: "task-assign-subordinates",
         textAnimation: { x: 10 },
       },
       {
-        // Previously also "ViewTaskManager"; made unique
         name: "Assigned Task",
         link: "/dashboard/assigned-task/employee",
-        permission: "ViewTaskManagerEmployee", // NEW
+        permission: "view-own-assigned-task", 
         textAnimation: { x: 10 },
       },
       {
-        // Previously also "ActionTrackerManager"; made unique
         name: "Daily Task",
         link: "/dashboard/daily-task",
-        permission: "ActionTrackerManagerDaily", // NEW
+        permission: "view-daily-subordinates-task", 
         textAnimation: { x: 10 },
       },
     ],
@@ -332,32 +328,31 @@ export const menuItems = [
       {
         name: "Main",
         link: "/dashboard/recruitment-main",
-        permission: "MainRecruitManagement",
+        permission: "recruit-main",
         textAnimation: { x: 10 },
       },
       {
         name: "All Vacancies",
         link: "/dashboard/all-vacancies",
-        permission: "viewVacancies",
+        permission: "recruit-view-vacancies",
         textAnimation: { x: 10 },
       },
       {
         name: "Create Vacancy",
         link: "/dashboard/create-vacancies",
-        permission: "jobPostingAdmin",
+        permission: "recruit-create-job",
         textAnimation: { x: 10 },
       },
       {
         name: "Referral List",
         link: "/dashboard/referral-list",
-        permission: "HRreferralDashboard",
+        permission: "recruit-view-referrals",
         textAnimation: { x: 10 },
       },
       {
-        // Repeated "HRreferralDashboard"; now unique
         name: "Vacancies List",
         link: "/dashboard/vancancies-list",
-        permission: "HRDashboardVacancies", // NEW
+        permission: "recruit-manage-vacancies", 
         textAnimation: { x: 10 },
       },
     ],
@@ -376,33 +371,33 @@ export const menuItems = [
       {
         name: "Main",
         link: "/dashboard/performance-dashboard",
-        permission: "MainPerformanceManagement",
+        permission: "performance-main",
       },
       {
         name: "Post Top Performer",
         link: "/dashboard/post-top-performers",
-        permission: "postTopPerformer",
+        permission: "post-top-performer",
       },
       {
         name: "View Top Performers",
         link: "/dashboard/top-performers",
-        permission: "viewTopPerformers",
+        permission: "view-top-performers",
       },
       {
         name: "Set KPIs",
         link: "/dashboard/set-kpis",
-        permission: "setKPIs",
+        permission: "performance-set-kpis",
       },
       {
         name: "Team Performance",
         link: "/dashboard/team-performance",
-        permission: "rateSubordinate",
+        permission: "performance-rate-subordinate",
         textAnimation: { x: 10 },
       },
       {
         name: "All Employes Rating",
         link: "/dashboard/all-emp-ratings",
-        permission: "viewAllEmployeeRatings",
+        permission: "view-all-employee-rating",
         textAnimation: { x: 10 },
       },
     ],
@@ -421,19 +416,19 @@ export const menuItems = [
       {
         name: "Main",
         link: "/dashboard/raci-dashboard",
-        permission: "RaciMain",
+        permission: "raci-main",
         textAnimation: { x: 10 },
       },
       {
         name: "RACI Business",
         link: "/dashboard/raci-business",
-        permission: "Raci2",
+        permission: "raci-business",
         textAnimation: { x: 10 },
       },
       {
         name: "RACI Operations",
         link: "/dashboard/raci-operations",
-        permission: "superAdminRaci",
+        permission: "raci-operations",
         textAnimation: { x: 10 },
       },
     ],
@@ -452,37 +447,37 @@ export const menuItems = [
       {
         name: "Company Info",
         link: "/dashboard/company-info",
-        permission: "companyInfo",
+        permission: "company-info",
         textAnimation: { x: 10 },
       },
       {
         name: "Company Settings",
         link: "/dashboard/company-settings",
-        permission: "CompanySettings",
+        permission: "company-settings",
         textAnimation: { x: 10 },
       },
       {
         name: "Add Hierarchy",
         link: "/dashboard/add-hierarchy",
-        permission: "addRole",
+        permission: "company-hierarchy",
         textAnimation: { x: 10 },
       },
       {
         name: "Update Policies",
         link: "/dashboard/update-policies",
-        permission: "PolicySystem",
+        permission: "company-policies",
         textAnimation: { x: 10 },
       },
       {
         name: "Update Induction",
         link: "/dashboard/post-induction",
-        permission: "postInduction",
+        permission: "company-induction",
         textAnimation: { x: 10 },
       },
       {
         name: "Break Settings",
         link: "/dashboard/break-settings",
-        permission: "addBreak",
+        permission: "company-break-settings",
         textAnimation: { x: 10 },
       },
     ],
@@ -499,22 +494,19 @@ export const menuItems = [
     textAnimation: { x: 10 },
     options: [
       {
-        // replaced "postTopPerformer" to avoid duplication
         name: "Main",
         link: "/dashboard/main-dashboard",
-        permission: "postTopPerformerMain", // NEW
+        permission: "productivity-main", 
       },
       {
-        // replaced "postTopPerformer" to avoid duplication
         name: "Productivity Dashboard",
         link: "/dashboard/productivity-dashboard",
-        permission: "postTopPerformerDashboard", // NEW
+        permission: "productivity-dashboard", 
       },
       {
-        // replaced "postTopPerformer" to avoid duplication
         name: "Team Productivity",
         link: "/dashboard/team-productivity",
-        permission: "postTopPerformerTeam", // NEW
+        permission: "productivity-team", 
       },
     ],
   },
@@ -531,7 +523,7 @@ export const menuItems = [
       {
         name: "chats",
         link: "/dashboard/chats",
-        permission: "useChats",
+        permission: "chat-user",
         textAnimation: { x: 10 },
       },
     ],
@@ -548,20 +540,19 @@ export const menuItems = [
       {
         name: "Leaves History",
         link: "/dashboard/leave-history",
-        permission: "viewLeaves",
+        permission: "leave-apply",
         textAnimation: { x: 10 },
       },
       {
         name: " Manage Leaves ",
         link: "/dashboard/manage-leave-history",
-        permission: "acceptandrejectleave",
+        permission: "leave-manage-subordinate",
         textAnimation: { x: 10 },
       },
       {
-        // repeated "viewLeaves" => made unique
-        name: "Subordinates Leaves",
+        name: " All Leaves ",
         link: "/dashboard/all-leave-history",
-        permission: "viewAllLeaves", // NEW
+        permission: "leave-view-all", 
         textAnimation: { x: 10 },
       },
     ],
@@ -578,25 +569,25 @@ export const menuItems = [
       {
         name: "Resignation Dashboard",
         link: "/dashboard/employee-resignation-history",
-        permission: "viewAllResignation",
+        permission: "resignation-main",
         textAnimation: { x: 10 },
       },
       {
         name: "Submit Resignation",
         link: "/dashboard/submit-resignation",
-        permission: "employeeResignationDashboard",
+        permission: "resignation-submit",
         textAnimation: { x: 10 },
       },
       {
         name: "Resignation Approvals",
         link: "/dashboard/resignation-approvals",
-        permission: "hrResignationDashboard",
+        permission: "resignation-manage",
         textAnimation: { x: 10 },
       },
       {
         name: "HR FNF Approvals",
         link: "/dashboard/fnf-request-hr",
-        permission: "FNFAprroval",
+        permission: "resignation-fnf-approve",
         textAnimation: { x: 10 },
       },
     ],
@@ -613,25 +604,25 @@ export const menuItems = [
       {
         name: "Admin Panel Training",
         link: "/dashboard/admin-panel-training",
-        permission: "adminPanelTraining",
+        permission: "training-manage",
         textAnimation: { x: 10 },
       },
       {
         name: "Induction PPT's",
         link: "/dashboard/induction-ppt",
-        permission: "inductionPPT",
+        permission: "induction-view",
         textAnimation: { x: 10 },
       },
       {
         name: "Company Policies",
         link: "/dashboard/company-policies",
-        permission: "companyPolicies",
+        permission: "policies-view",
         textAnimation: { x: 10 },
       },
       {
         name: "Training Material",
         link: "/dashboard/training-material",
-        permission: "trainingMaterial",
+        permission: "training-view",
         textAnimation: { x: 10 },
       },
     ],
@@ -649,7 +640,7 @@ export const menuItems = [
       {
         name: "Organization Chart",
         link: "/dashboard/organization-chart",
-        permission: "organizationChart",
+        permission: "organization-chart",
         textAnimation: { x: 10 },
       },
     ],

@@ -1,0 +1,166 @@
+# name: Build and Deploy React App
+
+# permissions:
+#   contents: write
+
+# on:
+#   push:
+#     branches: ["build"] # triggers on every push to the "build" branch
+
+# jobs:
+#   build-and-deploy:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       # 1. Check out the existing repo code
+#       - name: Check out code
+#         uses: actions/checkout@v2
+#         with:
+#           fetch-depth: 0 # ensures we can push to another branch if needed
+
+#       # 2. Set up Node environment (Node 18 is compatible with the latest pnpm)
+#       - name: Set up Node
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: 18
+
+#       # 3. Install pnpm globally
+#       - name: Install pnpm
+#         run: npm install -g pnpm
+
+#       # 4. Install project dependencies using pnpm
+#       - name: Install dependencies
+#         run: pnpm install
+
+#       # (Optional) If you want to run tests, add them here
+
+#       # 5. Build the React (Vite) app
+#       - name: Build
+#         run: pnpm run build
+
+#       # 6. Deploy to the 'deploy' branch
+#       - name: Deploy to deploy branch
+#         run: |
+#           # Configure Git identity
+#           git config user.name "GitHub Actions"
+#           git config user.email "actions@github.com"
+
+#           # 1) Create a temp directory outside the current workspace
+#           mkdir -p ../temp-dist
+
+#           # 2) Move the entire dist folder out of this workspace
+#           mv dist ../temp-dist/dist
+
+#           # 3) Remove everything except .git from the workspace
+#           find . -mindepth 1 -maxdepth 1 ! -name ".git" -exec rm -rf {} +
+
+#           # 4) Move the *contents* of dist back into the workspace root
+#           mv ../temp-dist/dist/* ./
+
+#           # 5) Remove the temp directory
+#           rm -rf ../temp-dist
+
+#           # 6) Optionally remove or overwrite .gitignore so it doesn't ignore our files
+#           # If you want no .gitignore at all, just remove it:
+#           rm -f .gitignore
+#           # OR if you prefer having a minimal .gitignore:
+#           # echo 'node_modules/' > .gitignore
+#           # echo '.DS_Store' >> .gitignore
+
+#           # 7) Stage and commit the cleaned workspace (now containing only the built files)
+#           git add .
+#           git commit -m "Deploy build from build branch" || echo "No changes to commit"
+
+#           # 8) Delete the old 'deploy' branch on remote if it exists (ignore errors)
+#           git push origin :deploy || true
+
+#           # 9) Create (or overwrite) the 'deploy' branch with our new build commit
+#           git push origin HEAD:deploy
+
+name: Build and Deploy React App
+
+permissions:
+  contents: write
+
+on:
+  push:
+    branches: ["build"] # triggers on every push to the "build" branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Check out the existing repo code
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # ensures we can push to another branch if needed
+
+      # 2. Set up Node environment (Node 18 is compatible with the latest pnpm)
+      - name: Set up Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+
+      # 3. Install pnpm globally
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      # 4. Install project dependencies using pnpm
+      - name: Install dependencies
+        run: pnpm install
+
+      # (Optional) If you want to run tests, add them here
+
+      # 5. Build the React (Vite) app
+      - name: Build
+        run: pnpm run build
+
+      # 6. Deploy to Hostinger via FTP (Use stable v4.2.0)
+      - name: Deploy to Hostinger via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.2.0 # Use stable version v4.2.0
+        with:
+          server: ftp://31.170.161.118 # Static FTP server (use IP or Hostname)
+          username: u965360670.humanmaximizer.com # Static FTP username
+          password: GoogleSamsung_123 # Hardcoded FTP password (not recommended for production)
+          protocol: ftp # Use FTP instead of FTPS
+          port: 21 # Static FTP port (21 for FTP)
+          local-dir: dist/ # This is the directory containing the built files (must end with '/')
+          server-dir: /public_html # Upload files into the "public_html" folder (adjust if needed)
+          dangerous-clean-slate: true # Removes all files from the target directory before upload
+
+      # 7. Stage and commit the cleaned workspace (now containing only the built files)
+      - name: Clean up and commit to deploy branch
+        run: |
+          # Configure Git identity
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+          # 1) Create a temp directory outside the current workspace
+          mkdir -p ../temp-dist
+
+          # 2) Move the entire dist folder out of this workspace
+          mv dist ../temp-dist/dist
+
+          # 3) Remove everything except .git from the workspace
+          find . -mindepth 1 -maxdepth 1 ! -name ".git" -exec rm -rf {} +
+
+          # 4) Move the *contents* of dist back into the workspace root
+          mv ../temp-dist/dist/* ./
+
+          # 5) Remove the temp directory
+          rm -rf ../temp-dist
+
+          # 6) Optionally remove or overwrite .gitignore so it doesn't ignore our files
+          rm -f .gitignore
+
+          # 7) Stage and commit the cleaned workspace
+          git add .
+          git commit -m "Deploy build from build branch" || echo "No changes to commit"
+
+          # 8) Delete the old 'deploy' branch on remote if it exists (ignore errors)
+          git push origin :deploy || true
+
+          # 9) Create (or overwrite) the 'deploy' branch with our new build commit
+          git push origin HEAD:deploy
