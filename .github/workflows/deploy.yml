@@ -48,7 +48,7 @@ jobs:
           echo "*" > .gitignore
 
           # Copy the build contents to the root of our current workspace
-          cp -r build/* .
+          cp -r dist/* .
 
           # Stage all files
           git add .
