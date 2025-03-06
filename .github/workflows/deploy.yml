@@ -117,9 +117,9 @@ jobs:
       - name: Build
         run: pnpm run build
 
-      # 6. Deploy to Hostinger via FTP (Use latest version of FTP Deploy Action)
+      # 6. Deploy to Hostinger via FTP (Use stable v4.2.0)
       - name: Deploy to Hostinger via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4 # Use latest stable version
+        uses: SamKirkland/FTP-Deploy-Action@v4.2.0 # Use stable version v4.2.0
         with:
           server: ftp://31.170.161.118 # Static FTP server (use IP or Hostname)
           username: u965360670.humanmaximizer.com # Static FTP username
