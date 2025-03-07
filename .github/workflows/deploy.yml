@@ -127,7 +127,7 @@ jobs:
           protocol: ftp # Use FTP instead of FTPS
           port: 21 # Static FTP port (21 for FTP)
           local-dir: dist/ # This is the directory containing the built files (must end with '/')
-          server-dir: /public_html/test # Upload files into the "public_html" folder (adjust if needed)
+          server-dir: /public_html/test/ # Upload files into the "public_html" folder (adjust if needed)
           dangerous-clean-slate: true # Removes all files from the target directory before upload
 
       # 7. Stage and commit the cleaned workspace (now containing only the built files)
