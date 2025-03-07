@@ -10,7 +10,7 @@ const SkeletonPlaceholder = ({ className }) => (
     className={`bg-gray-200 dark:bg-gray-700 animate-pulse rounded-md ${className}`}
   />
 );
-// 11
+
 const ViewAnnouncements = () => {
   const {
     announcements,
