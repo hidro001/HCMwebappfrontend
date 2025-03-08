@@ -6,20 +6,34 @@ import EmployeeFormTabs from "../../../components/Employeee Management/EmployeeF
 
 export default function UpdateEmployeePage() {
   const { id: employeeId } = useParams();
-  const { loadEmployeeById, selectedEmployee, loadingSelectedEmployee } =
-    useEmployeeStore();
+  const {
+    loadEmployeeById,
+    selectedEmployee,
+    loadingSelectedEmployee,
+    resetSelectedEmployee,
+  } = useEmployeeStore();
   const [defaultValues, setDefaultValues] = useState(null);
+
+  useEffect(() => {
+    // Reset before fetching to prevent stale data
+    setDefaultValues(null);
+    loadEmployeeById(employeeId);
+
+    return () => {
+      resetSelectedEmployee(); // clean up to prevent stale data
+    };
+  }, [employeeId, loadEmployeeById]);
 
   useEffect(() => {
     loadEmployeeById(employeeId);
   }, [employeeId, loadEmployeeById]);
 
   useEffect(() => {
-    if (selectedEmployee) {
+    if (selectedEmployee && selectedEmployee._id === employeeId) {
       const mappedValues = mapEmployeeToFormDefaults(selectedEmployee);
       setDefaultValues(mappedValues);
     }
-  }, [selectedEmployee]);
+  }, [selectedEmployee, employeeId]); // include employeeId dependency
 
   const handleComplete = (finalResponse) => {
     toast.success("Employee updated successfully!");
@@ -87,7 +101,6 @@ function mapEmployeeToFormDefaults(employeeData) {
   }
 
   return {
-  
     first_Name: employeeData.first_Name || "",
     last_Name: employeeData.last_Name || "",
     designation: employeeData.designation || "",
