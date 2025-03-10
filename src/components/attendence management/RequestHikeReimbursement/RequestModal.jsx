@@ -116,7 +116,7 @@ const RequestModal = ({ isOpen, onClose }) => {
                     required
                   >
                     <option value="">Select</option>
-                    <option value="Hike">Hike</option>
+                    {/* <option value="Hike">Hike</option> */}
                     <option value="Advance">Advance</option>
                     <option value="Reimbursement">Reimbursement</option>
                     <option value="Loan">Loan</option>

@@ -361,7 +361,7 @@ import ConfirmationDialog from "../../common/ConfirmationDialog";
 
 // Simple tab configuration
 const tabs = [
-  { key: "Hike", label: "Hike" },
+  // { key: "Hike", label: "Hike" },
   { key: "Advance", label: "Advance" },
   { key: "Reimbursement", label: "Reimbursement" },
   { key: "Loan", label: "Loan" },
@@ -370,7 +370,7 @@ const tabs = [
 const RequestDashboard = () => {
   const { requests, loading, fetchRequests } = useRequestsStore();
   const [showModal, setShowModal] = useState(false);
-  const [activeTab, setActiveTab] = useState("Hike");
+  const [activeTab, setActiveTab] = useState("Advance");
   const [confirmDialog, setConfirmDialog] = useState({
     open: false,
     title: "",
@@ -479,7 +479,7 @@ const RequestDashboard = () => {
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: -50 }}
       >
-        {activeTab === "Hike" && (
+        {/* {activeTab === "Hike" && (
           <RequestsTable
             requests={getRequestsByType("Hike")}
             openMediaInNewTab={openMediaInNewTab}
@@ -494,7 +494,7 @@ const RequestDashboard = () => {
               "Media",
             ]}
           />
-        )}
+        )} */}
 
         {activeTab === "Advance" && (
           <RequestsTable
