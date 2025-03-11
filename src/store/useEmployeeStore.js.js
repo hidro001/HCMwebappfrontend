@@ -221,6 +221,20 @@ const useEmployeeStore = create((set, get) => ({
       throw error;
     }
   },
+  bulkUploadEmployees: async (formData) => {
+    try {
+      // Make sure you specify "multipart/form-data"
+      const response = await axiosInstance.post("/user/bulk-upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data; // e.g. { success: true, message, results }
+    } catch (error) {
+      console.error("Error uploading employees in bulk:", error);
+      throw error;
+    }
+  },
 }));
 
 export default useEmployeeStore;
