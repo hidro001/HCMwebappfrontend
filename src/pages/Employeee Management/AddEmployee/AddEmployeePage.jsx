@@ -283,7 +283,7 @@ export default function AddEmployeePage() {
       const token = localStorage.getItem("token");
 
       const response = await axios.post(
-        "http://localhost:6060/api/v1/bulk/bulk-upload",
+        "https://apiv2.humanmaximizer.com/api/v1/bulk/bulk-upload",
         formData,
         {
           headers: {
