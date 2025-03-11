@@ -1,14 +1,14 @@
-
-
-import { create } from 'zustand';
-import axiosInstance from '../service/axiosInstance'; // Your custom axios setup
+// useDashboardStore.js
+import { create } from "zustand";
+import axiosInstance from "../service/axiosInstance"; // Your custom axios setup
 
 export const useDashboardStore = create((set) => ({
+  // State fields
   totalUsers: 0,
   usersLoggedInToday: 0,
   employeesOnLeaveToday: 0,
   employeesPerDepartment: [],
-  employeesPerEmployeeType: [], // You added this
+  employeesPerEmployeeType: [],
   maleCount: 0,
   femaleCount: 0,
   monthlyHiringTrend: [],
@@ -17,19 +17,26 @@ export const useDashboardStore = create((set) => ({
   totalSalaries: 0,
   topDesignations: [],
 
+  // ----------------------------
   // Fetches main dashboard stats
+  // ----------------------------
   fetchDashboardStats: async () => {
     try {
-      const response = await axiosInstance.get('/admin/stats');
+      const response = await axiosInstance.get("/admin/stats");
       if (response.data.success) {
         set({
           totalUsers: response.data.totalUsers ?? 0,
           usersLoggedInToday: response.data.numberOfUsersLoggedInToday ?? 0,
-          employeesOnLeaveToday: response.data.numberOfEmployeesOnLeaveToday ?? 0,
-          employeesPerDepartment: Array.isArray(response.data.employeesPerDepartment)
+          employeesOnLeaveToday:
+            response.data.numberOfEmployeesOnLeaveToday ?? 0,
+          employeesPerDepartment: Array.isArray(
+            response.data.employeesPerDepartment
+          )
             ? response.data.employeesPerDepartment
             : [],
-          employeesPerEmployeeType: Array.isArray(response.data.employeesPerEmployeeType)
+          employeesPerEmployeeType: Array.isArray(
+            response.data.employeesPerEmployeeType
+          )
             ? response.data.employeesPerEmployeeType
             : [],
           maleCount: response.data.maleCount ?? 0,
@@ -46,51 +53,79 @@ export const useDashboardStore = create((set) => ({
           totalSalaries: response.data.totalSalaries ?? 0,
         });
       } else {
-        console.error('Failed to fetch dashboard stats:', response.data.message);
+        console.error(
+          "Failed to fetch dashboard stats:",
+          response.data.message
+        );
       }
     } catch (error) {
-      console.error('Error fetching dashboard stats:', error);
+      console.error("Error fetching dashboard stats:", error);
     }
   },
 
-  // For attendance details
-  fetchAttendanceDetails: async () => {
-    try {
-      await axiosInstance.get('/admin/attendance-details');
-      // Handle as needed
-    } catch (error) {
-      console.error('Error fetching attendance details:', error);
-    }
-  },
+  // --------------------------------
+  // For attendance details (example)
+  // --------------------------------
+// For attendance details
+fetchAttendanceDetails: async () => {
+  try {
+    // Optional: set a loading state if you want
+    set({ attendanceDetailsLoading: true });
 
-  // For leave details
+    const response = await axiosInstance.get('/admin/attendance-details');
+    if (response.data.success) {
+      // Save the fetched array into the Zustand store
+      set({
+        attendanceDetails: response.data.attendanceDetails ?? [],
+      });
+    }
+  } catch (error) {
+    console.error('Error fetching attendance details:', error);
+  } finally {
+    // Optional: turn off the loading state
+    set({ attendanceDetailsLoading: false });
+  }
+},
+
+
+  // --------------------------------
+  // For leave details (example)
+  // --------------------------------
   fetchLeaveDetails: async () => {
     try {
-      await axiosInstance.get('/admin/leave-details');
-      // Handle as needed
+      const response = await axiosInstance.get("/admin/leave-details");
+      // Replace with logic to update any store state if desired
+      // e.g., set({ leaveDetails: response.data.leaveDetails || [] });
     } catch (error) {
-      console.error('Error fetching leave details:', error);
+      console.error("Error fetching leave details:", error);
     }
   },
 
-    // NEW FUNCTION: Fetches top-rated designations for a given month and year
-    fetchTopDesignations: async (month, year) => {
-      try {
-        const response = await axiosInstance.get('/kpi/ratings/top-designations', {
-          params: { month, year }
-        });
-        if (response.data.success) {
-          set({
-            topDesignations: Array.isArray(response.data.data)
-              ? response.data.data
-              : [],
-          });
-        } else {
-          console.error('Failed to fetch top designations:', response.data.message);
+  // ---------------------------------------------
+  // Fetches top-rated designations for a given month/year
+  // ---------------------------------------------
+  fetchTopDesignations: async (month, year) => {
+    try {
+      const response = await axiosInstance.get(
+        "/kpi/ratings/top-designations",
+        {
+          params: { month, year },
         }
-      } catch (error) {
-        console.error('Error fetching top designations:', error);
+      );
+      if (response.data.success) {
+        set({
+          topDesignations: Array.isArray(response.data.data)
+            ? response.data.data
+            : [],
+        });
+      } else {
+        console.error(
+          "Failed to fetch top designations:",
+          response.data.message
+        );
       }
-    },
-  
+    } catch (error) {
+      console.error("Error fetching top designations:", error);
+    }
+  },
 }));
