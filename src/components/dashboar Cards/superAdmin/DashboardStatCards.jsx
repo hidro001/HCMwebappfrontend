@@ -18,6 +18,9 @@ const customModalStyles = {
     overflow: "auto",
     width: "90%",
     maxWidth: "600px",
+    // Force the modal to use white background and black text:
+    backgroundColor: "#ffffff",
+    color: "#000000",
   },
 };
 
@@ -30,8 +33,10 @@ function DashboardStatCards() {
     fetchAttendanceDetails,
     attendanceDetails = [],
     attendanceDetailsLoading,
-    employeesOnLeaveList, // optional if you also want to display those who are on leave
+    employeesOnLeaveList,
     fetchLeaveDetails,
+    // If you have a global dark mode flag
+    isDarkMode = false,
   } = useDashboardStore();
 
   // For controlling the attendance modal
@@ -70,7 +75,7 @@ function DashboardStatCards() {
   // Handle "Employees On Leave Today" if you want a separate modal
   const handleLeaveClick = async () => {
     await fetchLeaveDetails();
-    // show a separate modal or the same one for leave details
+    // Potentially open another modal, if desired
   };
 
   // Define the data for each stat card
@@ -105,16 +110,19 @@ function DashboardStatCards() {
   const loggedInUsers = attendanceDetails.filter((user) => user.isPresent);
   const notLoggedInUsers = attendanceDetails.filter((user) => !user.isPresent);
 
+  // Container background for the row of stat cards
+  const rowBg = isDarkMode ? "bg-gray-900" : "bg-white";
+
   return (
     <>
       {/* Stat Cards Row */}
-      <div className="flex flex-col gap-5 md:flex-row">
+      <div className={`flex flex-col gap-5 md:flex-row ${rowBg} p-3`}>
         {statCardsData.map((item, index) => (
-          <StatCard key={index} {...item} />
+          <StatCard key={index} isDarkMode={isDarkMode} {...item} />
         ))}
       </div>
 
-      {/* Attendance Modal */}
+      {/* Attendance Modal (always white background & black text) */}
       <Modal
         isOpen={isAttendanceModalVisible}
         onRequestClose={closeAttendanceModal}
@@ -177,7 +185,7 @@ function DashboardStatCards() {
 }
 
 // ------------------------------------------------------------------------
-// StatCard Component - Now defined within the same file for convenience
+// StatCard Component - Defined within the same file for convenience
 // ------------------------------------------------------------------------
 function StatCard({
   icon,
@@ -186,9 +194,16 @@ function StatCard({
   chartLight,
   chartDark,
   onClickDetail,
+  isDarkMode,
 }) {
-  // For demonstration, we’ll just pick chartLight.
-  // You could conditionally choose chartDark if you implement dark mode.
+  // Pick a wave background based on theme
+  const waveBg = isDarkMode ? chartDark : chartLight;
+
+  // Text colors for dark/light
+  const containerBg = isDarkMode ? "bg-gray-800" : "bg-white";
+  const textColor = isDarkMode ? "text-gray-200" : "text-gray-800";
+  const labelColor = isDarkMode ? "text-gray-400" : "text-gray-500";
+
   const handleCardClick = () => {
     if (typeof onClickDetail === "function") {
       onClickDetail();
@@ -197,24 +212,37 @@ function StatCard({
 
   return (
     <div
-      className="relative w-full md:w-1/3 bg-white rounded-lg shadow-md p-4 cursor-pointer"
+      className={`relative w-full md:w-1/3 rounded-lg shadow-md p-4 cursor-pointer ${containerBg} ${textColor}`}
       onClick={handleCardClick}
     >
       <div className="flex items-center justify-between mb-2">
+        {/* Icon color is unchanged. We keep your provided classes (e.g., text-blue-600) */}
         <div className="text-3xl">{icon}</div>
         <div className="text-right">
-          <h2 className="text-gray-500 text-sm">{label}</h2>
+          <h2 className={`text-sm ${labelColor}`}>{label}</h2>
           <p className="text-2xl font-bold">{count ?? 0}</p>
         </div>
       </div>
 
       {/* Wave background image */}
       <img
-        src={chartLight}
+        src={waveBg}
         alt="stat-bg"
         className="absolute bottom-0 left-0 w-full h-10 object-cover rounded-b-lg"
         style={{ zIndex: -1 }}
       />
+
+      {/* See All button just for "Users Logged In Today" */}
+      {label === "Users Logged In Today" && (
+        <div className="mt-4 flex justify-end">
+          <button
+            onClick={handleCardClick}
+            className="px-3 py-1 rounded shadow bg-blue-500 hover:bg-blue-400 text-white"
+          >
+            See All
+          </button>
+        </div>
+      )}
     </div>
   );
 }
