@@ -39,7 +39,13 @@ export default function TicketDetailsModal({
                      text-gray-900 dark:text-gray-100 
                      rounded-lg overflow-hidden shadow-lg"
         >
-          <div className="flex flex-col w-1/2 p-4 border-r border-white/20 dark:border-white/10">
+          <div
+            className="flex flex-col w-1/2 p-4 border-r border-white/20 dark:border-white/10 overflow-auto [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600"
+          >
             <h2 className="text-xl font-bold mb-4">Ticket Details</h2>
             <div className="mb-4">
               <p className="font-semibold">Title</p>
@@ -118,11 +124,13 @@ export default function TicketDetailsModal({
                 <FaTimes size={20} />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto pr-2 space-y-3  overflow-auto [&::-webkit-scrollbar]:w-2
+            <div
+              className="flex-1 overflow-y-auto pr-2 space-y-3  overflow-auto [&::-webkit-scrollbar]:w-2
                 [&::-webkit-scrollbar-track]:rounded-full
                 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
                 [&::-webkit-scrollbar-thumb]:rounded-full
-                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600">
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600"
+            >
               {isCommentLoading ? (
                 <p>Loading comments...</p>
               ) : comments.length === 0 ? (
