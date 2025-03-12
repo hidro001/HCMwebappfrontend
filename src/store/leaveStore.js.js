@@ -108,7 +108,7 @@ const useLeaveStore = create((set, get) => ({
           error: `Your employment type "${userProfile.employee_Type}" is not configured in the system. Please contact your administrator.`,
         });
       }
-      // Optionally, set default leave types if not provided by company settings.
+    
       set({
         leaveTypes: companySettings.leaveTypes || [
           "Casual Leave",
