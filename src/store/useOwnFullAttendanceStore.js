@@ -1115,7 +1115,7 @@ export const useOwnFullAttendanceStore = create(
           } = get();
 
           // 2) Calculate final salary for that (year, month)
-          const baseSalary = parseFloat(userProfileData?.salary) || 0;
+          const baseSalary = parseFloat(userProfileData?.current_Base_Salary) || 0;
           const { finalSalary, deduction, leaves } = calculateFinalSalary({
             baseSalary,
             attendanceData,

@@ -1323,7 +1323,7 @@ export default function OwmFullAttendance() {
 
   // final salary
   // Parse the userProfileData?.salary as a number to avoid the toFixed() crash:
-  const numericBaseSalary = parseFloat(userProfileData?.salary) || 0;
+  const numericBaseSalary = parseFloat(userProfileData?.current_Base_Salary) || 0;
 
   const {
     finalSalary,
