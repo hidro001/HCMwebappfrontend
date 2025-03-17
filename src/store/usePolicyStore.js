@@ -53,7 +53,7 @@ const usePolicyStore = create((set, get) => ({
    deletePolicy: async (id) => {
     set({ loading: true });
     try {
-      const response = await axiosInstance.delete(`/policies/${id}`);
+      const response = await axiosInstance.delete(`/policy-new/${id}`);
       set((state) => ({
         policies: state.policies.filter((policy) => policy._id !== id),
         loading: false,

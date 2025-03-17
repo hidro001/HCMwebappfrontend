@@ -1,5 +1,5 @@
 // src/components/Feed/Feed.js
-import  { useEffect } from "react";
+import { useEffect } from "react";
 import PostCard from "./PostCard";
 import PollCard from "./PollCard";
 import React from "react";

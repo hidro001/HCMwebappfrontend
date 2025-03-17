@@ -62,7 +62,8 @@ export default function CompanyPoliciesView() {
                 {policy.title}
               </h2>
               <p className="text-sm text-gray-500 dark:text-gray-400">
-                {policy.category} | {policy.department}
+                {policy.category}
+                 {/* | {policy.department} */}
               </p>
               <p className="mt-2 text-gray-600 dark:text-gray-300 text-sm">
                 {policy.description}
