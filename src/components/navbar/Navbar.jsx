@@ -190,6 +190,17 @@ const Navbar = () => {
     };
   }, [showProfileDropdown, showNotificationDropdown, showBreakCard]);
 
+  const getDashboardPath = () => {
+    switch (useAuthStore.userRole?.toLowerCase()) {
+      case "employee":
+        return "/dashboard/employee";
+      case "super-admin":
+        return "/dashboard";
+      default:
+        return "/unknown"; // or "/dashboard" or any fallback route
+    }
+  };
+
   return (
     <nav
       className={
@@ -201,7 +212,7 @@ const Navbar = () => {
       {/* Left Section: Company Branding */}
       <div className="flex items-center space-x-4">
         <div className="text-2xl font-bold text-white">
-          <Link to="/dashboard">
+        <Link to={getDashboardPath()}>
             <img className="w-24" src={companyLogo} alt="Company Logo" />
           </Link>
         </div>
