@@ -191,13 +191,13 @@ const Navbar = () => {
   }, [showProfileDropdown, showNotificationDropdown, showBreakCard]);
 
   const getDashboardPath = () => {
-    switch (useAuthStore.userRole?.toLowerCase()) {
+    switch (authStore.userRole?.toLowerCase()) {
       case "employee":
         return "/dashboard/employee";
       case "super-admin":
         return "/dashboard";
       default:
-        return "/unknown"; // or "/dashboard" or any fallback route
+        return "/dashboard/employee"; // or "/dashboard" or any fallback route
     }
   };
 
