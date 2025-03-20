@@ -195,7 +195,7 @@ const Navbar = () => {
       case "employee":
         return "/dashboard/employee";
       case "super-admin":
-        return "/dashboard";
+        return "/dashboard/super-employee-dashboard";
       default:
         return "/dashboard/employee"; // or "/dashboard" or any fallback route
     }

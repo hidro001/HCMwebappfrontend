@@ -108,7 +108,7 @@ const router = createBrowserRouter([
     ),
     children: [
       {
-        index: true,
+        path: "super-employee-dashboard",
         element: <SuperAdminDashboardPage />,
       },
       {

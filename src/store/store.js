@@ -88,7 +88,7 @@ const useAuthStore = create(
         localStorage.setItem("_id", _id || ""); // Store _id
         const userPermissions = permissions || [];
         if (userPermissions.includes("dashboard-super")) {
-          window.location.href = "/dashboard";
+          window.location.href = "/dashboard/super-employee-dashboard";
         } else if (userPermissions.includes("dashboard-employee")) {
           window.location.href = "/dashboard/employee";
         } else {
