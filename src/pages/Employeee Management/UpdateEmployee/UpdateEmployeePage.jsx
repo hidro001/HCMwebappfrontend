@@ -87,7 +87,6 @@ function mapEmployeeToFormDefaults(employeeData) {
   }
 
   return {
-  
     first_Name: employeeData.first_Name || "",
     last_Name: employeeData.last_Name || "",
     designation: employeeData.designation || "",
@@ -131,8 +130,9 @@ function mapEmployeeToFormDefaults(employeeData) {
     documents:
       employeeData.documents && employeeData.documents.length > 0
         ? employeeData.documents.map((doc) => ({
+            _id: doc._id || "",
             name: doc.name || "",
-            file: null,
+            file: doc.url || "",
           }))
         : [{ name: "", file: null }],
     qualifications:
