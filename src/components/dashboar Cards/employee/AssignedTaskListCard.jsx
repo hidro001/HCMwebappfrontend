@@ -413,7 +413,7 @@ const AssignedTaskListCard = () => {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="w-full max-w-2xl mx-auto p-6 rounded-lg shadow-lg bg-white dark:bg-gray-800"
+      className="w-full  mx-auto p-6 rounded-lg shadow-lg bg-white dark:bg-gray-800"
     >
       {/* Title & Date Filter Side by Side */}
       <div className="flex justify-between items-center mb-4">
