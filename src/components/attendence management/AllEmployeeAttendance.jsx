@@ -385,10 +385,6 @@ export default function AllEmployeeAttendance() {
   // Render
   return (
     <div className="bg-gray-50 dark:bg-gray-900 dark:text-gray-100 p-6 min-h-screen">
-      <h1 className="text-xl md:text-2xl font-bold mb-4">
-        Today's Punch In/Out
-      </h1>
-
       {/* Filters */}
       <div className="bg-white dark:bg-gray-800 rounded-md shadow px-4 py-3 mb-6 transition-colors">
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
