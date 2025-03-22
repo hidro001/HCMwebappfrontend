@@ -87,9 +87,9 @@ const useAuthStore = create(
         localStorage.setItem("userAvatar", userAvatar || "");
         localStorage.setItem("_id", _id || ""); // Store _id
         const userPermissions = permissions || [];
-        if (userPermissions.includes("SuperDashboard")) {
-          window.location.href = "/dashboard";
-        } else if (userPermissions.includes("employeeDashboard")) {
+        if (userPermissions.includes("dashboard-super")) {
+          window.location.href = "/dashboard/super-employee-dashboard";
+        } else if (userPermissions.includes("dashboard-employee")) {
           window.location.href = "/dashboard/employee";
         } else {
           // fallback if user doesn't have either

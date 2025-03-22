@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import toast from "react-hot-toast";
@@ -50,7 +47,7 @@ function AllEmpRatings() {
   const [selectedRating, setSelectedRating] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Fetch ratings on component mount
+  // Fetch ratings on component mount (page 1 by default)
   useEffect(() => {
     fetchAllEmployeeRatings(1);
   }, [fetchAllEmployeeRatings]);
@@ -70,7 +67,7 @@ function AllEmpRatings() {
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 dark:text-gray-100 p-6">
       {/* Top Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         {summaryData.map((item, idx) => (
           <div
             key={idx}
@@ -84,7 +81,7 @@ function AllEmpRatings() {
             </div>
           </div>
         ))}
-      </div>
+      </div> */}
 
       {/* Table of Ratings */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
@@ -117,15 +114,17 @@ function AllEmpRatings() {
               <tbody className="divide-y divide-gray-300/50 text-gray-900 dark:text-gray-200">
                 {ratings.map((rating, idx) => {
                   const { ratedTo, ratedBy } = rating;
+                  // Calculate serial number based on current page and items per page.
+                  const itemsPerPage = pagination.itemsPerPage || 20;
+                  const serial =
+                    idx + 1 + (pagination.currentPage - 1) * itemsPerPage;
                   return (
                     <tr
                       key={rating._id}
                       className="hover:bg-gray-50 dark:hover:bg-gray-600 divide-x divide-gray-300/50"
                     >
                       <td className="py-2 px-2">
-                        {String(
-                          idx + 1 + (pagination.currentPage - 1) * 20
-                        ).padStart(2, "0")}
+                        {String(serial).padStart(2, "0")}
                       </td>
                       <td className="py-2 px-2">
                         {ratedTo?.employee_Id || "N/A"}
@@ -171,31 +170,90 @@ function AllEmpRatings() {
           </div>
         )}
 
-        {/* Pagination */}
-        <div className="mt-4 flex justify-center space-x-2">
-          {pagination?.totalPages > 1 && (
-            <>
-              {pagination.currentPage > 1 && (
-                <button
-                  onClick={() => handlePageChange(pagination.currentPage - 1)}
-                  className="px-3 py-1 border rounded"
-                >
-                  Prev
-                </button>
-              )}
-              <span>
-                Page {pagination.currentPage} of {pagination.totalPages}
-              </span>
-              {pagination.currentPage < pagination.totalPages && (
-                <button
-                  onClick={() => handlePageChange(pagination.currentPage + 1)}
-                  className="px-3 py-1 border rounded"
-                >
-                  Next
-                </button>
-              )}
-            </>
-          )}
+        {/* Pagination Controls */}
+        <div className="mt-4 flex flex-col md:flex-row md:justify-between items-center space-y-2 md:space-y-0">
+          {/* Prev/Next Buttons */}
+          <div className="flex items-center space-x-2">
+            {pagination?.currentPage > 1 && (
+              <button
+                onClick={() =>
+                  handlePageChange(pagination.currentPage - 1)
+                }
+                className="px-3 py-1 border rounded dark:bg-gray-700 dark:text-gray-100"
+              >
+                Prev
+              </button>
+            )}
+            {pagination?.currentPage < pagination?.totalPages && (
+              <button
+                onClick={() =>
+                  handlePageChange(pagination.currentPage + 1)
+                }
+                className="px-3 py-1 border rounded dark:bg-gray-700 dark:text-gray-100"
+              >
+                Next
+              </button>
+            )}
+          </div>
+
+          {/* "Go to Page" Form */}
+          <div className="flex items-center space-x-2">
+            <span className="text-sm dark:text-gray-300">
+              Page {pagination?.currentPage} of {pagination?.totalPages}
+            </span>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const page = Number(e.target.page.value);
+                if (
+                  page >= 1 &&
+                  page <= pagination?.totalPages
+                ) {
+                  handlePageChange(page);
+                }
+                e.target.page.value = "";
+              }}
+              className="flex items-center space-x-2"
+            >
+              <label htmlFor="page" className="text-sm dark:text-gray-300">
+                Go to page:
+              </label>
+              <input
+                id="page"
+                name="page"
+                type="number"
+                className="w-16 p-1 border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100"
+                min="1"
+                max={pagination?.totalPages}
+              />
+              <button
+                type="submit"
+                className="px-3 py-1 bg-blue-500 hover:bg-blue-600 text-white rounded"
+              >
+                Go
+              </button>
+            </form>
+          </div>
+
+          {/* Items per Page Selection */}
+          <div className="flex items-center space-x-2">
+            <span className="text-sm dark:text-gray-300">
+              Items per page:
+            </span>
+            <select
+              onChange={(e) =>
+                // When items per page changes, reset to page 1 and pass the new value
+                handlePageChange(1, Number(e.target.value))
+              }
+              className="p-1 border border-gray-300 dark:border-gray-700 rounded bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100"
+              value={pagination.itemsPerPage || 20}
+            >
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -214,4 +272,3 @@ function AllEmpRatings() {
 }
 
 export default AllEmpRatings;
-

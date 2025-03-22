@@ -472,7 +472,7 @@
 //                       })}
 //                     </td>
 //                     <td className="px-3 py-2 border border-gray-300 dark:border-gray-700">
-//                       {/* 
+//                       {/*
 //                         Some APIs store overallScore as 0–10 or 0–1 or 0–100.
 //                         Adjust as needed. Example: if it's 0–10, multiply by 10.
 //                       */}
@@ -545,7 +545,7 @@
 //                       })}
 //                     </td>
 //                     <td className="px-3 py-2 border border-gray-300 dark:border-gray-700">
-//                       {/* 
+//                       {/*
 //                         If Business uses 0–100 scale already:
 //                       */}
 //                       {row.overallScore.toFixed(2)}%
@@ -648,15 +648,15 @@
 //   };
 
 //   return (
-//     /** 
-//      * Container with a full-height dark background 
+//     /**
+//      * Container with a full-height dark background
 //      * + text color that adapts to dark mode
 //      **/
 //     <div className="min-h-screen bg-gradient-to-tr from-gray-900 via-black to-gray-900 text-gray-200 p-6 md:p-10">
 //       {/* Outer “card” wrapper, to set any desired max-width */}
 //       <div className="max-w-7xl mx-auto">
 //         <motion.h1
-//           className="text-center text-3xl sm:text-4xl font-extrabold mb-8 
+//           className="text-center text-3xl sm:text-4xl font-extrabold mb-8
 //                      text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-400"
 //           initial={{ opacity: 0, y: -10 }}
 //           animate={{ opacity: 1, y: 0 }}
@@ -669,7 +669,7 @@
 //         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
 //           {/* ----- RACI OPERATIONS CARD ----- */}
 //           <motion.div
-//             className="rounded-xl bg-gray-800/60 shadow-xl p-5 
+//             className="rounded-xl bg-gray-800/60 shadow-xl p-5
 //                        dark:bg-gray-800 dark:border dark:border-gray-700"
 //             initial={{ opacity: 0, y: 20 }}
 //             whileInView={{ opacity: 1, y: 0 }}
@@ -745,7 +745,7 @@
 
 //           {/* ----- RACI BUSINESS CARD ----- */}
 //           <motion.div
-//             className="rounded-xl bg-gray-800/60 shadow-xl p-5 
+//             className="rounded-xl bg-gray-800/60 shadow-xl p-5
 //                        dark:bg-gray-800 dark:border dark:border-gray-700"
 //             initial={{ opacity: 0, y: 20 }}
 //             whileInView={{ opacity: 1, y: 0 }}
@@ -892,8 +892,8 @@ export default function RaciDashboard() {
 
   return (
     <>
-      {/** 
-       * 1) Main Container: 
+      {/**
+       * 1) Main Container:
        *    Light mode => white background, gray text
        *    Dark mode  => gradient background, light text
        */}
@@ -929,10 +929,10 @@ export default function RaciDashboard() {
 
           {/* 3) Two Columns for Operations & Business (stack on small screens) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/** 
+            {/**
              * === RACI OPERATIONS CARD ===
              * Light: white card, gray text, subtle border
-             * Dark: nearly black card, white text, darker border 
+             * Dark: nearly black card, white text, darker border
              */}
             <motion.div
               className="
@@ -968,7 +968,9 @@ export default function RaciDashboard() {
                       <th className="px-4 py-3 text-left rounded-l-lg">S.NO</th>
                       <th className="px-4 py-3 text-left">Date</th>
                       <th className="px-4 py-3 text-left">Overall Score</th>
-                      <th className="px-4 py-3 text-left rounded-r-lg">Details</th>
+                      <th className="px-4 py-3 text-left rounded-r-lg">
+                        Details
+                      </th>
                     </tr>
                   </thead>
 
@@ -1000,9 +1002,7 @@ export default function RaciDashboard() {
                             transition-colors
                           "
                         >
-                          <td className="px-4 py-3 font-medium">
-                            {idx + 1}
-                          </td>
+                          <td className="px-4 py-3 font-medium">{idx + 1}</td>
                           <td className="px-4 py-3">
                             {new Date(item.date).toLocaleDateString("en-GB", {
                               day: "2-digit",
@@ -1041,7 +1041,7 @@ export default function RaciDashboard() {
             {/**
              * === RACI BUSINESS CARD ===
              * Light: white card, gray text, subtle border
-             * Dark: nearly black card, white text, darker border 
+             * Dark: nearly black card, white text, darker border
              */}
             <motion.div
               className="
@@ -1109,9 +1109,7 @@ export default function RaciDashboard() {
                             transition-colors
                           "
                         >
-                          <td className="px-4 py-3 font-medium">
-                            {idx + 1}
-                          </td>
+                          <td className="px-4 py-3 font-medium">{idx + 1}</td>
                           <td className="px-4 py-3">
                             {new Date(item.date).toLocaleDateString("en-GB", {
                               day: "2-digit",

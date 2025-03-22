@@ -6,7 +6,7 @@ import {
   getAllEmployeesApi,
   deleteUserApi,
   // restoreUserApi,
-  updateUserStatusApi 
+  updateUserStatusApi,
 } from "../service/getAllEmployeesApi";
 
 const useEmployeesStore = create((set, get) => ({

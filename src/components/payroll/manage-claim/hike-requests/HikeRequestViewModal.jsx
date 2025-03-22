@@ -1,8 +1,6 @@
-
-
 export default function HikeRequestViewModal({ request, onClose }) {
-  // If no request is passed, don't render anything
   if (!request) return null;
+console.log(request);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
@@ -17,13 +15,22 @@ export default function HikeRequestViewModal({ request, onClose }) {
         </button>
 
         <h2 className="text-lg md:text-xl font-semibold mb-3">
-          Hike Request of {request.name} ({request.empId})
+          Hike Request of ({request.employeeId})
         </h2>
         <div className="mb-2">
-          <strong>Requested At:</strong> {request.requestedAt}
-        </div>
+  <strong>Requested At:</strong>{" "}
+  {new Date(request.requestedAt).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  })}
+</div>
+
         <div className="mb-2">
-          <strong>Salary Hike (%):</strong> {request.salaryHike}
+          <strong>Salary Hike (%):</strong> {request.salaryHikePercentage}
         </div>
         <div className="mb-2">
           <strong>Status:</strong> {request.status}
@@ -31,7 +38,7 @@ export default function HikeRequestViewModal({ request, onClose }) {
         <div className="mb-2">
           <strong>Description:</strong>
           <p className="mt-1">
-            {request.description || 'No description provided.'}
+            {request.reason || 'No description provided.'}
           </p>
         </div>
       </div>

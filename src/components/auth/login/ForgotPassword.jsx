@@ -1,5 +1,3 @@
-
-
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import {
@@ -10,7 +8,7 @@ import {
   DialogContentText,
   DialogTitle,
   OutlinedInput,
-  CircularProgress,    // <-- Import the loading spinner
+  CircularProgress, // <-- Import the loading spinner
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import LockResetIcon from "@mui/icons-material/LockReset";

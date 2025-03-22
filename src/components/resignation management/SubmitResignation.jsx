@@ -1,6 +1,3 @@
-
-
-
 // import { useEffect, useState } from "react";
 // // 1) Remove react-toastify import:
 // // import { toast } from "react-toastify";
@@ -9,18 +6,18 @@
 // import toast from "react-hot-toast";
 
 // import SubmitResignationModal from "./model/SubmitResignationModal";
-// import ConfirmationDialog from "../../components/common/ConfirmationDialog"; 
+// import ConfirmationDialog from "../../components/common/ConfirmationDialog";
 // import useResignationStore from "../../store/useResignationStore";
 
 // export default function SubmitResignation() {
-//   const { 
-//     resignations, 
-//     resignation, 
-//     loading, 
-//     error, 
-//     fetchEmployeeResignations, 
-//     withdrawResignation, 
-//     requestFNF 
+//   const {
+//     resignations,
+//     resignation,
+//     loading,
+//     error,
+//     fetchEmployeeResignations,
+//     withdrawResignation,
+//     requestFNF
 //   } = useResignationStore();
 
 //   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -73,7 +70,6 @@
 
 //   return (
 //     <div className="dark:bg-gray-900 bg-gray-100 text-gray-900 dark:text-gray-100 p-6 min-h-screen">
-      
 
 //       {/* Header */}
 //       <div className="flex justify-between items-center mb-6">
@@ -245,7 +241,6 @@
 //   );
 // }
 
-
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
@@ -287,9 +282,8 @@ function FnfDetailsModal({ isOpen, onClose, fnf }) {
             {fnf.processedBy && (
               <div className="mt-2">
                 <p>
-                  <strong>Processed By:</strong>{" "}
-                  {fnf.processedBy.first_Name} {fnf.processedBy.last_Name} (
-                  {fnf.processedBy.employee_Id})
+                  <strong>Processed By:</strong> {fnf.processedBy.first_Name}{" "}
+                  {fnf.processedBy.last_Name} ({fnf.processedBy.employee_Id})
                 </p>
                 <p>
                   <strong>Processed At:</strong>{" "}
@@ -421,8 +415,8 @@ export default function SubmitResignation() {
                 <ul className="text-sm text-gray-600 dark:text-gray-400">
                   {resignation.approvers?.map((approver) => (
                     <li key={approver._id}>
-                      {approver.manager.first_Name} {approver.manager.last_Name} (
-                      {approver.manager.employee_Id})
+                      {approver.manager.first_Name} {approver.manager.last_Name}{" "}
+                      ({approver.manager.employee_Id})
                     </li>
                   ))}
                 </ul>
@@ -517,7 +511,9 @@ export default function SubmitResignation() {
             <thead>
               <tr className="bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                 <th className="p-2 border dark:border-gray-600">S.L</th>
-                <th className="p-2 border dark:border-gray-600">Employee Name</th>
+                <th className="p-2 border dark:border-gray-600">
+                  Employee Name
+                </th>
                 <th className="p-2 border dark:border-gray-600">Employee ID</th>
                 <th className="p-2 border dark:border-gray-600">
                   Resignation Date

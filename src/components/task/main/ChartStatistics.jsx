@@ -16,7 +16,9 @@ const ChartStatistics = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const employeeId = "EMP123"; // Replace this dynamically in real use
+
+  const employeeId=localStorage.getItem("employeeId")
+  // const employeeId = "EMP123"; // Replace this dynamically in real use
 
   useEffect(() => {
     const fetchTaskData = async () => {

@@ -147,3 +147,23 @@ export const getTaskStatusSummary = async (employeeId) => {
     throw error;
   }
 };
+
+
+
+
+
+
+
+
+
+export const getSubordinateDepartments = async () => {
+  try {
+    const response = await axiosInstance.get("/task/subordinate/department");
+    if (response.data.success) {
+      return response.data.data; 
+    }
+  } catch (error) {
+    console.error("Error fetching subordinates:", error);
+    return [];
+  }
+};

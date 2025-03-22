@@ -302,7 +302,7 @@ const LoginCard = () => {
         navigate("/dashboard/employee");
         break;
       case "super-admin":
-        navigate("/dashboard");
+        navigate("/dashboard/super-employee-dashboard");
         break;
       default:
         toast.error("Unknown user role");

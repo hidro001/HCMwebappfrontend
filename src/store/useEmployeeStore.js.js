@@ -12,6 +12,8 @@ import {
   updateEmployee,
 } from "../service/employeeService";
 import axiosInstance from "../service/axiosInstance";
+import { toast } from "react-hot-toast";
+import { getEmployeeByIdApi } from "../service/getAllEmployeesApi";
 
 const useEmployeeStore = create((set, get) => ({
   // Data States
@@ -33,7 +35,6 @@ const useEmployeeStore = create((set, get) => ({
   loadingPermissionRoles: false,
   loadingAddresses: false,
   loadingDesignations: false,
-
 
   loadBreakRecords: async () => {
     try {
@@ -188,23 +189,28 @@ const useEmployeeStore = create((set, get) => ({
   // To store a single employee in the store (if you like):
   selectedEmployee: null,
   loadingSelectedEmployee: false,
+  error: null,
 
   // Action: fetch employee by ID
   loadEmployeeById: async (id) => {
-    set({ loadingSelectedEmployee: true });
+    set({ loadingSelectedEmployee: true, error: null });
     try {
-      const response = await fetchEmployeeById(id);
+      const response = await getEmployeeByIdApi(id);
       if (response.success) {
-        set({ selectedEmployee: response.data });
+        set({
+          selectedEmployee: response.data,
+          loadingSelectedEmployee: false,
+        });
       } else {
-        console.error("Error loading employee: ", response.message);
+        throw new Error(response.message || "Failed to load employee data.");
       }
     } catch (error) {
-      console.error("Error loading employee: ", error);
-    } finally {
-      set({ loadingSelectedEmployee: false });
+      toast.error(error.message);
+      set({ error: error.message, loadingSelectedEmployee: false });
     }
   },
+
+  resetSelectedEmployee: () => set({ selectedEmployee: null }),
 
   // Action: update employee
   updateEmployeeData: async (id, formData) => {
@@ -212,6 +218,20 @@ const useEmployeeStore = create((set, get) => ({
       const response = await updateEmployee(id, formData);
       return response; // Let the caller handle success/failure
     } catch (error) {
+      throw error;
+    }
+  },
+  bulkUploadEmployees: async (formData) => {
+    try {
+      // Make sure you specify "multipart/form-data"
+      const response = await axiosInstance.post("/user/bulk-upload", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      return response.data; // e.g. { success: true, message, results }
+    } catch (error) {
+      console.error("Error uploading employees in bulk:", error);
       throw error;
     }
   },

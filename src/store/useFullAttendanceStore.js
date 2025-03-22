@@ -713,15 +713,43 @@ import { toast } from "react-hot-toast";
 import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import axiosInstance from "../service/axiosInstance";
-import {
-  convertTo24Hour,
-  convertTo24HourTime,
-  getAllDaysInMonth,
-} from "../utils/attendanceUtils";
+
+// --- Utility functions ---
+function convertTo24Hour(timeStr) {
+  if (!timeStr) return null;
+  const [timePart, ampm] = timeStr.split(" ");
+  if (!timePart || !ampm) return null;
+
+  let [hh, mm, ss] = timePart.split(":");
+  hh = parseInt(hh, 10) || 0;
+  mm = parseInt(mm, 10) || 0;
+  ss = parseInt(ss, 10) || 0;
+
+  if (ampm.toUpperCase() === "PM" && hh !== 12) hh += 12;
+  if (ampm.toUpperCase() === "AM" && hh === 12) hh = 0;
+
+  return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
+}
+
+/**
+ * Returns an array of every Date in the given (year, month).
+ * month = 1..12
+ */
+function getAllDaysInMonth(year, month) {
+  const days = [];
+  let current = new Date(year, month - 1, 1);
+  while (current.getMonth() === month - 1) {
+    days.push(new Date(current));
+    current.setDate(current.getDate() + 1);
+  }
+  return days;
+}
+
+// optional: if you store a “convertTo24HourTime” or other helpers in your “attendanceUtils,” import them likewise
 
 const useFullAttendanceStore = create((set, get) => ({
   // -------------------------------
-  //  State
+  //  States
   // -------------------------------
   userProfileData: null,
   approvedLeaves: [],
@@ -737,64 +765,32 @@ const useFullAttendanceStore = create((set, get) => ({
   error: null,
   isLoading: false,
 
-  // If you want to store "dummy data" fallback:
-  dummyAttendanceData: [
-    // The same placeholder array you had in the new UI.
-    // So if real fetch fails or is empty, you can use these.
-    {
-      sl: 1,
-      date: "2025-01-01",
-      day: "Wednesday",
-      logInTime: "10:39:45",
-      logOutTime: "19:07:56",
-      totalBreak: "45min 20sec",
-      status: "Present",
-    },
-    // ...
-    // replicate your entire dummy array
-  ],
-
-  // Example: you might also store a "fetched" boolean or something similar
+  // You can keep a “hasRealData” or “dummyAttendanceData” if you like
   hasRealData: false,
 
   // -------------------------------
-  //  Actions (async or sync)
+  //  Async Action: fetchAllData
   // -------------------------------
   fetchAllData: async (employeeId) => {
-    // This replicates the big useEffect from old code
     try {
       set({ isLoading: true, error: null });
 
-      // 1) Fetch user profile
-      const userProfileResponse = await axiosInstance.post(
-        `/user/getuser/${employeeId}`
-      );
+      // 1) user profile
+      const userProfileResponse = await axiosInstance.post(`/user/getuser/${employeeId}`);
       if (!userProfileResponse.data?.success) {
         throw new Error(
-          userProfileResponse.data?.message ||
-            "Failed to fetch user profile data"
+          userProfileResponse.data?.message || "Failed to fetch user profile data"
         );
       }
       const userData = userProfileResponse.data.data;
 
-
-
-
-
-
-
-
-
-      // 2) Fetch approved leaves
-      const approvedLeavesResponse = await axiosInstance.get(
-        `/leave/employee/leaves`,
-        {
-          params: {
-            status: "approved",
-            employee_Id: employeeId,
-          },
-        }
-      );
+      // 2) approved leaves
+      const approvedLeavesResponse = await axiosInstance.get(`/leave/employee/leaves`, {
+        params: {
+          status: "approved",
+          employee_Id: employeeId,
+        },
+      });
       let approvedLeavesData = [];
       if (Array.isArray(approvedLeavesResponse.data)) {
         approvedLeavesData = approvedLeavesResponse.data;
@@ -810,111 +806,47 @@ const useFullAttendanceStore = create((set, get) => ({
         approvedLeavesData = approvedLeavesResponse.data.leave;
       }
 
-      // 3) Fetch attendance
-      const attendanceResponse = await axiosInstance.get(
-        `/employee/attendencev2`,
-        {
-          params: {
-            employee_Id: employeeId,
-          },
-        }
-      );
+      // 3) attendance
+      const attendanceResponse = await axiosInstance.get(`/employee/attendencev2`, {
+        params: {
+          employee_Id: employeeId,
+        },
+      });
       if (!attendanceResponse.data?.success) {
         throw new Error(
           attendanceResponse.data?.message || "Failed to fetch attendance data"
         );
       }
-      // reduce duplicates by date if needed
       const uniqueData = attendanceResponse.data.data.reduce((acc, current) => {
-        const found = acc.find((item) => item.date === current.date);
-        if (!found) acc.push(current);
+        if (!acc.find((item) => item.date === current.date)) {
+          acc.push(current);
+        }
         return acc;
       }, []);
 
-      // 4) Fetch company settings
+      // 4) company settings
       const companySettingsResponse = await axiosInstance.get(
         `/superadmin/companysettings/settings`
       );
       if (!companySettingsResponse.data?.success) {
         throw new Error(
-          companySettingsResponse.data?.message ||
-            "Failed to fetch company settings"
+          companySettingsResponse.data?.message || "Failed to fetch company settings"
         );
       }
-      const settingsData = companySettingsResponse.data.data;
-
-      // 5) find attendancePolicies
+      const settingsData = companySettingsResponse.data.data || {};
       const attendancePoliciesData = settingsData.attendancePolicies || {};
 
-      // parse shift timing from user
-      let userShiftStartTime = "10:00";
-      let userShiftEndTime = "19:00";
-      if (userData.shift_Timing) {
-        // e.g. "Day Shift (10:00 - 19:00)"
-        const timeMatch = userData.shift_Timing.match(/\(([^)]+)\)/);
-        if (timeMatch && timeMatch[1]) {
-          const [start, end] = timeMatch[1].split(" - ").map((t) => t.trim());
-          userShiftStartTime = start;
-          userShiftEndTime = end;
-        }
-      }
-      // find shiftTiming object from settings
-      const shiftTiming = settingsData.shiftTimings?.find(
-        (st) => st.startTime === userShiftStartTime && st.endTime === userShiftEndTime
-      );
-
-      // find employment type object
-      const employmentType = settingsData.employmentTypes?.find(
-        (et) => et.name === userData.employee_Type
-      );
-      // find leave system
-      let leaveSystem = null;
-      let monthlyPaidLeavesValue = 0;
-      let totalPaidLeavesValue = 0;
-      const dateOfCreation = new Date(userData.createdAt);
-      const today = new Date();
-
-      if (employmentType) {
-        const leaveSystemId = employmentType.leaveSystemId;
-        leaveSystem = settingsData.leaveSystems?.find((ls) => ls.id === leaveSystemId);
-
-        if (leaveSystem) {
-          monthlyPaidLeavesValue = leaveSystem?.monthlyPaidLeaves || 0;
-        }
-
-        // months since creation
-        let monthsSinceCreation =
-          (today.getFullYear() - dateOfCreation.getFullYear()) * 12 +
-          (today.getMonth() - dateOfCreation.getMonth()) -
-          1;
-        monthsSinceCreation = Math.max(0, monthsSinceCreation);
-
-        totalPaidLeavesValue =
-          (userData.no_of_Paid_Leave || 0) + monthsSinceCreation * monthlyPaidLeavesValue;
-      }
-
-      // find the deduction objects
-      let deduceDetails = [];
-      if (employmentType && employmentType.deductions) {
-        deduceDetails = employmentType.deductions
-          .map((deductionId) =>
-            settingsData.deductions?.find((d) => d.id === deductionId)
-          )
-          .filter(Boolean); // remove undefined
-      }
+      // parse shift timing or other details if needed...
+      // find employment type, leave system, etc. (if your logic requires that)
 
       set({
         userProfileData: userData,
         approvedLeaves: approvedLeavesData,
         attendanceData: uniqueData,
         companySettings: settingsData,
-        shiftTimingDetails: shiftTiming || null,
-        employmentTypeDetails: employmentType || null,
-        leaveSystemDetails: leaveSystem,
-        monthlyPaidLeaves: monthlyPaidLeavesValue,
-        totalPaidLeaves: totalPaidLeavesValue,
-        deductionDetails: deduceDetails,
         attendancePolicies: attendancePoliciesData,
+        isLoading: false,
+        error: null,
         hasRealData: true,
       });
     } catch (err) {
@@ -923,48 +855,136 @@ const useFullAttendanceStore = create((set, get) => ({
       set({
         error: err.message || "An unexpected error occurred.",
         hasRealData: false,
+        isLoading: false,
       });
-    } finally {
-      set({ isLoading: false });
     }
   },
 
-  // ----------------------------------------------------
-  // Calculation helpers (just like in old code)
-  // Typically you’d keep them as “getters” inside the store
-  // so the new UI can call them directly
-  // or as separate pure functions in a utils file.
-  // ----------------------------------------------------
+  // -------------------------------
+  // Build a complete month view
+  // -------------------------------
+  getMonthlyAttendanceView: (year, month) => {
+    const { attendanceData, approvedLeaves, companySettings, attendancePolicies } = get();
 
+    // 1) build array of all days in (year, month)
+    const allDays = getAllDaysInMonth(year, month);
+
+    // 2) build sets for holiday & leaves
+    const holidaySet = new Set(
+      (companySettings?.holidays || []).map((h) =>
+        new Date(h.date).toISOString().split("T")[0]
+      )
+    );
+
+    const approvedLeavesSet = new Set();
+    for (const lv of approvedLeaves) {
+      const from = new Date(lv.leave_From);
+      const to = new Date(lv.leave_To);
+      for (let d = new Date(from); d <= to; d.setDate(d.getDate() + 1)) {
+        approvedLeavesSet.add(d.toISOString().split("T")[0]);
+      }
+    }
+
+    // 3) map each day => row
+    return allDays.map((dateObj, idx) => {
+      const dateStr = dateObj.toISOString().split("T")[0];
+      const dayName = dateObj.toLocaleDateString("en-US", { weekday: "long" });
+
+      // find record if any
+      const record = attendanceData.find((r) => r.date === dateStr);
+
+      let status = "Absent";
+      if (holidaySet.has(dateStr)) {
+        status = "Holiday";
+      } else if (approvedLeavesSet.has(dateStr)) {
+        status = "Holiday"; // or “Paid Leave”
+      } else if (record?.login && record?.logout) {
+        // parse hours
+        const login24 = convertTo24Hour(record.login);
+        const logout24 = convertTo24Hour(record.logout);
+        const start = new Date(`1970-01-01T${login24}`);
+        const end = new Date(`1970-01-01T${logout24}`);
+        const hoursWorked = (end - start) / 36e5;
+
+        const fullDayHours = attendancePolicies?.fullDayHours || 9;
+        const halfDayHours = attendancePolicies?.halfDayHours || 5;
+        const minHours = attendancePolicies?.minimumWorkingHours || 4.5;
+
+        if (hoursWorked >= fullDayHours) status = "Present";
+        else if (hoursWorked >= minHours && hoursWorked <= halfDayHours) status = "Half Day";
+        else if (hoursWorked > 0 && hoursWorked < minHours) status = "Not Even Half Day";
+        else status = "Present"; // fallback
+      } else {
+        // if future date => “------”
+        if (dateObj > new Date()) status = "------";
+      }
+
+      return {
+        sl: idx + 1,
+        date: dateStr,
+        day: dayName,
+        logInTime: record?.login || "------",
+        logOutTime: record?.logout || "------",
+        totalBreak: record?.breaks?.length ? `${record.breaks.length} break(s)` : "--",
+        status,
+      };
+    });
+  },
+
+  // -------------------------------
+  // Calculation helpers
+  // -------------------------------
   calculateTotalShifts: (year, month) => {
     const { attendanceData } = get();
-    return attendanceData.filter((record) => {
-      const recordDate = new Date(record.date);
+    return attendanceData.filter((rec) => {
+      const d = new Date(rec.date);
       return (
-        recordDate.getFullYear() === year &&
-        recordDate.getMonth() + 1 === month &&
-        record.login &&
-        record.logout
+        d.getFullYear() === year &&
+        d.getMonth() + 1 === month &&
+        rec.login &&
+        rec.logout
       );
     }).length;
   },
 
+  calculateTotalCompletedDays: (year, month) => {
+    const { attendanceData, attendancePolicies } = get();
+    const fullDayHours = attendancePolicies?.fullDayHours || 9;
+
+    return attendanceData.reduce((count, rec) => {
+      const d = new Date(rec.date);
+      if (
+        d.getFullYear() === year &&
+        d.getMonth() + 1 === month &&
+        rec.login &&
+        rec.logout
+      ) {
+        const login24 = convertTo24Hour(rec.login);
+        const logout24 = convertTo24Hour(rec.logout);
+        if (login24 && logout24) {
+          const start = new Date(`1970-01-01T${login24}`);
+          const end = new Date(`1970-01-01T${logout24}`);
+          const hoursWorked = (end - start) / 36e5;
+          if (hoursWorked >= fullDayHours) count++;
+        }
+      }
+      return count;
+    }, 0);
+  },
+
   calculateTotalLates: (year, month) => {
     const { attendanceData, shiftTimingDetails, attendancePolicies } = get();
-    return attendanceData.filter((record) => {
-      const recordDate = new Date(record.date);
-      if (
-        recordDate.getFullYear() === year &&
-        recordDate.getMonth() + 1 === month
-      ) {
+    return attendanceData.filter((rec) => {
+      const d = new Date(rec.date);
+      if (d.getFullYear() === year && d.getMonth() + 1 === month) {
         const shiftStartTime = shiftTimingDetails?.startTime || "09:00";
-        const gracePeriod = attendancePolicies?.gracePeriodMinutes || 15;
-        const loginTime = record.login ? record.login : null;
-        if (shiftStartTime && loginTime) {
+        const grace = attendancePolicies?.gracePeriodMinutes || 15;
+        if (rec.login && shiftStartTime) {
           const shiftStart = new Date(`1970-01-01T${convertTo24Hour(shiftStartTime)}`);
-          shiftStart.setMinutes(shiftStart.getMinutes() + gracePeriod);
-          const loginDateTime = new Date(`1970-01-01T${convertTo24Hour(loginTime)}`);
-          return loginDateTime > shiftStart;
+          shiftStart.setMinutes(shiftStart.getMinutes() + grace);
+
+          const loginTime = new Date(`1970-01-01T${convertTo24Hour(rec.login)}`);
+          return loginTime > shiftStart;
         }
       }
       return false;
@@ -973,45 +993,54 @@ const useFullAttendanceStore = create((set, get) => ({
 
   calculateTotalHalfDays: (year, month) => {
     const { attendanceData, attendancePolicies } = get();
-    return attendanceData.filter((record) => {
-      const recordDate = new Date(record.date);
+    const halfDayHours = attendancePolicies?.halfDayHours || 5;
+    const minHours = attendancePolicies?.minimumWorkingHours || 4.5;
+
+    let count = 0;
+    attendanceData.forEach((rec) => {
+      const d = new Date(rec.date);
       if (
-        recordDate.getFullYear() === year &&
-        recordDate.getMonth() + 1 === month &&
-        record.login &&
-        record.logout
+        d.getFullYear() === year &&
+        d.getMonth() + 1 === month &&
+        rec.login &&
+        rec.logout
       ) {
-        const logInTime = new Date(`1970-01-01T${convertTo24Hour(record.login)}`);
-        const logOutTime = new Date(`1970-01-01T${convertTo24Hour(record.logout)}`);
-        const hoursWorked = (logOutTime - logInTime) / (1000 * 60 * 60);
-        return (
-          hoursWorked > (attendancePolicies?.minimumWorkingHours || 4.5) &&
-          hoursWorked <= (attendancePolicies?.halfDayHours || 5)
-        );
+        const login24 = convertTo24Hour(rec.login);
+        const logout24 = convertTo24Hour(rec.logout);
+        if (login24 && logout24) {
+          const start = new Date(`1970-01-01T${login24}`);
+          const end = new Date(`1970-01-01T${logout24}`);
+          const hours = (end - start) / 36e5;
+
+          if (hours >= minHours && hours <= halfDayHours) count++;
+        }
       }
-      return false;
-    }).length;
+    });
+    return count;
   },
 
   calculateNotEvenHalfDays: (year, month) => {
-    const { attendanceData } = get();
+    const { attendanceData, attendancePolicies } = get();
+    const minHrs = attendancePolicies?.minimumWorkingHours || 4.5;
+
     let count = 0;
-    attendanceData.forEach((record) => {
-      const recordDate = new Date(record.date);
+    attendanceData.forEach((rec) => {
+      const d = new Date(rec.date);
       if (
-        recordDate.getFullYear() === year &&
-        recordDate.getMonth() + 1 === month &&
-        record.login &&
-        record.logout
+        d.getFullYear() === year &&
+        d.getMonth() + 1 === month &&
+        rec.login &&
+        rec.logout
       ) {
-        const loginDate = convertTo24HourTime(record.login);
-        const logoutDate = convertTo24HourTime(record.logout);
-        if (loginDate && logoutDate) {
-          const timeDifferenceInSeconds = (logoutDate - loginDate) / 1000;
-          // e.g., < 4.5 hours
-          if (timeDifferenceInSeconds < 4.5 * 3600) {
-            count++;
-          }
+        const login24 = convertTo24Hour(rec.login);
+        const logout24 = convertTo24Hour(rec.logout);
+        if (login24 && logout24) {
+          const start = new Date(`1970-01-01T${login24}`);
+          const end = new Date(`1970-01-01T${logout24}`);
+          const hours = (end - start) / 36e5;
+
+          // if less than minHrs, count
+          if (hours > 0 && hours < minHrs) count++;
         }
       }
     });
@@ -1021,45 +1050,20 @@ const useFullAttendanceStore = create((set, get) => ({
   calculateNotLoggedOut: (year, month) => {
     const { attendanceData } = get();
     const today = new Date();
-    return attendanceData.filter((record) => {
-      const recordDate = new Date(record.date);
+    return attendanceData.filter((rec) => {
+      const d = new Date(rec.date);
       return (
-        recordDate.getFullYear() === year &&
-        recordDate.getMonth() + 1 === month &&
-        record.login &&
-        !record.logout &&
-        recordDate <= today
+        d.getFullYear() === year &&
+        d.getMonth() + 1 === month &&
+        rec.login &&
+        !rec.logout &&
+        d <= today
       );
     }).length;
   },
 
-  calculateTotalCompletedDays: (year, month) => {
-    const { attendanceData, attendancePolicies } = get();
-    const completedDays = attendanceData.filter((record) => {
-      const recordDate = new Date(record.date);
-      if (
-        recordDate.getFullYear() === year &&
-        recordDate.getMonth() + 1 === month &&
-        record.login &&
-        record.logout
-      ) {
-        const loginTime = new Date(`1970-01-01T${convertTo24Hour(record.login)}`);
-        const logoutTime = new Date(`1970-01-01T${convertTo24Hour(record.logout)}`);
-        const hoursWorked = (logoutTime - loginTime) / (1000 * 60 * 60);
-        return hoursWorked >= (attendancePolicies?.fullDayHours || 9);
-      }
-      return false;
-    });
-    return completedDays.length;
-  },
-
-  // ... etc. You’d replicate all the old logic as needed.
-
-  // Example function to generate a PDF (like the old code’s generatePDF).
-  // Here, it doesn't tie to any sweetalert2. Instead, you can show your custom ConfirmationDialog
-  // in your UI, then if the user confirms, call this method.
+  // Sample PDF generator
   generatePDF: () => {
-    // The old code used sweetalert2. Now you can handle the "confirmation" in your custom dialog at the UI level.
     const doc = new jsPDF();
     doc.text("Hello from the PDF logic in Zustand store!", 10, 10);
     doc.save("payroll.pdf");
