@@ -532,6 +532,7 @@ import { useParams } from "react-router-dom";
 import useAttendanceStore from "../../store/useFullAttendanceStore";
 import ExportButtons from "../../components/common/PdfExcel";
 
+// Renders a small colored badge
 function renderStatusBadge(status) {
   let bgColor = "bg-gray-100 dark:bg-gray-700";
   let textColor = "text-gray-600 dark:text-gray-200";
@@ -566,30 +567,44 @@ function renderStatusBadge(status) {
     <span
       className={`px-2 py-1 text-sm rounded-md font-medium ${bgColor} ${textColor}`}
     >
-      {status}
+      {status || "----"}
     </span>
   );
 }
 
 export default function EmployeeFullAttendance() {
+  // If you have empID in route param
   const { empID } = useParams();
 
+  // Pull store data
   const {
     userProfileData,
-    attendanceData,
     fetchAllData,
+
+    // This method returns all days of the month with statuses:
+    getMonthlyAttendanceView,
+
+    // Summaries
     calculateTotalShifts,
     calculateTotalCompletedDays,
     calculateTotalLates,
     calculateTotalHalfDays,
     calculateNotEvenHalfDays,
     calculateNotLoggedOut,
+    error,
+    isLoading,
   } = useAttendanceStore();
 
+  // On mount, fetch data for the given empID (or fallback)
+  useEffect(() => {
+    if (empID) {
+      fetchAllData(empID);
+    } else {
+      fetchAllData("RI0546"); // fallback example
+    }
+  }, [empID, fetchAllData]);
 
-
-
-  // Default month → current month (Unchanged)
+  // Controls
   const today = new Date();
   const defaultMonthString = `${today.getFullYear()}-${String(
     today.getMonth() + 1
@@ -599,91 +614,54 @@ export default function EmployeeFullAttendance() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    if (empID) {
-      fetchAllData(empID);
-    } else {
-      fetchAllData("RI0546"); // fallback example if no empID is provided
-    }
-  }, [empID, fetchAllData]);
-
-  // Build real data directly from attendanceData
-  const realAttendanceData = attendanceData.map((record, index) => ({
-    sl: index + 1,
-    date: record.date || "",
-    day: record.day || "",
-    logInTime: record.login || "------",
-    logOutTime: record.logout || "------",
-    totalBreak: "--", // placeholder or calculate from your data
-    status: record.status || "Absent",
-  }));
-
-  // We no longer fall back to dummyAttendanceData:
-  const allAttendanceData = realAttendanceData;
-
-  // Filter by selectedMonth and searchText
-  const filteredData = useMemo(() => {
-    const byMonth = allAttendanceData.filter((item) =>
-      item.date.startsWith(selectedMonth)
-    );
-    const bySearch = byMonth.filter((item) => {
-      const combined = `${item.date} ${item.day} ${item.status}`.toLowerCase();
-      return combined.includes(searchText.toLowerCase());
-    });
-    return bySearch;
-  }, [allAttendanceData, selectedMonth, searchText]);
-
-  // Pagination calculations
-  const totalEntries = filteredData.length;
-  const totalPages = Math.ceil(totalEntries / rowsPerPage);
-  const safeCurrentPage = Math.min(Math.max(currentPage, 1), totalPages || 1);
-  const startIndex = (safeCurrentPage - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
-  const displayedData = filteredData.slice(startIndex, endIndex);
-
-  // Prepare columns for export
-  const columns = [
-    { header: "S.L", dataKey: "sl" },
-    { header: "Date", dataKey: "date" },
-    { header: "Day", dataKey: "day" },
-    { header: "Log In Time", dataKey: "logInTime" },
-    { header: "Log Out Time", dataKey: "logOutTime" },
-    { header: "Total Break", dataKey: "totalBreak" },
-    { header: "Status", dataKey: "status" },
-  ];
-
   function handleMonthChange(e) {
     setSelectedMonth(e.target.value);
     setCurrentPage(1);
   }
-
   function handleSearch(e) {
     setSearchText(e.target.value);
     setCurrentPage(1);
   }
-
   function handleRowsPerPage(e) {
     setRowsPerPage(Number(e.target.value));
     setCurrentPage(1);
   }
-
   function goToPage(pageNum) {
     if (pageNum >= 1 && pageNum <= totalPages) {
       setCurrentPage(pageNum);
     }
   }
 
-  // Convert "YYYY-MM" to "Month YYYY"
-  const [year, month] = selectedMonth.split("-");
-  const dateObj = new Date(parseInt(year, 10), parseInt(month, 10) - 1, 1);
-  const monthName = dateObj.toLocaleString("default", { month: "long" });
+  // Parse selectedMonth "YYYY-MM"
+  const [yearStr, monthStr] = selectedMonth.split("-");
+  const year = parseInt(yearStr, 10);
+  const month = parseInt(monthStr, 10);
 
-  // Employee info
-  const employeeName =
-    `${userProfileData?.first_Name || ""} ${
-      userProfileData?.last_Name || ""
-    }`.trim() || "Unknown Name";
-  const employeeCode = userProfileData?.employee_Id || "Unknown Code";
+  // *Key Fix* => build entire month table from store
+  const finalTableData = useMemo(() => {
+    if (!year || !month || isLoading) return [];
+
+    return getMonthlyAttendanceView(year, month);
+  }, [year, month, isLoading, getMonthlyAttendanceView]);
+
+  // Filter by search
+  const filteredData = useMemo(() => {
+    const txt = searchText.toLowerCase().trim();
+    if (!txt) return finalTableData;
+
+    return finalTableData.filter((row) => {
+      const combined = `${row.date} ${row.day} ${row.status}`.toLowerCase();
+      return combined.includes(txt);
+    });
+  }, [searchText, finalTableData]);
+
+  // Pagination
+  const totalEntries = filteredData.length;
+  const totalPages = Math.ceil(totalEntries / rowsPerPage);
+  const safeCurrentPage = Math.min(Math.max(currentPage, 1), totalPages || 1);
+  const startIndex = (safeCurrentPage - 1) * rowsPerPage;
+  const endIndex = startIndex + rowsPerPage;
+  const displayedData = filteredData.slice(startIndex, endIndex);
 
   // Summaries
   const parsedYear = parseInt(year, 10);
@@ -695,7 +673,7 @@ export default function EmployeeFullAttendance() {
   const notEvenHalfDay = calculateNotEvenHalfDays(parsedYear, parsedMonth);
   const notLoggedOut = calculateNotLoggedOut(parsedYear, parsedMonth);
 
-  // Basic counts for present/absent/holiday from displayed data
+  // Basic present/absent/holiday stats from displayed data
   const presentCount = displayedData.filter((item) =>
     item.status.toLowerCase().includes("present")
   ).length;
@@ -806,6 +784,44 @@ export default function EmployeeFullAttendance() {
     },
   ];
 
+  // Convert "YYYY-MM" to "Month YYYY"
+  const dateObj = new Date(parsedYear, parsedMonth - 1, 1);
+  const monthName = dateObj.toLocaleString("default", { month: "long" });
+
+  // Employee name and code
+  const employeeName =
+    `${userProfileData?.first_Name || ""} ${
+      userProfileData?.last_Name || ""
+    }`.trim() || "Unknown Name";
+  const employeeCode = userProfileData?.employee_Id || "Unknown Code";
+
+  // If there's an error or isLoading
+  if (error) {
+    return (
+      <div className="p-6 text-center text-red-600 dark:text-red-300">
+        <p>Error: {error}</p>
+      </div>
+    );
+  }
+  if (isLoading) {
+    return (
+      <div className="p-6 text-center">
+        <p className="text-gray-500">Loading ...</p>
+      </div>
+    );
+  }
+
+  // Prepare columns for export
+  const columns = [
+    { header: "S.L", dataKey: "sl" },
+    { header: "Date", dataKey: "date" },
+    { header: "Day", dataKey: "day" },
+    { header: "Log In Time", dataKey: "logInTime" },
+    { header: "Log Out Time", dataKey: "logOutTime" },
+    { header: "Total Break", dataKey: "totalBreak" },
+    { header: "Status", dataKey: "status" },
+  ];
+
   return (
     <motion.div
       className="p-6 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen"
@@ -813,7 +829,7 @@ export default function EmployeeFullAttendance() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
     >
-      {/* Page Heading */}
+      {/* Heading */}
       <motion.h1
         className="text-xl md:text-2xl font-bold mb-6"
         initial={{ opacity: 0, x: -50 }}
@@ -861,23 +877,11 @@ export default function EmployeeFullAttendance() {
                          bg-white dark:bg-gray-700 focus:outline-none"
             />
           </div>
-
-          {/* Example filter dropdown */}
-          {/* <div>
-            <select
-              className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700
-                         dark:text-gray-200 rounded-md py-1 px-2 text-sm focus:outline-none"
-            >
-              <option>Select</option>
-              <option>Late</option>
-              <option>Early Out</option>
-            </select>
-          </div> */}
         </div>
 
-        {/* Right group: Search + ExportButtons */}
+        {/* Right group: Search + Export */}
         <div className="flex items-center gap-2">
-          {/* Search box */}
+          {/* Search */}
           <div className="relative">
             <input
               type="text"
@@ -894,16 +898,16 @@ export default function EmployeeFullAttendance() {
             />
           </div>
 
-          {/* ExportButtons component */}
+          {/* ExportButtons */}
           <ExportButtons
-            data={displayedData} // current table data
-            columns={columns} // column definitions for export
+            data={displayedData}
+            columns={columns}
             filename={`Attendance_${employeeCode}_${selectedMonth}`}
           />
         </div>
       </motion.div>
 
-      {/* Main area: Table and side overview */}
+      {/* Table + Overview */}
       <motion.div
         className="grid grid-cols-1 lg:grid-cols-4 gap-4"
         initial={{ opacity: 0 }}
@@ -949,7 +953,7 @@ export default function EmployeeFullAttendance() {
                 ))}
 
                 {displayedData.length === 0 && (
-                  <tr key="no-records">
+                  <tr>
                     <td
                       colSpan={7}
                       className="py-4 text-center text-gray-500 dark:text-gray-400"
@@ -1007,7 +1011,7 @@ export default function EmployeeFullAttendance() {
           </motion.div>
         </div>
 
-        {/* Side panel: Employee Overview */}
+        {/* Side panel: Employee Overview (1/4) */}
         <motion.div
           className="bg-white dark:bg-gray-800 rounded-md shadow p-4"
           initial={{ opacity: 0, x: 20 }}
