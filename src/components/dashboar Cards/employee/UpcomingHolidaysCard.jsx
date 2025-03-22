@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FaRegCalendarTimes } from "react-icons/fa";
 import { getHolidays } from "../../../service/holidayService";
-import dayjs from "dayjs"; // optional: for better date formatting
+import dayjs from "dayjs";
 
 const UpcomingHolidaysCard = () => {
   const [holidays, setHolidays] = useState([]);
