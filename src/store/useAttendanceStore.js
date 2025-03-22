@@ -11,6 +11,7 @@ const useAttendanceStore = create((set, get) => ({
   loading: false,
   error: null,
   subordinateStats: null, // new piece of state
+  todayPunches: [],
 
   // ---- Actions ----
 
@@ -125,6 +126,28 @@ const useAttendanceStore = create((set, get) => ({
     }
   },
 
+  // ---- ADD: new action to fetch today's punch in/out times ----
+  fetchTodaysPunchTimes: async () => {
+    set({ loading: true, error: null });
+    try {
+      // Assuming your new endpoint is "/api/attendance/today"
+      const response = await axiosInstance.get("/employee/today");
+      const data = response.data;
+
+      if (data.success) {
+        // Save the returned array under `todayPunches`
+        set({ todayPunches: data.data });
+      } else {
+        throw new Error(data.message || "Failed to fetch today's punch times.");
+      }
+    } catch (err) {
+      console.error("Error fetching today's punch times:", err);
+      toast.error(err.message);
+      set({ error: err.message });
+    } finally {
+      set({ loading: false });
+    }
+  },
 }));
 
 export default useAttendanceStore;
