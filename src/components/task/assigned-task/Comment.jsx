@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { getComments, addComment } from '../../../../service/taskService';
+import { getComments, addComment } from '../../../service/taskService';
 import { FaComments, FaUser, FaClock, FaPaperPlane } from 'react-icons/fa';
 
 // A small utility to animate the scroll
@@ -78,7 +78,7 @@ const Comment = ({ taskId }) => {
       <div className="flex items-center mb-4">
         <FaComments className="text-xl text-blue-500 mr-2" />
         <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
-          Comment
+          Acknowledge
         </h2>
       </div>
 

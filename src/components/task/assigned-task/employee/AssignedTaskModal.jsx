@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
-import Comment from "../admin/Comment";
+import Comment from "../Comment";
 
 const AssignedTaskModal = ({ task, onClose }) => {
   if (!task) return null;
