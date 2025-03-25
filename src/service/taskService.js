@@ -167,3 +167,45 @@ export const getSubordinateDepartments = async () => {
     return [];
   }
 };
+
+
+
+
+
+
+
+
+
+// comment for task
+
+
+
+
+
+
+
+export const getComments = async (taskId) => {
+  try {
+    // Adjust the base URL if needed, e.g., axios.create({ baseURL: 'http://localhost:4000' })
+    const response = await axiosInstance.get(`/admin/comment/${taskId}`, {
+    
+    });
+    return response.data; // data.success, data.data, data.message, etc.
+  } catch (error) {
+    throw error; // Let the calling function handle errors
+  }
+};
+
+
+export const addComment = async (taskId, comment) => {
+  try {
+    const response = await axiosInstance.post(
+      `/admin/comment/${taskId}`,
+      { comment },
+     
+    );
+    return response.data; // data.success, data.data, data.message, etc.
+  } catch (error) {
+    throw error;
+  }
+};
