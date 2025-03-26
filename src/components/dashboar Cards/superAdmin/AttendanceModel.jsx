@@ -115,12 +115,12 @@ function AttendanceModal({
                           <th className="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-200">
                             Name
                           </th>
-                          <th className="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-200">
+                          {/* <th className="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-200">
                             Role
                           </th>
                           <th className="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-200">
                             Department
-                          </th>
+                          </th> */}
                         </tr>
                       </thead>
                       <tbody>
@@ -136,7 +136,7 @@ function AttendanceModal({
                             <td className="px-4 py-2">
                               {user.first_Name} {user.last_Name}
                             </td>
-                            <td className="px-4 py-2">
+                            {/* <td className="px-4 py-2">
                               <span className="inline-block rounded-full px-2 py-1 text-xs font-medium
                                                bg-green-100 text-green-800 dark:bg-green-600 dark:text-green-50">
                                 Employee
@@ -147,7 +147,7 @@ function AttendanceModal({
                                                bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
                                 Sales
                               </span>
-                            </td>
+                            </td> */}
                           </tr>
                         ))}
                       </tbody>
@@ -201,12 +201,12 @@ function AttendanceModal({
                           <th className="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-200">
                             Name
                           </th>
-                          <th className="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-200">
+                          {/* <th className="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-200">
                             Role
                           </th>
                           <th className="px-4 py-2 text-left font-medium text-gray-700 dark:text-gray-200">
                             Department
-                          </th>
+                          </th> */}
                         </tr>
                       </thead>
                       <tbody>
@@ -222,7 +222,7 @@ function AttendanceModal({
                             <td className="px-4 py-2">
                               {user.first_Name} {user.last_Name}
                             </td>
-                            <td className="px-4 py-2">
+                            {/* <td className="px-4 py-2">
                               <span className="inline-block rounded-full px-2 py-1 text-xs font-medium
                                                bg-red-100 text-red-800 dark:bg-red-600 dark:text-red-50">
                                 Employee
@@ -233,7 +233,7 @@ function AttendanceModal({
                                                bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
                                 Sales
                               </span>
-                            </td>
+                            </td> */}
                           </tr>
                         ))}
                       </tbody>
