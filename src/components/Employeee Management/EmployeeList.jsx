@@ -12,6 +12,9 @@ import { useNavigate } from "react-router-dom";
 import useEmployeesStore from "../../store/useAllEmployeesStore";
 import ConfirmationDialog from "../common/ConfirmationDialog";
 
+
+import  departmentStore from '../../store/departmentStore'
+
 const tableContainerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -65,6 +68,15 @@ export default function EmployeeList() {
     deleteEmployee,
     toggleEmployeeStatus,
   } = useEmployeesStore();
+
+
+  const {
+    departments
+  } = departmentStore();
+
+  console.log("asfasf",departments);
+  
+  
 
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -295,10 +307,20 @@ export default function EmployeeList() {
               focus:outline-none
             "
           >
-            <option value="">De (All)</option>
+            {/* <option value="">De (All)</option>
             <option value="IT">IT</option>
             <option value="HR">HR</option>
-            <option value="Sales">Sales</option>
+            <option value="Sales">Sales</option> */}
+
+            
+             <option value="">All Departments</option>
+  
+  {/* Dynamically render each department from the store */}
+  {departments.map((dept) => (
+    <option key={dept._id} value={dept.department}>
+      {dept.department}
+    </option>
+  ))}
           </select>
           <button
             className="

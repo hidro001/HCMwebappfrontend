@@ -176,7 +176,7 @@ const PostPerformer = () => {
               <input
                 type="number"
                 min="1"
-                max="10"
+                max="1000"
                 {...register('limit')}
                 className="border border-gray-300 dark:border-gray-600
                            bg-white dark:bg-gray-700
