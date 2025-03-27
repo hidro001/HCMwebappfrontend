@@ -7,6 +7,9 @@ import React, {
   useCallback,
 } from "react";
 import { ChatContextv2 } from "../../../contexts/ChatContextv2";
+import { useCall } from "../../../contexts/CallContext";
+import { toast } from "react-toastify";
+
 import {
   IoArrowBack,
   IoSend,
@@ -14,22 +17,19 @@ import {
   IoCloseCircle,
   IoPersonCircle,
 } from "react-icons/io5";
-import { FaCommentAlt, FaSpinner } from "react-icons/fa";
+import { FaCommentAlt, FaSpinner, FaVideo, FaPhone } from "react-icons/fa";
 import { MdImage, MdPictureAsPdf } from "react-icons/md";
-import { toast } from "react-toastify";
 
 export default function ChatWindow() {
   const scrollViewRef = useRef(null);
   const fileInputRef = useRef(null);
-
-  // For local file uploading animations
   const [uploadingFiles, setUploadingFiles] = useState({});
   const [modalVisible, setModalVisible] = useState(false);
 
-  // Grab context
+  // --- From your ChatContextv2 ---
   const {
     employeeId,
-    activeConversation,
+    activeConversation,         // Now we rely on activeConversation for calls
     clearActiveConversation,
     messages,
     messagesLoading,
@@ -39,23 +39,62 @@ export default function ChatWindow() {
     sendFileHandler,
   } = useContext(ChatContextv2);
 
-  // Auto-scroll to bottom when messages change
+  // --- Get the call initiate function from your CallContext ---
+  const { initiateCall } = useCall();
+
+  // --------------------------------------------
+  // 1) Handle Video / Voice Call
+  // --------------------------------------------
+  const handleVideoCall = () => {
+    if (!activeConversation || !activeConversation.employeeId) {
+      toast.error("No user or conversation selected.");
+      return;
+    }
+
+    initiateCall({
+      callType: "video",
+      participants: [activeConversation.employeeId],
+    });
+    console.log("Starting video call with", activeConversation.employeeId);
+  };
+
+  const handleVoiceCall = () => {
+    if (!activeConversation || !activeConversation.employeeId) {
+      toast.error("No user or conversation selected.");
+      return;
+    }
+
+    initiateCall({
+      callType: "voice",
+      participants: [activeConversation.employeeId],
+    });
+    console.log("Starting voice call with", activeConversation.employeeId);
+  };
+
+  // --------------------------------------------
+  // 2) Auto-scroll whenever messages change
+  // --------------------------------------------
   useEffect(() => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTop = scrollViewRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // Actually send the text message
+  // --------------------------------------------
+  // 3) Send text message
+  // --------------------------------------------
   const handleSend = useCallback(() => {
     if (!message.trim()) return;
     sendMessageHandler();
   }, [message, sendMessageHandler]);
 
-  // For file attachments, we show a local "uploading" bubble
+  // --------------------------------------------
+  // 4) Upload file with local "uploading" indicator
+  // --------------------------------------------
   const sendFileWithLoading = async (file) => {
     const uniqueId = `${file.name}-${Date.now()}`;
     setUploadingFiles((prev) => ({ ...prev, [uniqueId]: true }));
+
     try {
       await sendFileHandler(file);
       setUploadingFiles((prev) => {
@@ -75,16 +114,20 @@ export default function ChatWindow() {
     }
   };
 
-  // Called when <input type="file"> changes
+  // --------------------------------------------
+  // 5) File input change
+  // --------------------------------------------
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
     toast.success("Image picked successfully!");
     sendFileWithLoading(file);
-    e.target.value = null; // reset so user can pick same file again
+    e.target.value = null; // reset so user can pick the same file again
   };
 
-  // If you pick an image from the modal
+  // --------------------------------------------
+  // 6) Helpers to pick image/PDF
+  // --------------------------------------------
   const pickImage = () => {
     setModalVisible(false);
     if (fileInputRef.current) {
@@ -92,18 +135,20 @@ export default function ChatWindow() {
     }
   };
 
-  // For PDF picking (stubbed out)
   const pickPDF = () => {
     setModalVisible(false);
     toast.info("PDF picker pressed (implement as needed)");
-    // Could trigger a second hidden input with accept="application/pdf"
   };
 
-  // Helper: decide bubble color
+  // --------------------------------------------
+  // 7) Decide bubble color for your messages vs. incoming
+  // --------------------------------------------
   const getBubbleColor = (isOwn) =>
     isOwn ? "bg-violet-200 dark:bg-violet-600" : "bg-cyan-200 dark:bg-cyan-600";
 
-  // Render single message bubble
+  // --------------------------------------------
+  // 8) Render a single message bubble
+  // --------------------------------------------
   const renderMessageBubble = useCallback(
     (msg, index) => {
       const isOwn = msg.sender === employeeId;
@@ -120,11 +165,7 @@ export default function ChatWindow() {
             className={`
               relative max-w-[70%] p-3 rounded-xl shadow-lg
               ${bubbleColor} transition-colors
-              ${
-                isOwn
-                  ? "animate-fadeInRight"
-                  : "animate-fadeInLeft"
-              }
+              ${isOwn ? "animate-fadeInRight" : "animate-fadeInLeft"}
             `}
           >
             {msg.type === "file" ? (
@@ -132,13 +173,13 @@ export default function ChatWindow() {
                 <div className="font-semibold mb-1 text-gray-900 dark:text-gray-100 break-words">
                   {msg.fileName || "File"}
                 </div>
-                {msg.fileType?.startsWith("image/") && msg.fileUrl && (
+                {msg.fileType?.startsWith("image/") && msg.fileUrl ? (
                   <img
                     src={msg.fileUrl}
                     alt={msg.fileName}
                     className="w-36 h-36 rounded-md mt-1 object-cover"
                   />
-                )}
+                ) : null}
               </>
             ) : (
               <div className="whitespace-pre-wrap break-words text-gray-900 dark:text-gray-100 text-base">
@@ -146,18 +187,18 @@ export default function ChatWindow() {
               </div>
             )}
             {/* Timestamp */}
-            {msg.time && (
-              <div
-                className={`text-xs mt-2 text-gray-800 dark:text-gray-200 ${
-                  isOwn ? "text-right" : "text-left"
-                }`}
-              >
-                {new Date(msg.time).toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
-              </div>
-            )}
+            <div
+              className={`text-xs mt-2 text-gray-800 dark:text-gray-200 ${
+                isOwn ? "text-right" : "text-left"
+              }`}
+            >
+              {msg.time
+                ? new Date(msg.time).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                : ""}
+            </div>
           </div>
         </div>
       );
@@ -165,7 +206,9 @@ export default function ChatWindow() {
     [employeeId]
   );
 
-  // Main chat content
+  // --------------------------------------------
+  // 9) Main scrollable content
+  // --------------------------------------------
   let content;
   if (messagesLoading) {
     content = (
@@ -192,7 +235,9 @@ export default function ChatWindow() {
     content = messages.map((msg, index) => renderMessageBubble(msg, index));
   }
 
-  // For in-progress file uploads
+  // --------------------------------------------
+  // 10) In-progress file uploads (your messages)
+  // --------------------------------------------
   const uploadingIndicators = Object.keys(uploadingFiles).map((fileId) => (
     <div key={fileId} className="flex w-full px-2 my-1 justify-end">
       <div className="max-w-[70%] p-3 rounded-xl shadow-md bg-violet-200 dark:bg-violet-600 animate-pulse transition-colors">
@@ -209,7 +254,9 @@ export default function ChatWindow() {
     </div>
   ));
 
-  // Final render
+  // --------------------------------------------
+  // 11) Render
+  // --------------------------------------------
   return (
     <div className="flex flex-col w-full h-full bg-white dark:bg-gray-900 transition-colors">
       {/* Header Bar */}
@@ -230,7 +277,7 @@ export default function ChatWindow() {
         </button>
 
         {/* Active conversation info */}
-        <div className="flex flex-row items-center">
+        <div className="flex flex-row items-center flex-1">
           {activeConversation?.userAvatar ? (
             <img
               src={activeConversation.userAvatar}
@@ -246,10 +293,28 @@ export default function ChatWindow() {
                 ? `${activeConversation.firstName} ${activeConversation.lastName}`
                 : "Chat"}
             </p>
-            <p className="text-xs font-light text-white/80">
+            {/* <p className="text-xs font-light text-white/80">
               Online Now
-            </p>
+            </p> */}
           </div>
+        </div>
+
+        {/* Call Buttons */}
+        <div className="flex gap-4">
+          <button
+            onClick={handleVideoCall}
+            className="focus:outline-none w-10 h-10 flex items-center justify-center bg-white text-gray-800 rounded-full shadow hover:bg-gray-100 transition-colors"
+            title="Start Video Call"
+          >
+            <FaVideo size={20} />
+          </button>
+          <button
+            onClick={handleVoiceCall}
+            className="focus:outline-none w-10 h-10 flex items-center justify-center bg-white text-gray-800 rounded-full shadow hover:bg-gray-100 transition-colors"
+            title="Start Voice Call"
+          >
+            <FaPhone size={20} />
+          </button>
         </div>
       </div>
 
@@ -294,7 +359,7 @@ export default function ChatWindow() {
             if (e.key === "Enter") handleSend();
           }}
         />
-        <button
+        {/* <button
           onClick={() => setModalVisible(true)}
           className="
             w-10 h-10 rounded-full
@@ -306,7 +371,7 @@ export default function ChatWindow() {
           "
         >
           <IoAttach size={22} color="#fff" />
-        </button>
+        </button> */}
         <button
           onClick={handleSend}
           className="
@@ -345,7 +410,7 @@ export default function ChatWindow() {
               rounded-lg shadow-md relative
               transition-colors
             "
-            onClick={(e) => e.stopPropagation()} // stop click from closing modal
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
             <div
