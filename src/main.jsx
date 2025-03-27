@@ -14,8 +14,9 @@ import CallModal from "./components/chats/calls/CallModal.jsx";
 import CallWindow from "./components/chats/calls/CallWindow.jsx";
 import VideoCallModal from "./components/chats/calls/VideoCallModal.jsx";
 
-import { ChatProvider } from "./contexts/ChatContext";
+// import { ChatProvider } from "./contexts/ChatContext";
 import { ChatProviderv2 } from "./contexts/ChatContextv2.jsx";
+
 
 createRoot(document.getElementById("root")).render(
   <ThemeProvider>
@@ -26,9 +27,10 @@ createRoot(document.getElementById("root")).render(
       <ChatProviderv2>
 
     
-      <ChatProvider>
+      {/* <ChatProvider> */}
+     
         <App />
-      </ChatProvider>
+      {/* </ChatProvider> */}
       </ChatProviderv2>
     </CallProvider>
   </ThemeProvider>

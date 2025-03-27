@@ -1,4 +1,5 @@
-// // src/contexts/ChatContextv2.js
+
+
 // import React, {
 //   createContext,
 //   useState,
@@ -8,8 +9,6 @@
 //   useMemo,
 // } from "react";
 // import { toast } from "react-toastify";
-
-// // Socket services (replace with your actual socketService)
 // import {
 //   initSocket,
 //   joinRoom,
@@ -17,11 +16,7 @@
 //   sendFileMessage,
 //   disconnectSocket,
 // } from "../service/socketService";
-
-// // API calls (replace with your actual chatService)
 // import { fetchChatHistory, fetchAllMember } from "../service/chatService";
-
-// // Zustand store
 // import useAuthStore from "../store/store";
 
 // export const ChatContextv2 = createContext();
@@ -42,7 +37,7 @@
 //   }, [storeEmployeeId, storeUserName]);
 
 //   // ------------------------------------------------------------------
-//   // Members (for "Members" tab)
+//   // Members
 //   // ------------------------------------------------------------------
 //   const [members, setMembers] = useState([]);
 //   const [totalCount, setTotalCount] = useState(0);
@@ -92,17 +87,15 @@
 //   // ------------------------------------------------------------------
 //   const [selectedUser, setSelectedUser] = useState(null);
 //   const [selectedConversation, setSelectedConversation] = useState(null);
-
-//   // Decide which conversation is active
 //   const activeConversation = useMemo(() => {
 //     return selectedUser || selectedConversation || null;
 //   }, [selectedUser, selectedConversation]);
 
-//   // Messages for that active conversation
+//   // Messages for the active conversation
 //   const [messages, setMessages] = useState([]);
 //   const [messagesLoading, setMessagesLoading] = useState(false);
 
-//   // Our typed input
+//   // Input message
 //   const [message, setMessage] = useState("");
 
 //   // Socket references
@@ -119,7 +112,7 @@
 //   }, [activeConversation]);
 
 //   // ------------------------------------------------------------------
-//   // Initialize socket, fetch conversation list, handle new messages
+//   // Initialize socket and handle real-time updates
 //   // ------------------------------------------------------------------
 //   useEffect(() => {
 //     if (!employeeId) return;
@@ -152,21 +145,24 @@
 //       setConversations(normalized);
 //     };
 
-//     // 4) Handle new messages (server broadcast)
+//     // 4) Handle new messages (server broadcast) -> Real-time unread badges here
 //     const handleNewMessage = (data) => {
 //       const { sender, receiver } = data;
 //       const fromMe = sender === employeeIdRef.current;
+//       // The "other person" in the conversation
 //       const partnerId = fromMe ? receiver : sender;
 
-//       // If message belongs to the active conversation, append it to messages
+//       // If this belongs to the currently open conversation, just append it
 //       if (partnerId === activeConversationIdRef.current) {
 //         setMessages((prev) => [...prev, data]);
 //       }
-//       // Otherwise, increment unread if it's from someone else
+//       // If it's from someone else (i.e. I received a new message),
+//       // update the unread count and move that conversation to top:
 //       else if (!fromMe) {
 //         setConversations((prev) => {
 //           const index = prev.findIndex((c) => c.employeeId === partnerId);
-//           // If not found, add a new conversation
+
+//           // If conversation is brand new (not in the list yet)
 //           if (index === -1) {
 //             return [
 //               {
@@ -179,14 +175,18 @@
 //               ...prev,
 //             ];
 //           }
-//           // If found, increment unread
+
+//           // Otherwise, increment unread
 //           const oldConv = prev[index];
 //           const updated = {
 //             ...oldConv,
 //             unreadCount: (oldConv.unreadCount || 0) + 1,
 //           };
+
+//           // Remove the old conversation from the array
 //           const newList = [...prev];
 //           newList.splice(index, 1);
+//           // Put updated conversation at the top
 //           return [updated, ...newList];
 //         });
 //       }
@@ -196,6 +196,7 @@
 //     socketRef.current.on("allRoomIds", handleAllRoomIds);
 //     socketRef.current.on("receiveMessage", handleNewMessage);
 
+//     // Cleanup
 //     return () => {
 //       if (socketRef.current) {
 //         socketRef.current.off("allRoomIds", handleAllRoomIds);
@@ -219,16 +220,16 @@
 //       if (!socketRef.current || !employeeId) return;
 //       setSelectedConversation(conv);
 //       setSelectedUser(null);
-//       setMessages([]); // will fetch messages below
+//       setMessages([]); // will refetch below
 
-//       // Clear unread
+//       // Reset unread locally
 //       setConversations((prev) =>
 //         prev.map((c) =>
 //           c.employeeId === conv.employeeId ? { ...c, unreadCount: 0 } : c
 //         )
 //       );
 
-//       // Join the room & mark read
+//       // Join room & mark read
 //       joinRoom(socketRef.current, employeeId, conv.employeeId);
 //       socketRef.current.emit("markRead", {
 //         sender: employeeId,
@@ -243,9 +244,9 @@
 //       if (!socketRef.current || !employeeId) return;
 //       setSelectedUser(user);
 //       setSelectedConversation(null);
-//       setMessages([]); // will fetch messages below
+//       setMessages([]); // will refetch below
 
-//       // Clear unread
+//       // Reset unread locally
 //       setConversations((prev) =>
 //         prev.map((c) =>
 //           c.employeeId === user.employeeId ? { ...c, unreadCount: 0 } : c
@@ -262,7 +263,7 @@
 //   );
 
 //   // ------------------------------------------------------------------
-//   // Fetch message history whenever active conversation changes
+//   // Fetch message history
 //   // ------------------------------------------------------------------
 //   const fetchMessagesHistory = useCallback(async () => {
 //     if (!activeConversation?.employeeId) {
@@ -287,8 +288,7 @@
 //   }, [fetchMessagesHistory]);
 
 //   // ------------------------------------------------------------------
-//   // Sending messages: DO NOT APPEND LOCALLY
-//   // Let "receiveMessage" handle it
+//   // Sending messages
 //   // ------------------------------------------------------------------
 //   const sendMessageHandler = useCallback(() => {
 //     if (!message.trim() || !activeConversation?.employeeId) return;
@@ -301,7 +301,7 @@
 //       time: new Date().toISOString(),
 //     };
 //     sendPrivateMessage(socketRef.current, msgData);
-//     setMessage(""); 
+//     setMessage("");
 //   }, [employeeId, message, activeConversation]);
 
 //   const sendFileHandler = useCallback(
@@ -333,7 +333,7 @@
 //   );
 
 //   // ------------------------------------------------------------------
-//   // Final context value
+//   // Build context value
 //   // ------------------------------------------------------------------
 //   const contextValue = useMemo(() => {
 //     return {
@@ -400,6 +400,8 @@
 //   );
 // }
 
+
+
 // ChatContextv2.js
 
 import React, {
@@ -410,7 +412,6 @@ import React, {
   useCallback,
   useMemo,
 } from "react";
-import { toast } from "react-toastify";
 import {
   initSocket,
   joinRoom,
@@ -420,15 +421,13 @@ import {
 } from "../service/socketService";
 import { fetchChatHistory, fetchAllMember } from "../service/chatService";
 import useAuthStore from "../store/store";
+import { toast } from "react-toastify";
 
 export const ChatContextv2 = createContext();
 
 const baseUrlSocket = "http://localhost:6060/chat";
 
 export function ChatProviderv2({ children }) {
-  // ------------------------------------------------------------------
-  // Basic user info
-  // ------------------------------------------------------------------
   const { employeeId: storeEmployeeId, userName: storeUserName } = useAuthStore();
   const [employeeId, setEmployeeId] = useState("");
   const [username, setUsername] = useState("");
@@ -450,7 +449,6 @@ export function ChatProviderv2({ children }) {
     try {
       setLoading(true);
       setError(null);
-
       const { success, count, data } = await fetchAllMember();
       if (success) {
         const normalized = data.map((m) => ({
@@ -484,20 +482,18 @@ export function ChatProviderv2({ children }) {
   const [conversationsLoading, setConversationsLoading] = useState(false);
   const [conversationsError, setConversationsError] = useState(null);
 
-  // ------------------------------------------------------------------
-  // Current / active conversation
-  // ------------------------------------------------------------------
+  // Current or active conversation
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedConversation, setSelectedConversation] = useState(null);
+
+  // If we’re chatting with a “user” or a “conversation” object, unify them as activeConversation
   const activeConversation = useMemo(() => {
     return selectedUser || selectedConversation || null;
   }, [selectedUser, selectedConversation]);
 
-  // Messages for the active conversation
+  // Messages & input
   const [messages, setMessages] = useState([]);
   const [messagesLoading, setMessagesLoading] = useState(false);
-
-  // Input message
   const [message, setMessage] = useState("");
 
   // Socket references
@@ -547,25 +543,22 @@ export function ChatProviderv2({ children }) {
       setConversations(normalized);
     };
 
-    // 4) Handle new messages (server broadcast) -> Real-time unread badges here
+    // 4) Real-time new messages
     const handleNewMessage = (data) => {
       const { sender, receiver } = data;
       const fromMe = sender === employeeIdRef.current;
-      // The "other person" in the conversation
       const partnerId = fromMe ? receiver : sender;
 
-      // If this belongs to the currently open conversation, just append it
+      // If this belongs to the currently open conversation, just append
       if (partnerId === activeConversationIdRef.current) {
         setMessages((prev) => [...prev, data]);
       }
-      // If it's from someone else (i.e. I received a new message),
-      // update the unread count and move that conversation to top:
+      // Otherwise, increment unread & bring it to top
       else if (!fromMe) {
         setConversations((prev) => {
           const index = prev.findIndex((c) => c.employeeId === partnerId);
-
-          // If conversation is brand new (not in the list yet)
           if (index === -1) {
+            // New conversation we haven't seen
             return [
               {
                 employeeId: partnerId,
@@ -577,18 +570,14 @@ export function ChatProviderv2({ children }) {
               ...prev,
             ];
           }
-
-          // Otherwise, increment unread
+          // Increment unread
           const oldConv = prev[index];
           const updated = {
             ...oldConv,
             unreadCount: (oldConv.unreadCount || 0) + 1,
           };
-
-          // Remove the old conversation from the array
           const newList = [...prev];
           newList.splice(index, 1);
-          // Put updated conversation at the top
           return [updated, ...newList];
         });
       }
@@ -665,7 +654,7 @@ export function ChatProviderv2({ children }) {
   );
 
   // ------------------------------------------------------------------
-  // Fetch message history
+  // Fetch message history for active conversation
   // ------------------------------------------------------------------
   const fetchMessagesHistory = useCallback(async () => {
     if (!activeConversation?.employeeId) {
@@ -735,7 +724,21 @@ export function ChatProviderv2({ children }) {
   );
 
   // ------------------------------------------------------------------
-  // Build context value
+  //  Derive unreadCounts object from conversations
+  //  e.g. { 'EMP001': 2, 'EMP002': 5, ... }
+  // ------------------------------------------------------------------
+  const unreadCounts = useMemo(() => {
+    const map = {};
+    conversations.forEach((c) => {
+      if (c.employeeId) {
+        map[c.employeeId] = c.unreadCount || 0;
+      }
+    });
+    return map;
+  }, [conversations]);
+
+  // ------------------------------------------------------------------
+  //  Final context value
   // ------------------------------------------------------------------
   const contextValue = useMemo(() => {
     return {
@@ -754,9 +757,9 @@ export function ChatProviderv2({ children }) {
       conversations,
       conversationsLoading,
       conversationsError,
+      clearActiveConversation,
       handleSelectConversation,
       handleSelectUser,
-      clearActiveConversation,
 
       // Active conversation
       selectedUser,
@@ -772,6 +775,9 @@ export function ChatProviderv2({ children }) {
       setMessage,
       sendMessageHandler,
       sendFileHandler,
+
+      // NEW: derived unread counts for notifications
+      unreadCounts,
     };
   }, [
     employeeId,
@@ -793,6 +799,9 @@ export function ChatProviderv2({ children }) {
     sendMessageHandler,
     sendFileHandler,
     clearActiveConversation,
+    handleSelectConversation,
+    handleSelectUser,
+    unreadCounts,
   ]);
 
   return (
