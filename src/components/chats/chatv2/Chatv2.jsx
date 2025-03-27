@@ -1,0 +1,105 @@
+// src/components/Chat.jsx
+import React, { useState, useContext } from "react";
+import ConversationList from "./ConversationList";
+import UserList from "./UserList";
+import ChatWindow from "./ChatWindow";
+import { ChatContextv2 } from "../../../contexts/ChatContextv2";
+
+export default function Chat() {
+  const [activeTab, setActiveTab] = useState("Conversations");
+  const {
+    activeConversation,
+    clearActiveConversation,
+    setSelectedUser,
+    setSelectedConversation,
+  } = useContext(ChatContextv2);
+
+  const handleTabSwitch = (tab) => {
+    setActiveTab(tab);
+    // Reset active conversation
+    clearActiveConversation();
+    setSelectedUser(null);
+    setSelectedConversation(null);
+  };
+
+  const renderLeftPanelContent = () => {
+    return activeTab === "Members" ? <UserList /> : <ConversationList />;
+  };
+
+  const renderRightPanelContent = () => {
+    if (activeConversation) return <ChatWindow />;
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <div className="bg-white dark:bg-gray-700 rounded-md shadow-md p-6 flex flex-col items-center">
+          <div className="text-4xl mb-4" role="img" aria-label="Chat icon">
+            💬
+          </div>
+          <p className="text-sm text-gray-700 dark:text-gray-300">
+            Select a conversation to start chatting
+          </p>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div
+      className="
+        flex flex-col md:flex-row
+        h-[70vh] w-full
+        bg-gray-100 dark:bg-gray-800
+        transition-colors
+      "
+    >
+      {/* LEFT PANEL */}
+      <div className="w-full md:w-3/12 h-auto md:h-full flex flex-col transition-all">
+        {/* Tabs */}
+        <div className="flex flex-row h-12 md:h-14 p-2 gap-2 justify-center">
+          {/* Chat (Conversations) Tab */}
+          <div
+            onClick={() => handleTabSwitch("Conversations")}
+            className={`
+              w-1/2 flex items-center justify-center
+              text-sm font-semibold cursor-pointer
+              shadow-md transition-all rounded-l-lg
+              ${
+                activeTab === "Conversations"
+                  ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700"
+                  : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
+              }
+            `}
+          >
+            Chat
+          </div>
+
+          {/* Members Tab */}
+          <div
+            onClick={() => handleTabSwitch("Members")}
+            className={`
+              w-1/2 flex items-center justify-center
+              text-sm font-semibold cursor-pointer
+              shadow-md transition-all rounded-r-lg
+              ${
+                activeTab === "Members"
+                  ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white hover:from-blue-600 hover:to-blue-700"
+                  : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
+              }
+            `}
+          >
+            Members
+          </div>
+        </div>
+
+        {/* List area */}
+        <div className="flex-1 overflow-y-auto px-2 pb-2">
+          {renderLeftPanelContent()}
+        </div>
+      </div>
+
+      {/* RIGHT PANEL */}
+      <div className="flex-1 h-full p-4 overflow-y-auto">
+        {renderRightPanelContent()}
+      </div>
+    </div>
+  );
+}
