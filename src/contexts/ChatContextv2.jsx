@@ -425,7 +425,9 @@ import { toast } from "react-toastify";
 
 export const ChatContextv2 = createContext();
 
-const baseUrlSocket = "http://localhost:6060/chat";
+const baseUrlSocket = import.meta.env.VITE_SOCKET_URL ;
+
+
 
 export function ChatProviderv2({ children }) {
   const { employeeId: storeEmployeeId, userName: storeUserName } = useAuthStore();
