@@ -422,7 +422,7 @@ import React, {
 import io from "socket.io-client";
 import { toast } from "react-hot-toast";
 
-const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL;
+const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL_CALL;
 
 // Use your TURN server configuration here.
 const ICE_SERVERS = [
