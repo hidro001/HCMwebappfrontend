@@ -2,8 +2,51 @@ import React, { useEffect } from "react";
 import { FaTimes } from "react-icons/fa";
 import BaseModal from "../../common/BaseModal";
 import Comment from "./Comment";
-
+import { updateTask } from '../../../service/taskService';
+import { useState } from "react";
 const AssignedTaskModal = ({ task, onClose }) => {
+
+
+  const [status, setStatus] = useState(task.status);
+  const [taskUpdate, settaskUpdate] = useState("");
+
+
+  const handleStatusChange = (event) => {
+    setStatus(event.target.value);
+  };
+
+  const handleUpdateClick = async () => {
+    // Prepare data to send to backend
+    const taskData = { status };
+
+    try {
+      const updatedTask = await updateTask(task._id, taskData);
+
+      if (updatedTask) {
+        console.log('Task updated:', updatedTask);
+        settaskUpdate("Task Status updated Success")
+        // Optionally set the new status from the response
+        // setStatus(updatedTask.status);
+
+
+        setTimeout(() => {
+          settaskUpdate("");
+        }, 3000);
+      } else {
+        console.log('Failed to update task or server returned no data.');
+      }
+    } catch (error) {
+      console.error('Failed to update task:', error);
+    }
+  };
+
+
+
+
+
+
+
+
   if (!task) return null;
 
   useEffect(() => {
@@ -12,6 +55,10 @@ const AssignedTaskModal = ({ task, onClose }) => {
       document.body.style.overflow = "auto";
     };
   }, []);
+
+
+
+
 
   return (
     <BaseModal isOpen={true} onClose={onClose}>
@@ -87,6 +134,39 @@ const AssignedTaskModal = ({ task, onClose }) => {
                   {task.updatesComments}
                 </p>
               </div>
+
+{/*  task status */}
+<div>
+    <h3 className="text-lg font-semibold mb-2 text-gray-800 dark:text-gray-100">
+      Task Status
+    </h3>
+    
+    <select
+      value={status}
+      onChange={handleStatusChange}
+      className="block w-full p-2 mb-4 border border-gray-300 dark:border-gray-600 rounded 
+                 bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-200 
+                 focus:outline-none focus:ring-2 focus:ring-blue-400 dark:focus:ring-blue-600"
+    >
+      {/* Make sure you don't use the same option twice in a row */}
+      <option value="Not Started">Not Started</option>
+      <option value="In Progress">In-Progress</option>
+      <option value="Completed">Completed</option>
+    </select>
+
+    <button
+      onClick={handleUpdateClick}
+      className="px-4 py-2 text-white bg-blue-500 rounded 
+                 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 
+                 transition-colors duration-200"
+    >
+      Update Status
+    </button>
+
+    {/* Conditionally render the taskUpdate message */}
+    {taskUpdate && <h1>{taskUpdate}</h1>}
+  </div>
+
             </div>
 
             {/* Right Column (Comments) */}

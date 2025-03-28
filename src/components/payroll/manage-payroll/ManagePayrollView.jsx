@@ -30,7 +30,7 @@ export default function PayrollDetailModal({ isOpen, onClose, payrollData }) {
         {/* Header */}
         <div className="px-6 pt-6 pb-2 border-b border-gray-200 dark:border-gray-700">
           <h1 className="text-xl md:text-2xl font-bold">
-            Payroll Of {payrollData.employeeName} ({payrollData.employeeId})
+            Payroll of {`${payrollData.firstName} ${payrollData.lastName}`} ({payrollData.employeeId})
           </h1>
           {/* <div className="mt-2 flex justify-end space-x-3">
             <button
