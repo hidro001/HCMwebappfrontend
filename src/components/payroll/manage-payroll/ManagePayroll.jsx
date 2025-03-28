@@ -430,6 +430,7 @@ export default function ManagePayroll() {
           <thead className="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
             <tr>
               <th className="px-4 py-2 text-left font-semibold">S.L</th>
+              <th className="px-4 py-2 text-left font-semibold">Name</th>
               <th className="px-4 py-2 text-left font-semibold">Emp ID</th>
               <th className="px-4 py-2 text-left font-semibold">Department</th>
               <th className="px-4 py-2 text-left font-semibold">Month</th>
@@ -451,10 +452,13 @@ export default function ManagePayroll() {
                 <td className="px-4 py-2">
                   {(currentPage - 1) * pageSize + (index + 1)}
                 </td>
+             
+                <td className="px-4 py-2">{entry.firstName} {entry.lastName}</td>
                 <td className="px-4 py-2 text-blue-600 dark:text-blue-400 font-medium">
                   {entry.employeeId}
                 </td>
                 <td className="px-4 py-2">{entry.department}</td>
+
                 <td className="px-4 py-2">{entry.month}</td>
                 <td className="px-4 py-2">{entry.year}</td>
                 <td className="px-4 py-2">{entry.amount}</td>
