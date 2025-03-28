@@ -52,19 +52,25 @@ export default function PayrollDetailModal({ isOpen, onClose, payrollData }) {
         <div className="max-h-[70vh] overflow-y-auto p-6">
           <div className="grid grid-cols-1 md:grid-cols-2">
             <DetailRow label="EMPLOYEE ID" value={payrollData.employeeId} />
-            <DetailRow label="EMPLOYEE NAME" value={payrollData.employeeName} />
+            <DetailRow label="EMPLOYEE NAME" value={`${payrollData.firstName} ${payrollData.lastName}`} />
             <DetailRow label="DEPARTMENT" value={payrollData.department} />
-            <DetailRow label="ISSUED DATE" value={payrollData.issuedDate} />
-            <DetailRow label="GROSS SALARY" value={payrollData.grossSalary} />
+            <DetailRow
+  label="ISSUED DATE"
+  value={new Date(payrollData.createdAt).toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+  })}
+/>
+
+            <DetailRow label="GROSS SALARY" value={payrollData.amount} />
             <DetailRow label="DEDUCTION" value={payrollData.deduction} />
-            <DetailRow label="FINAL AMOUNT" value={payrollData.finalAmount} />
-            <DetailRow label="STATUS" value={payrollData.status} />
+            <DetailRow label="FINAL AMOUNT" value={payrollData.finalSalary} />
+            <DetailRow label="STATUS" value={"N/A"} />
             <DetailRow label="LEAVES" value={payrollData.leaves} />
             <DetailRow label="HALF DAYS" value={payrollData.halfDays} />
-            <DetailRow label="NOT EVEN HALF DAY" value={payrollData.notEvenHalfDay} />
+            <DetailRow label="NOT EVEN HALF DAY" value={payrollData.notEvenHalfDays} />
             <DetailRow label="TOTAL SHIFTS" value={payrollData.totalShifts} />
-            <DetailRow label="REMAINING PAID LEAVE" value={payrollData.remainingPaidLeave} />
-            <DetailRow label="COMPLETE SHIFTS" value={payrollData.completeShifts} />
+            <DetailRow label="REMAINING PAID LEAVE" value={payrollData.remainingPaidLeaves} />
+            <DetailRow label="COMPLETE SHIFTS" value={payrollData.completedShifts} />
             <DetailRow label="NOT LOGGED OUT" value={payrollData.notLoggedOut} />
             <DetailRow label="TOTAL LATES" value={payrollData.totalLates} />
             <DetailRow label="REGULARIZATIONS" value={payrollData.regularizations} />
