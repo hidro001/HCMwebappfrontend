@@ -121,6 +121,7 @@ const AssignedTask = () => {
               <th className="p-3 border dark:border-gray-700">Due Date</th>
               <th className="p-3 border dark:border-gray-700">Priority</th>
               <th className="p-3 border dark:border-gray-700">Status</th>
+              <th className="p-3 border dark:border-gray-700">Acknowledge</th>
               <th className="p-3 border dark:border-gray-700">Actions</th>
             </tr>
           </thead>
@@ -154,6 +155,7 @@ const AssignedTask = () => {
                       timeZone: "Asia/Kolkata",
                     })}
                   </td>
+                 
                   <td
                     className={`p-3 border dark:border-gray-700 font-semibold ${
                       task.priority === "High"
@@ -165,6 +167,7 @@ const AssignedTask = () => {
                   >
                     {task.priority}
                   </td>
+           
                   <td className="p-3">
                     <span
                       className={`px-3 py-1 rounded text-xs font-semibold ${
@@ -178,6 +181,24 @@ const AssignedTask = () => {
                       {task.status}
                     </span>
                   </td>
+              
+
+                  <td className="p-3">
+                  <span
+    className={`px-3 py-1 rounded text-xs font-semibold ${
+      task.acknowledge === "Not Acknowledge"
+        ? "bg-yellow-100 dark:bg-yellow-700 text-yellow-600 dark:text-yellow-200"
+        : task.acknowledge === "Acknowledged"
+        ? "bg-blue-100 dark:bg-blue-700 text-blue-600 dark:text-blue-200"
+        : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-200"
+    }`}
+  >
+    {task.acknowledge}
+  </span>
+                  </td>
+
+
+
                   <td className="p-3 border dark:border-gray-700 flex justify-center gap-2">
                     <button
                       className="bg-blue-500 text-white px-2 py-1 rounded-lg hover:scale-105"

@@ -223,3 +223,43 @@ export const addComment = async (taskId, comment) => {
     throw error;
   }
 };
+
+
+
+export const updateAcknowledgeStatus = async (taskId, status) => {
+  try {
+    // status should be "Acknowledged" in your scenario
+    const response = await axiosInstance.patch(`/employee/assign/acknowledge/${taskId}`, {
+      acknowledge: status,
+    });
+    return response.data; // e.g. { success, message }
+  } catch (error) {
+    // Forward the entire response so the component can read error.data
+    throw error.response;
+  }
+};
+
+
+
+
+export const deleteTask = async (taskId) => {
+  try {
+    const res = await axiosInstance.delete(`/task/delete/${taskId}`);
+    return res.data; // e.g. { success, message }
+  } catch (error) {
+    console.error("Error deleting task:", error);
+    toast.error("Error deleting task.");
+    throw error;
+  }
+};
+
+export const updateTaskdaily = async (taskId, payload) => {
+  try {
+    const res = await axiosInstance.put(`/task/edit/${taskId}`, payload);
+    return res.data; // e.g. { success, message }
+  } catch (error) {
+    console.error("Error updating task:", error);
+    toast.error("Error updating task.");
+    throw error;
+  }
+};
