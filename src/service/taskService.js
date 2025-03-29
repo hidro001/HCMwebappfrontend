@@ -71,6 +71,20 @@ export const updateTask = async (id, taskData) => {
 };
 
 
+export const updateTaskEmp = async (id, taskData) => {
+  try {
+    const response = await axiosInstance.put(`/admin/assign/emp/${id}`, taskData);
+    if (response.data.success) {
+      return response.data.data;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error updating task:", error);
+    return null;
+  }
+};
+
+
 
 
 export const fetchManagerTasks = async (taskDate) => {

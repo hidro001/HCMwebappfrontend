@@ -1,7 +1,7 @@
 import React, { useEffect,useState } from "react";
 import { FaTimes } from "react-icons/fa";
 import Comment from "../Comment";
-import { updateTask } from '../../../../service/taskService';
+import { updateTaskEmp } from '../../../../service/taskService';
 const AssignedTaskModal = ({ task, onClose }) => {
   if (!task) return null;
 
@@ -22,7 +22,7 @@ const AssignedTaskModal = ({ task, onClose }) => {
     const taskData = { status };
 
     try {
-      const updatedTask = await updateTask(task._id, taskData);
+      const updatedTask = await updateTaskEmp(task._id, taskData);
 
       if (updatedTask) {
         console.log('Task updated:', updatedTask);
