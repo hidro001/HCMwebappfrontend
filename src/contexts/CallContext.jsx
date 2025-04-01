@@ -4,14 +4,14 @@ import React, {
   useState,
   useRef,
   useMemo,
+  useEffect,
 } from "react";
 import io from "socket.io-client";
 import { toast } from "react-hot-toast";
 
-// Where your server is hosted:
-const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL_CALL;
-
-// Use your TURN server configuration here.
+// --------------------------------------------------
+// TURN server configuration
+// --------------------------------------------------
 const ICE_SERVERS = [
   {
     urls: "turn:razorinfotech.com:3478",
@@ -20,62 +20,87 @@ const ICE_SERVERS = [
   },
 ];
 
-// Utility: Generate a unique call ID (same format as your server)
+// --------------------------------------------------
+// Utility: Generate a unique call ID
+// --------------------------------------------------
 const generateUniqueCallId = () => {
   return "call_" + Date.now() + "_" + Math.floor(Math.random() * 1000);
 };
 
+// --------------------------------------------------
+// Create the Context
+// --------------------------------------------------
 const CallContext = createContext();
 
+// --------------------------------------------------
+// The Provider Component
+// --------------------------------------------------
 export function CallProvider({ children }) {
-  // ----------------------------------------------------------------
-  // 1) Store user info & socket. We'll connect/disconnect manually.
-  // ----------------------------------------------------------------
+  // --------------------------------------------------
+  // State & Refs
+  // --------------------------------------------------
   const [currentUser, setCurrentUser] = useState(null);
   const socketRef = useRef(null);
 
-  // ----------------------------------------------------------------
-  // 2) All the usual call states
-  // ----------------------------------------------------------------
+  // Call states
   const [call, setCall] = useState(null);
   const [incomingCall, setIncomingCall] = useState(null);
   const [outgoingCall, setOutgoingCall] = useState(null);
   const [stream, setStream] = useState(null);
   const [remoteStreams, setRemoteStreams] = useState([]);
 
-  // RTC references
+  // WebRTC references
   const localStreamRef = useRef(null);
   const peersRef = useRef({});
 
-  // ----------------------------------------------------------------
-  // 3) Provide a function to connect the socket (when user logs in)
-  // ----------------------------------------------------------------
-  const connectCallSocket = (userId) => {
-    if (!userId) {
-      console.error("No userId provided for call socket connection.");
+  // --------------------------------------------------
+  // 1) On mount, check localStorage for empId, connect if found
+  // --------------------------------------------------
+  useEffect(() => {
+    const storedEmpId = localStorage.getItem("employeeId"); // or "userId"
+    if (storedEmpId) {
+      connectCallSocket(storedEmpId);
+    } else {
+      console.warn("[CALL] No empId found in localStorage.");
+    }
+
+    return () => {
+      disconnectCallSocket();
+    };
+  }, []);
+
+  // --------------------------------------------------
+  // 2) Socket Connection Functions
+  // --------------------------------------------------
+  const connectCallSocket = (empId) => {
+    if (!empId) {
+      console.error("[CALL] No userId (empId) provided for call socket connection.");
       return;
     }
-    // Store current user in state
-    setCurrentUser(userId);
+    setCurrentUser(empId);
 
     // If already connected, do nothing
     if (socketRef.current) {
-      console.warn("Call socket is already connected or connecting.");
+      console.warn("[CALL] Socket is already connected or connecting.");
       return;
     }
 
-    // Create new socket connection
-    const newSocket = io(`${SOCKET_SERVER_URL}`, {
-      query: { userId },
+    // Create new socket
+    const newSocket = io(import.meta.env.VITE_SOCKET_URL_CALL, {
+      query: { userId: empId },
       transports: ["websocket", "polling"],
       reconnectionAttempts: 5,
       timeout: 10000,
     });
 
-    // Attach all your event listeners
     newSocket.on("connect", () => {
       console.log("[CALL] Socket connected:", newSocket.id);
     });
+    newSocket.on("disconnect", () => {
+      console.log("[CALL] Socket disconnected:", newSocket.id);
+    });
+
+    // Custom events
     newSocket.on("incomingCall", handleIncomingCall);
     newSocket.on("participantJoined", handleParticipantJoined);
     newSocket.on("participantLeft", handleParticipantLeft);
@@ -87,41 +112,30 @@ export function CallProvider({ children }) {
     newSocket.on("answer", handleAnswer);
     newSocket.on("candidate", handleCandidate);
 
-    newSocket.on("disconnect", () => {
-      console.log("[CALL] Socket disconnected:", newSocket.id);
-      // optional cleanup here
-    });
-
     socketRef.current = newSocket;
   };
 
-  // ----------------------------------------------------------------
-  // 4) Provide a function to disconnect the socket (on logout)
-  // ----------------------------------------------------------------
   const disconnectCallSocket = () => {
     if (socketRef.current) {
-      // Clean up any ongoing calls
       cleanupCall();
-
-      // Actually disconnect the socket
       socketRef.current.disconnect();
       socketRef.current = null;
       setCurrentUser(null);
-      console.log("[CALL] Socket disconnected (logout).");
+      console.log("[CALL] Socket disconnected (cleanup).");
     }
   };
 
-  // ----------------------------------------------------------------
-  // 5) All the same event handlers as before...
-  // ----------------------------------------------------------------
+  // --------------------------------------------------
+  // 3) Socket Event Handlers
+  // --------------------------------------------------
   const handleIncomingCall = (data) => {
-    console.log("Incoming call:", data);
+    console.log("[CALL] Incoming call:", data);
     setOutgoingCall(null);
     setIncomingCall(data);
   };
 
   const handleParticipantJoined = (data) => {
-    console.log("Participant joined:", data);
+    console.log("[CALL] Participant joined:", data);
     if (outgoingCall && outgoingCall.callId === data.callId) {
       setOutgoingCall(null);
       toast(`User ${data.userId} answered the call.`);
@@ -129,12 +143,13 @@ export function CallProvider({ children }) {
   };
 
   const handleParticipantLeft = (data) => {
-    console.log("Participant left:", data);
+    console.log("[CALL] Participant left:", data);
     if (peersRef.current[data.userId]) {
       peersRef.current[data.userId].peer.close();
       delete peersRef.current[data.userId];
     }
     setRemoteStreams((prev) => prev.filter((s) => s.userId !== data.userId));
+
     if (call && call.callId === data.callId) {
       toast(`User ${data.userId} ended the call.`);
       cleanupCall();
@@ -142,22 +157,22 @@ export function CallProvider({ children }) {
   };
 
   const handleCallRejected = (data) => {
-    console.log(`Call ${data.callId} was rejected by ${data.userId}`);
+    console.log(`[CALL] Call ${data.callId} was rejected by ${data.userId}`);
     toast(`Call was rejected by ${data.userId}`);
     cleanupCall();
   };
 
   const handleEndCall = (data) => {
-    console.log("Received endCall event:", data);
+    console.log("[CALL] Call ended by server:", data);
     toast("Call ended.");
     cleanupCall();
   };
 
-  // -----------------------
-  // WebRTC Signaling Handlers
-  // -----------------------
+  // --------------------------------------------------
+  // 4) WebRTC Signaling Handlers
+  // --------------------------------------------------
   const handleOffer = async (data) => {
-    console.log("Offer received from:", data.userId);
+    console.log("[CALL] Offer received from:", data.userId);
     if (!peersRef.current[data.userId]) {
       await createPeerConnection(data.callId, data.userId);
     }
@@ -166,46 +181,48 @@ export function CallProvider({ children }) {
       await peer.setRemoteDescription({ type: "offer", sdp: data.sdp });
       const answer = await peer.createAnswer();
       await peer.setLocalDescription(answer);
+
       socketRef.current.emit("answer", {
         callId: data.callId,
         userId: currentUser,
         sdp: answer.sdp,
       });
     } catch (err) {
-      console.error("Error handling offer:", err);
+      console.error("[CALL] Error handling offer:", err);
     }
   };
 
   const handleAnswer = async (data) => {
-    console.log("Answer received from:", data.userId);
+    console.log("[CALL] Answer received from:", data.userId);
     const pcObject = peersRef.current[data.userId];
     if (!pcObject) return;
+
     try {
       await pcObject.peer.setRemoteDescription({
         type: "answer",
         sdp: data.sdp,
       });
     } catch (err) {
-      console.error("Error setting remote description:", err);
+      console.error("[CALL] Error setting remote description:", err);
     }
   };
 
   const handleCandidate = async (data) => {
-    console.log("Candidate received from:", data.userId);
+    console.log("[CALL] Candidate received from:", data.userId);
     const pcObject = peersRef.current[data.userId];
     if (!pcObject) return;
     try {
       await pcObject.peer.addIceCandidate(new RTCIceCandidate(data.candidate));
     } catch (err) {
-      console.error("Error adding ICE candidate:", err);
+      console.error("[CALL] Error adding ICE candidate:", err);
     }
   };
 
-  // -----------------------
-  // Create PeerConnection
-  // -----------------------
+  // --------------------------------------------------
+  // 5) Create PeerConnection
+  // --------------------------------------------------
   const createPeerConnection = async (callId, remoteUserId) => {
-    console.log("Creating PeerConnection for:", remoteUserId);
+    console.log("[CALL] Creating PeerConnection for:", remoteUserId);
     const peer = new RTCPeerConnection({ iceServers: ICE_SERVERS });
 
     if (localStreamRef.current) {
@@ -229,36 +246,44 @@ export function CallProvider({ children }) {
       try {
         const offer = await peer.createOffer();
         await peer.setLocalDescription(offer);
+
         socketRef.current.emit("offer", {
           callId,
           userId: currentUser,
           sdp: offer.sdp,
         });
       } catch (err) {
-        console.error("Error in renegotiation:", err);
+        console.error("[CALL] Error in renegotiation:", err);
       }
     };
 
     peer.oniceconnectionstatechange = () => {
-      console.log(`ICE state for ${remoteUserId}:`, peer.iceConnectionState);
+      console.log(
+        `[CALL] ICE state for ${remoteUserId}:`,
+        peer.iceConnectionState
+      );
       if (
         peer.iceConnectionState === "failed" ||
         peer.iceConnectionState === "disconnected"
       ) {
-        console.warn(`Peer to ${remoteUserId} is ${peer.iceConnectionState}`);
+        console.warn(
+          `[CALL] Peer to ${remoteUserId} is ${peer.iceConnectionState}`
+        );
       }
     };
 
     peer.ontrack = (event) => {
       const [remoteStream] = event.streams;
-      console.log("Received remote track from:", remoteUserId);
+      console.log("[CALL] Received remote track from:", remoteUserId);
       setRemoteStreams((prev) => {
         const existing = prev.find((s) => s.userId === remoteUserId);
         if (existing) {
+          // Update the stream
           return prev.map((s) =>
             s.userId === remoteUserId ? { ...s, stream: remoteStream } : s
           );
         }
+        // Add new stream
         return [...prev, { userId: remoteUserId, stream: remoteStream }];
       });
     };
@@ -267,9 +292,9 @@ export function CallProvider({ children }) {
     return peersRef.current[remoteUserId];
   };
 
-  // -----------------------
-  // Get Local Media
-  // -----------------------
+  // --------------------------------------------------
+  // 6) Get Local Media
+  // --------------------------------------------------
   const getLocalMedia = async (constraints) => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia(
@@ -278,17 +303,18 @@ export function CallProvider({ children }) {
       setStream(mediaStream);
       localStreamRef.current = mediaStream;
     } catch (err) {
-      console.error("Error accessing media devices:", err);
+      console.error("[CALL] Error accessing media devices:", err);
       throw err;
     }
   };
 
-  // -----------------------
-  // Initiate Call
-  // -----------------------
+  // --------------------------------------------------
+  // 7) Initiate Call
+  // --------------------------------------------------
   const initiateCall = async ({ callType, participants }) => {
+    // If socket is not connected or we don’t have a user
     if (!socketRef.current || !currentUser) {
-      console.warn("Cannot initiate call, socket not connected or no user.");
+      console.warn("[CALL] Cannot initiate call, socket not connected or no user.");
       return;
     }
 
@@ -309,7 +335,6 @@ export function CallProvider({ children }) {
 
       await getLocalMedia(constraints);
 
-      // Inform server we're initiating a call
       socketRef.current.emit("initiateCall", {
         caller: currentUser,
         callType,
@@ -337,18 +362,18 @@ export function CallProvider({ children }) {
         });
       }
     } catch (err) {
-      console.error("Error initiating call:", err);
+      console.error("[CALL] Error initiating call:", err);
       setOutgoingCall(null);
     }
   };
 
-  // -----------------------
-  // Answer Call
-  // -----------------------
+  // --------------------------------------------------
+  // 8) Answer Call
+  // --------------------------------------------------
   const answerCall = async () => {
     if (!incomingCall || !socketRef.current || !currentUser) return;
-    const { callId, callType, participants } = incomingCall;
 
+    const { callId, callType, participants } = incomingCall;
     try {
       const constraints =
         callType === "video"
@@ -378,15 +403,16 @@ export function CallProvider({ children }) {
         }
       });
     } catch (err) {
-      console.error("Error answering call:", err);
+      console.error("[CALL] Error answering call:", err);
     }
   };
 
-  // -----------------------
-  // Reject Call
-  // -----------------------
+  // --------------------------------------------------
+  // 9) Reject Call
+  // --------------------------------------------------
   const rejectCall = () => {
     if (!incomingCall || !socketRef.current || !currentUser) return;
+
     socketRef.current.emit("rejectCall", {
       callId: incomingCall.callId,
       userId: currentUser,
@@ -394,9 +420,9 @@ export function CallProvider({ children }) {
     setIncomingCall(null);
   };
 
-  // -----------------------
-  // Add Participant
-  // -----------------------
+  // --------------------------------------------------
+  // 10) Add Participant
+  // --------------------------------------------------
   const addParticipant = (newParticipant) => {
     if (!call || !socketRef.current) return;
     socketRef.current.emit("addParticipant", {
@@ -410,9 +436,9 @@ export function CallProvider({ children }) {
     );
   };
 
-  // -----------------------
-  // Leave / Cancel Call
-  // -----------------------
+  // --------------------------------------------------
+  // 11) Leave / Cancel Call
+  // --------------------------------------------------
   const leaveCall = () => {
     if (!socketRef.current || (!call && !outgoingCall)) return;
 
@@ -428,16 +454,16 @@ export function CallProvider({ children }) {
           userId: currentUser,
         });
       } else {
-        console.warn("Call cancelled before callId was set.");
-        toast("Call cancelled.");
+        console.warn("[CALL] Call canceled before callId was set.");
+        toast("Call canceled.");
       }
     }
     cleanupCall();
   };
 
-  // -----------------------
-  // Cleanup Call
-  // -----------------------
+  // --------------------------------------------------
+  // 12) Cleanup Call
+  // --------------------------------------------------
   const cleanupCall = () => {
     Object.values(peersRef.current).forEach(({ peer }) => peer.close());
     peersRef.current = {};
@@ -453,24 +479,17 @@ export function CallProvider({ children }) {
     setRemoteStreams([]);
   };
 
-  // ----------------------------------------------------------------
-  // 6) Provide context value
-  // ----------------------------------------------------------------
+  // --------------------------------------------------
+  // 13) Memoized Value
+  // --------------------------------------------------
   const value = useMemo(
     () => ({
-      // Connection management
-      connectCallSocket,
-      disconnectCallSocket,
-
-      // States
       currentUser,
       call,
       incomingCall,
       outgoingCall,
       stream,
       remoteStreams,
-
-      // Actions
       initiateCall,
       answerCall,
       rejectCall,
@@ -484,8 +503,6 @@ export function CallProvider({ children }) {
       outgoingCall,
       stream,
       remoteStreams,
-      connectCallSocket,
-      disconnectCallSocket,
       initiateCall,
       answerCall,
       rejectCall,
@@ -497,6 +514,9 @@ export function CallProvider({ children }) {
   return <CallContext.Provider value={value}>{children}</CallContext.Provider>;
 }
 
+// --------------------------------------------------
+// Access the Context
+// --------------------------------------------------
 export function useCall() {
   return useContext(CallContext);
 }
