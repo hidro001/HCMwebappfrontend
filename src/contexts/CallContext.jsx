@@ -53,11 +53,15 @@ export function CallProvider({ children }) {
   const localStreamRef = useRef(null);
   const peersRef = useRef({});
 
+  // A map of userId -> array of ICE candidates that arrived
+  // before we set the remote description.
+  const pendingCandidatesRef = useRef({});
+
   // --------------------------------------------------
   // 1) On mount, check localStorage for empId, connect if found
   // --------------------------------------------------
   useEffect(() => {
-    const storedEmpId = localStorage.getItem("employeeId"); // or "userId"
+    const storedEmpId = localStorage.getItem("employeeId");
     if (storedEmpId) {
       connectCallSocket(storedEmpId);
     } else {
@@ -173,12 +177,21 @@ export function CallProvider({ children }) {
   // --------------------------------------------------
   const handleOffer = async (data) => {
     console.log("[CALL] Offer received from:", data.userId);
+
+    // Create the PeerConnection if it doesn't exist yet
     if (!peersRef.current[data.userId]) {
       await createPeerConnection(data.callId, data.userId);
     }
+
     const { peer } = peersRef.current[data.userId];
     try {
+      // Set remote desc to 'offer'
       await peer.setRemoteDescription({ type: "offer", sdp: data.sdp });
+
+      // After setting remote description, check for any pending ICE candidates
+      flushPendingCandidates(data.userId);
+
+      // Create and send back the answer
       const answer = await peer.createAnswer();
       await peer.setLocalDescription(answer);
 
@@ -194,14 +207,19 @@ export function CallProvider({ children }) {
 
   const handleAnswer = async (data) => {
     console.log("[CALL] Answer received from:", data.userId);
+
     const pcObject = peersRef.current[data.userId];
     if (!pcObject) return;
 
     try {
+      // Set remote desc to 'answer'
       await pcObject.peer.setRemoteDescription({
         type: "answer",
         sdp: data.sdp,
       });
+
+      // After setting remote description, check for any pending ICE candidates
+      flushPendingCandidates(data.userId);
     } catch (err) {
       console.error("[CALL] Error setting remote description:", err);
     }
@@ -209,13 +227,58 @@ export function CallProvider({ children }) {
 
   const handleCandidate = async (data) => {
     console.log("[CALL] Candidate received from:", data.userId);
+
     const pcObject = peersRef.current[data.userId];
-    if (!pcObject) return;
+    if (!pcObject) {
+      console.warn("[CALL] No peer found, storing candidate temporarily...");
+      queueCandidate(data.userId, data.candidate);
+      return;
+    }
+
+    // If remote description not yet set, queue the candidate
+    const { peer } = pcObject;
+    if (!peer.remoteDescription || !peer.remoteDescription.type) {
+      console.warn("[CALL] Remote desc not set yet, storing candidate temporarily...");
+      queueCandidate(data.userId, data.candidate);
+      return;
+    }
+
+    // Otherwise, add it immediately
     try {
-      await pcObject.peer.addIceCandidate(new RTCIceCandidate(data.candidate));
+      await peer.addIceCandidate(new RTCIceCandidate(data.candidate));
     } catch (err) {
       console.error("[CALL] Error adding ICE candidate:", err);
     }
+  };
+
+  /**
+   * Store a candidate to be added later for the given userId.
+   */
+  const queueCandidate = (userId, candidate) => {
+    if (!pendingCandidatesRef.current[userId]) {
+      pendingCandidatesRef.current[userId] = [];
+    }
+    pendingCandidatesRef.current[userId].push(candidate);
+  };
+
+  /**
+   * After we setRemoteDescription, flush any queued candidates for that user.
+   */
+  const flushPendingCandidates = async (userId) => {
+    const pcObject = peersRef.current[userId];
+    if (!pcObject) return;
+
+    const { peer } = pcObject;
+    const queued = pendingCandidatesRef.current[userId] || [];
+    for (const candidate of queued) {
+      try {
+        await peer.addIceCandidate(new RTCIceCandidate(candidate));
+      } catch (err) {
+        console.error("[CALL] Error adding flushed ICE candidate:", err);
+      }
+    }
+    // Clear them out once added
+    pendingCandidatesRef.current[userId] = [];
   };
 
   // --------------------------------------------------
@@ -325,7 +388,11 @@ export function CallProvider({ children }) {
       const constraints =
         callType === "video"
           ? {
-              video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } },
+              video: {
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+                frameRate: { ideal: 30 },
+              },
               audio: { echoCancellation: true, noiseSuppression: true },
             }
           : {
@@ -378,7 +445,11 @@ export function CallProvider({ children }) {
       const constraints =
         callType === "video"
           ? {
-              video: { width: { ideal: 1280 }, height: { ideal: 720 }, frameRate: { ideal: 30 } },
+              video: {
+                width: { ideal: 1280 },
+                height: { ideal: 720 },
+                frameRate: { ideal: 30 },
+              },
               audio: { echoCancellation: true, noiseSuppression: true },
             }
           : {
@@ -477,6 +548,8 @@ export function CallProvider({ children }) {
     setIncomingCall(null);
     setOutgoingCall(null);
     setRemoteStreams([]);
+    // Also clear any pending ICE candidates
+    pendingCandidatesRef.current = {};
   };
 
   // --------------------------------------------------
