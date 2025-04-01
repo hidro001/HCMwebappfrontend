@@ -21,6 +21,7 @@ import NotificationDropdown from "../Notification/NotificationDropdown";
 import BreakCard from "./BreakCard";
 
 import { ChatContextv2 } from "../../contexts/ChatContextv2";
+import { useCall } from "../../contexts/CallContext";
 
 // Helper to format seconds into HH:MM:SS
 function formatHMS(totalSeconds) {
@@ -93,7 +94,7 @@ const Navbar = () => {
 
   // Local timer in the navbar
   const [navbarTimer, setNavbarTimer] = useState("00:00:00");
-
+  const { disconnectCallSocke } = useCall();
   // Fetch punch/attendance and location on mount if authenticated
   useEffect(() => {
     if (authStore.isAuthenticated) {
@@ -145,6 +146,9 @@ const Navbar = () => {
     authStore.logout();
     toast.success("Signed out successfully!");
     navigate("/");
+    disconnectCallSocke()
+
+
   };
 
   // Company & user info
