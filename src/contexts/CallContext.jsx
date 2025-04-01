@@ -53,9 +53,12 @@ export function CallProvider({ children }) {
   const localStreamRef = useRef(null);
   const peersRef = useRef({});
 
-  // A map of userId -> array of ICE candidates that arrived
-  // before we set the remote description.
+  // A map of userId -> array of ICE candidates that arrived too early
   const pendingCandidatesRef = useRef({});
+
+  // For safe renegotiation
+  // userId -> boolean that tells us if there's an ongoing negotiation
+  const negotiationInProgressRef = useRef({});
 
   // --------------------------------------------------
   // 1) On mount, check localStorage for empId, connect if found
@@ -188,7 +191,7 @@ export function CallProvider({ children }) {
       // Set remote desc to 'offer'
       await peer.setRemoteDescription({ type: "offer", sdp: data.sdp });
 
-      // After setting remote description, check for any pending ICE candidates
+      // After setting remote description, flush pending ICE
       flushPendingCandidates(data.userId);
 
       // Create and send back the answer
@@ -218,7 +221,7 @@ export function CallProvider({ children }) {
         sdp: data.sdp,
       });
 
-      // After setting remote description, check for any pending ICE candidates
+      // Flush any candidates that arrived while waiting
       flushPendingCandidates(data.userId);
     } catch (err) {
       console.error("[CALL] Error setting remote description:", err);
@@ -251,9 +254,9 @@ export function CallProvider({ children }) {
     }
   };
 
-  /**
-   * Store a candidate to be added later for the given userId.
-   */
+  // --------------------------------------------------
+  // ICE Candidate Queue Helpers
+  // --------------------------------------------------
   const queueCandidate = (userId, candidate) => {
     if (!pendingCandidatesRef.current[userId]) {
       pendingCandidatesRef.current[userId] = [];
@@ -261,9 +264,6 @@ export function CallProvider({ children }) {
     pendingCandidatesRef.current[userId].push(candidate);
   };
 
-  /**
-   * After we setRemoteDescription, flush any queued candidates for that user.
-   */
   const flushPendingCandidates = async (userId) => {
     const pcObject = peersRef.current[userId];
     if (!pcObject) return;
@@ -282,12 +282,16 @@ export function CallProvider({ children }) {
   };
 
   // --------------------------------------------------
-  // 5) Create PeerConnection
+  // 5) Create PeerConnection (with safe negotiation)
   // --------------------------------------------------
   const createPeerConnection = async (callId, remoteUserId) => {
     console.log("[CALL] Creating PeerConnection for:", remoteUserId);
     const peer = new RTCPeerConnection({ iceServers: ICE_SERVERS });
 
+    // Initialize negotiation lock for this remoteUserId
+    negotiationInProgressRef.current[remoteUserId] = false;
+
+    // Add local tracks
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach((track) => {
         peer.addTrack(track, localStreamRef.current);
@@ -304,9 +308,28 @@ export function CallProvider({ children }) {
       }
     };
 
+    /**
+     * Safe renegotiation
+     *
+     * We only proceed if:
+     * - not already negotiating
+     * - signalingState is stable
+     */
     peer.onnegotiationneeded = async () => {
-      if (peer.signalingState !== "stable") return;
+      const alreadyNegotiating = negotiationInProgressRef.current[remoteUserId];
+      if (alreadyNegotiating) {
+        console.log("[CALL] Already negotiating, skipping onnegotiationneeded.");
+        return;
+      }
+
+      negotiationInProgressRef.current[remoteUserId] = true;
       try {
+        if (peer.signalingState !== "stable") {
+          console.warn("[CALL] Signaling state not stable, skipping renegotiation.");
+          return;
+        }
+
+        console.log("[CALL] onnegotiationneeded => creating new offer...");
         const offer = await peer.createOffer();
         await peer.setLocalDescription(offer);
 
@@ -317,6 +340,8 @@ export function CallProvider({ children }) {
         });
       } catch (err) {
         console.error("[CALL] Error in renegotiation:", err);
+      } finally {
+        negotiationInProgressRef.current[remoteUserId] = false;
       }
     };
 
@@ -351,6 +376,7 @@ export function CallProvider({ children }) {
       });
     };
 
+    // Store
     peersRef.current[remoteUserId] = { peer };
     return peersRef.current[remoteUserId];
   };
@@ -548,8 +574,10 @@ export function CallProvider({ children }) {
     setIncomingCall(null);
     setOutgoingCall(null);
     setRemoteStreams([]);
-    // Also clear any pending ICE candidates
+    // Clear any pending ICE candidates
     pendingCandidatesRef.current = {};
+    // Reset negotiation locks
+    negotiationInProgressRef.current = {};
   };
 
   // --------------------------------------------------
