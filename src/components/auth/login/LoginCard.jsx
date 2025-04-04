@@ -215,110 +215,11 @@ const { connectCallSocket } = useCall();
   };
 
   // Handle Successful Login or OTP Verification
-  // const handleLoginSuccess = (response) => {
-  //   const { user, accessToken } = response;
-  //   const {
-  //     user_Role,
-  //     _id, // Extract _id
-  //     permission_role,
-  //     first_Name,
-  //     last_Name,
-  //     employee_Id,
-  //     department,
-  //     working_Email_Id,
-  //     mobile_No,
-  //     designation,
-  //     departmentAlocated,
-  //     teams,
-  //     user_Avatar,
-  //     permission,
-  //   } = user;
-
-  //   // Parse departmentAlocated and teams
-  //   const parseDepartmentAlocated = (deptAlloc) => {
-  //     let departmentsArray = [];
-  //     if (Array.isArray(deptAlloc)) {
-  //       deptAlloc.forEach((element) => {
-  //         if (typeof element === "string") {
-  //           try {
-  //             const parsedElement = JSON.parse(element);
-  //             if (Array.isArray(parsedElement)) {
-  //               departmentsArray = departmentsArray.concat(parsedElement);
-  //             } else {
-  //               departmentsArray = departmentsArray.concat(element.split(","));
-  //             }
-  //           } catch (e) {
-  //             departmentsArray = departmentsArray.concat(element.split(","));
-  //           }
-  //         }
-  //       });
-  //     } else if (typeof deptAlloc === "string") {
-  //       try {
-  //         const parsed = JSON.parse(deptAlloc);
-  //         if (Array.isArray(parsed)) {
-  //           departmentsArray = parsed;
-  //         } else {
-  //           departmentsArray = deptAlloc.split(",");
-  //         }
-  //       } catch (e) {
-  //         departmentsArray = deptAlloc.split(",");
-  //       }
-  //     }
-  //     return [...new Set(departmentsArray.map((dept) => dept.trim()))];
-  //   };
-
-  //   const parseTeams = (teams) => {
-  //     if (Array.isArray(teams)) {
-  //       return teams.map((team) => ({
-  //         department: team.department,
-  //         teamName: team.teamName,
-  //         teamId: team._id,
-  //       }));
-  //     }
-  //     return [];
-  //   };
-
-  //   const departmentsArray = parseDepartmentAlocated(departmentAlocated);
-  //   const teamsArray = parseTeams(teams);
-
-  //   // Update Zustand store
-  //   authStore.login({
-  //     accessToken,
-  //     _id, // Store _id
-  //     userRole: user_Role,
-  //     permissionRole: permission_role,
-  //     userName: `${first_Name} ${last_Name || ""}`,
-  //     employeeId: employee_Id,
-  //     department,
-  //     workingEmail: working_Email_Id,
-  //     phoneNumber: mobile_No,
-  //     designation,
-  //     departmentAlocated: departmentsArray,
-  //     teams: teamsArray,
-  //     userAvatar: user_Avatar, // Add user avatar
-  //     permissions: permission || [], // We'll store this in Zustand
-  //     engagement_permission: user.engagement_permission,
-  //   });
-
-  //   toast.success("Login Successful!");
-  //   connectCallSocket(employee_Id);
-  //   switch (user_Role.toLowerCase()) {
-  //     case "employee":
-  //       navigate("/dashboard/employee");
-  //       break;
-  //     case "super-admin":
-  //       navigate("/dashboard/super-employee-dashboard");
-  //       break;
-  //     default:
-  //       toast.error("Unknown user role");
-  //   }
-  // };
-
   const handleLoginSuccess = (response) => {
     const { user, accessToken } = response;
     const {
       user_Role,
-      _id,
+      _id, // Extract _id
       permission_role,
       first_Name,
       last_Name,
@@ -332,17 +233,58 @@ const { connectCallSocket } = useCall();
       user_Avatar,
       permission,
     } = user;
-  
-    const parseDepartmentAlocated = (deptAlloc) => { /* existing logic */ };
-    const parseTeams = (teams) => { /* existing logic */ };
-  
+
+    // Parse departmentAlocated and teams
+    const parseDepartmentAlocated = (deptAlloc) => {
+      let departmentsArray = [];
+      if (Array.isArray(deptAlloc)) {
+        deptAlloc.forEach((element) => {
+          if (typeof element === "string") {
+            try {
+              const parsedElement = JSON.parse(element);
+              if (Array.isArray(parsedElement)) {
+                departmentsArray = departmentsArray.concat(parsedElement);
+              } else {
+                departmentsArray = departmentsArray.concat(element.split(","));
+              }
+            } catch (e) {
+              departmentsArray = departmentsArray.concat(element.split(","));
+            }
+          }
+        });
+      } else if (typeof deptAlloc === "string") {
+        try {
+          const parsed = JSON.parse(deptAlloc);
+          if (Array.isArray(parsed)) {
+            departmentsArray = parsed;
+          } else {
+            departmentsArray = deptAlloc.split(",");
+          }
+        } catch (e) {
+          departmentsArray = deptAlloc.split(",");
+        }
+      }
+      return [...new Set(departmentsArray.map((dept) => dept.trim()))];
+    };
+
+    const parseTeams = (teams) => {
+      if (Array.isArray(teams)) {
+        return teams.map((team) => ({
+          department: team.department,
+          teamName: team.teamName,
+          teamId: team._id,
+        }));
+      }
+      return [];
+    };
+
     const departmentsArray = parseDepartmentAlocated(departmentAlocated);
     const teamsArray = parseTeams(teams);
-  
+
     // Update Zustand store
     authStore.login({
       accessToken,
-      _id,
+      _id, // Store _id
       userRole: user_Role,
       permissionRole: permission_role,
       userName: `${first_Name} ${last_Name || ""}`,
@@ -353,26 +295,13 @@ const { connectCallSocket } = useCall();
       designation,
       departmentAlocated: departmentsArray,
       teams: teamsArray,
-      userAvatar: user_Avatar,
-      permissions: permission || [],
+      userAvatar: user_Avatar, // Add user avatar
+      permissions: permission || [], // We'll store this in Zustand
       engagement_permission: user.engagement_permission,
     });
-  
-    // ⬇️ **NEW CODE: Send credentials to Electron main process**
-    if (window.electronAPI && window.electronAPI.sendCredentials) {
-      window.electronAPI.sendCredentials({
-        accessToken: accessToken,
-        employeeId: employee_Id,
-        userName: `${first_Name} ${last_Name || ""}`,
-      });
-      console.log("Credentials sent to Electron successfully.");
-    } else {
-      console.warn("Electron API not available. Check preload.js.");
-    }
-  
+
     toast.success("Login Successful!");
     connectCallSocket(employee_Id);
-  
     switch (user_Role.toLowerCase()) {
       case "employee":
         navigate("/dashboard/employee");
@@ -384,7 +313,6 @@ const { connectCallSocket } = useCall();
         toast.error("Unknown user role");
     }
   };
-  
 
   // Handle Forgot Password Modal Open/Close
   const handleForgotPasswordOpen = () => setForgotPasswordOpen(true);
