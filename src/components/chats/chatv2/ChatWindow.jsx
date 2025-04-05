@@ -1,35 +1,31 @@
-// src/components/ChatWindow.jsx
-import React, {
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-  useCallback,
-} from "react";
+import React, { useContext, useEffect, useRef, useState, useCallback } from "react";
 import { ChatContextv2 } from "../../../contexts/ChatContextv2";
 import { useCall } from "../../../contexts/CallContext";
-import { toast } from "react-toastify";
-
 import {
   IoArrowBack,
   IoSend,
   IoAttach,
-  IoCloseCircle,
   IoPersonCircle,
 } from "react-icons/io5";
-import { FaCommentAlt, FaSpinner, FaVideo, FaPhone } from "react-icons/fa";
-import { MdImage, MdPictureAsPdf } from "react-icons/md";
+import {
+  FaCommentAlt,
+  FaSpinner,
+  FaVideo,
+  FaPhone,
+  FaFilePdf,
+  FaImage,
+} from "react-icons/fa";
 
 export default function ChatWindow() {
   const scrollViewRef = useRef(null);
   const fileInputRef = useRef(null);
-  const [uploadingFiles, setUploadingFiles] = useState({});
-  const [modalVisible, setModalVisible] = useState(false);
 
-  // --- From your ChatContextv2 ---
+  // ----------------------------------------------------------------
+  // Destructure from context
+  // ----------------------------------------------------------------
   const {
     employeeId,
-    activeConversation,         // Now we rely on activeConversation for calls
+    activeConversation,
     clearActiveConversation,
     messages,
     messagesLoading,
@@ -37,123 +33,214 @@ export default function ChatWindow() {
     setMessage,
     sendMessageHandler,
     sendFileHandler,
+    requestFileURL, // <== We'll call this when user clicks on a file
   } = useContext(ChatContextv2);
 
-  // --- Get the call initiate function from your CallContext ---
   const { initiateCall } = useCall();
 
-  // --------------------------------------------
-  // 1) Handle Video / Voice Call
-  // --------------------------------------------
+  // ----------------------------------------------------------------
+  // Local states
+  // ----------------------------------------------------------------
+  const [showAttachmentMenu, setShowAttachmentMenu] = useState(false);
+  const [attachmentType, setAttachmentType] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [filesRemaining, setFilesRemaining] = useState(0);
+
+  // ----------------------------------------------------------------
+  // Calls
+  // ----------------------------------------------------------------
   const handleVideoCall = () => {
-    if (!activeConversation || !activeConversation.employeeId) {
-      toast.error("No user or conversation selected.");
+    if (!activeConversation?.employeeId) {
+      console.error("No user or conversation selected for video call.");
       return;
     }
-
     initiateCall({
       callType: "video",
       participants: [activeConversation.employeeId],
     });
-    console.log("Starting video call with", activeConversation.employeeId);
   };
 
   const handleVoiceCall = () => {
-    if (!activeConversation || !activeConversation.employeeId) {
-      toast.error("No user or conversation selected.");
+    if (!activeConversation?.employeeId) {
+      console.error("No user or conversation selected for voice call.");
       return;
     }
-
     initiateCall({
       callType: "voice",
       participants: [activeConversation.employeeId],
     });
-    console.log("Starting voice call with", activeConversation.employeeId);
   };
 
-  // --------------------------------------------
-  // 2) Auto-scroll whenever messages change
-  // --------------------------------------------
+  // ----------------------------------------------------------------
+  // Auto-scroll
+  // ----------------------------------------------------------------
   useEffect(() => {
     if (scrollViewRef.current) {
       scrollViewRef.current.scrollTop = scrollViewRef.current.scrollHeight;
     }
   }, [messages]);
 
-  // --------------------------------------------
-  // 3) Send text message
-  // --------------------------------------------
+  // ----------------------------------------------------------------
+  // Send text
+  // ----------------------------------------------------------------
   const handleSend = useCallback(() => {
     if (!message.trim()) return;
     sendMessageHandler();
   }, [message, sendMessageHandler]);
 
-  // --------------------------------------------
-  // 4) Upload file with local "uploading" indicator
-  // --------------------------------------------
-  const sendFileWithLoading = async (file) => {
-    const uniqueId = `${file.name}-${Date.now()}`;
-    setUploadingFiles((prev) => ({ ...prev, [uniqueId]: true }));
-
-    try {
-      await sendFileHandler(file);
-      setUploadingFiles((prev) => {
-        const updated = { ...prev };
-        delete updated[uniqueId];
-        return updated;
-      });
-      toast.success("File sent successfully.");
-    } catch (error) {
-      console.error("Error sending file:", error);
-      setUploadingFiles((prev) => {
-        const updated = { ...prev };
-        delete updated[uniqueId];
-        return updated;
-      });
-      toast.error("Failed to send file.");
-    }
+  // ----------------------------------------------------------------
+  // Attach flow
+  // ----------------------------------------------------------------
+  const handleAttachClick = () => {
+    setShowAttachmentMenu((prev) => !prev);
   };
 
-  // --------------------------------------------
-  // 5) File input change
-  // --------------------------------------------
+  const handleAttachmentTypeSelect = (type) => {
+    setAttachmentType(type);
+    setShowAttachmentMenu(false);
+
+    if (!fileInputRef.current) return;
+    fileInputRef.current.value = null;
+
+    if (type === "image") {
+      fileInputRef.current.accept = "image/*";
+    } else if (type === "pdf") {
+      fileInputRef.current.accept = "application/pdf";
+    } else {
+      fileInputRef.current.accept = "*/*";
+    }
+    fileInputRef.current.click();
+  };
+
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    toast.success("Image picked successfully!");
-    sendFileWithLoading(file);
-    e.target.value = null; // reset so user can pick the same file again
+    const { files } = e.target;
+    if (!files || !files.length) return;
+    const fileArray = Array.from(files);
+
+    setIsUploading(true);
+    setFilesRemaining(fileArray.length);
+
+    // pass a progress callback
+    sendFileHandler(fileArray, (fileName, percent) => {
+      if (percent >= 100 || percent < 0) {
+        setFilesRemaining((prev) => {
+          const next = prev - 1;
+          if (next <= 0) {
+            // Done
+            setIsUploading(false);
+            return 0;
+          }
+          return next;
+        });
+      }
+    });
+
+    setAttachmentType("");
   };
 
-  // --------------------------------------------
-  // 6) Helpers to pick image/PDF
-  // --------------------------------------------
-  const pickImage = () => {
-    setModalVisible(false);
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
+  // ----------------------------------------------------------------
+  // Clicking on a file bubble => request fresh URL => open new tab
+  // ----------------------------------------------------------------
+  const handleFileClick = useCallback(
+    (fileName) => {
+      if (!fileName) return;
+      requestFileURL(fileName)
+        .then((url) => {
+          if (url) {
+            window.open(url, "_blank");
+          }
+        })
+        .catch((err) => {
+          console.error("Could not get file URL:", err);
+        });
+    },
+    [requestFileURL]
+  );
 
-  const pickPDF = () => {
-    setModalVisible(false);
-    toast.info("PDF picker pressed (implement as needed)");
-  };
-
-  // --------------------------------------------
-  // 7) Decide bubble color for your messages vs. incoming
-  // --------------------------------------------
+  // ----------------------------------------------------------------
+  // Render message bubbles
+  // ----------------------------------------------------------------
   const getBubbleColor = (isOwn) =>
     isOwn ? "bg-violet-200 dark:bg-violet-600" : "bg-cyan-200 dark:bg-cyan-600";
 
-  // --------------------------------------------
-  // 8) Render a single message bubble
-  // --------------------------------------------
   const renderMessageBubble = useCallback(
     (msg, index) => {
       const isOwn = msg.sender === employeeId;
       const bubbleColor = getBubbleColor(isOwn);
 
+      if (msg.fileUrl) {
+        const fileType = msg.fileType || "";
+        const isImage = fileType.startsWith("image/");
+        const isPDF = fileType === "application/pdf";
+
+        return (
+          <div
+            key={index}
+            className={`flex w-full px-2 my-1 transition-all ${
+              isOwn ? "justify-end" : "justify-start"
+            }`}
+          >
+            <div
+              className={`
+                relative max-w-[70%] p-3 rounded-xl shadow-lg
+                ${bubbleColor} transition-colors
+                ${isOwn ? "animate-fadeInRight" : "animate-fadeInLeft"}
+              `}
+            >
+              {/* Instead of <a href=...>, we do onClick => handleFileClick(fileName) */}
+              {isImage && (
+                <div
+                  className="flex flex-col items-start cursor-pointer"
+                  onClick={() => handleFileClick(msg.fileUrl)}
+                >
+                  <FaImage className="text-2xl mb-1" />
+                  <span className="text-sm underline break-all">
+                    {msg.fileName || "Image"}
+                  </span>
+                </div>
+              )}
+
+              {isPDF && (
+                <div
+                  className="flex flex-col items-start cursor-pointer"
+                  onClick={() => handleFileClick(msg.fileUrl)}
+                >
+                  <FaFilePdf className="text-4xl mb-1" />
+                  <span className="text-sm underline break-all">
+                    {msg.fileName || "PDF File"}
+                  </span>
+                </div>
+              )}
+
+              {!isImage && !isPDF && (
+                <div
+                  className="flex flex-col items-start cursor-pointer"
+                  onClick={() => handleFileClick(msg.fileUrl)}
+                >
+                  <span className="underline break-all">
+                    {msg.fileName || "File"}
+                  </span>
+                </div>
+              )}
+
+              <div
+                className={`text-xs mt-2 text-gray-800 dark:text-gray-200 ${
+                  isOwn ? "text-right" : "text-left"
+                }`}
+              >
+                {msg.time
+                  ? new Date(msg.time).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })
+                  : ""}
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // Normal text bubble
       return (
         <div
           key={index}
@@ -168,25 +255,9 @@ export default function ChatWindow() {
               ${isOwn ? "animate-fadeInRight" : "animate-fadeInLeft"}
             `}
           >
-            {msg.type === "file" ? (
-              <>
-                <div className="font-semibold mb-1 text-gray-900 dark:text-gray-100 break-words">
-                  {msg.fileName || "File"}
-                </div>
-                {msg.fileType?.startsWith("image/") && msg.fileUrl ? (
-                  <img
-                    src={msg.fileUrl}
-                    alt={msg.fileName}
-                    className="w-36 h-36 rounded-md mt-1 object-cover"
-                  />
-                ) : null}
-              </>
-            ) : (
-              <div className="whitespace-pre-wrap break-words text-gray-900 dark:text-gray-100 text-base">
-                {msg.message}
-              </div>
-            )}
-            {/* Timestamp */}
+            <div className="whitespace-pre-wrap break-words text-gray-900 dark:text-gray-100 text-base">
+              {msg.message}
+            </div>
             <div
               className={`text-xs mt-2 text-gray-800 dark:text-gray-200 ${
                 isOwn ? "text-right" : "text-left"
@@ -203,12 +274,12 @@ export default function ChatWindow() {
         </div>
       );
     },
-    [employeeId]
+    [employeeId, handleFileClick]
   );
 
-  // --------------------------------------------
-  // 9) Main scrollable content
-  // --------------------------------------------
+  // ----------------------------------------------------------------
+  // Main scrollable content
+  // ----------------------------------------------------------------
   let content;
   if (messagesLoading) {
     content = (
@@ -235,28 +306,9 @@ export default function ChatWindow() {
     content = messages.map((msg, index) => renderMessageBubble(msg, index));
   }
 
-  // --------------------------------------------
-  // 10) In-progress file uploads (your messages)
-  // --------------------------------------------
-  const uploadingIndicators = Object.keys(uploadingFiles).map((fileId) => (
-    <div key={fileId} className="flex w-full px-2 my-1 justify-end">
-      <div className="max-w-[70%] p-3 rounded-xl shadow-md bg-violet-200 dark:bg-violet-600 animate-pulse transition-colors">
-        <div className="text-gray-900 dark:text-gray-100 mb-1">
-          {employeeId} · Sending...
-        </div>
-        <div className="flex flex-row items-center">
-          <FaSpinner className="animate-spin text-blue-600" />
-          <span className="ml-2 text-blue-600 dark:text-blue-200">
-            Uploading...
-          </span>
-        </div>
-      </div>
-    </div>
-  ));
-
-  // --------------------------------------------
-  // 11) Render
-  // --------------------------------------------
+  // ----------------------------------------------------------------
+  // Render
+  // ----------------------------------------------------------------
   return (
     <div className="flex flex-col w-full h-full bg-white dark:bg-gray-900 transition-colors">
       {/* Header Bar */}
@@ -293,9 +345,6 @@ export default function ChatWindow() {
                 ? `${activeConversation.firstName} ${activeConversation.lastName}`
                 : "Chat"}
             </p>
-            {/* <p className="text-xs font-light text-white/80">
-              Online Now
-            </p> */}
           </div>
         </div>
 
@@ -329,19 +378,84 @@ export default function ChatWindow() {
         "
       >
         {content}
-        {uploadingIndicators}
+
+        {/* If we have at least one file still uploading, show a spinner */}
+        {isUploading && filesRemaining > 0 && (
+          <div className="flex items-center justify-center py-4 text-indigo-600">
+            <FaSpinner className="animate-spin text-2xl mr-2" />
+            <span>Uploading files... Please wait.</span>
+          </div>
+        )}
       </div>
 
-      {/* Footer area (input + attach) */}
+      {/* Footer area (input / attach / send) */}
       <div
         className="
           flex flex-row items-center p-2 md:p-3 border-t
           border-gray-200 dark:border-gray-700
           bg-gray-50 dark:bg-gray-800
           shadow-sm space-x-2
-          transition-colors
+          transition-colors relative
         "
       >
+        {/* Hidden file input (multiple files allowed) */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+        />
+
+        {/* Attach Button + small dropdown menu */}
+        <div className="relative">
+          <button
+            className="
+              p-2 rounded-full hover:bg-gray-200
+              dark:hover:bg-gray-700 transition-colors
+            "
+            onClick={handleAttachClick}
+            title="Attach files"
+          >
+            <IoAttach size={24} />
+          </button>
+
+          {showAttachmentMenu && (
+            <div
+              className="
+                absolute bottom-[3rem] left-0
+                flex flex-col bg-white dark:bg-gray-700
+                rounded-md shadow-md py-2
+                z-10
+              "
+            >
+              <button
+                className="
+                  flex items-center gap-2 px-3 py-2
+                  hover:bg-gray-200 dark:hover:bg-gray-600
+                  transition-colors
+                "
+                onClick={() => handleAttachmentTypeSelect("image")}
+              >
+                <FaImage />
+                Image
+              </button>
+              <button
+                className="
+                  flex items-center gap-2 px-3 py-2
+                  hover:bg-gray-200 dark:hover:bg-gray-600
+                  transition-colors
+                "
+                onClick={() => handleAttachmentTypeSelect("pdf")}
+              >
+                <FaFilePdf />
+                PDF
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Text input */}
         <input
           className="
             flex-1
@@ -355,23 +469,12 @@ export default function ChatWindow() {
           placeholder="Type your message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          onKeyPress={(e) => {
+          onKeyDown={(e) => {
             if (e.key === "Enter") handleSend();
           }}
         />
-        {/* <button
-          onClick={() => setModalVisible(true)}
-          className="
-            w-10 h-10 rounded-full
-            bg-pink-400 dark:bg-pink-600
-            flex items-center justify-center
-            shadow
-            hover:scale-105
-            transition-transform
-          "
-        >
-          <IoAttach size={22} color="#fff" />
-        </button> */}
+
+        {/* Send button */}
         <button
           onClick={handleSend}
           className="
@@ -387,96 +490,6 @@ export default function ChatWindow() {
           <IoSend size={20} color="#fff" />
         </button>
       </div>
-
-      {/* Hidden file input for images */}
-      <input
-        type="file"
-        accept="image/*"
-        ref={fileInputRef}
-        style={{ display: "none" }}
-        onChange={handleFileChange}
-      />
-
-      {/* Modal for attachment options */}
-      {modalVisible && (
-        <div
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50"
-          onClick={() => setModalVisible(false)}
-        >
-          <div
-            className="
-              bg-white dark:bg-gray-800
-              w-11/12 md:w-1/2 xl:w-1/3
-              rounded-lg shadow-md relative
-              transition-colors
-            "
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div
-              className="
-                flex flex-row items-center
-                bg-pink-600 dark:bg-pink-700
-                rounded-t-lg p-4
-                transition-colors
-              "
-            >
-              <IoAttach size={22} color="#fff" />
-              <span className="text-lg font-bold text-white ml-2">
-                Attach File
-              </span>
-            </div>
-
-            {/* Modal Body (Attachment Options) */}
-            <div className="px-4 py-3 space-y-3">
-              <button
-                className="
-                  flex flex-row items-center py-2 w-full text-left
-                  hover:bg-gray-100 dark:hover:bg-gray-700
-                  rounded px-2 transition-colors
-                "
-                onClick={pickImage}
-              >
-                <MdImage className="mr-2 text-green-600" size={20} />
-                <span className="text-gray-700 dark:text-gray-200 text-base">
-                  Image
-                </span>
-              </button>
-              <button
-                className="
-                  flex flex-row items-center py-2 w-full text-left
-                  hover:bg-gray-100 dark:hover:bg-gray-700
-                  rounded px-2 transition-colors
-                "
-                onClick={pickPDF}
-              >
-                <MdPictureAsPdf className="mr-2 text-red-500" size={20} />
-                <span className="text-gray-700 dark:text-gray-200 text-base">
-                  PDF
-                </span>
-              </button>
-              <button
-                className="
-                  flex flex-row items-center mt-4 pt-4 border-t
-                  border-gray-200 dark:border-gray-600
-                  w-full justify-center
-                  hover:bg-gray-100 dark:hover:bg-gray-700
-                  rounded px-2 transition-colors
-                "
-                onClick={() => setModalVisible(false)}
-              >
-                <IoCloseCircle
-                  className="mr-2 text-pink-600 dark:text-pink-400"
-                  size={20}
-                />
-                <span className="text-base text-pink-600 dark:text-pink-400">
-                  Cancel
-                </span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
