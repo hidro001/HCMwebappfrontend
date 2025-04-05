@@ -146,7 +146,7 @@ const Navbar = () => {
     authStore.logout();
     toast.success("Signed out successfully!");
     navigate("/");
-    disconnectCallSocke()
+   
 
 
   };
