@@ -228,6 +228,8 @@ login: (userData) => {
     engagement_permission,
   } = userData;
 
+  localStorage.setItem("employeeId", employeeId);
+
   // ✅ Clearly handle both scenarios
   const resolvedUserName = userName 
     ? userName 
