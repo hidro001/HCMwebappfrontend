@@ -10,20 +10,21 @@ import {
   initSocket,
   joinRoom,
   sendPrivateMessage,
-  sendFileMessage,
   disconnectSocket,
 } from "../service/socketService";
 import { fetchChatHistory, fetchAllMember } from "../service/chatService";
 import useAuthStore from "../store/store";
-import { toast } from "react-toastify";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 export const ChatContextv2 = createContext();
 
-const baseUrlSocket = import.meta.env.VITE_SOCKET_URL ;
-
-
+const baseUrlSocket = import.meta.env.VITE_SOCKET_URL;
 
 export function ChatProviderv2({ children }) {
+  // ------------------------------------------------------------------
+  // Basic user info
+  // ------------------------------------------------------------------
   const { employeeId: storeEmployeeId, userName: storeUserName } = useAuthStore();
   const [employeeId, setEmployeeId] = useState("");
   const [username, setUsername] = useState("");
@@ -34,7 +35,7 @@ export function ChatProviderv2({ children }) {
   }, [storeEmployeeId, storeUserName]);
 
   // ------------------------------------------------------------------
-  // Members
+  // Member list
   // ------------------------------------------------------------------
   const [members, setMembers] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -82,20 +83,24 @@ export function ChatProviderv2({ children }) {
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedConversation, setSelectedConversation] = useState(null);
 
-  // If we’re chatting with a “user” or a “conversation” object, unify them as activeConversation
   const activeConversation = useMemo(() => {
     return selectedUser || selectedConversation || null;
   }, [selectedUser, selectedConversation]);
 
-  // Messages & input
+  // ------------------------------------------------------------------
+  // Chat messages & input
+  // ------------------------------------------------------------------
   const [messages, setMessages] = useState([]);
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  // Socket references
+  // ------------------------------------------------------------------
+  // Socket references & initialization
+  // ------------------------------------------------------------------
   const socketRef = useRef(null);
   const employeeIdRef = useRef("");
   const activeConversationIdRef = useRef("");
+  const token = localStorage.getItem("accessToken");
 
   useEffect(() => {
     employeeIdRef.current = employeeId;
@@ -105,27 +110,20 @@ export function ChatProviderv2({ children }) {
     activeConversationIdRef.current = activeConversation?.employeeId || "";
   }, [activeConversation]);
 
-  // ------------------------------------------------------------------
-  // Initialize socket and handle real-time updates
-  // ------------------------------------------------------------------
-
-const token =localStorage.getItem("accessToken")
-
-
   useEffect(() => {
     if (!employeeId) return;
 
-    // 1) Connect
-    socketRef.current = initSocket(baseUrlSocket, employeeId , token);
+    // Connect the socket
+    socketRef.current = initSocket(baseUrlSocket, employeeId, token);
 
-    // 2) Fetch conversation list
+    // Fetch conversation list
     const fetchConversations = () => {
       setConversationsLoading(true);
       setConversationsError(null);
       socketRef.current.emit("getAllConverationUser", employeeId);
     };
 
-    // 3) Handle conversation list response
+    // Handle conversation list response
     const handleAllRoomIds = (data) => {
       setConversationsLoading(false);
       if (!data.success) {
@@ -143,22 +141,18 @@ const token =localStorage.getItem("accessToken")
       setConversations(normalized);
     };
 
-    // 4) Real-time new messages
+    // Real-time new messages
     const handleNewMessage = (data) => {
       const { sender, receiver } = data;
       const fromMe = sender === employeeIdRef.current;
       const partnerId = fromMe ? receiver : sender;
 
-      // If this belongs to the currently open conversation, just append
       if (partnerId === activeConversationIdRef.current) {
         setMessages((prev) => [...prev, data]);
-      }
-      // Otherwise, increment unread & bring it to top
-      else if (!fromMe) {
+      } else if (!fromMe) {
         setConversations((prev) => {
           const index = prev.findIndex((c) => c.employeeId === partnerId);
           if (index === -1) {
-            // New conversation we haven't seen
             return [
               {
                 employeeId: partnerId,
@@ -170,7 +164,6 @@ const token =localStorage.getItem("accessToken")
               ...prev,
             ];
           }
-          // Increment unread
           const oldConv = prev[index];
           const updated = {
             ...oldConv,
@@ -187,7 +180,6 @@ const token =localStorage.getItem("accessToken")
     socketRef.current.on("allRoomIds", handleAllRoomIds);
     socketRef.current.on("receiveMessage", handleNewMessage);
 
-    // Cleanup
     return () => {
       if (socketRef.current) {
         socketRef.current.off("allRoomIds", handleAllRoomIds);
@@ -195,10 +187,10 @@ const token =localStorage.getItem("accessToken")
       }
       disconnectSocket();
     };
-  }, [employeeId,token]);
+  }, [employeeId, token]);
 
   // ------------------------------------------------------------------
-  // Selecting a conversation or user
+  // Selecting a conversation
   // ------------------------------------------------------------------
   const clearActiveConversation = useCallback(() => {
     setSelectedUser(null);
@@ -211,16 +203,15 @@ const token =localStorage.getItem("accessToken")
       if (!socketRef.current || !employeeId) return;
       setSelectedConversation(conv);
       setSelectedUser(null);
-      setMessages([]); // will refetch below
+      setMessages([]);
 
-      // Reset unread locally
+      // Reset unreadCount for this conversation
       setConversations((prev) =>
         prev.map((c) =>
           c.employeeId === conv.employeeId ? { ...c, unreadCount: 0 } : c
         )
       );
 
-      // Join room & mark read
       joinRoom(socketRef.current, employeeId, conv.employeeId);
       socketRef.current.emit("markRead", {
         sender: employeeId,
@@ -235,9 +226,9 @@ const token =localStorage.getItem("accessToken")
       if (!socketRef.current || !employeeId) return;
       setSelectedUser(user);
       setSelectedConversation(null);
-      setMessages([]); // will refetch below
+      setMessages([]);
 
-      // Reset unread locally
+      // Reset unreadCount for this user (if present in conversations)
       setConversations((prev) =>
         prev.map((c) =>
           c.employeeId === user.employeeId ? { ...c, unreadCount: 0 } : c
@@ -254,7 +245,7 @@ const token =localStorage.getItem("accessToken")
   );
 
   // ------------------------------------------------------------------
-  // Fetch message history for active conversation
+  // Fetch message history
   // ------------------------------------------------------------------
   const fetchMessagesHistory = useCallback(async () => {
     if (!activeConversation?.employeeId) {
@@ -279,7 +270,7 @@ const token =localStorage.getItem("accessToken")
   }, [fetchMessagesHistory]);
 
   // ------------------------------------------------------------------
-  // Sending messages
+  // Sending text messages
   // ------------------------------------------------------------------
   const sendMessageHandler = useCallback(() => {
     if (!message.trim() || !activeConversation?.employeeId) return;
@@ -295,37 +286,125 @@ const token =localStorage.getItem("accessToken")
     setMessage("");
   }, [employeeId, message, activeConversation]);
 
+  // ------------------------------------------------------------------
+  // Sending files (with progress callback)
+  // ------------------------------------------------------------------
+  const MAX_FILE_SIZE_MB = 20;
+  const MAX_FILES = 10;
+  
   const sendFileHandler = useCallback(
-    async (file) => {
-      if (!activeConversation?.employeeId) {
-        toast.error("Select a conversation first.");
+    async (files, onProgress) => {
+      if (!files?.length || !socketRef.current || !activeConversation?.employeeId) {
         return;
       }
-      if (!socketRef.current) return;
-
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64File = reader.result;
-        const fileData = {
-          sender: employeeId,
-          receiver: activeConversation.employeeId,
-          file: base64File,
-          fileName: file.name,
-          fileType: file.type,
-          time: new Date().toISOString(),
-          type: "file",
-        };
-        sendFileMessage(socketRef.current, fileData);
-      };
-      reader.onerror = (err) => console.error("File reading error:", err);
-      reader.readAsDataURL(file);
+  
+      // Check total files limit
+      if (files.length > MAX_FILES) {
+        toast.error(`Please select at most ${MAX_FILES} files at a time.`);
+        return;
+      }
+  
+      // We'll pass this down to the backend
+      const totalFileCount = files.length;
+  
+      for (const file of files) {
+        if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+          toast.error(`${file.name} is too large (max ${MAX_FILE_SIZE_MB} MB).`);
+          if (onProgress) onProgress(file.name, -1);
+          continue;
+        }
+  
+        try {
+          // --- Pass totalFileCount in the data object ---
+          const { success, data, message: errorMsg } = await new Promise((resolve) => {
+            socketRef.current.emit(
+              "getPreSignedUploadURL",
+              {
+                key: file.name,
+                contentType: file.type,
+                size: file.size,
+                totalFileCount, // <=== sending number of files here
+              },
+              (response) => resolve(response)
+            );
+          });
+  
+          if (!success || !data?.uploadUrl) {
+            console.error("Failed to generate upload URL:", errorMsg);
+            toast.error(`Upload URL generation failed for ${file.name}.`);
+            if (onProgress) onProgress(file.name, -1);
+            continue;
+          }
+  
+          const { uploadUrl, uniqueKey } = data;
+  
+          await axios.put(uploadUrl, file, {
+            headers: { "Content-Type": file.type },
+            onUploadProgress: (event) => {
+              if (onProgress) {
+                const percent = Math.round((event.loaded * 100) / event.total);
+                onProgress(file.name, percent);
+              }
+            },
+          });
+  
+          // Confirm with server
+          const roomId = [employeeId, activeConversation.employeeId].sort().join("_");
+          const confirmResponse = await new Promise((resolve) => {
+            socketRef.current.emit(
+              "confirmUpload",
+              {
+                uniqueKey,
+                roomId,
+                sender: employeeId,
+                receiver: activeConversation.employeeId,
+                fileName: file.name,
+                fileType: file.type,
+              },
+              (cbResp) => resolve(cbResp)
+            );
+          });
+  
+          if (confirmResponse.success) {
+            if (confirmResponse.data?.newMessage) {
+              setMessages((prev) => [...prev, confirmResponse.data.newMessage]);
+            }
+            if (onProgress) onProgress(file.name, 100);
+          } else {
+            console.error("Failed to save file metadata:", confirmResponse.message);
+            toast.error(`Failed to save file metadata for ${file.name}.`);
+            if (onProgress) onProgress(file.name, -1);
+          }
+        } catch (err) {
+          console.error("File upload error:", err);
+          toast.error(`Upload error: ${file.name}.`);
+          if (onProgress) onProgress(file.name, -1);
+        }
+      }
     },
     [employeeId, activeConversation]
   );
+  
+  // ------------------------------------------------------------------
+  // requestFileURL for on-click
+  // ------------------------------------------------------------------
+  const requestFileURL = useCallback((fileName) => {
+    return new Promise((resolve, reject) => {
+      if (!socketRef.current) {
+        return reject(new Error("Socket not connected"));
+      }
+      socketRef.current.emit("requestFileURL", { fileName }, (response) => {
+        if (response?.success) {
+          resolve(response.data.url);
+        } else {
+          reject(response?.message || "No URL returned");
+        }
+      });
+    });
+  }, []);
 
   // ------------------------------------------------------------------
-  //  Derive unreadCounts object from conversations
-  //  e.g. { 'EMP001': 2, 'EMP002': 5, ... }
+  // Derive unread counts
   // ------------------------------------------------------------------
   const unreadCounts = useMemo(() => {
     const map = {};
@@ -338,7 +417,7 @@ const token =localStorage.getItem("accessToken")
   }, [conversations]);
 
   // ------------------------------------------------------------------
-  //  Final context value
+  // Final context value
   // ------------------------------------------------------------------
   const contextValue = useMemo(() => {
     return {
@@ -374,9 +453,14 @@ const token =localStorage.getItem("accessToken")
       message,
       setMessage,
       sendMessageHandler,
+
+      // File sending
       sendFileHandler,
 
-      // NEW: derived unread counts for notifications
+      // requestFileURL
+      requestFileURL,
+
+      // Unread counts
       unreadCounts,
     };
   }, [
@@ -401,6 +485,7 @@ const token =localStorage.getItem("accessToken")
     clearActiveConversation,
     handleSelectConversation,
     handleSelectUser,
+    requestFileURL,
     unreadCounts,
   ]);
 
