@@ -205,74 +205,78 @@ const useAuthStore = create(
       companyInfo: null,
 
       // Actions
-      login: (userData) => {
-        const {
-          accessToken,
-          _id,
-          userRole,
-          permissionRole,
-          first_Name,
-          last_Name,
-          employeeId,
-          department,
-          workingEmail,
-          phoneNumber,
-          designation,
-          departmentAlocated,
-          teams,
-          userAvatar,
-          permissions,
-          notifications,
-          engagement_permission,
-        } = userData;
+     // Updated Zustand login action
+login: (userData) => {
+  const {
+    accessToken,
+    _id,
+    userRole,
+    permissionRole,
+    first_Name,
+    last_Name,
+    userName, // ⬅️ explicitly extracting userName as well
+    employeeId,
+    department,
+    workingEmail,
+    phoneNumber,
+    designation,
+    departmentAlocated,
+    teams,
+    userAvatar,
+    permissions,
+    notifications,
+    engagement_permission,
+  } = userData;
 
-        // Update Zustand state clearly once
-        set({
-          isAuthenticated: true,
-          _id,
-          userRole,
-          permissionRole,
-          userName: `${first_Name} ${last_Name || ""}`,
-          employeeId,
-          department,
-          workingEmail,
-          phoneNumber,
-          designation,
-          departmentAlocated,
-          teams,
-          userAvatar,
-          permissions: permissions || [],
-        });
+  // ✅ Clearly handle both scenarios
+  const resolvedUserName = userName 
+    ? userName 
+    : `${first_Name || ""}${last_Name ? " " + last_Name : ""}`.trim();
 
-        // ⬇️ **Keep only the token in localStorage manually (if required)** 
-        localStorage.setItem("accessToken", accessToken);
+  set({
+    isAuthenticated: true,
+    _id,
+    userRole,
+    permissionRole,
+    userName: resolvedUserName, // ⬅️ Fixed here
+    employeeId,
+    department,
+    workingEmail,
+    phoneNumber,
+    designation,
+    departmentAlocated,
+    teams,
+    userAvatar,
+    permissions: permissions || [],
+  });
 
-        // Handle notifications and engagement clearly
-        if (notifications && Array.isArray(notifications)) {
-          useNotificationStore.getState().setNotifications(notifications);
-          useNotificationStore
-            .getState()
-            .setUnreadCount(notifications.filter((n) => !n.isRead).length);
-        }
+  localStorage.setItem("accessToken", accessToken);
 
-        if (
-          engagement_permission &&
-          Array.isArray(engagement_permission.permissions)
-        ) {
-          useEngagementStore
-            .getState()
-            .setPermissions(engagement_permission.permissions);
-        }
+  if (notifications && Array.isArray(notifications)) {
+    useNotificationStore.getState().setNotifications(notifications);
+    useNotificationStore
+      .getState()
+      .setUnreadCount(notifications.filter((n) => !n.isRead).length);
+  }
 
-        // Clearly handle navigation (use navigate properly if possible)
-        if (permissions.includes("dashboard-super")) {
-          window.location.href = "/dashboard/super-employee-dashboard";
-        } else if (permissions.includes("dashboard-employee")) {
-          window.location.href = "/dashboard/employee";
-        } else {
-          window.location.href = "/dashboard";
-        }
-      },
+  if (
+    engagement_permission &&
+    Array.isArray(engagement_permission.permissions)
+  ) {
+    useEngagementStore
+      .getState()
+      .setPermissions(engagement_permission.permissions);
+  }
+
+  if (permissions.includes("dashboard-super")) {
+    window.location.href = "/dashboard/super-employee-dashboard";
+  } else if (permissions.includes("dashboard-employee")) {
+    window.location.href = "/dashboard/employee";
+  } else {
+    window.location.href = "/dashboard";
+  }
+},
+
 
       logout: () => {
         set({
