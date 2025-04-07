@@ -455,7 +455,7 @@ import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { motion } from "framer-motion";
 import axiosInstance from "../../service/axiosInstance";
-import useAuthStore from "../../store/store"; // Adjust path if needed
+import useAuthStore from "../../store/store"; 
 import useFeedStore from "../../store/feedStore";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
@@ -475,7 +475,12 @@ const PostCard = ({ post }) => {
 
   // Because each item in `post.likes` is a user object { _id, first_Name, ... }
   // we check if user's `_id` appears among them.
-  const liked = (post.likes || []).some((likeObj) => likeObj._id === userId);
+  // const liked = (post.likes || []).some((likeObj) => likeObj._id === userId);
+    const liked = (post.likes || []).some(likeItem =>
+    typeof likeItem === 'string'
+      ? likeItem === userId
+      : likeItem._id === userId,
+  );
   const likeCount = (post.likes || []).length;
 
   const [showComments, setShowComments] = React.useState(false);

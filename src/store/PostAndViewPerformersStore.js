@@ -6,9 +6,9 @@ import axiosInstance from '../service/axiosInstance';
 const PostAndViewPerformersStore = create((set, get) => ({
   // ======= STATE =======
   designations: [],
-  topEmployees: [],    // for "PostPerformer" (top-rated employees)
-  topPerformers: [],   // for "ViewPerformer" (posted performers)
-  employeeRatings: [], // for detailed ratings of an individual
+  topEmployees: [],    
+  topPerformers: [],  
+  employeeRatings: [], 
   loading: false,
 
   // ======= ACTIONS =======
