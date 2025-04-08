@@ -1,14 +1,16 @@
-// src/service/socketService.js
 import io from 'socket.io-client';
 import { toast } from 'react-hot-toast';
 
 let socket;
 
-export const initSocket = (serverUrl, employeeId) => {
+export const initSocket = (serverUrl, employeeId,token) => {
   socket = io(serverUrl, {
     transports: ['websocket', 'polling'],
     reconnectionAttempts: 5,
     timeout: 10000,
+    auth: {
+      token: token, // <--- Pass the token here
+    },
   });
 
   socket.on('connect', () => {

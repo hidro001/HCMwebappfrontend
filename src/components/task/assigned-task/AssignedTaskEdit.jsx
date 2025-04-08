@@ -319,15 +319,13 @@ const AssignedTaskEdit = ({ task, onClose, onEditSuccess }) => {
 
         {/* Form Content */}
         <div className="p-6">
-          <p className="text-gray-600 dark:text-gray-300 mb-4">
-            Edit the task details below.
-          </p>
+       
 
           <form className="space-y-4" onSubmit={handleSubmit}>
             {/* Task Description */}
             <div>
               <label className="block text-sm font-medium mb-1" htmlFor="taskDesc">
-                Task Description*
+                Task Name*
               </label>
               <input
                 id="taskDesc"
@@ -475,7 +473,7 @@ const AssignedTaskEdit = ({ task, onClose, onEditSuccess }) => {
             {/* Updates/Comments */}
             <div>
               <label className="block text-sm font-medium mb-1" htmlFor="updatesComments">
-                Updates/Comments
+               Task Description
               </label>
               <textarea
                 id="updatesComments"

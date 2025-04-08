@@ -16,7 +16,7 @@ export const SocketProvider = ({ children }) => {
 
   useEffect(() => {
     if (token) {
-      const newSocket = io(import.meta.env.VITE_SOCKET_URL , {
+      const newSocket = io(import.meta.env.VITE_API_BASE_URL , {
         auth: {
           token,
         },

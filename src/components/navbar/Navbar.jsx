@@ -19,7 +19,9 @@ import usePunchStore from "../../store/usePunchStore";
 import ThemeToggleButton from "../theme toggle button/ThemeToggleButton";
 import NotificationDropdown from "../Notification/NotificationDropdown";
 import BreakCard from "./BreakCard";
-import { ChatContext } from "../../contexts/ChatContext";
+
+import { ChatContextv2 } from "../../contexts/ChatContextv2";
+import { useCall } from "../../contexts/CallContext";
 
 // Helper to format seconds into HH:MM:SS
 function formatHMS(totalSeconds) {
@@ -43,19 +45,21 @@ const Navbar = () => {
 
   // chat related ###################
 
-  const { unreadCounts } = useContext(ChatContext);
+    const { unreadCounts = {} } = useContext(ChatContextv2);
+
+
+
+    const personsWithUnread = Object.values(unreadCounts).filter(
+      (count) => count > 0
+    ).length;
+  
   const navigate = useNavigate();
-  const userCount = Object.keys(unreadCounts).length;
+
 
   // Local state to control badge visibility.
   const [showBadge, setShowBadge] = useState(true);
 
-  // Whenever unreadCounts changes and there are unread messages, show the badge.
-  useEffect(() => {
-    if (userCount > 0) {
-      setShowBadge(true);
-    }
-  }, [userCount]);
+
 
   const handleClick = () => {
     // Hide the badge.
@@ -90,7 +94,7 @@ const Navbar = () => {
 
   // Local timer in the navbar
   const [navbarTimer, setNavbarTimer] = useState("00:00:00");
-
+  const { disconnectCallSocke } = useCall();
   // Fetch punch/attendance and location on mount if authenticated
   useEffect(() => {
     if (authStore.isAuthenticated) {
@@ -142,6 +146,9 @@ const Navbar = () => {
     authStore.logout();
     toast.success("Signed out successfully!");
     navigate("/");
+   
+
+
   };
 
   // Company & user info
@@ -284,16 +291,23 @@ const Navbar = () => {
             )}
           </AnimatePresence>
         </div>
-
-        {/* Chat Icon */}
         <div className="relative cursor-pointer" onClick={handleClick}>
+        {personsWithUnread > 0 && (
+            <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-full transition-opacity duration-300">
+           {personsWithUnread}
+            </span>
+          )}
+          <FaComments className="text-blue-500 w-6 h-6" />
+        </div>
+        {/* Chat Icon */}
+        {/* <div className="relative cursor-pointer" onClick={handleClick}>
           {userCount > 0 && showBadge && (
             <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-full transition-opacity duration-300">
               {userCount}
             </span>
           )}
           <FaComments className="text-blue-500 w-6 h-6" />
-        </div>
+        </div> */}
 
         {/* Theme Toggle */}
         <ThemeToggleButton />

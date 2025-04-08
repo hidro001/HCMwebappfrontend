@@ -26,7 +26,7 @@ const DailyTaskModal = ({ task, onClose }) => {
         {/* Header */}
         <div className="flex justify-between items-center border-b pb-3">
           <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-            View Task Details
+            Task of The Day
           </h2>
           <button onClick={onClose} className="text-gray-500 hover:text-red-600">
             <FaTimes size={18} />
@@ -37,7 +37,7 @@ const DailyTaskModal = ({ task, onClose }) => {
         <div className="mt-4 space-y-2 text-sm">
           {/* Task Boxes */}
           <div>
-            <span className="font-semibold">Task:</span>
+            <span className="font-semibold">Today Task:</span>
             <div className="mt-1 flex flex-wrap gap-2">
               {Array.isArray(task.task)
                 ? task.task.map((item, index) => (
@@ -56,7 +56,7 @@ const DailyTaskModal = ({ task, onClose }) => {
             </div>
           </div>
           <p>
-            <span className="font-semibold">Assigned Date:</span>{" "}
+            <span className="font-semibold">Task Date:</span>{" "}
             {task.task_Date}
           </p>
           <p>
@@ -75,12 +75,12 @@ const DailyTaskModal = ({ task, onClose }) => {
             <span className="font-semibold">Full Name:</span>{" "}
             {task.full_Name}
           </p>
-          <p>
+          {/* <p>
             <span className="font-semibold">Created At:</span>{" "}
             {new Date(task.createdAt).toLocaleString("en-IN", {
               timeZone: "Asia/Kolkata",
             })}
-          </p>
+          </p> */}
           {task.teams && task.teams.trim() !== "" && (
             <p>
               <span className="font-semibold">Teams:</span> {task.teams}

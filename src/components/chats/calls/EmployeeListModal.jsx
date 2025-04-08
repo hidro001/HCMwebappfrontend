@@ -17,10 +17,10 @@ const EmployeeListModal = ({ onClose, onSelectEmployee }) => {
       try {
         // Fetch subordinates & managers in parallel
         const [subsResponse, managersResponse] = await Promise.all([
-          axios.get("https://demoapi.humanmaximizer.com/api/v1/admin/subordinates", {
+          axios.get("https://apiv2.humanmaximizer.com/api/v1/admin/subordinates", {
             headers: { Authorization: `Bearer ${accessToken}` },
           }),
-          axios.get("https://demoapi.humanmaximizer.com/api/v1/admin/both", {
+          axios.get("https://apiv2.humanmaximizer.com/api/v1/admin/both", {
             headers: { Authorization: `Bearer ${accessToken}` },
           }),
         ]);
