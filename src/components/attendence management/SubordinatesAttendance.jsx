@@ -92,7 +92,7 @@ export default function SubordinatesAttendance() {
 
     // If you still want old stats: fetchStats();
   }, [fetchSubordinates, fetchDepartments, fetchSubordinateStats]);
-
+  // If you want to handle errors, you can do so here
   // The rest is your existing code...
   const currentDate = new Date();
   const defaultMonth = `${currentDate.getFullYear()}-${String(
