@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { FaFilePdf, FaFileCsv, FaPrint, FaSearch } from "react-icons/fa";
 import { MdOutlineFileDownload } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-
+import useAuthStore from "../../store/store";  // ⬅️ Import Zustand Auth Store
 // Icons for the new cards
 import { FaUserFriends } from "react-icons/fa";
 import { GiSandsOfTime } from "react-icons/gi";
@@ -79,9 +79,11 @@ export default function SubordinatesAttendance() {
   } = useAttendanceStore();
 
   // We'll fetch your subordinate stats + subordinates + departments
+  const { _id: userId } = useAuthStore(); // ⬅️ use Zustand's _id directly
   useEffect(() => {
     // If you had a userId
-    const userId = localStorage.getItem("_id");
+    
+    // const userId = localStorage.getItem("_id");
     if (userId) {
       fetchSubordinates(userId);
     }
