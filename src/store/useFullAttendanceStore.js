@@ -886,13 +886,74 @@ const useFullAttendanceStore = create((set, get) => ({
     }
 
     // 3) map each day => row
+    // return allDays.map((dateObj, idx) => {
+    //   const dateStr = dateObj.toISOString().split("T")[0];
+    //   const dayName = dateObj.toLocaleDateString("en-US", { weekday: "long" });
+
+    //   // find record if any
+    //   const record = attendanceData.find((r) => r.date === dateStr);
+
+    //   let status = "Absent";
+    //   if (holidaySet.has(dateStr)) {
+    //     status = "Holiday";
+    //   } else if (approvedLeavesSet.has(dateStr)) {
+    //     status = "Holiday"; // or “Paid Leave”
+    //   } else if (record?.login && record?.logout) {
+    //     // parse hours
+    //     const login24 = convertTo24Hour(record.login);
+    //     const logout24 = convertTo24Hour(record.logout);
+    //     const start = new Date(`1970-01-01T${login24}`);
+    //     const end = new Date(`1970-01-01T${logout24}`);
+    //     const hoursWorked = (end - start) / 36e5;
+
+    //     const fullDayHours = attendancePolicies?.fullDayHours || 9;
+    //     const halfDayHours = attendancePolicies?.halfDayHours || 5;
+    //     const minHours = attendancePolicies?.minimumWorkingHours || 4.5;
+
+    //     if (hoursWorked >= fullDayHours) status = "Present";
+    //     else if (hoursWorked >= minHours && hoursWorked <= halfDayHours) status = "Half Day";
+    //     else if (hoursWorked > 0 && hoursWorked < minHours) status = "Not Even Half Day";
+    //     else status = "Present"; // fallback
+    //   } else {
+    //     // if future date => “------”
+    //     if (dateObj > new Date()) status = "------";
+    //   }
+
+    //   return {
+    //     sl: idx + 1,
+    //     date: dateStr,
+    //     day: dayName,
+    //     logInTime: record?.login || "------",
+    //     logOutTime: record?.logout || "------",
+    //     totalBreak: record?.breaks?.length ? `${record.breaks.length} break(s)` : "--",
+    //     status,
+    //   };
+    // });
+
     return allDays.map((dateObj, idx) => {
       const dateStr = dateObj.toISOString().split("T")[0];
       const dayName = dateObj.toLocaleDateString("en-US", { weekday: "long" });
-
+    
       // find record if any
       const record = attendanceData.find((r) => r.date === dateStr);
+    
+      // compute total break minutes
+      let totalBreakMinutes = 0;
+      if (record?.breaks && record.breaks.length > 0) {
+        record.breaks.forEach((br) => {
+          if (br.start && br.end) {
+            const breakStartTime = new Date(br.start);
+            const breakEndTime = new Date(br.end);
+            const breakDuration = (breakEndTime - breakStartTime) / 60000; // minutes
+            if (breakDuration > 0) {
+              totalBreakMinutes += Math.floor(breakDuration);
 
+            }
+          }
+        });
+      }
+      
+    
       let status = "Absent";
       if (holidaySet.has(dateStr)) {
         status = "Holiday";
@@ -905,30 +966,32 @@ const useFullAttendanceStore = create((set, get) => ({
         const start = new Date(`1970-01-01T${login24}`);
         const end = new Date(`1970-01-01T${logout24}`);
         const hoursWorked = (end - start) / 36e5;
-
+    
         const fullDayHours = attendancePolicies?.fullDayHours || 9;
         const halfDayHours = attendancePolicies?.halfDayHours || 5;
         const minHours = attendancePolicies?.minimumWorkingHours || 4.5;
-
+    
         if (hoursWorked >= fullDayHours) status = "Present";
         else if (hoursWorked >= minHours && hoursWorked <= halfDayHours) status = "Half Day";
         else if (hoursWorked > 0 && hoursWorked < minHours) status = "Not Even Half Day";
         else status = "Present"; // fallback
       } else {
-        // if future date => “------”
+        // future date check => “------”
         if (dateObj > new Date()) status = "------";
       }
-
+    
       return {
         sl: idx + 1,
         date: dateStr,
         day: dayName,
         logInTime: record?.login || "------",
         logOutTime: record?.logout || "------",
-        totalBreak: record?.breaks?.length ? `${record.breaks.length} break(s)` : "--",
+        // Show total break minutes (or “--” if none):
+        totalBreak: totalBreakMinutes > 0 ? `${totalBreakMinutes} minutes` : "--",
         status,
       };
     });
+    
   },
 
   // -------------------------------

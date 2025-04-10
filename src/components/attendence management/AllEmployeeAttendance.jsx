@@ -483,6 +483,14 @@ export default function AllEmployeeAttendance() {
                     >
                       View Attendance
                     </button>
+                    <button
+                        className="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded transition-colors"
+                        onClick={() =>
+                          navigate(`/dashboard/statistics/${emp.empID}`)
+                        }
+                      >
+                        View Statistics
+                      </button>
                   </td>
                 </tr>
               ))}
