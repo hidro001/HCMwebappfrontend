@@ -89,6 +89,8 @@ import {
   NotificationsPage,
 } from "../components";
 import DailyTaskPage from "../pages/task/DailyTaskPage";
+import GeolocationPage from "../pages/geolocation/GeolocationPage";
+import FiledworkerPage from "../pages/geolocation/FiledworkerPage";
 
 const router = createBrowserRouter([
   {
@@ -418,7 +420,28 @@ const router = createBrowserRouter([
       {
         path: "request-hike-advance-reimbursement",
         element: <RequestDashboardPage />,
+      }, 
+
+
+       {
+        path: "/dashboard/geo-location",
+        element: <GeolocationPage />,
       },
+
+
+      {
+        path: "/dashboard/field-worker",
+        element: <FiledworkerPage />,
+      },
+
+
+
+
+
+
+
+
+      
     ],
   },
   {
