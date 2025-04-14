@@ -9,7 +9,7 @@ export const initSocket = (serverUrl, employeeId,token) => {
     reconnectionAttempts: 5,
     timeout: 10000,
     auth: {
-      token: token, // <--- Pass the token here
+      token: token,
     },
   });
 
