@@ -735,15 +735,28 @@ function convertTo24Hour(timeStr) {
  * Returns an array of every Date in the given (year, month).
  * month = 1..12
  */
+// function getAllDaysInMonth(year, month) {
+//   const days = [];
+//   let current = new Date(year, month - 1, 1);
+//   while (current.getMonth() === month - 1) {
+//     days.push(new Date(current));
+//     current.setDate(current.getDate() + 1);
+//   }
+//   return days;
+// }
+
 function getAllDaysInMonth(year, month) {
   const days = [];
-  let current = new Date(year, month - 1, 1);
+  // Create the date at noon local time so it never "shifts" to the previous/next month
+  let current = new Date(year, month - 1, 1, 12, 0, 0, 0);
+
   while (current.getMonth() === month - 1) {
-    days.push(new Date(current));
+    days.push(new Date(current.getTime())); // use a copy of current
     current.setDate(current.getDate() + 1);
   }
   return days;
 }
+
 
 // optional: if you store a “convertTo24HourTime” or other helpers in your “attendanceUtils,” import them likewise
 
