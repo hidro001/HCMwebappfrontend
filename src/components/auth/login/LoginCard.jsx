@@ -27,7 +27,7 @@ import {
   fetchCompanyInfo,
 } from "../../../service/service"; // API services
 import LockIcon from "@mui/icons-material/Lock"; // MUI Icon
-import { useCall } from "../../../contexts/CallContext";
+
 
 // Styled Components
 
@@ -85,7 +85,6 @@ const LoginCard = () => {
 
 
 
-const { connectCallSocket } = useCall();
 
   // Fetch company info on mount
   useEffect(() => {
@@ -301,7 +300,6 @@ const { connectCallSocket } = useCall();
   //   });
 
   //   toast.success("Login Successful!");
-  //   connectCallSocket(employee_Id);
   //   switch (user_Role.toLowerCase()) {
   //     case "employee":
   //       navigate("/dashboard/employee");
@@ -371,7 +369,6 @@ const { connectCallSocket } = useCall();
     }
   
     toast.success("Login Successful!");
-    connectCallSocket(employee_Id);
   
     switch (user_Role.toLowerCase()) {
       case "employee":
