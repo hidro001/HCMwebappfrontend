@@ -1,3 +1,5 @@
+
+
 import React, {
   createContext,
   useContext,
@@ -27,47 +29,58 @@ const generateUniqueCallId = () => {
 const CallContext = createContext();
 
 export const CallProvider = ({ children }) => {
-  // --------------------------------------
-  // 1) Store the user/employee ID in state
-  //    rather than reading localStorage directly.
-  // --------------------------------------
+  // ----------------------------
+  // 1) Current user ID
+  // ----------------------------
   const [currentUser, setCurrentUser] = useState(null);
 
-  // --------------------------------------
-  // Additional call-related states
-  // --------------------------------------
+  // ----------------------------
+  // 2) Call states
+  // ----------------------------
   const [call, setCall] = useState(null);
   const [incomingCall, setIncomingCall] = useState(null);
   const [outgoingCall, setOutgoingCall] = useState(null);
+
+  // ----------------------------
+  // 3) Local camera/mic stream
+  // ----------------------------
   const [stream, setStream] = useState(null);
+
+  /**
+   * Store remote streams as an array:
+   *   [
+   *     { userId, stream, type: "camera" | "screen" },
+   *     ...
+   *   ]
+   */
   const [remoteStreams, setRemoteStreams] = useState([]);
 
-  // Refs
+  // ----------------------------
+  // 4) Refs
+  // ----------------------------
   const localStreamRef = useRef(null);
   const peersRef = useRef({});
   const socketRef = useRef();
 
-  // --------------------------------------
-  // 2) On mount, read localStorage (or use
-  //    your Auth logic) to populate currentUser.
-  // --------------------------------------
+  // ----------------------------
+  // On mount, load currentUser from storage
+  // ----------------------------
   useEffect(() => {
     const storedEmployeeId = localStorage.getItem("employeeId");
     if (storedEmployeeId) {
       setCurrentUser(storedEmployeeId);
     } else {
-      // Optionally provide a fallback or wait for the user to log in
+      // Optional fallback
       setCurrentUser("EMP0001");
     }
   }, []);
 
-  // --------------------------------------
-  // 3) Once we have currentUser, connect socket and attach listeners
-  // --------------------------------------
+  // ----------------------------
+  // Once we have currentUser, connect to Socket.io
+  // ----------------------------
   useEffect(() => {
     if (!currentUser) return; // don't connect until we have an ID
 
-    // Connect socket with the correct user ID
     socketRef.current = io(SOCKET_SERVER_URL, {
       query: { userId: currentUser },
       transports: ["websocket", "polling"],
@@ -75,27 +88,26 @@ export const CallProvider = ({ children }) => {
       timeout: 10000,
     });
 
-    // Attach all the socket event listeners
+    // Attach event listeners
     socketRef.current.on("incomingCall", handleIncomingCall);
     socketRef.current.on("participantJoined", handleParticipantJoined);
     socketRef.current.on("participantLeft", handleParticipantLeft);
     socketRef.current.on("callRejected", handleCallRejected);
     socketRef.current.on("endCall", handleEndCall);
 
-    // WebRTC signaling
+    // WebRTC signaling events
     socketRef.current.on("offer", handleOffer);
     socketRef.current.on("answer", handleAnswer);
     socketRef.current.on("candidate", handleCandidate);
 
     return () => {
-      // Clean up socket on unmount or if user ID changes
       socketRef.current.disconnect();
     };
   }, [currentUser]);
 
-  // -----------------------
+  // ----------------------------
   // Event Handlers
-  // -----------------------
+  // ----------------------------
   const handleIncomingCall = (data) => {
     console.log("Incoming call:", data);
     setOutgoingCall(null);
@@ -116,7 +128,9 @@ export const CallProvider = ({ children }) => {
       peersRef.current[data.userId].peer.close();
       delete peersRef.current[data.userId];
     }
+    // Remove all streams from that user
     setRemoteStreams((prev) => prev.filter((s) => s.userId !== data.userId));
+
     if (call && call.callId === data.callId) {
       toast(`User ${data.userId} ended the call.`);
       cleanupCall();
@@ -135,22 +149,23 @@ export const CallProvider = ({ children }) => {
     cleanupCall();
   };
 
-  // -----------------------
+  // ----------------------------
   // WebRTC Signaling Handlers
-  // -----------------------
+  // ----------------------------
   const handleOffer = async (data) => {
     console.log("Offer received from:", data.userId);
     if (!peersRef.current[data.userId]) {
       await createPeerConnection(data.callId, data.userId);
     }
     const { peer } = peersRef.current[data.userId];
+
     try {
       await peer.setRemoteDescription({ type: "offer", sdp: data.sdp });
       const answer = await peer.createAnswer();
       await peer.setLocalDescription(answer);
       socketRef.current.emit("answer", {
         callId: data.callId,
-        userId: currentUser, // <--- use state variable
+        userId: currentUser,
         sdp: answer.sdp,
       });
     } catch (err) {
@@ -162,6 +177,7 @@ export const CallProvider = ({ children }) => {
     console.log("Answer received from:", data.userId);
     const pcObject = peersRef.current[data.userId];
     if (!pcObject) return;
+
     try {
       await pcObject.peer.setRemoteDescription({
         type: "answer",
@@ -176,6 +192,7 @@ export const CallProvider = ({ children }) => {
     console.log("Candidate received from:", data.userId);
     const pcObject = peersRef.current[data.userId];
     if (!pcObject) return;
+
     try {
       await pcObject.peer.addIceCandidate(new RTCIceCandidate(data.candidate));
     } catch (err) {
@@ -183,26 +200,32 @@ export const CallProvider = ({ children }) => {
     }
   };
 
-  // -----------------------
+  // ----------------------------
   // Create PeerConnection
-  // -----------------------
+  // ----------------------------
   const createPeerConnection = async (callId, remoteUserId) => {
     console.log("Creating PeerConnection for:", remoteUserId);
     const peer = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+
+    // If we have local camera/mic stream, add them
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach((track) => {
         peer.addTrack(track, localStreamRef.current);
       });
     }
+
+    // ICE candidate => emit to server
     peer.onicecandidate = (evt) => {
       if (evt.candidate) {
         socketRef.current.emit("candidate", {
           callId,
-          userId: currentUser, // <--- use state variable
+          userId: currentUser,
           candidate: evt.candidate,
         });
       }
     };
+
+    // Negotiation
     peer.onnegotiationneeded = async () => {
       if (peer.signalingState !== "stable") return;
       try {
@@ -210,13 +233,15 @@ export const CallProvider = ({ children }) => {
         await peer.setLocalDescription(offer);
         socketRef.current.emit("offer", {
           callId,
-          userId: currentUser, // <--- use state variable
+          userId: currentUser,
           sdp: offer.sdp,
         });
       } catch (err) {
         console.error("Error in renegotiation:", err);
       }
     };
+
+    // Optional: track ICE state changes
     peer.oniceconnectionstatechange = () => {
       console.log(`ICE state for ${remoteUserId}:`, peer.iceConnectionState);
       if (
@@ -228,32 +253,64 @@ export const CallProvider = ({ children }) => {
         );
       }
     };
+
+    // ontrack: handle multiple streams (camera + screen)
     peer.ontrack = (event) => {
       const [remoteStream] = event.streams;
-      console.log("Received remote track from:", remoteUserId);
+      const track = event.track;
+      console.log(
+        "Received remote track from:",
+        remoteUserId,
+        "label:",
+        track.label
+      );
+
+      // Distinguish "camera" vs "screen"
+      let trackType = "camera";
+      const label = track.label.toLowerCase();
+      if (
+        label.includes("screen") ||
+        label.includes("display") ||
+        label.includes("window")
+      ) {
+        trackType = "screen";
+      }
+
+      // Update or add the remote stream in state
       setRemoteStreams((prev) => {
-        const existing = prev.find((s) => s.userId === remoteUserId);
-        if (existing) {
-          return prev.map((s) =>
-            s.userId === remoteUserId ? { ...s, stream: remoteStream } : s
-          );
+        // See if we already have an entry for (remoteUserId, trackType)
+        const existingIndex = prev.findIndex(
+          (item) => item.userId === remoteUserId && item.type === trackType
+        );
+        if (existingIndex >= 0) {
+          // Update existing
+          const updated = [...prev];
+          updated[existingIndex] = {
+            userId: remoteUserId,
+            stream: remoteStream,
+            type: trackType,
+          };
+          return updated;
         } else {
-          return [...prev, { userId: remoteUserId, stream: remoteStream }];
+          // Add new entry
+          return [
+            ...prev,
+            { userId: remoteUserId, stream: remoteStream, type: trackType },
+          ];
         }
       });
     };
+
     peersRef.current[remoteUserId] = { peer };
     return peersRef.current[remoteUserId];
   };
 
-  // -----------------------
-  // Get Local Media
-  // -----------------------
+  // ----------------------------
+  // Get Local Camera/Mic
+  // ----------------------------
   const getLocalMedia = async (constraints) => {
     try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia(
-        constraints
-      );
+      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
       setStream(mediaStream);
       localStreamRef.current = mediaStream;
     } catch (err) {
@@ -262,9 +319,9 @@ export const CallProvider = ({ children }) => {
     }
   };
 
-  // -----------------------
+  // ----------------------------
   // Initiate Call
-  // -----------------------
+  // ----------------------------
   const initiateCall = async ({ callType, participants }) => {
     try {
       const callId = generateUniqueCallId();
@@ -300,9 +357,10 @@ export const CallProvider = ({ children }) => {
               },
             };
 
+      // Acquire local camera/mic
       await getLocalMedia(constraints);
 
-      // Inform server we're initiating a call
+      // Notify server
       socketRef.current.emit("initiateCall", {
         caller: currentUser,
         callType,
@@ -310,21 +368,21 @@ export const CallProvider = ({ children }) => {
         callId,
       });
 
-      // Immediately set call state
+      // Update call state
       setCall({
         callId,
         callType,
         participants: [currentUser, ...participants],
       });
 
-      // Create PeerConnections/offers for each participant
+      // Create PeerConnections & send offers
       for (let remoteUserId of participants) {
         const { peer } = await createPeerConnection(callId, remoteUserId);
         const offer = await peer.createOffer();
         await peer.setLocalDescription(offer);
         socketRef.current.emit("offer", {
           callId,
-          userId: currentUser, // <--- use state variable
+          userId: currentUser,
           sdp: offer.sdp,
         });
       }
@@ -334,12 +392,13 @@ export const CallProvider = ({ children }) => {
     }
   };
 
-  // -----------------------
+  // ----------------------------
   // Answer Call
-  // -----------------------
+  // ----------------------------
   const answerCall = async () => {
     if (!incomingCall) return;
     const { callId, callType, participants } = incomingCall;
+
     try {
       const constraints =
         callType === "video"
@@ -368,11 +427,13 @@ export const CallProvider = ({ children }) => {
 
       await getLocalMedia(constraints);
 
+      // Notify server
       socketRef.current.emit("answerCall", {
         callId,
-        userId: currentUser, // <--- use state variable
+        userId: currentUser,
       });
 
+      // Update state
       setCall({ callId, callType, participants });
       setIncomingCall(null);
 
@@ -387,9 +448,9 @@ export const CallProvider = ({ children }) => {
     }
   };
 
-  // -----------------------
+  // ----------------------------
   // Reject Call
-  // -----------------------
+  // ----------------------------
   const rejectCall = () => {
     if (!incomingCall) return;
     socketRef.current.emit("rejectCall", {
@@ -399,9 +460,9 @@ export const CallProvider = ({ children }) => {
     setIncomingCall(null);
   };
 
-  // -----------------------
+  // ----------------------------
   // Add Participant
-  // -----------------------
+  // ----------------------------
   const addParticipant = (newParticipant) => {
     if (!call) return;
     socketRef.current.emit("addParticipant", {
@@ -415,9 +476,9 @@ export const CallProvider = ({ children }) => {
     );
   };
 
-  // -----------------------
+  // ----------------------------
   // Leave / Cancel Call
-  // -----------------------
+  // ----------------------------
   const leaveCall = () => {
     if (!call && !outgoingCall) return;
 
@@ -440,17 +501,21 @@ export const CallProvider = ({ children }) => {
     cleanupCall();
   };
 
-  // -----------------------
+  // ----------------------------
   // Cleanup Call
-  // -----------------------
+  // ----------------------------
   const cleanupCall = () => {
+    // Close all peer connections
     Object.values(peersRef.current).forEach(({ peer }) => peer.close());
     peersRef.current = {};
 
+    // Stop local tracks
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach((track) => track.stop());
       localStreamRef.current = null;
     }
+
+    // Reset states
     setStream(null);
     setCall(null);
     setIncomingCall(null);
@@ -465,6 +530,7 @@ export const CallProvider = ({ children }) => {
         incomingCall,
         outgoingCall,
         stream,
+        // now an array: [ { userId, stream, type: "camera"|"screen" }, ... ]
         remoteStreams,
         initiateCall,
         answerCall,
@@ -481,5 +547,4 @@ export const CallProvider = ({ children }) => {
 };
 
 export const useCall = () => useContext(CallContext);
-
 export default CallProvider;
