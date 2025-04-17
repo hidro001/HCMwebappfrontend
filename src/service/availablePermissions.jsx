@@ -610,6 +610,14 @@ const availablePermissionManager = [
 
   // ------------------------------ Organization Chart ------------------------------
   { name: "Organization Chart", permission: "organization-chart" },
+
+  // ------------------------------ geolocation ------------------------------
+
+
+   { name: "Geolocation Panel", permission: "access-geolocation-panel" },
+
+
+
 ];
 
 export { availablePermission, availablePermissionManager };

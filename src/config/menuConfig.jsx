@@ -24,6 +24,7 @@ import { MdTrackChanges, MdModelTraining } from "react-icons/md";
 import { RiOrganizationChart } from "react-icons/ri";
 import { LuFileCheck2 } from "react-icons/lu";
 import { ChatBubble } from "@mui/icons-material";
+import { BiCurrentLocation } from "react-icons/bi";
 
 export const menuItems = [
   // ------------------------------ Dashboard ------------------------------
@@ -644,5 +645,38 @@ export const menuItems = [
         textAnimation: { x: 10 },
       },
     ],
-  },
+  }, 
+
+
+  {
+    name: "Geo Location",
+    tooltip: "",
+    icon: <BiCurrentLocation />,
+    color: "text-red-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Field Workers",
+        link: "/dashboard/field-worker",
+        permission: "organization-chart",
+        textAnimation: { x: 10 },
+      },  {
+        name: "View Map",
+        link: "/dashboard/geo-location",
+        permission: "organization-chart",
+        textAnimation: { x: 10 },
+      },
+    ],
+  }, 
+  
+  
+  
+  
+
+
+
+
+
+
 ];

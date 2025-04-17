@@ -12,6 +12,10 @@ const axiosInstance = axios.create({
   },
 });
 
+
+
+
+
 // Add a request interceptor to include the Authorization header if needed
 axiosInstance.interceptors.request.use(
   (config) => {
@@ -19,6 +23,11 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
+
+ // Set device type dynamically
+ config.headers['x-device-type'] = "web"
+
+
     return config;
   },
   (error) => {
