@@ -9,7 +9,7 @@ export default function UsageCategorizer() {
         loading,
         fetchDepartments,
     } = useBreakSettingsStore();
-
+//HELLO
   const [departments, setDepartments] = useState([]);
   const [selectedDept, setSelectedDept] = useState("");
   const [ratings, setRatings] = useState({}); 
