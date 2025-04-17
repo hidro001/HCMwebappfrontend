@@ -659,12 +659,12 @@ export const menuItems = [
       {
         name: "Field Workers",
         link: "/dashboard/field-worker",
-        permission: "organization-chart",
+        permission: "geo-location-single-worker",
         textAnimation: { x: 10 },
       },  {
         name: "View Map",
         link: "/dashboard/geo-location",
-        permission: "organization-chart",
+        permission: "geo-location-all-worker",
         textAnimation: { x: 10 },
       },
     ],

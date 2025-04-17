@@ -607,6 +607,8 @@ const availablePermissionManager = [
   { name: "View Induction PPTs", permission: "induction-view" },
   { name: "View Company Policies", permission: "policies-view" },
   { name: "User Profile", permission: "profile-view" },
+  {name: "geo-location-all-worker", permission: "geo-location-all-worker"},
+  {name: "geo-location-single-worker", permission: "geo-location-single-worker"},
 
   // ------------------------------ Organization Chart ------------------------------
   { name: "Organization Chart", permission: "organization-chart" },
