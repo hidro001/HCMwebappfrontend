@@ -6,6 +6,8 @@ import toast from 'react-hot-toast';
 const useBreakSettingsStore = create((set, get) => ({
   breakRecords: [],
   loading: false,
+  uniqueApps: [],
+  uniqueWebsites: [],
 
   // Fetch all break records from the API
   fetchBreakRecords: async () => {
@@ -98,6 +100,37 @@ const useBreakSettingsStore = create((set, get) => ({
         error.response?.data?.message ||
           'An error occurred while deleting break record.'
       );
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+  //To fetch all departments available in the organisation
+
+  fetchDepartments: async () => {
+    try {
+      const response = await axiosInstance.get(`/superadmin/departments`);
+      return response.data.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  //To fetch unique apps and websites used throughout the organisation
+
+  fetchUniqueUsage: async () => {
+    set({ loading: true, error: null });
+    try {
+      const res = await axiosInstance.get("/usage-stats/unique-usage");
+      if (res.data.success) {
+        set({
+          uniqueApps: res.data.data.uniqueApps,
+          uniqueWebsites: res.data.data.uniqueWebsites,
+        });
+      }
+    } catch (err) {
+      toast.error("Failed to fetch unique usage data");
+      set({ error: err.message });
     } finally {
       set({ loading: false });
     }

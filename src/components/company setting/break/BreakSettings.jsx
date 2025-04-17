@@ -4,6 +4,7 @@ import { FiEdit, FiTrash2, FiPlus } from "react-icons/fi";
 import BreakSettingsModal from "./model/BreakSettingsModal";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import useBreakSettingsStore from "../../../store/breakSettingsStore.";
+import UsageCategorizer from "./UsageCategorizer";
 
 export default function BreakSettings() {
   const {
@@ -208,6 +209,7 @@ export default function BreakSettings() {
         confirmText="Yes, delete it!"
         cancelText="Cancel"
       />
+      <UsageCategorizer />
     </div>
   );
 }
