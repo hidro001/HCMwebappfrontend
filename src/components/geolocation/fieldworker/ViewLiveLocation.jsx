@@ -1,4 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
+const baseUrl=import.meta.env.VITE_API_BASE_URL
+
 
 const LocationTracker = ({ onClose, fieldworker }) => {
   const [error, setError] = useState(null);
@@ -22,7 +24,7 @@ const LocationTracker = ({ onClose, fieldworker }) => {
     }
 
     // Pass the token and employeeId via query parameters
-    const url = `http://localhost:6060/api/v1/geolocation/subscribe?accessToken=${token}&empId=${employeeId}`;
+    const url = `${baseUrl}/api/v1/geolocation/subscribe?accessToken=${token}&empId=${employeeId}`;
     const eventSource = new EventSource(url);
 
     eventSource.onmessage = (event) => {

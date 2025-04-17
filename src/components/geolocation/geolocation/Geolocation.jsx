@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from "react";
+const baseUrl=import.meta.env.VITE_API_BASE_URL
+
 
 function AllWorkersEmbeddedMap() {
   const [employeesData, setEmployeesData] = useState({});
@@ -24,7 +26,7 @@ function AllWorkersEmbeddedMap() {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
-    const url = `http://localhost:6060/api/v1/geolocation//subscribe-all?accessToken=${token}&employee_Id=all`;
+    const url = `${baseUrl}/api/v1/geolocation/subscribe-all?accessToken=${token}&employee_Id=all`;
     const source = new EventSource(url);
 
     source.onmessage = (event) => {

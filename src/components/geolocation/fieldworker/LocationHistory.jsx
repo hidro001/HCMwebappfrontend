@@ -11,7 +11,16 @@ import {
 } from "react-icons/fa";
 
 // Import our helper
+
+
+
 import { getAddressFromNominatim } from "../../../utils/nominatimService";
+
+
+
+const baseUrl=import.meta.env.VITE_API_BASE_URL
+
+
 
 const LocationHistory = ({ onClose, fieldworker }) => {
   // State for date
@@ -48,7 +57,7 @@ const LocationHistory = ({ onClose, fieldworker }) => {
       return;
     }
 
-    const url = `http://localhost:6060/api/v1/geolocation/fieldworker/history?accessToken=${token}&employee_Id=${employeeId}&date=${date}&page=${page}&limit=${limit}`;
+    const url = `${baseUrl}/api/v1/geolocation/fieldworker/history?accessToken=${token}&employee_Id=${employeeId}&date=${date}&page=${page}&limit=${limit}`;
 
     try {
       const response = await fetch(url);
