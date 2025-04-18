@@ -8,6 +8,9 @@ const useBreakSettingsStore = create((set, get) => ({
   loading: false,
   uniqueApps: [],
   uniqueWebsites: [],
+  error: null,
+  /* per‑department tags */
+  deptCategories: { productive: [], unproductive: [], unrated: [] },
 
   // Fetch all break records from the API
   fetchBreakRecords: async () => {
@@ -121,7 +124,7 @@ const useBreakSettingsStore = create((set, get) => ({
   fetchUniqueUsage: async () => {
     set({ loading: true, error: null });
     try {
-      const res = await axiosInstance.get("/usage-stats/unique-usage");
+      const res = await axiosInstance.post("/usage-stats/webandappdata");
       if (res.data.success) {
         set({
           uniqueApps: res.data.data.uniqueApps,
@@ -135,6 +138,65 @@ const useBreakSettingsStore = create((set, get) => ({
       set({ loading: false });
     }
   },
+
+  fetchDeptCategories: async (deptName) => {
+    if (!deptName) return;
+    set({ loading: true });
+    try {
+      const trimmedDeptName = deptName.trim();  // <- trim here
+      const res = await axiosInstance.get(
+        `/usage-stats/department/${encodeURIComponent(trimmedDeptName)}`
+      );
+      if (res.data.success) {
+        const d = res.data.data || {};
+        set({
+          deptCategories: {
+            productive: d.productive || [],
+            unproductive: d.unproductive || [],
+            unrated: d.unrated || [],
+          },
+        });
+      } else {
+        toast.error(res.data.message || "Failed to fetch categories.");
+      }
+    } catch (err) {
+      toast.error("Failed to fetch categories.");
+    } finally {
+      set({ loading: false });
+    }
+  },
+  
+  saveDeptCategories: async (deptName, ratings) => {
+    set({ loading: true });
+    try {
+      const payload = { apps: [], websites: [] };
+      Object.entries(ratings).forEach(([name, category]) => {
+        if (!category) return;
+        const isUrl = name.includes(".") || name.includes(" ");
+        (isUrl ? payload.websites : payload.apps).push({ name, category });
+      });
+  
+      const trimmedDeptName = deptName.trim(); // <- trim here as well
+  
+      const res = await axiosInstance.put(
+        `/usage-stats/department/${encodeURIComponent(trimmedDeptName)}/bulk`,
+        payload
+      );
+  
+      if (res.data.success) {
+        toast.success("Categories saved!");
+        await get().fetchDeptCategories(trimmedDeptName);
+      } else {
+        toast.error(res.data.message || "Save failed.");
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Save failed.");
+    } finally {
+      set({ loading: false });
+    }
+  },
+  
+
 }));
 
 export default useBreakSettingsStore;
