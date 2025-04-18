@@ -87,6 +87,8 @@ import EmployeeTreemapPage from "./Org Chart/EmployeeTreemapPage";
 import RequestDashboardPage from "./attendence management/RequestDashboardPage";
 import PostPerformerPage from "./performance management/PostPerformerPage";
 import ViewPerformerPage from "./performance management/ViewPerformerPage";
+import SetKpisNewPage from "./performance management new/SetKpisNewPage";
+
 
 
 
@@ -167,4 +169,5 @@ export {
   AdminPanelTrainingPage,
   EmployeeTreemapPage,
   RequestDashboardPage,
+  SetKpisNewPage,
 };

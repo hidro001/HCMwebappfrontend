@@ -78,6 +78,7 @@ import {
   RequestDashboardPage,
   PostPerformerPage,
   ViewPerformerPage,
+  SetKpisNewPage,
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -418,6 +419,10 @@ const router = createBrowserRouter([
       {
         path: "request-hike-advance-reimbursement",
         element: <RequestDashboardPage />,
+      },
+      {
+        path: "set-kpis-new",
+        element: <SetKpisNewPage />,
       },
     ],
   },

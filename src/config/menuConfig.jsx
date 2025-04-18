@@ -98,6 +98,42 @@ export const menuItems = [
     ],
   },
 
+  {
+    name: "Performance Management New",
+    tooltip:
+      "Track, evaluate, and improve employee performance to drive team success",
+    icon: <GrDocumentPerformance />,
+    color: "text-blue-400",
+    iconAnimation: { rotate: 360 },
+    options: [
+      {
+        name: "Set KPIs",
+        link: "/dashboard/set-kpis-new",
+        permission: "engagement-view",
+      },
+      {
+        name: "Post Top Performer",
+        link: "/dashboard/post-top-performers-new",
+        permission: "engagement-view",
+      },
+      {
+        name: "View Top Performers",
+        link: "/dashboard/top-performers-new",
+        permission: "engagement-view",
+      },
+      {
+        name: "Team Performance",
+        link: "/dashboard/team-performance-new",
+        permission: "engagement-view",
+      },
+      {
+        name: "All Employes Rating",
+        link: "/dashboard/all-emp-ratings-new",
+        permission: "engagement-view",
+      },
+    ],
+  },
+
   // ------------------------------ Manage Employees ------------------------------
   {
     name: "Manage Employees",
