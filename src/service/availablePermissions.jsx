@@ -616,7 +616,9 @@ const availablePermissionManager = [
   // ------------------------------ geolocation ------------------------------
 
 
-   { name: "Geolocation Panel", permission: "access-geolocation-panel" },
+  //  { name: "Geolocation Panel", permission: "access-geolocation-panel" },
+
+   { name: "Geolocation Panel", permission: "geolocation-all-permission" },
 
 
 

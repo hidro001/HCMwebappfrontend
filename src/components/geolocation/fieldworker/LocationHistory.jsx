@@ -15,6 +15,7 @@ import {
 
 
 import { getAddressFromNominatim } from "../../../utils/nominatimService";
+import axiosInstance from "../../../service/axiosInstance";
 
 
 
@@ -48,37 +49,41 @@ const LocationHistory = ({ onClose, fieldworker }) => {
   const fetchHistory = async (date, page, limit) => {
     setLoading(true);
     setError(null);
-
-    const token = localStorage.getItem("accessToken");
+  
+   
     const employeeId = fieldworker?.employee_Id;
-    if (!token || !employeeId) {
-      setError("Missing token or fieldworker information.");
+    
+    if ( !employeeId) {
+      setError("fieldworker information.");
       setLoading(false);
       return;
     }
-
-    const url = `${baseUrl}/api/v1/geolocation/fieldworker/history?accessToken=${token}&employee_Id=${employeeId}&date=${date}&page=${page}&limit=${limit}`;
-
+  
+  
     try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error(`Error: ${response.statusText}`);
-      }
-      const data = await response.json();
-
-      if (data.success) {
-        setHistory(data.data || []);
+      const response = await axiosInstance.get("/geolocation/fieldworker/history", {
+        params: {
+          // accessToken: token,
+          employee_Id: employeeId,
+          date: date,
+          page: page,
+          limit: limit,
+        },
+      });
+  
+      if (response.data.success) {
+        setHistory(response.data.data || []);
         const {
           totalCount = 0,
           totalPages = 1,
           currentPage = 1,
-        } = data.pagination || {};
-
+        } = response.data.pagination || {};
+  
         setTotalCount(totalCount);
         setTotalPages(totalPages);
         setCurrentPage(currentPage);
       } else {
-        setError(data.message || "Failed to fetch history.");
+        setError(response.data.message || "Failed to fetch history.");
       }
     } catch (err) {
       console.error("Error fetching location history:", err);
@@ -87,7 +92,6 @@ const LocationHistory = ({ onClose, fieldworker }) => {
       setLoading(false);
     }
   };
-
   // Fetch on mount or when fieldworker changes
   useEffect(() => {
     if (fieldworker) {

@@ -25,8 +25,16 @@ function AllWorkersEmbeddedMap() {
   };
 
   useEffect(() => {
+
+
+
+
     const token = localStorage.getItem("accessToken");
-    const url = `${baseUrl}/api/v1/geolocation/subscribe-all?accessToken=${token}&employee_Id=all`;
+    // const url = `${baseUrl}/api/v1/geolocation/subscribe-all?accessToken=${token}&employee_Id=all`;
+
+    const deviceType = "web";
+    const url = `${baseUrl}/api/v1/geolocation/subscribe-all?accessToken=${token}&employee_Id=all&device_type=${deviceType}`;
+
     const source = new EventSource(url);
 
     source.onmessage = (event) => {
