@@ -79,6 +79,7 @@ import {
   PostPerformerPage,
   ViewPerformerPage,
   SetKpisNewPage,
+  RatingDashboardPage,
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -423,6 +424,10 @@ const router = createBrowserRouter([
       {
         path: "set-kpis-new",
         element: <SetKpisNewPage />,
+      },
+      {
+        path: "post-top-performers-new",
+        element: <RatingDashboardPage />,
       },
     ],
   },
