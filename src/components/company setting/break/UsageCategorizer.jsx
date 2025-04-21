@@ -192,6 +192,48 @@ export default function UsageCategorizer() {
   // }, [selectedDept]);
 
 
+  // useEffect(() => {
+  //   if (!selectedDept) {
+  //     setRatings({});
+  //     return;
+  //   }
+  
+  //   Promise.all([
+  //     fetchUniqueUsage(),
+  //     fetchDeptCategories(selectedDept),
+  //   ]).then(() => {
+  //     const { uniqueApps, uniqueWebsites, deptCategories } = useBreakSettingsStore.getState();
+  
+  //     const current = {};
+  
+  //     [...uniqueApps, ...uniqueWebsites].forEach((item) => {
+  //       const tag =
+  //         deptCategories.productive.find((d) => d.name === item)?.category ||
+  //         deptCategories.unproductive.find((d) => d.name === item)?.category ||
+  //         deptCategories.unrated.find((d) => d.name === item)?.category ||
+  //         "unrated";
+  //       current[item] = tag;
+  //     });
+  
+  //     setRatings(current);
+  //   });
+  // }, [selectedDept]);
+
+
+  const isValidItem = (name) => {
+    const fileExtensionPattern = /\.(jpg|jpeg|png|gif|bmp|svg|webp|pdf|docx?|xlsx?|pptx?)$/i;
+    const untitledPattern = /untitled/i;
+    const morePagesPattern = /and \s*\d+\s*more pages/i;
+    const googleSearchPattern = /-?\s?google search$/i;
+  
+    return (
+      !fileExtensionPattern.test(name) &&
+      !untitledPattern.test(name) &&
+      !morePagesPattern.test(name) &&
+      !googleSearchPattern.test(name)
+    );
+  };
+  
   useEffect(() => {
     if (!selectedDept) {
       setRatings({});
@@ -204,9 +246,12 @@ export default function UsageCategorizer() {
     ]).then(() => {
       const { uniqueApps, uniqueWebsites, deptCategories } = useBreakSettingsStore.getState();
   
+      const filteredWebsites = uniqueWebsites.filter(isValidItem);
+      const filteredApps = uniqueApps.filter(isValidItem);
+  
       const current = {};
   
-      [...uniqueApps, ...uniqueWebsites].forEach((item) => {
+      [...filteredApps, ...filteredWebsites].forEach((item) => {
         const tag =
           deptCategories.productive.find((d) => d.name === item)?.category ||
           deptCategories.unproductive.find((d) => d.name === item)?.category ||
@@ -217,7 +262,11 @@ export default function UsageCategorizer() {
   
       setRatings(current);
     });
-  }, [selectedDept]);
+  }, [selectedDept, fetchUniqueUsage, fetchDeptCategories]); // added dependencies explicitly
+  
+  
+  
+  
   
   /* ---------- dropdown helper ---------- */
   const Dropdown = ({ item }) => (
@@ -283,24 +332,23 @@ export default function UsageCategorizer() {
 
       {/* Lists */}
       {selectedDept && (
-        <>
-          {/* Apps */}
-          <Section
-            title="Unique Apps"
-            items={uniqueApps}
-            loading={loading}
-            Dropdown={Dropdown}
-          />
+  <>
+    <Section
+      title="Unique Apps"
+      items={uniqueApps.filter(name => !/\.(jpg|jpeg|png|gif|bmp|svg|webp|pdf|docx?|xlsx?|pptx?)/i.test(name))}
+      loading={loading}
+      Dropdown={Dropdown}
+    />
 
-          {/* Websites */}
-          <Section
-            title="Unique Websites"
-            items={uniqueWebsites}
-            loading={loading}
-            Dropdown={Dropdown}
-          />
-        </>
-      )}
+    <Section
+      title="Unique Websites"
+      items={uniqueWebsites.filter(name => !/\.(jpg|jpeg|png|gif|bmp|svg|webp|pdf|docx?|xlsx?|pptx?)/i.test(name))}
+      loading={loading}
+      Dropdown={Dropdown}
+    />
+  </>
+)}
+
     </div>
   );
 }
