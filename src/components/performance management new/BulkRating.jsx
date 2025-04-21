@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { getWeeksInMonth } from "./calendarUtils"; // your new utility
+import { getWeeksInMonth } from "./calendarUtils"; 
 import useRatingStore from "../../store/useRatingNewStore";
 
 function BulkRating() {
