@@ -22,9 +22,9 @@ const LocationTracker = ({ onClose, fieldworker }) => {
       setError("Missing token or fieldworker information.");
       return;
     }
-
+    const deviceType = "web";
     // Pass the token and employeeId via query parameters
-    const url = `${baseUrl}/api/v1/geolocation/subscribe?accessToken=${token}&empId=${employeeId}`;
+    const url = `${baseUrl}/api/v1/geolocation/subscribe?accessToken=${token}&empId=${employeeId}&device_type=${deviceType}`;
     const eventSource = new EventSource(url);
 
     eventSource.onmessage = (event) => {

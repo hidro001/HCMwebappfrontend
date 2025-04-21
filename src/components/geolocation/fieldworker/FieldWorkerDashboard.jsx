@@ -22,6 +22,7 @@ const Fieldworker = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [goToPageValue, setGoToPageValue] = useState('');
+  const [searchQuery, setSearchQuery] = useState(''); // Add search query state
 
   // Modal states for live location and history
   const [isLiveModalOpen, setIsLiveModalOpen] = useState(false);
@@ -32,7 +33,7 @@ const Fieldworker = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getFieldworkers(page, limit);
+        const response = await getFieldworkers(page, limit, searchQuery); // Pass searchQuery
         if (response.success) {
           setFieldworkers(response.data);
           setTotalPages(response.pagination.totalPages);
@@ -43,7 +44,7 @@ const Fieldworker = () => {
       }
     };
     fetchData();
-  }, [page, limit]);
+  }, [page, limit, searchQuery]); // Trigger re-fetch when searchQuery changes
 
   // Pagination handlers
   const handlePrevPage = () => {
@@ -65,6 +66,11 @@ const Fieldworker = () => {
       setPage(targetPage);
     }
     setGoToPageValue('');
+  };
+
+  // Search handler
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value); // Update search query state
   };
 
   // Handlers for modal opening/closing
@@ -96,6 +102,17 @@ const Fieldworker = () => {
         <h2 className="text-2xl font-semibold">Fieldworker List</h2>
       </div>
 
+      {/* Search Bar */}
+      <div className="mb-4">
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={handleSearchChange}
+          placeholder="Search by Employee ID, First Name or Last Name"
+          className="px-4 py-2 border rounded-md w-full dark:bg-gray-800 dark:border-gray-600 dark:text-gray-300 bg-white text-gray-700 focus:ring-2 focus:ring-indigo-500"
+        />
+      </div>
+
       {/* Pagination Controls (top) */}
       <div className="flex items-center flex-wrap mb-4 gap-4">
         <div className="flex items-center gap-2">
@@ -120,98 +137,72 @@ const Fieldworker = () => {
         </div>
       </div>
 
-      {/* Fieldworker Cards - responsive grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {fieldworkers && fieldworkers.length > 0 ? (
-          fieldworkers.map((fw) => {
-            const fullName = `${fw.first_Name || ''} ${fw.last_Name || ''}`.trim() || 'N/A';
-            return (
-              <div
-                key={fw._id}
-                className="
-                  bg-white dark:bg-gray-800
-                  rounded-lg shadow
-                  p-4 flex flex-col
-                  justify-between space-y-4
-                  transition-all duration-200
-                  hover:shadow-lg
-                "
-              >
-                {/* Avatar */}
-                {fw.user_Avatar ? (
-                  <img
-                    src={fw.user_Avatar}
-                    alt={fullName}
-                    className="w-32 h-32 object-cover rounded-full mx-auto"
-                  />
-                ) : (
-                  <div className="w-32 h-32 flex items-center justify-center mx-auto bg-gray-200 dark:bg-gray-600 rounded-full">
-                    <FaUserAlt className="text-gray-500 dark:text-gray-300 text-3xl" />
-                  </div>
-                )}
-
-                {/* Info text */}
-                <div className="text-center space-y-1">
-                  <p className="font-semibold text-lg">{fullName}</p>
-                  {fw.designation && (
-                    <p className="flex items-center justify-center gap-1 text-sm text-gray-600 dark:text-gray-300">
-                      <FaBriefcase className="text-blue-500" />
-                      {fw.designation}
-                    </p>
-                  )}
-                  {fw.department && (
-                    <p className="flex items-center justify-center gap-1 text-sm text-gray-600 dark:text-gray-300">
-                      <FaBuilding className="text-green-500" />
-                      Dept: {fw.department}
-                    </p>
-                  )}
-                  {fw.user_Role && (
-                    <p className="flex items-center justify-center gap-1 text-sm text-gray-600 dark:text-gray-300">
-                      <FaUserShield className="text-purple-500" />
-                      Role: {fw.user_Role}
-                    </p>
-                  )}
-                </div>
-
-                {/* Action buttons */}
-                <div className="flex justify-around mt-auto">
-                  <button
-                    type="button"
-                    onClick={() => handleViewLocation(fw)}
-                    className="
-                      flex items-center gap-2
-                      bg-blue-600 hover:bg-blue-700
-                      text-white py-2 px-3
-                      rounded shadow
-                      transition-colors
-                    "
-                  >
-                    <FaMapMarkerAlt />
-                    Live Location
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleViewHistory(fw)}
-                    className="
-                      flex items-center gap-2
-                      bg-green-600 hover:bg-green-700
-                      text-white py-2 px-3
-                      rounded shadow
-                      transition-colors
-                    "
-                  >
-                    <FaHistory />
-                    History
-                  </button>
-                </div>
-              </div>
-            );
-          })
-        ) : (
-          <div className="col-span-full text-center text-gray-600 dark:text-gray-400">
-            No fieldworkers found
-          </div>
-        )}
+      {/* Fieldworker Table */}
+      <div className="overflow-x-auto">
+        <table className="min-w-full table-auto bg-white dark:bg-gray-800 rounded-lg shadow">
+          <thead>
+            <tr className="bg-gray-200 dark:bg-gray-700">
+              <th className="px-4 py-2 text-left">Sr No</th>
+              <th className="px-4 py-2 text-left">Avatar</th>
+              <th className="px-4 py-2 text-left">Name</th>
+              <th className="px-4 py-2 text-left">Designation</th>
+              <th className="px-4 py-2 text-left">Department</th>
+              <th className="px-4 py-2 text-left">Role</th>
+              <th className="px-4 py-2 text-left">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {fieldworkers && fieldworkers.length > 0 ? (
+              fieldworkers.map((fw, index) => {
+                const fullName = `${fw.first_Name || ''} ${fw.last_Name || ''}`.trim() || 'N/A';
+                return (
+                  <tr key={fw._id} className="border-t border-gray-300 dark:border-gray-600">
+                    <td className="px-4 py-2 text-center">{(page - 1) * limit + index + 1}</td> {/* Sr No */}
+                    <td className="px-4 py-2 text-center">
+                      {fw.user_Avatar ? (
+                        <img
+                          src={fw.user_Avatar}
+                          alt={fullName}
+                          className="w-12 h-12 object-cover rounded-full mx-auto"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 flex items-center justify-center mx-auto bg-gray-200 dark:bg-gray-600 rounded-full">
+                          <FaUserAlt className="text-gray-500 dark:text-gray-300 text-2xl" />
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-4 py-2">{fullName}</td>
+                    <td className="px-4 py-2">{fw.designation || 'N/A'}</td>
+                    <td className="px-4 py-2">{fw.department || 'N/A'}</td>
+                    <td className="px-4 py-2">{fw.user_Role || 'N/A'}</td>
+                    <td className="px-4 py-2 text-center">
+                      <button
+                        type="button"
+                        onClick={() => handleViewLocation(fw)}
+                        className="text-white bg-blue-600 hover:bg-blue-700 py-1 px-3 rounded shadow transition-colors"
+                      >
+                        <FaMapMarkerAlt />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleViewHistory(fw)}
+                        className="text-white bg-green-600 hover:bg-green-700 py-1 px-3 rounded shadow transition-colors ml-2"
+                      >
+                        <FaHistory />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="7" className="text-center text-gray-600 dark:text-gray-400 py-4">
+                  No fieldworkers found
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
 
       {/* Pagination: Prev, Next, Go To Page */}
