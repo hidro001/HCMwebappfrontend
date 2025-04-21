@@ -1,12 +1,15 @@
 
 
+
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { getWeeksInMonth } from "./calendarUtils";
 import useRatingStore from "../../store/useRatingNewStore";
-
-// 1) Import the new modal component
 import RatingModal from "./modal/RatingModal";
+import { FiSearch, FiStar, FiUser, FiFilter } from "react-icons/fi";
+import { HiChevronDown, HiOutlineBadgeCheck } from "react-icons/hi";
+import { BsThreeDots } from "react-icons/bs";
+import { MdWorkOutline } from "react-icons/md";
 
 const FREQUENCIES = ["daily", "weekly", "monthly", "yearly"];
 
@@ -29,6 +32,9 @@ function RateEmployee() {
 
   const [selectedEmployee, setSelectedEmployee] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterDesignation, setFilterDesignation] = useState("");
+  const [sortOrder, setSortOrder] = useState("name-asc"); // name-asc, name-desc, designation
 
   const [frequency, setFrequency] = useState("daily");
   const [date, setDate] = useState(defaultDate);
@@ -43,6 +49,33 @@ function RateEmployee() {
   useEffect(() => {
     fetchSubordinates();
   }, [fetchSubordinates]);
+
+  // Get unique designations for filter dropdown
+  const uniqueDesignations = [...new Set(subordinates.map(emp => emp.designation))];
+
+  // Filter employees based on search and designation
+  const filteredEmployees = subordinates.filter(emp => {
+    const fullName = `${emp.first_Name} ${emp.last_Name}`.toLowerCase();
+    const matchesSearch = searchQuery === "" || 
+      fullName.includes(searchQuery.toLowerCase()) || 
+      emp.employee_Id.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    const matchesDesignation = filterDesignation === "" || emp.designation === filterDesignation;
+    
+    return matchesSearch && matchesDesignation;
+  });
+
+  // Sort employees
+  const sortedEmployees = [...filteredEmployees].sort((a, b) => {
+    if (sortOrder === "name-asc") {
+      return `${a.first_Name} ${a.last_Name}`.localeCompare(`${b.first_Name} ${b.last_Name}`);
+    } else if (sortOrder === "name-desc") {
+      return `${b.first_Name} ${b.last_Name}`.localeCompare(`${a.first_Name} ${a.last_Name}`);
+    } else if (sortOrder === "designation") {
+      return a.designation.localeCompare(b.designation);
+    }
+    return 0;
+  });
 
   // open modal
   const handleOpenModal = (emp) => {
@@ -145,7 +178,8 @@ function RateEmployee() {
     );
   };
 
-  const handleScoreChange = (index, newVal) => {
+
+const handleScoreChange = (index, newVal) => {
     setKpis((prev) =>
       prev.map((k, i) => {
         if (i !== index) return k;
@@ -222,53 +256,179 @@ function RateEmployee() {
   };
 
   return (
-    <div className="p-4 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 ">
-      <h2 className="text-xl font-bold mb-4">Rate Employees (One-by-One)</h2>
-
-      {loading && <p className="text-blue-500">Loading...</p>}
-      {error && <p className="text-red-500">Error: {error}</p>}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {subordinates.map((emp) => (
-          <div
-            key={emp._id}
-            className="p-4 border border-gray-200 dark:border-gray-700 rounded shadow-sm bg-white dark:bg-gray-800"
-          >
-            <div className="flex items-center space-x-2">
-              <img
-                src={emp.user_Avatar}
-                alt="avatar"
-                className="w-10 h-10 rounded-full object-cover"
+    <div className="p-6 bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 rounded-2xl ">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+          <div className="mb-4 md:mb-0">
+            <h2 className="text-2xl font-bold flex items-center">
+              <FiStar className="mr-2 text-indigo-500" />
+              Performance Ratings
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              Rate your team members based on key performance indicators
+            </p>
+          </div>
+          
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search employees..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-600 focus:border-indigo-500 bg-white dark:bg-gray-800 w-full md:w-64"
               />
-              <div>
-                <p className="font-semibold">
-                  {emp.first_Name} {emp.last_Name}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {emp.designation} - {emp.employee_Id}
-                </p>
+            </div>
+          </div>
+        </div>
+        
+        {/* Filters */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6 flex flex-wrap items-center gap-4">
+          <div className="flex-1 min-w-[200px]">
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Filter by Designation</label>
+            <div className="relative">
+              <select
+                value={filterDesignation}
+                onChange={(e) => setFilterDesignation(e.target.value)}
+                className="w-full pl-3 pr-10 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="">All Designations</option>
+                {uniqueDesignations.map((designation) => (
+                  <option key={designation} value={designation}>
+                    {designation}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                <HiChevronDown className="text-gray-500" />
               </div>
             </div>
-            <button
-              onClick={() => handleOpenModal(emp)}
-              className="mt-2 px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded transition-colors"
+          </div>
+          
+          <div className="flex-1 min-w-[200px]">
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Sort By</label>
+            <div className="relative">
+              <select
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                className="w-full pl-3 pr-10 py-2 border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 appearance-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              >
+                <option value="name-asc">Name (A-Z)</option>
+                <option value="name-desc">Name (Z-A)</option>
+                <option value="designation">Designation</option>
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                <HiChevronDown className="text-gray-500" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="flex items-end">
+            <button 
+              className="inline-flex items-center px-4 py-2 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 font-medium rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-900 transition-colors"
+              onClick={() => {
+                setSearchQuery("");
+                setFilterDesignation("");
+                setSortOrder("name-asc");
+              }}
             >
-              Rate
+              <FiFilter className="mr-2" />
+              Reset Filters
             </button>
           </div>
-        ))}
+        </div>
+
+        {/* Status/loading indicators */}
+        {loading && (
+          <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-4 rounded-lg mb-6 flex items-center">
+            <div className="mr-3">
+              <svg className="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </div>
+            <p>Loading employee data...</p>
+          </div>
+        )}
+        
+        {error && (
+          <div className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 p-4 rounded-lg mb-6 flex items-center">
+            <div className="mr-3">
+              <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <p>Error: {error}</p>
+          </div>
+        )}
+
+        {/* Employee Grid */}
+        {sortedEmployees.length === 0 ? (
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
+            <FiUser className="mx-auto text-gray-400 dark:text-gray-500 w-16 h-16 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No employees found</h3>
+            <p className="text-gray-500 dark:text-gray-400">
+              {searchQuery || filterDesignation ? 
+                "Try adjusting your search or filters" : 
+                "No subordinates are assigned to you yet"}
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {sortedEmployees.map((emp) => (
+              <div
+                key={emp._id}
+                className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden border border-gray-100 dark:border-gray-700 flex flex-col"
+              >
+                <div className="p-4 flex items-center space-x-3">
+                  {emp.user_Avatar ? (
+                    <img
+                      src={emp.user_Avatar}
+                      alt={`${emp.first_Name} ${emp.last_Name}`}
+                      className="w-14 h-14 rounded-full object-cover ring-2 ring-indigo-100 dark:ring-indigo-900"
+                    />
+                  ) : (
+                    <div className="w-14 h-14 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                      {emp.first_Name?.[0]}{emp.last_Name?.[0]}
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">
+                      {emp.first_Name} {emp.last_Name}
+                    </h3>
+                    <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      <MdWorkOutline className="mr-1 flex-shrink-0" />
+                      <span className="truncate">{emp.designation}</span>
+                    </div>
+                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 mt-1">
+                      <HiOutlineBadgeCheck className="mr-1 flex-shrink-0" />
+                      <span className="truncate">{emp.employee_Id}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="mt-auto p-4 pt-2 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                  <button
+                    onClick={() => handleOpenModal(emp)}
+                    className="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white py-2 px-4 rounded-lg font-medium text-sm transition-all duration-200 shadow-sm hover:shadow flex items-center justify-center"
+                  >
+                    <FiStar className="mr-1.5" />
+                    Rate Performance
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* 2) Use the new RatingModal component */}
+      {/* Rating Modal Component */}
       <RatingModal
-        // show/hide
         showModal={showModal}
         onClose={() => setShowModal(false)}
-
-        // Employee
         selectedEmployee={selectedEmployee}
-
-        // Frequency & date states
         frequency={frequency}
         handleFrequencyChange={handleFrequencyChange}
         date={date}
@@ -279,11 +439,7 @@ function RateEmployee() {
         setMonth={setMonth}
         week={week}
         setWeek={setWeek}
-
-        // Weeks array
         availableWeeks={availableWeeks}
-
-        // KPI rating data & handlers
         kpis={kpis}
         handleAchievedChange={handleAchievedChange}
         handleScoreChange={handleScoreChange}
