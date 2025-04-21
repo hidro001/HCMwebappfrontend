@@ -114,9 +114,9 @@ export default function NonFieldWorkerDashboard() {
         <div className="text-lg font-semibold text-gray-700 dark:text-gray-300">
           <p>Enabled: {fieldWorkerCounts.trueCount}</p>
         </div>
-        <div className="text-lg font-semibold text-gray-700 dark:text-gray-300">
+        {/* <div className="text-lg font-semibold text-gray-700 dark:text-gray-300">
           <p>Disabled: {fieldWorkerCounts.falseCount}</p>
-        </div>
+        </div> */}
         <div className="text-lg font-semibold text-gray-700 dark:text-gray-300">
           <p>Total Employees: {pagination.totalCount}</p>
         </div>
