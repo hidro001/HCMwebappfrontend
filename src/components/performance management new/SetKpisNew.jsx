@@ -112,12 +112,21 @@ function SetKpis() {
         version: version || "",
       });
       setKpis(data?.kpis || []);
-    } catch {
-      // 404 → no set yet
-      setKpis([]);
+      setEditIndex(null);
+      setHasEdited(false);
+    } catch (err) {
+      // If there's no document for this freq, clear the old data
+      if (err.response?.status === 404) {
+        setKpis([]);
+        setEditIndex(null);
+        setHasEdited(false);
+        // IMPORTANT: Clear the old kpiSet in Zustand,
+        // so we won't accidentally reuse the old _id
+        useKpiSetStore.setState({ kpiSet: null });
+      } else {
+        toast.error(err.response?.data?.message || err.message);
+      }
     }
-    setEditIndex(null);
-    setHasEdited(false);
   };
 
   /* ---------------------------------------------------------------------
@@ -208,9 +217,12 @@ function SetKpis() {
     };
 
     try {
-      await createKpiSet(payload);
+      const result = await createKpiSet(payload);
       toast.success("KPI Set created!");
-      handleAutoFetchKpiSet();
+      // Store newly created doc in Zustand, so we have the correct _id
+      useKpiSetStore.setState({ kpiSet: result.data });
+      setKpis(result.data.kpis || []);
+      setHasEdited(false);
     } catch (err) {
       toast.error(err.response?.data?.message || err.message);
     }
@@ -241,17 +253,21 @@ function SetKpis() {
     try {
       await updateKpiSet(kpiSet._id, payload);
       toast.success("KPI Set updated!");
-      handleAutoFetchKpiSet(); // refresh UI with latest data
+      // refresh UI with latest data
+      handleAutoFetchKpiSet();
     } catch (err) {
       toast.error(err.response?.data?.message || err.message);
     }
   };
+
   const confirmDeleteKpiSet = async () => {
     if (!kpiSet?._id) return toast.error("No KPI set to delete.");
     try {
       await deleteKpiSet(kpiSet._id);
       toast.success("KPI Set deleted!");
       setKpis([]);
+      // Also clear global store so UI sees no doc loaded
+      useKpiSetStore.setState({ kpiSet: null });
     } catch (err) {
       toast.error(err.response?.data?.message || err.message);
     }
@@ -275,8 +291,7 @@ function SetKpis() {
         Derived flags for button states
      --------------------------------------------------------------------- */
   const isExistingSet = !!kpiSet?._id;
-  const isCreateEnabled =
-    !isExistingSet && totalMarks === 100 && kpis.length > 0;
+  const isCreateEnabled = !isExistingSet && totalMarks === 100 && kpis.length > 0;
   const isUpdateEnabled = isExistingSet && hasEdited && totalMarks === 100;
   const isDeleteEnabled = isExistingSet;
 
@@ -702,23 +717,18 @@ function SetKpis() {
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead className="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
-                    {[
-                      "KPI Name",
-                      "Type",
-                      "Marks",
-                      "Target",
-                      "Category",
-                      "",
-                    ].map((h) => (
-                      <th
-                        key={h}
-                        className={`${
-                          h ? "text-left" : "text-right"
-                        } px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase`}
-                      >
-                        {h || "Actions"}
-                      </th>
-                    ))}
+                    {["KPI Name", "Type", "Marks", "Target", "Category", ""].map(
+                      (h) => (
+                        <th
+                          key={h}
+                          className={`${
+                            h ? "text-left" : "text-right"
+                          } px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-400 uppercase`}
+                        >
+                          {h || "Actions"}
+                        </th>
+                      )
+                    )}
                   </tr>
                 </thead>
                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">

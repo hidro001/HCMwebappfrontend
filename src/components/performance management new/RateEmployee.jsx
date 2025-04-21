@@ -1,8 +1,9 @@
-// components/RateEmployee.jsx
+
 
 import React, { useEffect, useState } from "react";
-import useRatingStore from "../../store/useRatingNewStore";
 import { toast } from "react-hot-toast";
+import { getWeeksInMonth } from "./calendarUtils"; // your new utility
+import useRatingStore from "../../store/useRatingNewStore";
 
 const FREQUENCIES = ["daily", "weekly", "monthly", "yearly"];
 
@@ -24,8 +25,9 @@ function RateEmployee() {
   const [frequency, setFrequency] = useState("daily");
   const [date, setDate] = useState(""); // for daily
   const [year, setYear] = useState(""); // for weekly/monthly/yearly
-  const [month, setMonth] = useState(""); // for monthly
+  const [month, setMonth] = useState(""); // for monthly or weekly
   const [week, setWeek] = useState(""); // for weekly
+  const [availableWeeks, setAvailableWeeks] = useState([]); // computed from year+month
   const [kpis, setKpis] = useState([]); // local copy of fetched KPI set to store scores/comments
   const [comment, setComment] = useState("");
 
@@ -46,16 +48,16 @@ function RateEmployee() {
     setWeek("");
     setComment("");
     setKpis([]);
+    setAvailableWeeks([]);
   };
 
   // Whenever frequency or selectedEmployee changes, fetch KPI set
-  // (in real code, you'd let the user pick frequency first, then fetch)
+  // (In a real app, you might wait for user to choose frequency first, then fetch, but here's a simplified approach.)
   useEffect(() => {
     const fetchData = async () => {
       if (!selectedEmployee) return;
       try {
         const data = await fetchKpiSet(selectedEmployee.designation, frequency);
-        // data structure: { ... kpis: [{kpiName, type, marks, target, ...}], version, ... }
         if (data) {
           // Initialize local kpis with a "score" + "comment" field
           const initialKpis = data.kpis.map((k) => ({
@@ -75,6 +77,22 @@ function RateEmployee() {
     }
   }, [selectedEmployee, frequency, showModal, fetchKpiSet]);
 
+  // Weekly: whenever year or month changes, recalc the available weeks
+  useEffect(() => {
+    if (frequency === "weekly" && year && month) {
+      const yearNum = parseInt(year, 10);
+      const monthNum = parseInt(month, 10) - 1; // 0-based
+      if (yearNum > 0 && monthNum >= 0) {
+        const weeksArr = getWeeksInMonth(yearNum, monthNum);
+        setAvailableWeeks(weeksArr);
+      } else {
+        setAvailableWeeks([]);
+      }
+    } else {
+      setAvailableWeeks([]);
+    }
+  }, [frequency, year, month]);
+
   // Compute total score
   const totalScore = kpis.reduce((acc, k) => acc + Number(k.score || 0), 0);
 
@@ -86,9 +104,19 @@ function RateEmployee() {
       toast.error("Please select a date for daily frequency");
       return;
     }
-    if (frequency === "weekly" && (!year || !week)) {
-      toast.error("Please select year & week");
-      return;
+    if (frequency === "weekly") {
+      if (!year) {
+        toast.error("Please select a year for weekly frequency");
+        return;
+      }
+      if (!month) {
+        toast.error("Please select a month for weekly frequency");
+        return;
+      }
+      if (!week) {
+        toast.error("Please select which week in the month");
+        return;
+      }
     }
     if (frequency === "monthly" && (!year || !month)) {
       toast.error("Please select year & month");
@@ -105,9 +133,11 @@ function RateEmployee() {
         frequency,
         version: kpiSet?.version || 1,
         date: frequency === "daily" ? date : undefined,
+        // For weekly/monthly/yearly
         year: ["weekly", "monthly", "yearly"].includes(frequency) ? year : undefined,
-        month: frequency === "monthly" ? month : undefined,
+        month: ["weekly", "monthly"].includes(frequency) ? month : undefined,
         week: frequency === "weekly" ? week : undefined,
+
         kpis: kpis.map((k) => ({
           kpiName: k.kpiName,
           type: k.type,
@@ -174,6 +204,7 @@ function RateEmployee() {
       {showModal && selectedEmployee && (
         <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow-lg w-full max-w-2xl relative">
+            {/* Close button */}
             <button
               onClick={() => setShowModal(false)}
               className="absolute top-2 right-2 text-xl"
@@ -191,7 +222,15 @@ function RateEmployee() {
               <select
                 className="border p-2 w-full rounded"
                 value={frequency}
-                onChange={(e) => setFrequency(e.target.value)}
+                onChange={(e) => {
+                  setFrequency(e.target.value);
+                  // reset some states if needed
+                  setYear("");
+                  setMonth("");
+                  setWeek("");
+                  setDate("");
+                  setAvailableWeeks([]);
+                }}
               >
                 {FREQUENCIES.map((freq) => (
                   <option key={freq} value={freq}>
@@ -201,7 +240,7 @@ function RateEmployee() {
               </select>
             </div>
 
-            {/* Date pickers depending on frequency */}
+            {/* DAILY */}
             {frequency === "daily" && (
               <div className="mb-2">
                 <label className="block font-medium">Date</label>
@@ -213,30 +252,64 @@ function RateEmployee() {
                 />
               </div>
             )}
+
+            {/* WEEKLY => year + month => dropdown of weeks */}
             {frequency === "weekly" && (
-              <div className="flex space-x-2 mb-2">
-                <div>
+              <>
+                <div className="mb-2">
                   <label className="block font-medium">Year</label>
                   <input
                     type="number"
                     className="border p-2 rounded w-full"
+                    placeholder="2025"
                     value={year}
                     onChange={(e) => setYear(e.target.value)}
-                    placeholder="2025"
                   />
                 </div>
-                <div>
-                  <label className="block font-medium">Week #</label>
-                  <input
-                    type="number"
+
+                <div className="mb-2">
+                  <label className="block font-medium">Month</label>
+                  <select
                     className="border p-2 rounded w-full"
-                    value={week}
-                    onChange={(e) => setWeek(e.target.value)}
-                    placeholder="1-52"
-                  />
+                    value={month}
+                    onChange={(e) => setMonth(e.target.value)}
+                  >
+                    <option value="">Select Month</option>
+                    {[...Array(12)].map((_, i) => {
+                      const m = i + 1;
+                      return (
+                        <option key={m} value={m.toString().padStart(2, "0")}>
+                          {m}
+                        </option>
+                      );
+                    })}
+                  </select>
                 </div>
-              </div>
+
+                {/* if we have a valid year+month, show the weeks dropdown */}
+                {year && month && (
+                  <div className="mb-2">
+                    <label className="block font-medium">
+                      Week in {month}/{year}
+                    </label>
+                    <select
+                      className="border p-2 rounded w-full"
+                      value={week}
+                      onChange={(e) => setWeek(e.target.value)}
+                    >
+                      <option value="">Select Week</option>
+                      {availableWeeks.map((wObj) => (
+                        <option key={wObj.value} value={wObj.value}>
+                          {wObj.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </>
             )}
+
+            {/* MONTHLY => Year + Month */}
             {frequency === "monthly" && (
               <div className="flex space-x-2 mb-2">
                 <div>
@@ -269,6 +342,8 @@ function RateEmployee() {
                 </div>
               </div>
             )}
+
+            {/* YEARLY => Year */}
             {frequency === "yearly" && (
               <div className="mb-2">
                 <label className="block font-medium">Year</label>
@@ -334,13 +409,9 @@ function RateEmployee() {
                 <p className="text-sm text-gray-500">No informal KPIs.</p>
               )}
               {groupedKpis.informal.map((k, idx) => {
-                // We need a separate index offset for the informal array
                 const realIdx = kpis.indexOf(k);
                 return (
-                  <div
-                    key={realIdx}
-                    className="flex items-center space-x-2 my-2"
-                  >
+                  <div key={realIdx} className="flex items-center space-x-2 my-2">
                     <div className="w-1/3">
                       <p className="font-medium">{k.kpiName}</p>
                       <p className="text-sm text-gray-400">Max: {k.marks}</p>
@@ -389,7 +460,8 @@ function RateEmployee() {
             {/* Total Score & actions */}
             <div className="mt-4 flex justify-between items-center">
               <p className="font-semibold">
-                Total Score: <span className="text-indigo-600">{totalScore}</span>
+                Total Score:{" "}
+                <span className="text-indigo-600">{totalScore}</span>
               </p>
               <button
                 onClick={handleSubmitRating}
