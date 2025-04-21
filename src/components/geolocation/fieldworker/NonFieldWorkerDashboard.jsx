@@ -139,6 +139,7 @@ export default function NonFieldWorkerDashboard() {
           <thead>
             <tr className="bg-gray-100 dark:bg-gray-800 text-sm">
               <th className="px-4 py-2">Sr No</th>
+              <th className="px-4 py-2">Avatar</th>
               <th className="px-4 py-2">Emp ID</th>
               <th className="px-4 py-2">First Name</th>
               <th className="px-4 py-2">Last Name</th>
