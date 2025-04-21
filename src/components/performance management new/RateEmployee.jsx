@@ -48,26 +48,34 @@ function RateEmployee() {
   }, [fetchSubordinates]);
 
   // Get unique designations for filter dropdown
-  const uniqueDesignations = [...new Set(subordinates.map(emp => emp.designation))];
+  const uniqueDesignations = [
+    ...new Set(subordinates.map((emp) => emp.designation)),
+  ];
 
   // Filter employees based on search and designation
-  const filteredEmployees = subordinates.filter(emp => {
+  const filteredEmployees = subordinates.filter((emp) => {
     const fullName = `${emp.first_Name} ${emp.last_Name}`.toLowerCase();
-    const matchesSearch = searchQuery === "" || 
-      fullName.includes(searchQuery.toLowerCase()) || 
+    const matchesSearch =
+      searchQuery === "" ||
+      fullName.includes(searchQuery.toLowerCase()) ||
       emp.employee_Id.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesDesignation = filterDesignation === "" || emp.designation === filterDesignation;
-    
+
+    const matchesDesignation =
+      filterDesignation === "" || emp.designation === filterDesignation;
+
     return matchesSearch && matchesDesignation;
   });
 
   // Sort employees
   const sortedEmployees = [...filteredEmployees].sort((a, b) => {
     if (sortOrder === "name-asc") {
-      return `${a.first_Name} ${a.last_Name}`.localeCompare(`${b.first_Name} ${b.last_Name}`);
+      return `${a.first_Name} ${a.last_Name}`.localeCompare(
+        `${b.first_Name} ${b.last_Name}`
+      );
     } else if (sortOrder === "name-desc") {
-      return `${b.first_Name} ${b.last_Name}`.localeCompare(`${a.first_Name} ${a.last_Name}`);
+      return `${b.first_Name} ${b.last_Name}`.localeCompare(
+        `${a.first_Name} ${a.last_Name}`
+      );
     } else if (sortOrder === "designation") {
       return a.designation.localeCompare(b.designation);
     }
@@ -175,8 +183,7 @@ function RateEmployee() {
     );
   };
 
-
-const handleScoreChange = (index, newVal) => {
+  const handleScoreChange = (index, newVal) => {
     setKpis((prev) =>
       prev.map((k, i) => {
         if (i !== index) return k;
@@ -231,7 +238,9 @@ const handleScoreChange = (index, newVal) => {
         frequency,
         version: kpiSet?.version || 1,
         date: frequency === "daily" ? date : undefined,
-        year: ["weekly", "monthly", "yearly"].includes(frequency) ? year : undefined,
+        year: ["weekly", "monthly", "yearly"].includes(frequency)
+          ? year
+          : undefined,
         month: ["weekly", "monthly"].includes(frequency) ? month : undefined,
         week: frequency === "weekly" ? week : undefined,
         kpis: kpis.map((k) => ({
@@ -266,7 +275,7 @@ const handleScoreChange = (index, newVal) => {
               Rate your team members based on key performance indicators
             </p>
           </div>
-          
+
           <div className="flex items-center space-x-3">
             <div className="relative">
               <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -280,11 +289,13 @@ const handleScoreChange = (index, newVal) => {
             </div>
           </div>
         </div>
-        
+
         {/* Filters */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4 mb-6 flex flex-wrap items-center gap-4">
           <div className="flex-1 min-w-[200px]">
-            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Filter by Designation</label>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+              Filter by Designation
+            </label>
             <div className="relative">
               <select
                 value={filterDesignation}
@@ -303,9 +314,11 @@ const handleScoreChange = (index, newVal) => {
               </div>
             </div>
           </div>
-          
+
           <div className="flex-1 min-w-[200px]">
-            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Sort By</label>
+            <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+              Sort By
+            </label>
             <div className="relative">
               <select
                 value={sortOrder}
@@ -321,9 +334,9 @@ const handleScoreChange = (index, newVal) => {
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-end">
-            <button 
+            <button
               className="inline-flex items-center px-4 py-2 bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 font-medium rounded-lg hover:bg-indigo-200 dark:hover:bg-indigo-900 transition-colors"
               onClick={() => {
                 setSearchQuery("");
@@ -341,20 +354,45 @@ const handleScoreChange = (index, newVal) => {
         {loading && (
           <div className="bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-4 rounded-lg mb-6 flex items-center">
             <div className="mr-3">
-              <svg className="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              <svg
+                className="animate-spin h-5 w-5 text-blue-500"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
               </svg>
             </div>
             <p>Loading employee data...</p>
           </div>
         )}
-        
+
         {error && (
           <div className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 p-4 rounded-lg mb-6 flex items-center">
             <div className="mr-3">
-              <svg className="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+              <svg
+                className="h-5 w-5 text-red-500"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                  clipRule="evenodd"
+                />
               </svg>
             </div>
             <p>Error: {error}</p>
@@ -365,11 +403,13 @@ const handleScoreChange = (index, newVal) => {
         {sortedEmployees.length === 0 ? (
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-12 text-center">
             <FiUser className="mx-auto text-gray-400 dark:text-gray-500 w-16 h-16 mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">No employees found</h3>
+            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+              No employees found
+            </h3>
             <p className="text-gray-500 dark:text-gray-400">
-              {searchQuery || filterDesignation ? 
-                "Try adjusting your search or filters" : 
-                "No subordinates are assigned to you yet"}
+              {searchQuery || filterDesignation
+                ? "Try adjusting your search or filters"
+                : "No subordinates are assigned to you yet"}
             </p>
           </div>
         ) : (
@@ -388,7 +428,8 @@ const handleScoreChange = (index, newVal) => {
                     />
                   ) : (
                     <div className="w-14 h-14 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-xl font-bold text-indigo-600 dark:text-indigo-400">
-                      {emp.first_Name?.[0]}{emp.last_Name?.[0]}
+                      {emp.first_Name?.[0]}
+                      {emp.last_Name?.[0]}
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
@@ -405,7 +446,7 @@ const handleScoreChange = (index, newVal) => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="mt-auto p-4 pt-2 border-t border-gray-100 dark:border-gray-700 flex justify-between items-center">
                   <button
                     onClick={() => handleOpenModal(emp)}
