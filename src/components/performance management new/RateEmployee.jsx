@@ -246,6 +246,9 @@ function RateEmployee() {
         kpis: kpis.map((k) => ({
           kpiName: k.kpiName,
           type: k.type,
+          marks: k.marks,
+          target: k.target,
+          achieved: k.achieved,
           score: Number(k.score),
           comment: k.comment,
         })),
