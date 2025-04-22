@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useCallback, Fragment } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -21,11 +22,13 @@ import {
   FiAlertCircle,
   FiGrid,
   FiSearch,
-  FiFilter,
   FiMoon,
   FiSun,
 } from "react-icons/fi";
 import { Dialog, Transition } from "@headlessui/react";
+
+// CHANGES HERE: import the ConfirmationDialog
+import ConfirmationDialog from "../../common/ConfirmationDialog"; 
 
 export default function UpdateTask() {
   // Task input state (for form)
@@ -50,7 +53,7 @@ export default function UpdateTask() {
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [manualPage, setManualPage] = useState(1);
-  const tasksPerPage = 10; // Display 5 tasks per page
+  const tasksPerPage = 10;
 
   // Edit mode tracking
   const [editMode, setEditMode] = useState(false);
@@ -59,12 +62,34 @@ export default function UpdateTask() {
   // View mode (list or grid)
   const [viewMode, setViewMode] = useState("list");
 
-  // Theme toggle
-
   // Search term
   const [searchTerm, setSearchTerm] = useState("");
 
+  // CHANGES HERE: ConfirmationDialog controlling state
+  const [confirmationOpen, setConfirmationOpen] = useState(false);
+  const [confirmationData, setConfirmationData] = useState({
+    title: "",
+    message: "",
+    confirmText: "Confirm",
+    cancelText: "Cancel",
+    onConfirm: () => {},
+  });
 
+  // Helper to open the confirmation dialog
+  const openConfirmation = ({
+    title,
+    message,
+    onConfirm,
+    confirmText = "Confirm",
+    cancelText = "Cancel",
+  }) => {
+    setConfirmationData({ title, message, onConfirm, confirmText, cancelText });
+    setConfirmationOpen(true);
+  };
+
+  const closeConfirmation = () => {
+    setConfirmationOpen(false);
+  };
 
   // 1. Fetch tasks from the API
   const fetchTasks = useCallback(async () => {
@@ -78,7 +103,6 @@ export default function UpdateTask() {
       }
     } catch (error) {
       console.error("Error fetching tasks:", error);
-      // Additional toast in service file if needed
     } finally {
       setLoading(false);
     }
@@ -147,7 +171,7 @@ export default function UpdateTask() {
     setTaskList((prev) => prev.map((task, i) => (i === index ? value : task)));
   };
 
-  // If user decides to cancel edit
+  // If user decides to cancel editing/adding
   const handleCancelEdit = () => {
     setTaskList([""]);
     setEditMode(false);
@@ -163,9 +187,8 @@ export default function UpdateTask() {
     });
   };
 
-  // 4. Submitting the form: add or update
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  // Actual function that does the "ADD" or "UPDATE" service call
+  const doSubmitTask = async () => {
     const nonEmptyTasks = taskList.filter((task) => task.trim().length > 0);
     if (nonEmptyTasks.length === 0) {
       toast.error("Please enter at least one non-empty task.");
@@ -181,7 +204,6 @@ export default function UpdateTask() {
         const res = await updateTaskdaily(editTaskId, payload);
         if (res.success) {
           toast.success(res.message || "Task updated successfully!");
-          // Reset the form and exit edit mode
           setTaskList([""]);
           setEditMode(false);
           setEditTaskId(null);
@@ -195,7 +217,6 @@ export default function UpdateTask() {
         const result = await addTask(payload);
         if (result.success) {
           toast.success(result.message || "Tasks submitted successfully!");
-          // Clear the form
           setTaskList([""]);
           setIsModalOpen(false);
           fetchTasks();
@@ -211,13 +232,26 @@ export default function UpdateTask() {
     }
   };
 
-  // 5. Deleting a task from the table
-  const handleDeleteTask = async (taskId) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this task?"
-    );
-    if (!confirmDelete) return;
+  // 4. Confirm & then submit (Add or Edit)
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Open the confirmation dialog
+    openConfirmation({
+      title: editMode ? "Update Task" : "Add Task",
+      message: editMode
+        ? "Are you sure you want to update this task?"
+        : "Are you sure you want to add this task?",
+      confirmText: editMode ? "Update" : "Add",
+      cancelText: "Cancel",
+      onConfirm: async () => {
+        closeConfirmation(); // close the confirmation dialog
+        await doSubmitTask(); // proceed with the actual service call
+      },
+    });
+  };
 
+  // Function that performs the actual delete
+  const doDeleteTask = async (taskId) => {
     setLoadingId(taskId);
     try {
       const res = await deleteTask(taskId);
@@ -235,10 +269,22 @@ export default function UpdateTask() {
     }
   };
 
+  // 5. Deleting a task -> prompt the ConfirmationDialog
+  const handleDeleteTask = (taskId) => {
+    openConfirmation({
+      title: "Delete Task",
+      message: "Are you sure you want to delete this task?",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      onConfirm: () => {
+        closeConfirmation();
+        doDeleteTask(taskId);
+      },
+    });
+  };
+
   // 6. Editing a task from the table
   const handleUpdateClick = (item) => {
-    // 'item.task' is an array of strings.
-    // Populate 'taskList' for the form.
     setTaskList(item.task);
     setEditTaskId(item._id);
     setEditMode(true);
@@ -252,10 +298,10 @@ export default function UpdateTask() {
   };
 
   return (
-    <div className="bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100  transition-all duration-300 ease-in-out">
+    <div className="bg-gray-50 dark:bg-gray-950 text-gray-800 dark:text-gray-100 transition-all duration-300 ease-in-out">
       {/* Glassmorphism header */}
       <div className="bg-white/90 dark:bg-gray-950/90 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 shadow-sm">
-        <div className=" mx-auto py-4 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto py-4 px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="bg-gradient-to-br from-indigo-500 to-violet-500 rounded-lg p-2 shadow-lg">
@@ -287,7 +333,7 @@ export default function UpdateTask() {
         </div>
       </div>
 
-      <div className=" mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search and Filter Bar */}
         <div className="mb-6 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
           <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
@@ -787,6 +833,17 @@ export default function UpdateTask() {
           </div>
         </Dialog>
       </Transition>
+
+      {/* CHANGES HERE: The reusable ConfirmationDialog component */}
+      <ConfirmationDialog
+        open={confirmationOpen}
+        title={confirmationData.title}
+        message={confirmationData.message}
+        confirmText={confirmationData.confirmText}
+        cancelText={confirmationData.cancelText}
+        onConfirm={confirmationData.onConfirm}
+        onCancel={closeConfirmation}
+      />
     </div>
   );
 }
