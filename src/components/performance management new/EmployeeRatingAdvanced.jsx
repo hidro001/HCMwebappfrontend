@@ -1,18 +1,1651 @@
 
 
+// import React, { useEffect, useState } from "react";
+// import { useParams } from "react-router-dom";
+// import { toast } from "react-hot-toast";
+// import useRatingStore from "../../store/useRatingNewStore";
+// import { getWeeksInMonth } from "./calendarUtils"; 
+
+// const FREQUENCIES = ["daily", "weekly", "monthly", "yearly"];
+
+// function EmployeeRatingAdvanced() {
+//   const { employeeId } = useParams();
+
+//   // from Zustand
+//   const { getEmployeeRatingsAdvanced, loading, error } = useRatingStore();
+
+//   // frequency state
+//   const [frequency, setFrequency] = useState("daily");
+
+//   // daily
+//   const [startDate, setStartDate] = useState("");
+//   const [endDate, setEndDate] = useState("");
+
+//   // weekly/monthly/yearly
+//   const [startYear, setStartYear] = useState("");
+//   const [endYear, setEndYear] = useState("");
+//   const [startMonth, setStartMonth] = useState("");
+//   const [endMonth, setEndMonth] = useState("");
+//   const [startWeek, setStartWeek] = useState("");
+//   const [endWeek, setEndWeek] = useState("");
+//   const [startAvailableWeeks, setStartAvailableWeeks] = useState([]);
+//   const [endAvailableWeeks, setEndAvailableWeeks] = useState([]);
+
+//   // data from API
+//   const [employeeData, setEmployeeData] = useState(null);
+//   const [filteredRatings, setFilteredRatings] = useState([]);
+
+//   // ---- NEW: KPI Detail Modal state ----
+//   const [showModal, setShowModal] = useState(false);
+//   const [selectedRating, setSelectedRating] = useState(null);
+
+//   // a small date helper
+//   const today = new Date();
+//   const isoToday = today.toISOString().split("T")[0];
+//   const currentYear = today.getFullYear();
+//   const currentMonth = String(today.getMonth() + 1).padStart(2, "0");
+
+//   // reset frequency defaults
+//   useEffect(() => {
+//     switch (frequency) {
+//       case "daily":
+//         setStartDate(isoToday);
+//         setEndDate(isoToday);
+//         setStartYear("");
+//         setEndYear("");
+//         setStartMonth("");
+//         setEndMonth("");
+//         setStartWeek("");
+//         setEndWeek("");
+//         setStartAvailableWeeks([]);
+//         setEndAvailableWeeks([]);
+//         break;
+//       case "weekly":
+//         setStartDate("");
+//         setEndDate("");
+//         setStartYear(String(currentYear));
+//         setEndYear(String(currentYear));
+//         setStartMonth(currentMonth);
+//         setEndMonth(currentMonth);
+//         setStartWeek("");
+//         setEndWeek("");
+//         break;
+//       case "monthly":
+//         setStartDate("");
+//         setEndDate("");
+//         setStartYear(String(currentYear));
+//         setEndYear(String(currentYear));
+//         setStartMonth(currentMonth);
+//         setEndMonth(currentMonth);
+//         setStartWeek("");
+//         setEndWeek("");
+//         setStartAvailableWeeks([]);
+//         setEndAvailableWeeks([]);
+//         break;
+//       case "yearly":
+//         setStartDate("");
+//         setEndDate("");
+//         setStartYear(String(currentYear));
+//         setEndYear(String(currentYear));
+//         setStartMonth("");
+//         setEndMonth("");
+//         setStartWeek("");
+//         setEndWeek("");
+//         setStartAvailableWeeks([]);
+//         setEndAvailableWeeks([]);
+//         break;
+//       default:
+//         break;
+//     }
+//   }, [frequency]);
+
+//   // if weekly => recalc startWeek
+//   useEffect(() => {
+//     if (frequency !== "weekly") return;
+//     if (startYear && startMonth) {
+//       const y = parseInt(startYear, 10);
+//       const m = parseInt(startMonth, 10) - 1;
+//       if (y >= 0 && m >= 0) {
+//         const weeksArr = getWeeksInMonth(y, m);
+//         setStartAvailableWeeks(weeksArr);
+//         if (!startWeek || !weeksArr.find((w) => w.value === startWeek)) {
+//           setStartWeek(weeksArr[0]?.value || "");
+//         }
+//       } else {
+//         setStartAvailableWeeks([]);
+//       }
+//     } else {
+//       setStartAvailableWeeks([]);
+//     }
+//   }, [frequency, startYear, startMonth, startWeek]);
+
+//   // if weekly => recalc endWeek
+//   useEffect(() => {
+//     if (frequency !== "weekly") return;
+//     if (endYear && endMonth) {
+//       const y = parseInt(endYear, 10);
+//       const m = parseInt(endMonth, 10) - 1;
+//       if (y >= 0 && m >= 0) {
+//         const weeksArr = getWeeksInMonth(y, m);
+//         setEndAvailableWeeks(weeksArr);
+//         if (!endWeek || !weeksArr.find((w) => w.value === endWeek)) {
+//           setEndWeek(weeksArr[0]?.value || "");
+//         }
+//       } else {
+//         setEndAvailableWeeks([]);
+//       }
+//     } else {
+//       setEndAvailableWeeks([]);
+//     }
+//   }, [frequency, endYear, endMonth, endWeek]);
+
+//   // fetch with advanced filters
+//   const handleFetchRatings = async () => {
+//     if (!employeeId) {
+//       toast.error("No employee selected.");
+//       return;
+//     }
+//     try {
+//       const params = { frequency };
+//       // daily
+//       if (frequency === "daily" && startDate && endDate) {
+//         params.startDate = startDate;
+//         params.endDate = endDate;
+//       }
+//       // weekly
+//       if (
+//         frequency === "weekly" &&
+//         startYear &&
+//         endYear &&
+//         startMonth &&
+//         endMonth &&
+//         startWeek &&
+//         endWeek
+//       ) {
+//         params.startYear = startYear;
+//         params.endYear = endYear;
+//         params.startMonth = startMonth;
+//         params.endMonth = endMonth;
+//         params.startWeek = startWeek;
+//         params.endWeek = endWeek;
+//       }
+//       // monthly
+//       if (
+//         frequency === "monthly" &&
+//         startYear &&
+//         endYear &&
+//         startMonth &&
+//         endMonth
+//       ) {
+//         params.startYear = startYear;
+//         params.endYear = endYear;
+//         params.startMonth = startMonth;
+//         params.endMonth = endMonth;
+//       }
+//       // yearly
+//       if (frequency === "yearly" && startYear && endYear) {
+//         params.startYear = startYear;
+//         params.endYear = endYear;
+//       }
+
+//       const res = await getEmployeeRatingsAdvanced(employeeId, params);
+//       if (res.success) {
+//         const { employee, filteredRatings, averageRating, ratingCount } = res.data;
+//         setEmployeeData({
+//           ...employee,
+//           averageRating,
+//           ratingCount,
+//         });
+//         setFilteredRatings(filteredRatings);
+//       } else {
+//         toast.error(res.message || "Could not fetch data");
+//       }
+//     } catch (err) {
+//       toast.error(err.message || "Error fetching employee advanced ratings");
+//     }
+//   };
+
+//   // handler to open KPI detail modal
+//   const handleOpenModal = (ratingDoc) => {
+//     setSelectedRating(ratingDoc);
+//     setShowModal(true);
+//   };
+
+//   const handleCloseModal = () => {
+//     setShowModal(false);
+//     setSelectedRating(null);
+//   };
+
+//   return (
+//     <div className="p-4 min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
+//       <h1 className="text-2xl font-bold mb-4">Employee Rating (Advanced)</h1>
+
+//       {loading && <p className="text-blue-500 mb-2">Loading...</p>}
+//       {error && <p className="text-red-500 mb-2">Error: {error}</p>}
+
+//       {/* Filter Panel */}
+//       <div className="bg-white dark:bg-gray-800 rounded p-4 mb-6 shadow">
+//         <label className="block font-medium mb-1">Frequency</label>
+//         <select
+//           className="border p-2 rounded w-48 dark:bg-gray-700 dark:border-gray-600"
+//           value={frequency}
+//           onChange={(e) => setFrequency(e.target.value)}
+//         >
+//           {FREQUENCIES.map((freq) => (
+//             <option key={freq} value={freq}>
+//               {freq}
+//             </option>
+//           ))}
+//         </select>
+
+//         {/* daily => date range */}
+//         {frequency === "daily" && (
+//           <div className="mt-4 flex space-x-4">
+//             <div>
+//               <label className="block font-medium mb-1">Start Date</label>
+//               <input
+//                 type="date"
+//                 className="border p-2 rounded dark:bg-gray-700 dark:border-gray-600"
+//                 value={startDate}
+//                 onChange={(e) => setStartDate(e.target.value)}
+//               />
+//             </div>
+//             <div>
+//               <label className="block font-medium mb-1">End Date</label>
+//               <input
+//                 type="date"
+//                 className="border p-2 rounded dark:bg-gray-700 dark:border-gray-600"
+//                 value={endDate}
+//                 onChange={(e) => setEndDate(e.target.value)}
+//               />
+//             </div>
+//           </div>
+//         )}
+
+//         {/* weekly => start Year/Month/Week + end Year/Month/Week */}
+//         {frequency === "weekly" && (
+//           <>
+//             {/* START weekly */}
+//             <div className="mt-4 flex space-x-4">
+//               <div>
+//                 <label className="block font-medium mb-1">Start Year</label>
+//                 <input
+//                   type="number"
+//                   className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
+//                   placeholder="2025"
+//                   value={startYear}
+//                   onChange={(e) => setStartYear(e.target.value)}
+//                 />
+//               </div>
+//               <div>
+//                 <label className="block font-medium mb-1">Start Month</label>
+//                 <input
+//                   type="number"
+//                   className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
+//                   placeholder="1-12"
+//                   value={startMonth}
+//                   onChange={(e) => setStartMonth(e.target.value)}
+//                 />
+//               </div>
+//               <div>
+//                 <label className="block font-medium mb-1">Start Week</label>
+//                 <select
+//                   className="border p-2 rounded w-24 dark:bg-gray-700 dark:border-gray-600"
+//                   value={startWeek}
+//                   onChange={(e) => setStartWeek(e.target.value)}
+//                 >
+//                   <option value="">Select Week</option>
+//                   {startAvailableWeeks.map((w) => (
+//                     <option key={w.value} value={w.value}>
+//                       {w.label}
+//                     </option>
+//                   ))}
+//                 </select>
+//               </div>
+//             </div>
+
+//             {/* END weekly */}
+//             <div className="mt-4 flex space-x-4">
+//               <div>
+//                 <label className="block font-medium mb-1">End Year</label>
+//                 <input
+//                   type="number"
+//                   className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
+//                   placeholder="2025"
+//                   value={endYear}
+//                   onChange={(e) => setEndYear(e.target.value)}
+//                 />
+//               </div>
+//               <div>
+//                 <label className="block font-medium mb-1">End Month</label>
+//                 <input
+//                   type="number"
+//                   className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
+//                   placeholder="1-12"
+//                   value={endMonth}
+//                   onChange={(e) => setEndMonth(e.target.value)}
+//                 />
+//               </div>
+//               <div>
+//                 <label className="block font-medium mb-1">End Week</label>
+//                 <select
+//                   className="border p-2 rounded w-24 dark:bg-gray-700 dark:border-gray-600"
+//                   value={endWeek}
+//                   onChange={(e) => setEndWeek(e.target.value)}
+//                 >
+//                   <option value="">Select Week</option>
+//                   {endAvailableWeeks.map((w) => (
+//                     <option key={w.value} value={w.value}>
+//                       {w.label}
+//                     </option>
+//                   ))}
+//                 </select>
+//               </div>
+//             </div>
+//           </>
+//         )}
+
+//         {/* monthly => startYear/Month + endYear/Month */}
+//         {frequency === "monthly" && (
+//           <div className="mt-4 flex space-x-4">
+//             <div>
+//               <label className="block font-medium mb-1">Start Year</label>
+//               <input
+//                 type="number"
+//                 className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
+//                 value={startYear}
+//                 onChange={(e) => setStartYear(e.target.value)}
+//                 placeholder="2024"
+//               />
+//             </div>
+//             <div>
+//               <label className="block font-medium mb-1">Start Month</label>
+//               <input
+//                 type="number"
+//                 className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
+//                 value={startMonth}
+//                 onChange={(e) => setStartMonth(e.target.value)}
+//                 placeholder="1-12"
+//               />
+//             </div>
+//             <div>
+//               <label className="block font-medium mb-1">End Year</label>
+//               <input
+//                 type="number"
+//                 className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
+//                 value={endYear}
+//                 onChange={(e) => setEndYear(e.target.value)}
+//                 placeholder="2025"
+//               />
+//             </div>
+//             <div>
+//               <label className="block font-medium mb-1">End Month</label>
+//               <input
+//                 type="number"
+//                 className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
+//                 value={endMonth}
+//                 onChange={(e) => setEndMonth(e.target.value)}
+//                 placeholder="1-12"
+//               />
+//             </div>
+//           </div>
+//         )}
+
+//         {/* yearly => startYear + endYear */}
+//         {frequency === "yearly" && (
+//           <div className="mt-4 flex space-x-4">
+//             <div>
+//               <label className="block font-medium mb-1">Start Year</label>
+//               <input
+//                 type="number"
+//                 className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
+//                 value={startYear}
+//                 onChange={(e) => setStartYear(e.target.value)}
+//                 placeholder="2023"
+//               />
+//             </div>
+//             <div>
+//               <label className="block font-medium mb-1">End Year</label>
+//               <input
+//                 type="number"
+//                 className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
+//                 value={endYear}
+//                 onChange={(e) => setEndYear(e.target.value)}
+//                 placeholder="2025"
+//               />
+//             </div>
+//           </div>
+//         )}
+
+//         <button
+//           onClick={handleFetchRatings}
+//           className="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded"
+//         >
+//           Fetch Ratings
+//         </button>
+//       </div>
+
+//       {/* Employee Info + Ratings */}
+//       {employeeData ? (
+//         <div className="bg-white dark:bg-gray-800 rounded p-4 shadow">
+//           <div className="flex items-center space-x-4 mb-4">
+//             <img
+//               src={employeeData.user_Avatar}
+//               alt="avatar"
+//               className="w-16 h-16 rounded-full"
+//             />
+//             <div>
+//               <h2 className="text-xl font-semibold">
+//                 {employeeData.first_Name} {employeeData.last_Name} (
+//                 {employeeData.employee_Id})
+//               </h2>
+//               <p className="text-gray-600 dark:text-gray-400">
+//                 {employeeData.designation}
+//               </p>
+//               {employeeData.department && (
+//                 <p className="text-gray-500 dark:text-gray-400 text-sm">
+//                   Dept: {employeeData.department}
+//                 </p>
+//               )}
+//             </div>
+//             <div className="ml-auto text-right">
+//               <p className="text-gray-600 dark:text-gray-400 text-sm">
+//                 Ratings Found: {employeeData.ratingCount}
+//               </p>
+//               <p className="font-bold">
+//                 Avg Rating: {employeeData.averageRating.toFixed(2)}
+//               </p>
+//             </div>
+//           </div>
+
+//           {filteredRatings.length === 0 ? (
+//             <p className="text-gray-500 dark:text-gray-400">
+//               No rating docs match your filters.
+//             </p>
+//           ) : (
+//             <div className="overflow-x-auto">
+//               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+//                 <thead className="bg-gray-50 dark:bg-gray-900/50">
+//                   <tr>
+//                     <th className="px-4 py-2 text-left">Frequency</th>
+//                     <th className="px-4 py-2 text-left">Period</th>
+//                     <th className="px-4 py-2 text-left">TotalScore</th>
+//                     <th className="px-4 py-2 text-left"># of KPIs</th>
+//                     <th className="px-4 py-2 text-left">Comment</th>
+//                     <th className="px-4 py-2 text-left">Action</th>
+//                   </tr>
+//                 </thead>
+//                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+//                   {filteredRatings.map((rdoc) => (
+//                     <tr key={rdoc._id}>
+//                       <td className="px-4 py-2">{rdoc.frequency}</td>
+//                       <td className="px-4 py-2">{renderPeriod(rdoc)}</td>
+//                       <td className="px-4 py-2">{rdoc.totalScore}</td>
+//                       <td className="px-4 py-2">{rdoc.kpis?.length || 0}</td>
+//                       <td className="px-4 py-2">{rdoc.comment || "—"}</td>
+//                       <td className="px-4 py-2">
+//                         <button
+//                           className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
+//                           onClick={() => handleOpenModal(rdoc)}
+//                         >
+//                           View KPIs
+//                         </button>
+//                       </td>
+//                     </tr>
+//                   ))}
+//                 </tbody>
+//               </table>
+//             </div>
+//           )}
+//         </div>
+//       ) : (
+//         <p className="text-gray-500 dark:text-gray-400">
+//           No employee data loaded yet. Choose filters and click "Fetch Ratings."
+//         </p>
+//       )}
+
+//       {/* ------- MODAL for KPI detail ------- */}
+//       {showModal && selectedRating && (
+//         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+//           <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg relative w-full max-w-md">
+//             <button
+//               onClick={handleCloseModal}
+//               className="absolute top-2 right-2 text-xl text-gray-500 hover:text-gray-700 dark:text-gray-300"
+//             >
+//               &times;
+//             </button>
+//             <h3 className="text-lg font-semibold mb-3">
+//               KPI Details: {renderPeriod(selectedRating)} 
+//             </h3>
+//             <p className="text-sm text-gray-500 dark:text-gray-300 mb-2">
+//               Frequency: {selectedRating.frequency} | 
+//               Score: {selectedRating.totalScore}
+//             </p>
+//             <div className="max-h-64 overflow-auto space-y-2 pr-2">
+//               {selectedRating.kpis.map((k, idx) => (
+//                 <div
+//                   key={idx}
+//                   className="border border-gray-200 dark:border-gray-600 rounded p-3 bg-gray-50 dark:bg-gray-700"
+//                 >
+//                   <p className="font-medium">{k.kpiName}</p>
+//                   <p className="text-sm text-gray-500 dark:text-gray-300">
+//                     Type: {k.type} | Score: {k.score}
+//                   </p>
+//                   {k.comment && (
+//                     <p className="text-sm text-gray-500 dark:text-gray-300">
+//                       Comment: {k.comment}
+//                     </p>
+//                   )}
+//                 </div>
+//               ))}
+//             </div>
+//             <div className="mt-4 text-right">
+//               <button
+//                 onClick={handleCloseModal}
+//                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded"
+//               >
+//                 Close
+//               </button>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+// /**
+//  * Helper to render the date/period
+//  */
+// function renderPeriod(rdoc) {
+//   if (rdoc.frequency === "daily") {
+//     if (!rdoc.date) return "No date";
+//     const d = new Date(rdoc.date);
+//     return d.toLocaleDateString();
+//   } else if (rdoc.frequency === "weekly") {
+//     return `Yr${rdoc.year}-M${rdoc.month}-Wk${rdoc.week}`;
+//   } else if (rdoc.frequency === "monthly") {
+//     return `${rdoc.year}-${rdoc.month}`;
+//   } else if (rdoc.frequency === "yearly") {
+//     return rdoc.year || "??";
+//   }
+//   return "??";
+// }
+
+// export default EmployeeRatingAdvanced;
+
+
+
+// import React, { useEffect, useState } from "react";
+// import { useParams } from "react-router-dom";
+// import { toast } from "react-hot-toast";
+// import useRatingStore from "../../store/useRatingNewStore";
+// import { getWeeksInMonth } from "./calendarUtils";
+// import { 
+//   FiCalendar, FiUser, FiFilter, FiBarChart2, FiEye, 
+//   FiX, FiBriefcase, FiSearch, FiChevronLeft, FiChevronRight, 
+//   FiCheckCircle, FiSun, FiMoon,
+//   FiChevronUp,
+//   FiChevronDown
+// } from "react-icons/fi";
+// import { RiDashboardLine, RiStarFill } from "react-icons/ri";
+// import { BsCalendarWeek, BsCalendarMonth, BsCalendar2Range } from "react-icons/bs";
+
+// const FREQUENCIES = [
+//   { value: "daily", label: "Daily", icon: <FiCalendar className="mr-2" /> },
+//   { value: "weekly", label: "Weekly", icon: <BsCalendarWeek className="mr-2" /> },
+//   { value: "monthly", label: "Monthly", icon: <BsCalendarMonth className="mr-2" /> },
+//   { value: "yearly", label: "Yearly", icon: <BsCalendar2Range className="mr-2" /> }
+// ];
+
+// function EmployeeRatingAdvanced() {
+//   const { employeeId } = useParams();
+
+//   // from Zustand
+//   const { getEmployeeRatingsAdvanced, loading, error } = useRatingStore();
+
+//   // UI state
+//   const [isDarkMode, setIsDarkMode] = useState(() => {
+//     return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+//   });
+//   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
+//   const [activeTab, setActiveTab] = useState("ratings"); // ratings, charts, history
+
+//   // frequency state
+//   const [frequency, setFrequency] = useState("daily");
+
+//   // daily
+//   const [startDate, setStartDate] = useState("");
+//   const [endDate, setEndDate] = useState("");
+
+//   // weekly/monthly/yearly
+//   const [startYear, setStartYear] = useState("");
+//   const [endYear, setEndYear] = useState("");
+//   const [startMonth, setStartMonth] = useState("");
+//   const [endMonth, setEndMonth] = useState("");
+//   const [startWeek, setStartWeek] = useState("");
+//   const [endWeek, setEndWeek] = useState("");
+//   const [startAvailableWeeks, setStartAvailableWeeks] = useState([]);
+//   const [endAvailableWeeks, setEndAvailableWeeks] = useState([]);
+
+//   // data from API
+//   const [employeeData, setEmployeeData] = useState(null);
+//   const [filteredRatings, setFilteredRatings] = useState([]);
+
+//   // KPI Detail Modal state
+//   const [showModal, setShowModal] = useState(false);
+//   const [selectedRating, setSelectedRating] = useState(null);
+
+//   // a small date helper
+//   const today = new Date();
+//   const isoToday = today.toISOString().split("T")[0];
+//   const currentYear = today.getFullYear();
+//   const currentMonth = String(today.getMonth() + 1).padStart(2, "0");
+
+//   // Toggle dark mode
+//   const toggleDarkMode = () => {
+//     setIsDarkMode(!isDarkMode);
+//     document.documentElement.classList.toggle('dark');
+//   };
+
+//   // Apply dark mode class to root element
+//   useEffect(() => {
+//     if (isDarkMode) {
+//       document.documentElement.classList.add('dark');
+//     } else {
+//       document.documentElement.classList.remove('dark');
+//     }
+//   }, [isDarkMode]);
+
+//   // reset frequency defaults
+//   useEffect(() => {
+//     switch (frequency) {
+//       case "daily":
+//         setStartDate(isoToday);
+//         setEndDate(isoToday);
+//         setStartYear("");
+//         setEndYear("");
+//         setStartMonth("");
+//         setEndMonth("");
+//         setStartWeek("");
+//         setEndWeek("");
+//         setStartAvailableWeeks([]);
+//         setEndAvailableWeeks([]);
+//         break;
+//       case "weekly":
+//         setStartDate("");
+//         setEndDate("");
+//         setStartYear(String(currentYear));
+//         setEndYear(String(currentYear));
+//         setStartMonth(currentMonth);
+//         setEndMonth(currentMonth);
+//         setStartWeek("");
+//         setEndWeek("");
+//         break;
+//       case "monthly":
+//         setStartDate("");
+//         setEndDate("");
+//         setStartYear(String(currentYear));
+//         setEndYear(String(currentYear));
+//         setStartMonth(currentMonth);
+//         setEndMonth(currentMonth);
+//         setStartWeek("");
+//         setEndWeek("");
+//         setStartAvailableWeeks([]);
+//         setEndAvailableWeeks([]);
+//         break;
+//       case "yearly":
+//         setStartDate("");
+//         setEndDate("");
+//         setStartYear(String(currentYear));
+//         setEndYear(String(currentYear));
+//         setStartMonth("");
+//         setEndMonth("");
+//         setStartWeek("");
+//         setEndWeek("");
+//         setStartAvailableWeeks([]);
+//         setEndAvailableWeeks([]);
+//         break;
+//       default:
+//         break;
+//     }
+//   }, [frequency]);
+
+//   // if weekly => recalc startWeek
+//   useEffect(() => {
+//     if (frequency !== "weekly") return;
+//     if (startYear && startMonth) {
+//       const y = parseInt(startYear, 10);
+//       const m = parseInt(startMonth, 10) - 1;
+//       if (y >= 0 && m >= 0) {
+//         const weeksArr = getWeeksInMonth(y, m);
+//         setStartAvailableWeeks(weeksArr);
+//         if (!startWeek || !weeksArr.find((w) => w.value === startWeek)) {
+//           setStartWeek(weeksArr[0]?.value || "");
+//         }
+//       } else {
+//         setStartAvailableWeeks([]);
+//       }
+//     } else {
+//       setStartAvailableWeeks([]);
+//     }
+//   }, [frequency, startYear, startMonth, startWeek]);
+
+//   // if weekly => recalc endWeek
+//   useEffect(() => {
+//     if (frequency !== "weekly") return;
+//     if (endYear && endMonth) {
+//       const y = parseInt(endYear, 10);
+//       const m = parseInt(endMonth, 10) - 1;
+//       if (y >= 0 && m >= 0) {
+//         const weeksArr = getWeeksInMonth(y, m);
+//         setEndAvailableWeeks(weeksArr);
+//         if (!endWeek || !weeksArr.find((w) => w.value === endWeek)) {
+//           setEndWeek(weeksArr[0]?.value || "");
+//         }
+//       } else {
+//         setEndAvailableWeeks([]);
+//       }
+//     } else {
+//       setEndAvailableWeeks([]);
+//     }
+//   }, [frequency, endYear, endMonth, endWeek]);
+
+//   // fetch with advanced filters
+//   const handleFetchRatings = async () => {
+//     if (!employeeId) {
+//       toast.error("No employee selected.");
+//       return;
+//     }
+//     try {
+//       const params = { frequency };
+//       // daily
+//       if (frequency === "daily" && startDate && endDate) {
+//         params.startDate = startDate;
+//         params.endDate = endDate;
+//       }
+//       // weekly
+//       if (
+//         frequency === "weekly" &&
+//         startYear &&
+//         endYear &&
+//         startMonth &&
+//         endMonth &&
+//         startWeek &&
+//         endWeek
+//       ) {
+//         params.startYear = startYear;
+//         params.endYear = endYear;
+//         params.startMonth = startMonth;
+//         params.endMonth = endMonth;
+//         params.startWeek = startWeek;
+//         params.endWeek = endWeek;
+//       }
+//       // monthly
+//       if (
+//         frequency === "monthly" &&
+//         startYear &&
+//         endYear &&
+//         startMonth &&
+//         endMonth
+//       ) {
+//         params.startYear = startYear;
+//         params.endYear = endYear;
+//         params.startMonth = startMonth;
+//         params.endMonth = endMonth;
+//       }
+//       // yearly
+//       if (frequency === "yearly" && startYear && endYear) {
+//         params.startYear = startYear;
+//         params.endYear = endYear;
+//       }
+
+//       const res = await getEmployeeRatingsAdvanced(employeeId, params);
+//       if (res.success) {
+//         const { employee, filteredRatings, averageRating, ratingCount } = res.data;
+//         setEmployeeData({
+//           ...employee,
+//           averageRating,
+//           ratingCount,
+//         });
+//         setFilteredRatings(filteredRatings);
+//         toast.success(`Found ${filteredRatings.length} ratings`);
+//       } else {
+//         toast.error(res.message || "Could not fetch data");
+//       }
+//     } catch (err) {
+//       toast.error(err.message || "Error fetching employee advanced ratings");
+//     }
+//   };
+
+//   // handler to open KPI detail modal
+//   const handleOpenModal = (ratingDoc) => {
+//     setSelectedRating(ratingDoc);
+//     setShowModal(true);
+//   };
+
+//   const handleCloseModal = () => {
+//     setShowModal(false);
+//     setSelectedRating(null);
+//   };
+
+//   // Performance rating color based on score
+//   const getRatingColor = (score) => {
+//     if (score >= 4) return "text-emerald-500";
+//     if (score >= 3) return "text-blue-500";
+//     if (score >= 2) return "text-amber-500";
+//     return "text-red-500";
+//   };
+
+//   // Helper to render stars based on score
+//   const renderRatingStars = (score) => {
+//     const stars = [];
+//     const fullStars = Math.floor(score);
+//     const hasHalfStar = score - fullStars >= 0.5;
+    
+//     for (let i = 0; i < 5; i++) {
+//       if (i < fullStars) {
+//         stars.push(<RiStarFill key={i} className="text-yellow-500" />);
+//       } else if (i === fullStars && hasHalfStar) {
+//         stars.push(<RiStarFill key={i} className="text-yellow-300" />);
+//       } else {
+//         stars.push(<RiStarFill key={i} className="text-gray-300 dark:text-gray-600" />);
+//       }
+//     }
+//     return <div className="flex">{stars}</div>;
+//   };
+
+//   return (
+//     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+//       {/* Top navigation bar */}
+//       <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700">
+//         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+//           <div className="flex items-center space-x-3">
+//             <RiDashboardLine className="text-blue-600 dark:text-blue-400 text-2xl" />
+//             <h1 className="text-xl font-bold">Performance Analytics</h1>
+//           </div>
+          
+//           <div className="flex items-center space-x-4">
+//             <button
+//               onClick={toggleDarkMode}
+//               className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+//             >
+//               {isDarkMode ? <FiSun className="text-lg" /> : <FiMoon className="text-lg" />}
+//             </button>
+            
+//             {employeeData && (
+//               <div className="flex items-center space-x-2">
+//                 <img
+//                   src={employeeData.user_Avatar}
+//                   alt="avatar"
+//                   className="w-8 h-8 rounded-full border-2 border-blue-500"
+//                 />
+//                 <span className="font-medium hidden sm:inline">
+//                   {employeeData.first_Name} {employeeData.last_Name}
+//                 </span>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="container mx-auto px-4 py-6">
+//         {/* Dashboard header */}
+//         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+//           <div className="mb-4 md:mb-0">
+//             <h2 className="text-2xl font-bold mb-1 flex items-center">
+//               <FiUser className="mr-2 text-blue-500" />
+//               Employee Performance Dashboard
+//             </h2>
+//             <p className="text-gray-600 dark:text-gray-400 text-sm">
+//               View and analyze employee performance metrics across different time periods
+//             </p>
+//           </div>
+          
+//           {employeeData && (
+//             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 flex items-center">
+//               <div className="mr-4">
+//                 <div className="text-xs text-gray-500 dark:text-gray-400">Average Rating</div>
+//                 <div className="text-2xl font-bold flex items-center">
+//                   <span className={getRatingColor(employeeData.averageRating)}>
+//                     {employeeData.averageRating.toFixed(1)}
+//                   </span>
+//                   <span className="text-gray-400 text-sm ml-1">/5</span>
+//                 </div>
+//               </div>
+//               <div>
+//                 <div className="text-xs text-gray-500 dark:text-gray-400">Total Reviews</div>
+//                 <div className="text-lg font-semibold">{employeeData.ratingCount}</div>
+//               </div>
+//             </div>
+//           )}
+//         </div>
+
+//         {/* Filter section */}
+//         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg mb-6 overflow-hidden transition-all duration-300">
+//           <div 
+//             className="flex items-center justify-between cursor-pointer p-4 border-b border-gray-100 dark:border-gray-700"
+//             onClick={() => setIsFilterExpanded(!isFilterExpanded)}
+//           >
+//             <div className="flex items-center">
+//               <FiFilter className="text-blue-500 mr-2" />
+//               <h3 className="text-lg font-semibold">Filter Options</h3>
+//             </div>
+//             <div className="flex items-center space-x-2">
+//               {isFilterExpanded ? 
+//                 <FiChevronUp className="text-gray-500" /> : 
+//                 <FiChevronDown className="text-gray-500" />
+//               }
+//             </div>
+//           </div>
+          
+//           {isFilterExpanded && (
+//             <div className="p-4">
+//               <div className="mb-6">
+//                 <label className="block font-medium mb-2 text-gray-700 dark:text-gray-300">Time Period</label>
+//                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+//                   {FREQUENCIES.map((freq) => (
+//                     <button
+//                       key={freq.value}
+//                       className={`flex items-center justify-center py-2 px-4 rounded-lg border transition-colors ${
+//                         frequency === freq.value
+//                           ? "bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-300"
+//                           : "border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+//                       }`}
+//                       onClick={() => setFrequency(freq.value)}
+//                     >
+//                       {freq.icon}
+//                       {freq.label}
+//                     </button>
+//                   ))}
+//                 </div>
+//               </div>
+
+//               {/* Time period filters based on frequency */}
+//               <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+//                 {/* daily => date range */}
+//                 {frequency === "daily" && (
+//                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//                     <div>
+//                       <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+//                         Start Date
+//                       </label>
+//                       <div className="relative">
+//                         <FiCalendar className="absolute left-3 top-3 text-gray-500" />
+//                         <input
+//                           type="date"
+//                           className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                           value={startDate}
+//                           onChange={(e) => setStartDate(e.target.value)}
+//                         />
+//                       </div>
+//                     </div>
+//                     <div>
+//                       <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+//                         End Date
+//                       </label>
+//                       <div className="relative">
+//                         <FiCalendar className="absolute left-3 top-3 text-gray-500" />
+//                         <input
+//                           type="date"
+//                           className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                           value={endDate}
+//                           onChange={(e) => setEndDate(e.target.value)}
+//                         />
+//                       </div>
+//                     </div>
+//                   </div>
+//                 )}
+
+//                 {/* weekly => start Year/Month/Week + end Year/Month/Week */}
+//                 {frequency === "weekly" && (
+//                   <div className="space-y-4">
+//                     <div>
+//                       <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+//                         Start Period
+//                       </label>
+//                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+//                         <div className="relative">
+//                           <BsCalendar2Range className="absolute left-3 top-3 text-gray-500" />
+//                           <input
+//                             type="number"
+//                             className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                             placeholder="Year"
+//                             value={startYear}
+//                             onChange={(e) => setStartYear(e.target.value)}
+//                           />
+//                         </div>
+//                         <div className="relative">
+//                           <BsCalendarMonth className="absolute left-3 top-3 text-gray-500" />
+//                           <input
+//                             type="number"
+//                             min="1"
+//                             max="12"
+//                             className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                             placeholder="Month (1-12)"
+//                             value={startMonth}
+//                             onChange={(e) => setStartMonth(e.target.value)}
+//                           />
+//                         </div>
+//                         <div className="relative">
+//                           <BsCalendarWeek className="absolute left-3 top-3 text-gray-500" />
+//                           <select
+//                             className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                             value={startWeek}
+//                             onChange={(e) => setStartWeek(e.target.value)}
+//                           >
+//                             <option value="">Select Week</option>
+//                             {startAvailableWeeks.map((w) => (
+//                               <option key={w.value} value={w.value}>
+//                                 {w.label}
+//                               </option>
+//                             ))}
+//                           </select>
+//                         </div>
+//                       </div>
+//                     </div>
+                    
+//                     <div>
+//                       <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+//                         End Period
+//                       </label>
+//                       <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+//                         <div className="relative">
+//                           <BsCalendar2Range className="absolute left-3 top-3 text-gray-500" />
+//                           <input
+//                             type="number"
+//                             className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                             placeholder="Year"
+//                             value={endYear}
+//                             onChange={(e) => setEndYear(e.target.value)}
+//                           />
+//                         </div>
+//                         <div className="relative">
+//                           <BsCalendarMonth className="absolute left-3 top-3 text-gray-500" />
+//                           <input
+//                             type="number"
+//                             min="1"
+//                             max="12"
+//                             className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                             placeholder="Month (1-12)"
+//                             value={endMonth}
+//                             onChange={(e) => setEndMonth(e.target.value)}
+//                           />
+//                         </div>
+//                         <div className="relative">
+//                           <BsCalendarWeek className="absolute left-3 top-3 text-gray-500" />
+//                           <select
+//                             className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                             value={endWeek}
+//                             onChange={(e) => setEndWeek(e.target.value)}
+//                           >
+//                             <option value="">Select Week</option>
+//                             {endAvailableWeeks.map((w) => (
+//                               <option key={w.value} value={w.value}>
+//                                 {w.label}
+//                               </option>
+//                             ))}
+//                           </select>
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 )}
+
+//                 {/* monthly => startYear/Month + endYear/Month */}
+//                 {frequency === "monthly" && (
+//                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//                     <div>
+//                       <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+//                         Start Period
+//                       </label>
+//                       <div className="grid grid-cols-2 gap-2">
+//                         <div className="relative">
+//                           <BsCalendar2Range className="absolute left-3 top-3 text-gray-500" />
+//                           <input
+//                             type="number"
+//                             className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                             placeholder="Year"
+//                             value={startYear}
+//                             onChange={(e) => setStartYear(e.target.value)}
+//                           />
+//                         </div>
+//                         <div className="relative">
+//                           <BsCalendarMonth className="absolute left-3 top-3 text-gray-500" />
+//                           <input
+//                             type="number"
+//                             min="1"
+//                             max="12"
+//                             className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                             placeholder="Month (1-12)"
+//                             value={startMonth}
+//                             onChange={(e) => setStartMonth(e.target.value)}
+//                           />
+//                         </div>
+//                       </div>
+//                     </div>
+//                     <div>
+//                       <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+//                         End Period
+//                       </label>
+//                       <div className="grid grid-cols-2 gap-2">
+//                         <div className="relative">
+//                           <BsCalendar2Range className="absolute left-3 top-3 text-gray-500" />
+//                           <input
+//                             type="number"
+//                             className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                             placeholder="Year"
+//                             value={endYear}
+//                             onChange={(e) => setEndYear(e.target.value)}
+//                           />
+//                         </div>
+//                         <div className="relative">
+//                           <BsCalendarMonth className="absolute left-3 top-3 text-gray-500" />
+//                           <input
+//                             type="number"
+//                             min="1"
+//                             max="12"
+//                             className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                             placeholder="Month (1-12)"
+//                             value={endMonth}
+//                             onChange={(e) => setEndMonth(e.target.value)}
+//                           />
+//                         </div>
+//                       </div>
+//                     </div>
+//                   </div>
+//                 )}
+
+//                 {/* yearly => startYear + endYear */}
+//                 {frequency === "yearly" && (
+//                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+//                     <div>
+//                       <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+//                         Start Year
+//                       </label>
+//                       <div className="relative">
+//                         <BsCalendar2Range className="absolute left-3 top-3 text-gray-500" />
+//                         <input
+//                           type="number"
+//                           className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                           placeholder="Year"
+//                           value={startYear}
+//                           onChange={(e) => setStartYear(e.target.value)}
+//                         />
+//                       </div>
+//                     </div>
+//                     <div>
+//                       <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+//                         End Year
+//                       </label>
+//                       <div className="relative">
+//                         <BsCalendar2Range className="absolute left-3 top-3 text-gray-500" />
+//                         <input
+//                           type="number"
+//                           className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                           placeholder="Year"
+//                           value={endYear}
+//                           onChange={(e) => setEndYear(e.target.value)}
+//                         />
+//                       </div>
+//                     </div>
+//                   </div>
+//                 )}
+
+//                 <div className="flex justify-end mt-4">
+//                   <button
+//                     onClick={handleFetchRatings}
+//                     disabled={loading}
+//                     className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md disabled:opacity-50"
+//                   >
+//                     {loading ? (
+//                       <span className="flex items-center">
+//                         <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+//                           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+//                           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+//                         </svg>
+//                         Processing...
+//                       </span>
+//                     ) : (
+//                       <>
+//                         <FiSearch className="mr-2" />
+//                         Apply Filters
+//                       </>
+//                     )}
+//                   </button>
+//                 </div>
+//               </div>
+//             </div>
+//           )}
+//         </div>
+
+//         {/* Error message */}
+//         {error && (
+//           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 p-4 rounded-lg mb-6 flex items-start">
+//             <FiAlertCircle className="text-red-500 mr-2 mt-1 flex-shrink-0" />
+//             <div>
+//               <p className="font-medium">Error</p>
+//               <p>{error}</p>
+//             </div>
+//           </div>
+//         )}
+
+//         {/* Employee Data Panel */}
+//         {employeeData && (
+//           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6">
+//             {/* Employee header */}
+//             <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+//               <div className="flex flex-col md:flex-row md:items-center">
+//                 <div className="flex items-center mb-4 md:mb-0">
+//                   <img
+//                 src={employeeData.user_Avatar}
+//                     alt="Employee"
+//                     className="w-16 h-16 rounded-full object-cover border-4 border-blue-100 dark:border-blue-900"
+//                   />
+//                   <div className="ml-4">
+//                     <h3 className="text-xl font-bold">
+//                       {employeeData.first_Name} {employeeData.last_Name}
+//                     </h3>
+//                     <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+//                       <FiBriefcase className="mr-1" />
+//                       <span>{employeeData.designation}</span>
+//                       {employeeData.department && (
+//                         <span className="ml-2 flex items-center">
+//                           <span className="mx-1">•</span>
+//                           {employeeData.department}
+//                         </span>
+//                       )}
+//                     </div>
+//                     <div className="mt-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded inline-block">
+//                       ID: {employeeData.employee_Id}
+//                     </div>
+//                   </div>
+//                 </div>
+                
+//                 <div className="md:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-3">
+//                   <div className="flex items-center bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg px-4 py-2">
+//                     <div className="mr-3">
+//                       <div className="text-xs text-gray-500 dark:text-gray-400">Average</div>
+//                       <div className="font-bold text-xl">
+//                         <span className={getRatingColor(employeeData.averageRating)}>
+//                           {employeeData.averageRating.toFixed(1)}
+//                         </span>
+//                       </div>
+//                     </div>
+//                     {renderRatingStars(employeeData.averageRating)}
+//                   </div>
+                  
+//                   <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg px-4 py-2">
+//                     <div className="text-xs text-gray-500 dark:text-gray-400">Ratings</div>
+//                     <div className="font-bold text-xl">{employeeData.ratingCount}</div>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Navigation tabs */}
+//             <div className="border-b border-gray-100 dark:border-gray-700">
+//               <div className="flex overflow-x-auto">
+//                 <button 
+//                   onClick={() => setActiveTab("ratings")}
+//                   className={`px-6 py-3 text-sm font-medium flex items-center border-b-2 transition-colors ${
+//                     activeTab === "ratings" 
+//                       ? "border-blue-500 text-blue-600 dark:text-blue-400" 
+//                       : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+//                   }`}
+//                 >
+//                   <FiBarChart2 className="mr-2" />
+//                   Ratings
+//                 </button>
+//                 <button 
+//                   onClick={() => setActiveTab("charts")}
+//                   className={`px-6 py-3 text-sm font-medium flex items-center border-b-2 transition-colors ${
+//                     activeTab === "charts" 
+//                       ? "border-blue-500 text-blue-600 dark:text-blue-400" 
+//                       : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+//                   }`}
+//                 >
+//                   <RiDashboardLine className="mr-2" />
+//                   Analytics
+//                 </button>
+//               </div>
+//             </div>
+
+//             {/* Tab content */}
+//             <div className="p-4">
+//               {activeTab === "ratings" && (
+//                 <>
+//                   {filteredRatings.length === 0 ? (
+//                     <div className="flex flex-col items-center justify-center py-12 text-center">
+//                       <svg 
+//                         className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" 
+//                         fill="none" 
+//                         stroke="currentColor" 
+//                         viewBox="0 0 24 24"
+//                       >
+//                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+//                       </svg>
+//                       <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">No ratings found</h3>
+//                       <p className="text-gray-500 dark:text-gray-400 max-w-md">
+//                         No performance rating documents match your selected filters. Try adjusting your filters or selecting a different time period.
+//                       </p>
+//                     </div>
+//                   ) : (
+//                     <div className="overflow-x-auto">
+//                       <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+//                         <thead>
+//                           <tr className="bg-gray-50 dark:bg-gray-800/50">
+//                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Period</th>
+//                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Frequency</th>
+//                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Score</th>
+//                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">KPIs</th>
+//                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Comment</th>
+//                             <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Actions</th>
+//                           </tr>
+//                         </thead>
+//                         <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
+//                           {filteredRatings.map((rdoc) => (
+//                             <tr 
+//                               key={rdoc._id} 
+//                               className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+//                             >
+//                               <td className="px-4 py-3 whitespace-nowrap">
+//                                 <div className="font-medium">{renderPeriod(rdoc)}</div>
+//                               </td>
+//                               <td className="px-4 py-3 whitespace-nowrap">
+//                                 <span className="px-2 py-1 text-xs rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 capitalize">
+//                                   {rdoc.frequency}
+//                                 </span>
+//                               </td>
+//                               <td className="px-4 py-3 whitespace-nowrap">
+//                                 <div className="flex items-center">
+//                                   <span className={`font-bold ${getRatingColor(rdoc.totalScore)}`}>
+//                                     {rdoc.totalScore.toFixed(1)}
+//                                   </span>
+//                                   <div className="ml-2 flex">
+//                                     {[...Array(5)].map((_, i) => (
+//                                       <RiStarFill
+//                                         key={i}
+//                                         className={
+//                                           i < Math.round(rdoc.totalScore)
+//                                             ? "text-yellow-500 w-3 h-3"
+//                                             : "text-gray-300 dark:text-gray-600 w-3 h-3"
+//                                         }
+//                                       />
+//                                     ))}
+//                                   </div>
+//                                 </div>
+//                               </td>
+//                               <td className="px-4 py-3 whitespace-nowrap">
+//                                 <span className="px-2 py-1 text-xs rounded-full bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300">
+//                                   {rdoc.kpis?.length || 0} KPIs
+//                                 </span>
+//                               </td>
+//                               <td className="px-4 py-3">
+//                                 <div className="text-sm text-gray-700 dark:text-gray-300 max-w-xs truncate">
+//                                   {rdoc.comment || "—"}
+//                                 </div>
+//                               </td>
+//                               <td className="px-4 py-3 whitespace-nowrap text-right">
+//                                 <button
+//                                   className="inline-flex items-center px-3 py-1 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 rounded-md transition-colors text-sm font-medium"
+//                                   onClick={() => handleOpenModal(rdoc)}
+//                                 >
+//                                   <FiEye className="mr-1" />
+//                                   View Details
+//                                 </button>
+//                               </td>
+//                             </tr>
+//                           ))}
+//                         </tbody>
+//                       </table>
+//                     </div>
+//                   )}
+//                 </>
+//               )}
+              
+//               {activeTab === "charts" && (
+//                 <div className="flex flex-col items-center justify-center py-12 text-center">
+//                   <svg 
+//                     className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4" 
+//                     fill="none" 
+//                     stroke="currentColor" 
+//                     viewBox="0 0 24 24"
+//                   >
+//                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 13v-1m4 1v-3m4 3V8M12 21l9-9-9-9-9 9 9 9z" />
+//                   </svg>
+//                   <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">Analytics Coming Soon</h3>
+//                   <p className="text-gray-500 dark:text-gray-400 max-w-md">
+//                     Performance analytics visualizations are coming in the next update.
+//                   </p>
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+//         )}
+        
+//         {!employeeData && !loading && (
+//           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
+//             <div className="flex flex-col items-center justify-center py-6">
+//               <svg 
+//                 className="w-20 h-20 text-gray-300 dark:text-gray-600 mb-4" 
+//                 fill="none" 
+//                 stroke="currentColor" 
+//                 viewBox="0 0 24 24"
+//               >
+//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+//               </svg>
+//               <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">No Employee Data</h3>
+//               <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
+//                 Select a time period using the filters above and click "Apply Filters" to view employee performance data.
+//               </p>
+//               <button
+//                 onClick={handleFetchRatings}
+//                 className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md"
+//               >
+//                 <FiSearch className="mr-2" />
+//                 Fetch Employee Data
+//               </button>
+//             </div>
+//           </div>
+//         )}
+//       </div>
+
+//       {/* KPI Detail Modal */}
+//       {showModal && selectedRating && (
+//         <div className="fixed inset-0 z-50 overflow-y-auto">
+//           <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+//             <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+//               <div className="absolute inset-0 bg-gray-900 dark:bg-gray-900 opacity-75"></div>
+//             </div>
+            
+//             <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            
+//             <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+//               <div className="absolute top-3 right-3">
+//                 <button
+//                   onClick={handleCloseModal}
+//                   className="text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 focus:outline-none"
+//                 >
+//                   <FiX className="h-6 w-6" />
+//                 </button>
+//               </div>
+              
+//               <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 rounded-t-lg border-b border-gray-200 dark:border-gray-600">
+//                 <div className="flex items-center justify-between">
+//                   <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
+//                     Performance Details
+//                   </h3>
+//                   <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+//                     {renderPeriod(selectedRating)}
+//                   </span>
+//                 </div>
+//               </div>
+              
+//               <div className="p-6">
+//                 <div className="mb-4 flex items-center justify-between">
+//                   <div>
+//                     <span className="text-sm text-gray-500 dark:text-gray-400">
+//                       Total Score
+//                     </span>
+//                     <div className="flex items-center mt-1">
+//                       <span className={`text-2xl font-bold ${getRatingColor(selectedRating.totalScore)}`}>
+//                         {selectedRating.totalScore.toFixed(1)}
+//                       </span>
+//                       <span className="text-gray-500 dark:text-gray-400 text-sm ml-1">/ 5.0</span>
+//                     </div>
+//                   </div>
+//                   {renderRatingStars(selectedRating.totalScore)}
+//                 </div>
+                
+//                 {selectedRating.comment && (
+//                   <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md">
+//                     <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+//                       Feedback:
+//                     </h4>
+//                     <p className="text-gray-600 dark:text-gray-400 text-sm italic">
+//                       "{selectedRating.comment}"
+//                     </p>
+//                   </div>
+//                 )}
+                
+//                 <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2 mt-4">
+//                   KPI Breakdown ({selectedRating.kpis?.length || 0})
+//                 </h4>
+                
+//                 {selectedRating.kpis.length === 0 ? (
+//                   <p className="text-gray-500 dark:text-gray-400">No KPIs recorded for this period.</p>
+//                 ) : (
+//                   <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+//                     {selectedRating.kpis.map((kpi, idx) => (
+//                       <div 
+//                         key={idx} 
+//                         className="border border-gray-200 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700"
+//                       >
+//                         <div className="flex items-start justify-between mb-1">
+//                           <div className="font-medium">{kpi.kpiName}</div>
+//                           <div className={`font-bold ${getRatingColor(kpi.score)}`}>
+//                             {kpi.score}
+//                           </div>
+//                         </div>
+//                         <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+//                           Type: {kpi.type}
+//                         </div>
+//                         {kpi.comment && (
+//                           <div className="mt-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-600/50 p-2 rounded">
+//                             {kpi.comment}
+//                           </div>
+//                         )}
+//                       </div>
+//                     ))}
+//                   </div>
+//                 )}
+//               </div>
+              
+//               <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 flex justify-end rounded-b-lg border-t border-gray-200 dark:border-gray-600">
+//                 <button
+//                   onClick={handleCloseModal}
+//                   className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+//                 >
+//                   Close
+//                 </button>
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+// /**
+//  * Helper to render the date/period
+//  */
+// function renderPeriod(rdoc) {
+//   if (rdoc.frequency === "daily") {
+//     if (!rdoc.date) return "No date";
+//     const d = new Date(rdoc.date);
+//     // Format to show month name, day, and year
+//     return d.toLocaleDateString(undefined, { 
+//       year: 'numeric', 
+//       month: 'short', 
+//       day: 'numeric' 
+//     });
+//   } else if (rdoc.frequency === "weekly") {
+//     return `${rdoc.year} • Month ${rdoc.month} • Week ${rdoc.week}`;
+//   } else if (rdoc.frequency === "monthly") {
+//     // Convert month number to month name
+//     const monthNames = ["January", "February", "March", "April", "May", "June",
+//       "July", "August", "September", "October", "November", "December"];
+//     const monthName = monthNames[parseInt(rdoc.month) - 1] || `Month ${rdoc.month}`;
+//     return `${monthName} ${rdoc.year}`;
+//   } else if (rdoc.frequency === "yearly") {
+//     return rdoc.year || "Unknown Year";
+//   }
+//   return "Unknown Period";
+// }
+
+// export default EmployeeRatingAdvanced;
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import useRatingStore from "../../store/useRatingNewStore";
-import { getWeeksInMonth } from "./calendarUtils"; // your helper
+import { getWeeksInMonth } from "./calendarUtils";
 
-const FREQUENCIES = ["daily", "weekly", "monthly", "yearly"];
+import {
+  FiCalendar,
+  FiUser,
+  FiFilter,
+  FiBarChart2,
+  FiEye,
+  FiX,
+  FiBriefcase,
+  FiSearch,
+  FiChevronUp,
+  FiChevronDown,
+  FiSun,
+  FiMoon,
+  FiAlertCircle,
+} from "react-icons/fi";
+
+import { RiDashboardLine } from "react-icons/ri";
+import {
+  BsCalendarWeek,
+  BsCalendarMonth,
+  BsCalendar2Range,
+} from "react-icons/bs";
+
+const FREQUENCIES = [
+  { value: "daily", label: "Daily", icon: <FiCalendar className="mr-2" /> },
+  { value: "weekly", label: "Weekly", icon: <BsCalendarWeek className="mr-2" /> },
+  { value: "monthly", label: "Monthly", icon: <BsCalendarMonth className="mr-2" /> },
+  { value: "yearly", label: "Yearly", icon: <BsCalendar2Range className="mr-2" /> },
+];
+
+// Color-codes a 0-100 score.
+function getScoreColor(scoreOutOf100) {
+  if (scoreOutOf100 >= 80) return "text-emerald-500";
+  if (scoreOutOf100 >= 60) return "text-blue-500";
+  if (scoreOutOf100 >= 40) return "text-amber-500";
+  return "text-red-500";
+}
 
 function EmployeeRatingAdvanced() {
   const { employeeId } = useParams();
 
   // from Zustand
   const { getEmployeeRatingsAdvanced, loading, error } = useRatingStore();
+
+  // UI state
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    return (
+      window.matchMedia &&
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+    );
+  });
+  const [isFilterExpanded, setIsFilterExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState("ratings"); // 'ratings', 'charts'
 
   // frequency state
   const [frequency, setFrequency] = useState("daily");
@@ -35,7 +1668,7 @@ function EmployeeRatingAdvanced() {
   const [employeeData, setEmployeeData] = useState(null);
   const [filteredRatings, setFilteredRatings] = useState([]);
 
-  // ---- NEW: KPI Detail Modal state ----
+  // KPI Detail Modal state
   const [showModal, setShowModal] = useState(false);
   const [selectedRating, setSelectedRating] = useState(null);
 
@@ -45,7 +1678,22 @@ function EmployeeRatingAdvanced() {
   const currentYear = today.getFullYear();
   const currentMonth = String(today.getMonth() + 1).padStart(2, "0");
 
-  // reset frequency defaults
+  // Toggle dark mode
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+    document.documentElement.classList.toggle("dark");
+  };
+
+  // Apply dark mode class to root element
+  useEffect(() => {
+    if (isDarkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDarkMode]);
+
+  // reset frequency defaults whenever frequency changes
   useEffect(() => {
     switch (frequency) {
       case "daily":
@@ -190,13 +1838,17 @@ function EmployeeRatingAdvanced() {
 
       const res = await getEmployeeRatingsAdvanced(employeeId, params);
       if (res.success) {
-        const { employee, filteredRatings, averageRating, ratingCount } = res.data;
+        const { employee, filteredRatings, averageRating, ratingCount } =
+          res.data;
+
         setEmployeeData({
           ...employee,
+          // `averageRating` from the API is already 0-100
           averageRating,
           ratingCount,
         });
         setFilteredRatings(filteredRatings);
+        toast.success(`Found ${filteredRatings.length} ratings`);
       } else {
         toast.error(res.message || "Could not fetch data");
       }
@@ -217,335 +1869,779 @@ function EmployeeRatingAdvanced() {
   };
 
   return (
-    <div className="p-4 min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
-      <h1 className="text-2xl font-bold mb-4">Employee Rating (Advanced)</h1>
-
-      {loading && <p className="text-blue-500 mb-2">Loading...</p>}
-      {error && <p className="text-red-500 mb-2">Error: {error}</p>}
-
-      {/* Filter Panel */}
-      <div className="bg-white dark:bg-gray-800 rounded p-4 mb-6 shadow">
-        <label className="block font-medium mb-1">Frequency</label>
-        <select
-          className="border p-2 rounded w-48 dark:bg-gray-700 dark:border-gray-600"
-          value={frequency}
-          onChange={(e) => setFrequency(e.target.value)}
-        >
-          {FREQUENCIES.map((freq) => (
-            <option key={freq} value={freq}>
-              {freq}
-            </option>
-          ))}
-        </select>
-
-        {/* daily => date range */}
-        {frequency === "daily" && (
-          <div className="mt-4 flex space-x-4">
-            <div>
-              <label className="block font-medium mb-1">Start Date</label>
-              <input
-                type="date"
-                className="border p-2 rounded dark:bg-gray-700 dark:border-gray-600"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block font-medium mb-1">End Date</label>
-              <input
-                type="date"
-                className="border p-2 rounded dark:bg-gray-700 dark:border-gray-600"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-              />
-            </div>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+      {/* Top navigation bar */}
+      <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <RiDashboardLine className="text-blue-600 dark:text-blue-400 text-2xl" />
+            <h1 className="text-xl font-bold">Performance Analytics</h1>
           </div>
-        )}
 
-        {/* weekly => start Year/Month/Week + end Year/Month/Week */}
-        {frequency === "weekly" && (
-          <>
-            {/* START weekly */}
-            <div className="mt-4 flex space-x-4">
-              <div>
-                <label className="block font-medium mb-1">Start Year</label>
-                <input
-                  type="number"
-                  className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
-                  placeholder="2025"
-                  value={startYear}
-                  onChange={(e) => setStartYear(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block font-medium mb-1">Start Month</label>
-                <input
-                  type="number"
-                  className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
-                  placeholder="1-12"
-                  value={startMonth}
-                  onChange={(e) => setStartMonth(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block font-medium mb-1">Start Week</label>
-                <select
-                  className="border p-2 rounded w-24 dark:bg-gray-700 dark:border-gray-600"
-                  value={startWeek}
-                  onChange={(e) => setStartWeek(e.target.value)}
-                >
-                  <option value="">Select Week</option>
-                  {startAvailableWeeks.map((w) => (
-                    <option key={w.value} value={w.value}>
-                      {w.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
+          <div className="flex items-center space-x-4">
+            <button
+              onClick={toggleDarkMode}
+              className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+            >
+              {isDarkMode ? <FiSun className="text-lg" /> : <FiMoon className="text-lg" />}
+            </button>
 
-            {/* END weekly */}
-            <div className="mt-4 flex space-x-4">
-              <div>
-                <label className="block font-medium mb-1">End Year</label>
-                <input
-                  type="number"
-                  className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
-                  placeholder="2025"
-                  value={endYear}
-                  onChange={(e) => setEndYear(e.target.value)}
+            {employeeData && (
+              <div className="flex items-center space-x-2">
+                <img
+                  src={employeeData.user_Avatar}
+                  alt="avatar"
+                  className="w-8 h-8 rounded-full border-2 border-blue-500 object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "https://via.placeholder.com/40";
+                  }}
                 />
+                <span className="font-medium hidden sm:inline">
+                  {employeeData.first_Name} {employeeData.last_Name}
+                </span>
               </div>
-              <div>
-                <label className="block font-medium mb-1">End Month</label>
-                <input
-                  type="number"
-                  className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
-                  placeholder="1-12"
-                  value={endMonth}
-                  onChange={(e) => setEndMonth(e.target.value)}
-                />
-              </div>
-              <div>
-                <label className="block font-medium mb-1">End Week</label>
-                <select
-                  className="border p-2 rounded w-24 dark:bg-gray-700 dark:border-gray-600"
-                  value={endWeek}
-                  onChange={(e) => setEndWeek(e.target.value)}
-                >
-                  <option value="">Select Week</option>
-                  {endAvailableWeeks.map((w) => (
-                    <option key={w.value} value={w.value}>
-                      {w.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-          </>
-        )}
-
-        {/* monthly => startYear/Month + endYear/Month */}
-        {frequency === "monthly" && (
-          <div className="mt-4 flex space-x-4">
-            <div>
-              <label className="block font-medium mb-1">Start Year</label>
-              <input
-                type="number"
-                className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
-                value={startYear}
-                onChange={(e) => setStartYear(e.target.value)}
-                placeholder="2024"
-              />
-            </div>
-            <div>
-              <label className="block font-medium mb-1">Start Month</label>
-              <input
-                type="number"
-                className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
-                value={startMonth}
-                onChange={(e) => setStartMonth(e.target.value)}
-                placeholder="1-12"
-              />
-            </div>
-            <div>
-              <label className="block font-medium mb-1">End Year</label>
-              <input
-                type="number"
-                className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
-                value={endYear}
-                onChange={(e) => setEndYear(e.target.value)}
-                placeholder="2025"
-              />
-            </div>
-            <div>
-              <label className="block font-medium mb-1">End Month</label>
-              <input
-                type="number"
-                className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
-                value={endMonth}
-                onChange={(e) => setEndMonth(e.target.value)}
-                placeholder="1-12"
-              />
-            </div>
+            )}
           </div>
-        )}
-
-        {/* yearly => startYear + endYear */}
-        {frequency === "yearly" && (
-          <div className="mt-4 flex space-x-4">
-            <div>
-              <label className="block font-medium mb-1">Start Year</label>
-              <input
-                type="number"
-                className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
-                value={startYear}
-                onChange={(e) => setStartYear(e.target.value)}
-                placeholder="2023"
-              />
-            </div>
-            <div>
-              <label className="block font-medium mb-1">End Year</label>
-              <input
-                type="number"
-                className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
-                value={endYear}
-                onChange={(e) => setEndYear(e.target.value)}
-                placeholder="2025"
-              />
-            </div>
-          </div>
-        )}
-
-        <button
-          onClick={handleFetchRatings}
-          className="mt-4 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded"
-        >
-          Fetch Ratings
-        </button>
+        </div>
       </div>
 
-      {/* Employee Info + Ratings */}
-      {employeeData ? (
-        <div className="bg-white dark:bg-gray-800 rounded p-4 shadow">
-          <div className="flex items-center space-x-4 mb-4">
-            <img
-              src={employeeData.user_Avatar}
-              alt="avatar"
-              className="w-16 h-16 rounded-full"
-            />
-            <div>
-              <h2 className="text-xl font-semibold">
-                {employeeData.first_Name} {employeeData.last_Name} (
-                {employeeData.employee_Id})
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                {employeeData.designation}
-              </p>
-              {employeeData.department && (
-                <p className="text-gray-500 dark:text-gray-400 text-sm">
-                  Dept: {employeeData.department}
-                </p>
-              )}
-            </div>
-            <div className="ml-auto text-right">
-              <p className="text-gray-600 dark:text-gray-400 text-sm">
-                Ratings Found: {employeeData.ratingCount}
-              </p>
-              <p className="font-bold">
-                Avg Rating: {employeeData.averageRating.toFixed(2)}
-              </p>
-            </div>
+      <div className="container mx-auto px-4 py-6">
+        {/* Dashboard header */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+          <div className="mb-4 md:mb-0">
+            <h2 className="text-2xl font-bold mb-1 flex items-center">
+              <FiUser className="mr-2 text-blue-500" />
+              Employee Performance Dashboard
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">
+              View and analyze employee performance metrics across different time periods
+            </p>
           </div>
 
-          {filteredRatings.length === 0 ? (
-            <p className="text-gray-500 dark:text-gray-400">
-              No rating docs match your filters.
-            </p>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead className="bg-gray-50 dark:bg-gray-900/50">
-                  <tr>
-                    <th className="px-4 py-2 text-left">Frequency</th>
-                    <th className="px-4 py-2 text-left">Period</th>
-                    <th className="px-4 py-2 text-left">TotalScore</th>
-                    <th className="px-4 py-2 text-left"># of KPIs</th>
-                    <th className="px-4 py-2 text-left">Comment</th>
-                    <th className="px-4 py-2 text-left">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  {filteredRatings.map((rdoc) => (
-                    <tr key={rdoc._id}>
-                      <td className="px-4 py-2">{rdoc.frequency}</td>
-                      <td className="px-4 py-2">{renderPeriod(rdoc)}</td>
-                      <td className="px-4 py-2">{rdoc.totalScore}</td>
-                      <td className="px-4 py-2">{rdoc.kpis?.length || 0}</td>
-                      <td className="px-4 py-2">{rdoc.comment || "—"}</td>
-                      <td className="px-4 py-2">
-                        <button
-                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-sm"
-                          onClick={() => handleOpenModal(rdoc)}
-                        >
-                          View KPIs
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          {employeeData && (
+            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 flex items-center">
+              <div className="mr-4">
+                <div className="text-xs text-gray-500 dark:text-gray-400">Average Score</div>
+                {/**
+                 * averageRating is 0-100 from API
+                 */}
+                <div className="text-2xl font-bold flex items-center">
+                  <span className={getScoreColor(employeeData.averageRating)}>
+                    {employeeData.averageRating.toFixed(1)}
+                  </span>
+                  <span className="text-gray-400 text-sm ml-1">/100</span>
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">Total Reviews</div>
+                <div className="text-lg font-semibold">{employeeData.ratingCount}</div>
+              </div>
             </div>
           )}
         </div>
-      ) : (
-        <p className="text-gray-500 dark:text-gray-400">
-          No employee data loaded yet. Choose filters and click "Fetch Ratings."
-        </p>
-      )}
 
-      {/* ------- MODAL for KPI detail ------- */}
-      {showModal && selectedRating && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded shadow-lg relative w-full max-w-md">
-            <button
-              onClick={handleCloseModal}
-              className="absolute top-2 right-2 text-xl text-gray-500 hover:text-gray-700 dark:text-gray-300"
-            >
-              &times;
-            </button>
-            <h3 className="text-lg font-semibold mb-3">
-              KPI Details: {renderPeriod(selectedRating)} 
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-300 mb-2">
-              Frequency: {selectedRating.frequency} | 
-              Score: {selectedRating.totalScore}
-            </p>
-            <div className="max-h-64 overflow-auto space-y-2 pr-2">
-              {selectedRating.kpis.map((k, idx) => (
-                <div
-                  key={idx}
-                  className="border border-gray-200 dark:border-gray-600 rounded p-3 bg-gray-50 dark:bg-gray-700"
-                >
-                  <p className="font-medium">{k.kpiName}</p>
-                  <p className="text-sm text-gray-500 dark:text-gray-300">
-                    Type: {k.type} | Score: {k.score}
-                  </p>
-                  {k.comment && (
-                    <p className="text-sm text-gray-500 dark:text-gray-300">
-                      Comment: {k.comment}
-                    </p>
-                  )}
-                </div>
-              ))}
+        {/* Filter section */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg mb-6 overflow-hidden transition-all duration-300">
+          <div
+            className="flex items-center justify-between cursor-pointer p-4 border-b border-gray-100 dark:border-gray-700"
+            onClick={() => setIsFilterExpanded(!isFilterExpanded)}
+          >
+            <div className="flex items-center">
+              <FiFilter className="text-blue-500 mr-2" />
+              <h3 className="text-lg font-semibold">Filter Options</h3>
             </div>
-            <div className="mt-4 text-right">
-              <button
-                onClick={handleCloseModal}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded"
+            <div className="flex items-center space-x-2">
+              {isFilterExpanded ? (
+                <FiChevronUp className="text-gray-500" />
+              ) : (
+                <FiChevronDown className="text-gray-500" />
+              )}
+            </div>
+          </div>
+
+          {isFilterExpanded && (
+            <div className="p-4">
+              <div className="mb-6">
+                <label className="block font-medium mb-2 text-gray-700 dark:text-gray-300">
+                  Time Period
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {FREQUENCIES.map((freq) => (
+                    <button
+                      key={freq.value}
+                      className={`flex items-center justify-center py-2 px-4 rounded-lg border transition-colors ${
+                        frequency === freq.value
+                          ? "bg-blue-50 dark:bg-blue-900/30 border-blue-500 text-blue-700 dark:text-blue-300"
+                          : "border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      }`}
+                      onClick={() => setFrequency(freq.value)}
+                    >
+                      {freq.icon}
+                      {freq.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Time period filters based on frequency */}
+              <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
+                {/* daily => date range */}
+                {frequency === "daily" && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+                        Start Date
+                      </label>
+                      <div className="relative">
+                        <FiCalendar className="absolute left-3 top-3 text-gray-500" />
+                        <input
+                          type="date"
+                          className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          value={startDate}
+                          onChange={(e) => setStartDate(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+                        End Date
+                      </label>
+                      <div className="relative">
+                        <FiCalendar className="absolute left-3 top-3 text-gray-500" />
+                        <input
+                          type="date"
+                          className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          value={endDate}
+                          onChange={(e) => setEndDate(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* weekly => start Year/Month/Week + end Year/Month/Week */}
+                {frequency === "weekly" && (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+                        Start Period
+                      </label>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div className="relative">
+                          <BsCalendar2Range className="absolute left-3 top-3 text-gray-500" />
+                          <input
+                            type="number"
+                            className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Year"
+                            value={startYear}
+                            onChange={(e) => setStartYear(e.target.value)}
+                          />
+                        </div>
+                        <div className="relative">
+                          <BsCalendarMonth className="absolute left-3 top-3 text-gray-500" />
+                          <input
+                            type="number"
+                            min="1"
+                            max="12"
+                            className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Month (1-12)"
+                            value={startMonth}
+                            onChange={(e) => setStartMonth(e.target.value)}
+                          />
+                        </div>
+                        <div className="relative">
+                          <BsCalendarWeek className="absolute left-3 top-3 text-gray-500" />
+                          <select
+                            className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={startWeek}
+                            onChange={(e) => setStartWeek(e.target.value)}
+                          >
+                            <option value="">Select Week</option>
+                            {startAvailableWeeks.map((w) => (
+                              <option key={w.value} value={w.value}>
+                                {w.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+                        End Period
+                      </label>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div className="relative">
+                          <BsCalendar2Range className="absolute left-3 top-3 text-gray-500" />
+                          <input
+                            type="number"
+                            className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Year"
+                            value={endYear}
+                            onChange={(e) => setEndYear(e.target.value)}
+                          />
+                        </div>
+                        <div className="relative">
+                          <BsCalendarMonth className="absolute left-3 top-3 text-gray-500" />
+                          <input
+                            type="number"
+                            min="1"
+                            max="12"
+                            className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Month (1-12)"
+                            value={endMonth}
+                            onChange={(e) => setEndMonth(e.target.value)}
+                          />
+                        </div>
+                        <div className="relative">
+                          <BsCalendarWeek className="absolute left-3 top-3 text-gray-500" />
+                          <select
+                            className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            value={endWeek}
+                            onChange={(e) => setEndWeek(e.target.value)}
+                          >
+                            <option value="">Select Week</option>
+                            {endAvailableWeeks.map((w) => (
+                              <option key={w.value} value={w.value}>
+                                {w.label}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* monthly => startYear/Month + endYear/Month */}
+                {frequency === "monthly" && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+                        Start Period
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="relative">
+                          <BsCalendar2Range className="absolute left-3 top-3 text-gray-500" />
+                          <input
+                            type="number"
+                            className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Year"
+                            value={startYear}
+                            onChange={(e) => setStartYear(e.target.value)}
+                          />
+                        </div>
+                        <div className="relative">
+                          <BsCalendarMonth className="absolute left-3 top-3 text-gray-500" />
+                          <input
+                            type="number"
+                            min="1"
+                            max="12"
+                            className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Month (1-12)"
+                            value={startMonth}
+                            onChange={(e) => setStartMonth(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+                        End Period
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="relative">
+                          <BsCalendar2Range className="absolute left-3 top-3 text-gray-500" />
+                          <input
+                            type="number"
+                            className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Year"
+                            value={endYear}
+                            onChange={(e) => setEndYear(e.target.value)}
+                          />
+                        </div>
+                        <div className="relative">
+                          <BsCalendarMonth className="absolute left-3 top-3 text-gray-500" />
+                          <input
+                            type="number"
+                            min="1"
+                            max="12"
+                            className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Month (1-12)"
+                            value={endMonth}
+                            onChange={(e) => setEndMonth(e.target.value)}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* yearly => startYear + endYear */}
+                {frequency === "yearly" && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+                        Start Year
+                      </label>
+                      <div className="relative">
+                        <BsCalendar2Range className="absolute left-3 top-3 text-gray-500" />
+                        <input
+                          type="number"
+                          className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Year"
+                          value={startYear}
+                          onChange={(e) => setStartYear(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block font-medium mb-2 text-sm text-gray-700 dark:text-gray-300">
+                        End Year
+                      </label>
+                      <div className="relative">
+                        <BsCalendar2Range className="absolute left-3 top-3 text-gray-500" />
+                        <input
+                          type="number"
+                          className="pl-9 pr-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          placeholder="Year"
+                          value={endYear}
+                          onChange={(e) => setEndYear(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="flex justify-end mt-4">
+                  <button
+                    onClick={handleFetchRatings}
+                    disabled={loading}
+                    className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md disabled:opacity-50"
+                  >
+                    {loading ? (
+                      <span className="flex items-center">
+                        <svg
+                          className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          ></path>
+                        </svg>
+                        Processing...
+                      </span>
+                    ) : (
+                      <>
+                        <FiSearch className="mr-2" />
+                        Apply Filters
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Error message */}
+        {error && (
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 p-4 rounded-lg mb-6 flex items-start">
+            <FiAlertCircle className="text-red-500 mr-2 mt-1 flex-shrink-0" />
+            <div>
+              <p className="font-medium">Error</p>
+              <p>{error}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Employee Data Panel */}
+        {employeeData && (
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-6">
+            {/* Employee header */}
+            <div className="p-6 border-b border-gray-100 dark:border-gray-700">
+              <div className="flex flex-col md:flex-row md:items-center">
+                <div className="flex items-center mb-4 md:mb-0">
+                  <img
+                    src={employeeData.user_Avatar}
+                    alt="Employee"
+                    className="w-16 h-16 rounded-full object-cover border-4 border-blue-100 dark:border-blue-900"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "https://via.placeholder.com/40";
+                    }}
+                  />
+                  <div className="ml-4">
+                    <h3 className="text-xl font-bold">
+                      {employeeData.first_Name} {employeeData.last_Name}
+                    </h3>
+                    <div className="flex items-center text-sm text-gray-600 dark:text-gray-400">
+                      <FiBriefcase className="mr-1" />
+                      <span>{employeeData.designation}</span>
+                      {employeeData.department && (
+                        <span className="ml-2 flex items-center">
+                          <span className="mx-1">•</span>
+                          {employeeData.department}
+                        </span>
+                      )}
+                    </div>
+                    <div className="mt-1 text-xs bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 px-2 py-0.5 rounded inline-block">
+                      ID: {employeeData.employee_Id}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="md:ml-auto flex flex-col sm:flex-row items-start sm:items-center gap-3">
+                  <div className="flex items-center bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg px-4 py-2">
+                    <div className="mr-3">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        Average
+                      </div>
+                      <div className="font-bold text-xl">
+                        <span className={getScoreColor(employeeData.averageRating)}>
+                          {employeeData.averageRating.toFixed(1)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg px-4 py-2">
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      Ratings
+                    </div>
+                    <div className="font-bold text-xl">
+                      {employeeData.ratingCount}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Navigation tabs */}
+            <div className="border-b border-gray-100 dark:border-gray-700">
+              <div className="flex overflow-x-auto">
+                <button
+                  onClick={() => setActiveTab("ratings")}
+                  className={`px-6 py-3 text-sm font-medium flex items-center border-b-2 transition-colors ${
+                    activeTab === "ratings"
+                      ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                      : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                  }`}
+                >
+                  <FiBarChart2 className="mr-2" />
+                  Ratings
+                </button>
+                <button
+                  onClick={() => setActiveTab("charts")}
+                  className={`px-6 py-3 text-sm font-medium flex items-center border-b-2 transition-colors ${
+                    activeTab === "charts"
+                      ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                      : "border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+                  }`}
+                >
+                  <RiDashboardLine className="mr-2" />
+                  Analytics
+                </button>
+              </div>
+            </div>
+
+            {/* Tab content */}
+            <div className="p-4">
+              {activeTab === "ratings" && (
+                <>
+                  {filteredRatings.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                      <svg
+                        className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                      <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        No ratings found
+                      </h3>
+                      <p className="text-gray-500 dark:text-gray-400 max-w-md">
+                        No performance rating documents match your selected
+                        filters. Try adjusting your filters or selecting a
+                        different time period.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead>
+                          <tr className="bg-gray-50 dark:bg-gray-800/50">
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                              Period
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                              Frequency
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                              Score (0-100)
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                              KPIs
+                            </th>
+                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                              Comment
+                            </th>
+                            <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                              Actions
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
+                          {filteredRatings.map((rdoc) => (
+                            <tr
+                              key={rdoc._id}
+                              className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                            >
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                <div className="font-medium">
+                                  {renderPeriod(rdoc)}
+                                </div>
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                <span className="px-2 py-1 text-xs rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 capitalize">
+                                  {rdoc.frequency}
+                                </span>
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                <div className="flex items-center">
+                                  <span
+                                    className={`font-bold ${getScoreColor(
+                                      rdoc.totalScore
+                                    )}`}
+                                  >
+                                    {rdoc.totalScore.toFixed(1)}
+                                  </span>
+                                  <span className="ml-1 text-gray-400 text-xs">
+                                    /100
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap">
+                                <span className="px-2 py-1 text-xs rounded-full bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300">
+                                  {rdoc.kpis?.length || 0} KPIs
+                                </span>
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="text-sm text-gray-700 dark:text-gray-300 max-w-xs truncate">
+                                  {rdoc.comment || "—"}
+                                </div>
+                              </td>
+                              <td className="px-4 py-3 whitespace-nowrap text-right">
+                                <button
+                                  className="inline-flex items-center px-3 py-1 bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300 rounded-md transition-colors text-sm font-medium"
+                                  onClick={() => handleOpenModal(rdoc)}
+                                >
+                                  <FiEye className="mr-1" />
+                                  View Details
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {activeTab === "charts" && (
+                <div className="flex flex-col items-center justify-center py-12 text-center">
+                  <svg
+                    className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M8 13v-1m4 1v-3m4 3V8M12 21l9-9-9-9-9 9 9 9z"
+                    />
+                  </svg>
+                  <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Analytics Coming Soon
+                  </h3>
+                  <p className="text-gray-500 dark:text-gray-400 max-w-md">
+                    Performance analytics visualizations are coming in the next
+                    update.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {!employeeData && !loading && (
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-8 text-center">
+            <div className="flex flex-col items-center justify-center py-6">
+              <svg
+                className="w-20 h-20 text-gray-300 dark:text-gray-600 mb-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
               >
-                Close
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">
+                No Employee Data
+              </h3>
+              <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
+                Select a time period using the filters above and click &quot;Apply
+                Filters&quot; to view employee performance data.
+              </p>
+              <button
+                onClick={handleFetchRatings}
+                className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md"
+              >
+                <FiSearch className="mr-2" />
+                Fetch Employee Data
               </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* KPI Detail Modal */}
+      {showModal && selectedRating && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
+              <div className="absolute inset-0 bg-gray-900 dark:bg-gray-900 opacity-75"></div>
+            </div>
+
+            <span
+              className="hidden sm:inline-block sm:align-middle sm:h-screen"
+              aria-hidden="true"
+            >
+              &#8203;
+            </span>
+
+            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full relative">
+              <div className="absolute top-3 right-3">
+                <button
+                  onClick={handleCloseModal}
+                  className="text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 focus:outline-none"
+                >
+                  <FiX className="h-6 w-6" />
+                </button>
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 rounded-t-lg border-b border-gray-200 dark:border-gray-600">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
+                    Performance Details
+                  </h3>
+                  <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
+                    {renderPeriod(selectedRating)}
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-6">
+                <div className="mb-4">
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    Total Score (0-100)
+                  </span>
+                  <div className="flex items-center mt-1">
+                    <span
+                      className={`text-2xl font-bold ${getScoreColor(
+                        selectedRating.totalScore
+                      )}`}
+                    >
+                      {selectedRating.totalScore.toFixed(1)}
+                    </span>
+                    <span className="text-gray-500 dark:text-gray-400 text-sm ml-1">
+                      /100
+                    </span>
+                  </div>
+                </div>
+
+                {selectedRating.comment && (
+                  <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md">
+                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Feedback:
+                    </h4>
+                    <p className="text-gray-600 dark:text-gray-400 text-sm italic">
+                      &quot;{selectedRating.comment}&quot;
+                    </p>
+                  </div>
+                )}
+
+                <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2 mt-4">
+                  KPI Breakdown ({selectedRating.kpis?.length || 0})
+                </h4>
+
+                {selectedRating.kpis.length === 0 ? (
+                  <p className="text-gray-500 dark:text-gray-400">
+                    No KPIs recorded for this period.
+                  </p>
+                ) : (
+                  <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+                    {selectedRating.kpis.map((kpi, idx) => (
+                      <div
+                        key={idx}
+                        className="border border-gray-200 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700"
+                      >
+                        <div className="flex items-start justify-between mb-1">
+                          <div className="font-medium">{kpi.kpiName}</div>
+                          <div className={`font-bold ${(kpi.score)}`}>
+                            {kpi.score.toFixed(1)}
+                          </div>
+                        </div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
+                          Type: {kpi.type}
+                        </div>
+                        {kpi.comment && (
+                          <div className="mt-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-600/50 p-2 rounded">
+                            {kpi.comment}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 flex justify-end rounded-b-lg border-t border-gray-200 dark:border-gray-600">
+                <button
+                  onClick={handleCloseModal}
+                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -561,15 +2657,37 @@ function renderPeriod(rdoc) {
   if (rdoc.frequency === "daily") {
     if (!rdoc.date) return "No date";
     const d = new Date(rdoc.date);
-    return d.toLocaleDateString();
+    // Format to show month name, day, and year
+    return d.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
   } else if (rdoc.frequency === "weekly") {
-    return `Yr${rdoc.year}-M${rdoc.month}-Wk${rdoc.week}`;
+    return `${rdoc.year} • Month ${rdoc.month} • Week ${rdoc.week}`;
   } else if (rdoc.frequency === "monthly") {
-    return `${rdoc.year}-${rdoc.month}`;
+    // Convert month number to month name
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const monthName =
+      monthNames[parseInt(rdoc.month) - 1] || `Month ${rdoc.month}`;
+    return `${monthName} ${rdoc.year}`;
   } else if (rdoc.frequency === "yearly") {
-    return rdoc.year || "??";
+    return rdoc.year || "Unknown Year";
   }
-  return "??";
+  return "Unknown Period";
 }
 
 export default EmployeeRatingAdvanced;
