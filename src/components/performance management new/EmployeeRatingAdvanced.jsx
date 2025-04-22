@@ -1,26 +1,31 @@
+// // components/EmployeeRatingAdvanced.jsx
 
-
-
-// import React, { useState, useEffect } from "react";
+// import React, { useEffect, useState } from "react";
+// import { useParams } from "react-router-dom"; 
 // import { toast } from "react-hot-toast";
-// import { useNavigate } from "react-router-dom";
 // import useRatingStore from "../../store/useRatingNewStore";
 
 // const FREQUENCIES = ["daily", "weekly", "monthly", "yearly"];
 
-// function TeamRatingsAdvanced() {
-//   const { getTeamRatingsAdvanced, loading, error } = useRatingStore();
+// function EmployeeRatingAdvanced() {
+//   // If using react-router, get employeeId from URL param
+//   // e.g. path="/employee-advanced/:employeeId"
+//   const { employeeId } = useParams();
 
-//   const navigate = useNavigate(); // React Router navigate hook
+//   // If you prefer receiving employeeId as a prop: 
+//   // function EmployeeRatingAdvanced({ employeeId }) { ... }
 
-//   // UI states for filters
+//   // Zustand store
+//   const { getEmployeeRatingsAdvanced, loading, error } = useRatingStore();
+
+//   // UI states
 //   const [frequency, setFrequency] = useState("daily");
 
-//   // For daily
+//   // For daily date range
 //   const [startDate, setStartDate] = useState("");
 //   const [endDate, setEndDate] = useState("");
 
-//   // For weekly/monthly/yearly
+//   // For weekly/monthly/yearly range
 //   const [startYear, setStartYear] = useState("");
 //   const [endYear, setEndYear] = useState("");
 //   const [startMonth, setStartMonth] = useState("");
@@ -28,10 +33,12 @@
 //   const [startWeek, setStartWeek] = useState("");
 //   const [endWeek, setEndWeek] = useState("");
 
-//   // The result data from the API
-//   const [teamData, setTeamData] = useState([]);
+//   // The fetched data
+//   // { employee, filteredRatings, averageRating, ratingCount }
+//   const [employeeData, setEmployeeData] = useState(null);
+//   const [filteredRatings, setFilteredRatings] = useState([]);
 
-//   // Reset date inputs whenever frequency changes
+//   // Reset date fields whenever frequency changes
 //   useEffect(() => {
 //     setStartDate("");
 //     setEndDate("");
@@ -43,64 +50,67 @@
 //     setEndWeek("");
 //   }, [frequency]);
 
+//   // If you want to auto-fetch on mount with default frequency,
+//   // you can call handleFetch here. But let's do a button-based approach.
+
 //   const handleFetchRatings = async () => {
+//     if (!employeeId) {
+//       toast.error("No employee selected or invalid route param.");
+//       return;
+//     }
 //     try {
 //       const params = { frequency };
-
-//       if (frequency === "daily") {
-//         if (startDate && endDate) {
-//           params.startDate = startDate;
-//           params.endDate = endDate;
-//         }
+//       // daily
+//       if (frequency === "daily" && startDate && endDate) {
+//         params.startDate = startDate;
+//         params.endDate = endDate;
 //       }
-//       if (frequency === "weekly") {
-//         if (startYear && endYear && startWeek && endWeek) {
-//           params.startYear = startYear;
-//           params.endYear = endYear;
-//           params.startWeek = startWeek;
-//           params.endWeek = endWeek;
-//         }
+//       // weekly
+//       if (frequency === "weekly" && startYear && endYear && startWeek && endWeek) {
+//         params.startYear = startYear;
+//         params.endYear = endYear;
+//         params.startWeek = startWeek;
+//         params.endWeek = endWeek;
 //       }
-//       if (frequency === "monthly") {
-//         if (startYear && endYear && startMonth && endMonth) {
-//           params.startYear = startYear;
-//           params.endYear = endYear;
-//           params.startMonth = startMonth;
-//           params.endMonth = endMonth;
-//         }
+//       // monthly
+//       if (frequency === "monthly" && startYear && endYear && startMonth && endMonth) {
+//         params.startYear = startYear;
+//         params.endYear = endYear;
+//         params.startMonth = startMonth;
+//         params.endMonth = endMonth;
 //       }
-//       if (frequency === "yearly") {
-//         if (startYear && endYear) {
-//           params.startYear = startYear;
-//           params.endYear = endYear;
-//         }
+//       // yearly
+//       if (frequency === "yearly" && startYear && endYear) {
+//         params.startYear = startYear;
+//         params.endYear = endYear;
 //       }
 
-//       const res = await getTeamRatingsAdvanced(params);
+//       const res = await getEmployeeRatingsAdvanced(employeeId, params);
 //       if (res.success) {
-//         setTeamData(res.data);
+//         const { employee, filteredRatings, averageRating, ratingCount } = res.data;
+//         setEmployeeData({
+//           ...employee,
+//           averageRating,
+//           ratingCount
+//         });
+//         setFilteredRatings(filteredRatings);
 //       } else {
 //         toast.error(res.message || "Could not fetch data");
 //       }
 //     } catch (err) {
-//       toast.error(err.message || "Error fetching advanced ratings");
+//       toast.error(err.message || "Error fetching employee advanced ratings");
 //     }
-//   };
-
-//   // Handler for "View Full Rating"
-//   const handleViewFullRating = (employeeId) => {
-//     // navigate to /employee-advanced/:employeeId
-//     navigate(`/dashboard/employee-advanced/${employeeId}`);
 //   };
 
 //   return (
 //     <div className="p-4 min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
-//       <h2 className="text-2xl font-bold mb-4">Team Ratings (Advanced)</h2>
+//       <h1 className="text-2xl font-bold mb-4">Employee Rating (Advanced)</h1>
 
 //       {loading && <p className="text-blue-500 mb-2">Loading...</p>}
 //       {error && <p className="text-red-500 mb-2">Error: {error}</p>}
 
-//       <div className="bg-white dark:bg-gray-800 rounded p-4 mb-4 shadow">
+//       {/* Filter Panel */}
+//       <div className="bg-white dark:bg-gray-800 rounded p-4 mb-6 shadow">
 //         <label className="block font-medium mb-1">Frequency</label>
 //         <select
 //           className="border p-2 rounded w-48 dark:bg-gray-700 dark:border-gray-600"
@@ -108,13 +118,11 @@
 //           onChange={(e) => setFrequency(e.target.value)}
 //         >
 //           {FREQUENCIES.map((freq) => (
-//             <option key={freq} value={freq}>
-//               {freq}
-//             </option>
+//             <option key={freq} value={freq}>{freq}</option>
 //           ))}
 //         </select>
 
-//         {/* daily fields */}
+//         {/* daily => date range */}
 //         {frequency === "daily" && (
 //           <div className="mt-4 flex space-x-4">
 //             <div>
@@ -138,7 +146,7 @@
 //           </div>
 //         )}
 
-//         {/* weekly fields */}
+//         {/* weekly => year+week range */}
 //         {frequency === "weekly" && (
 //           <div className="mt-4 flex space-x-4">
 //             <div>
@@ -146,9 +154,9 @@
 //               <input
 //                 type="number"
 //                 className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
-//                 placeholder="2025"
 //                 value={startYear}
 //                 onChange={(e) => setStartYear(e.target.value)}
+//                 placeholder="2025"
 //               />
 //             </div>
 //             <div>
@@ -156,9 +164,9 @@
 //               <input
 //                 type="number"
 //                 className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
-//                 placeholder="2025"
 //                 value={endYear}
 //                 onChange={(e) => setEndYear(e.target.value)}
+//                 placeholder="2025"
 //               />
 //             </div>
 //             <div>
@@ -166,9 +174,9 @@
 //               <input
 //                 type="number"
 //                 className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
-//                 placeholder="1"
 //                 value={startWeek}
 //                 onChange={(e) => setStartWeek(e.target.value)}
+//                 placeholder="1"
 //               />
 //             </div>
 //             <div>
@@ -176,15 +184,15 @@
 //               <input
 //                 type="number"
 //                 className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
-//                 placeholder="8"
 //                 value={endWeek}
 //                 onChange={(e) => setEndWeek(e.target.value)}
+//                 placeholder="8"
 //               />
 //             </div>
 //           </div>
 //         )}
 
-//         {/* monthly fields */}
+//         {/* monthly => year+month range */}
 //         {frequency === "monthly" && (
 //           <div className="mt-4 flex space-x-4">
 //             <div>
@@ -202,9 +210,9 @@
 //               <input
 //                 type="number"
 //                 className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
-//                 placeholder="1-12"
 //                 value={startMonth}
 //                 onChange={(e) => setStartMonth(e.target.value)}
+//                 placeholder="1-12"
 //               />
 //             </div>
 //             <div>
@@ -222,15 +230,15 @@
 //               <input
 //                 type="number"
 //                 className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
-//                 placeholder="1-12"
 //                 value={endMonth}
 //                 onChange={(e) => setEndMonth(e.target.value)}
+//                 placeholder="1-12"
 //               />
 //             </div>
 //           </div>
 //         )}
 
-//         {/* yearly fields */}
+//         {/* yearly => year range */}
 //         {frequency === "yearly" && (
 //           <div className="mt-4 flex space-x-4">
 //             <div>
@@ -264,101 +272,141 @@
 //         </button>
 //       </div>
 
-//       <div className="bg-white dark:bg-gray-800 rounded p-4 shadow">
-//         <h3 className="text-lg font-semibold mb-4">Results</h3>
-//         {teamData.length === 0 ? (
-//           <p className="text-gray-500 dark:text-gray-400">
-//             No data fetched or no ratings found.
-//           </p>
-//         ) : (
-//           <div className="overflow-x-auto">
-//             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-//               <thead className="bg-gray-50 dark:bg-gray-900/50">
-//                 <tr>
-//                   <th className="px-4 py-2 text-left">Employee</th>
-//                   <th className="px-4 py-2 text-left">Designation</th>
-//                   <th className="px-4 py-2 text-left">Rating Count</th>
-//                   <th className="px-4 py-2 text-left">Average Rating</th>
-//                   <th className="px-4 py-2 text-center">Actions</th>
-//                 </tr>
-//               </thead>
-//               <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-//                 {teamData.map((item) => {
-//                   const { employee, averageRating, ratingCount } = item;
-//                   return (
-//                     <tr key={employee._id}>
-//                       <td className="px-4 py-2 whitespace-nowrap">
-//                         <div className="flex items-center space-x-2">
-//                           <img
-//                             src={employee.user_Avatar}
-//                             alt="avatar"
-//                             className="w-8 h-8 rounded-full"
-//                           />
-//                           <div>
-//                             {employee.first_Name} {employee.last_Name} (
-//                             {employee.employee_Id})
-//                           </div>
-//                         </div>
-//                       </td>
-//                       <td className="px-4 py-2 whitespace-nowrap">
-//                         {employee.designation}
-//                       </td>
-//                       <td className="px-4 py-2">{ratingCount}</td>
-//                       <td className="px-4 py-2">
-//                         {averageRating.toFixed(2)}
-//                       </td>
-//                       <td className="px-4 py-2 text-center">
-//                         {/* The 'View Full Rating' button */}
-//                         <button
-//                           onClick={() => handleViewFullRating(employee._id)}
-//                           className="inline-flex items-center px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded"
-//                         >
-//                           View Full Rating
-//                         </button>
-//                       </td>
-//                     </tr>
-//                   );
-//                 })}
-//               </tbody>
-//             </table>
+//       {/* Employee Info + Ratings */}
+//       {employeeData ? (
+//         <div className="bg-white dark:bg-gray-800 rounded p-4 shadow">
+//           <div className="flex items-center space-x-4 mb-4">
+//             <img
+//               src={employeeData.user_Avatar}
+//               alt="avatar"
+//               className="w-16 h-16 rounded-full"
+//             />
+//             <div>
+//               <h2 className="text-xl font-semibold">
+//                 {employeeData.first_Name} {employeeData.last_Name} (
+//                 {employeeData.employee_Id})
+//               </h2>
+//               <p className="text-gray-600 dark:text-gray-400">
+//                 {employeeData.designation} 
+//                 {/* If you have department: ` - ${employeeData.department}` */}
+//               </p>
+//             </div>
+//             <div className="ml-auto text-right">
+//               <p className="text-gray-600 dark:text-gray-400 text-sm">
+//                 Ratings Found: {employeeData.ratingCount}
+//               </p>
+//               <p className="font-bold">
+//                 Avg Rating: {employeeData.averageRating.toFixed(2)}
+//               </p>
+//             </div>
 //           </div>
-//         )}
-//       </div>
+
+//           {filteredRatings.length === 0 ? (
+//             <p className="text-gray-500 dark:text-gray-400">
+//               No rating docs match your filters.
+//             </p>
+//           ) : (
+//             <div className="overflow-x-auto">
+//               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+//                 <thead className="bg-gray-50 dark:bg-gray-900/50">
+//                   <tr>
+//                     <th className="px-4 py-2 text-left">Frequency</th>
+//                     <th className="px-4 py-2 text-left">Date/Period</th>
+//                     <th className="px-4 py-2 text-left">TotalScore</th>
+//                     <th className="px-4 py-2 text-left"># of KPIs</th>
+//                     <th className="px-4 py-2 text-left">Comment</th>
+//                   </tr>
+//                 </thead>
+//                 <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+//                   {filteredRatings.map((rdoc) => {
+//                     return (
+//                       <tr key={rdoc._id}>
+//                         <td className="px-4 py-2">{rdoc.frequency}</td>
+//                         <td className="px-4 py-2">
+//                           {/* For daily => rdoc.date, for monthly => rdoc.year/month, etc. */}
+//                           {renderPeriod(rdoc)}
+//                         </td>
+//                         <td className="px-4 py-2">{rdoc.totalScore}</td>
+//                         <td className="px-4 py-2">
+//                           {rdoc.kpis ? rdoc.kpis.length : 0}
+//                         </td>
+//                         <td className="px-4 py-2">{rdoc.comment || "—"}</td>
+//                       </tr>
+//                     );
+//                   })}
+//                 </tbody>
+//               </table>
+//             </div>
+//           )}
+//         </div>
+//       ) : (
+//         <p className="text-gray-500 dark:text-gray-400">
+//           No employee data loaded yet. Choose filters and click "Fetch Ratings."
+//         </p>
+//       )}
 //     </div>
 //   );
 // }
 
-// export default TeamRatingsAdvanced;
+// /**
+//  * Helper to render the "date or period" for a rating doc.
+//  */
+// function renderPeriod(rdoc) {
+//   if (rdoc.frequency === "daily") {
+//     if (!rdoc.date) return "No date";
+//     const d = new Date(rdoc.date);
+//     return d.toLocaleDateString(); // e.g. "4/05/2025"
+//   } else if (rdoc.frequency === "weekly") {
+//     // e.g. "2025-Wk2 (Month:05?)"
+//     return `Yr${rdoc.year}-Wk${rdoc.week} (M:${rdoc.month})`;
+//   } else if (rdoc.frequency === "monthly") {
+//     // e.g. "2025-04"
+//     return `${rdoc.year || "??"}-${rdoc.month || "??"}`;
+//   } else if (rdoc.frequency === "yearly") {
+//     // e.g. "2025"
+//     return rdoc.year || "??";
+//   } else {
+//     // fallback
+//     return "??";
+//   }
+// }
+
+// export default EmployeeRatingAdvanced;
 
 
-import React, { useState, useEffect } from "react";
+// components/EmployeeRatingAdvanced.jsx
+
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
 import useRatingStore from "../../store/useRatingNewStore";
 
-// 1) Import your helper that returns weeks in a month
+// 1) Import your helper to get weeks in a month
 import { getWeeksInMonth } from "./calendarUtils";
 
 const FREQUENCIES = ["daily", "weekly", "monthly", "yearly"];
 
-function TeamRatingsAdvanced() {
-  const { getTeamRatingsAdvanced, loading, error } = useRatingStore();
-  const navigate = useNavigate();
+function EmployeeRatingAdvanced() {
+  // If using react-router, get employeeId from URL param
+  const { employeeId } = useParams();
+
+  // Zustand store
+  const { getEmployeeRatingsAdvanced, loading, error } = useRatingStore();
 
   // -------------------------
-  // Frequency selection
+  // Frequency
   // -------------------------
   const [frequency, setFrequency] = useState("daily");
 
   // -------------------------
-  // For daily
+  // For daily date range
   // -------------------------
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
   // -------------------------
   // For weekly / monthly / yearly
-  // Using range: (startYear, startMonth, startWeek) --> (endYear, endMonth, endWeek)
+  // We'll store a start range and an end range
   // -------------------------
   const [startYear, setStartYear] = useState("");
   const [endYear, setEndYear] = useState("");
@@ -367,85 +415,81 @@ function TeamRatingsAdvanced() {
   const [startWeek, setStartWeek] = useState("");
   const [endWeek, setEndWeek] = useState("");
 
-  // 2) We'll store separate arrays of available weeks for the start and for the end
+  // We'll store two separate arrays of "weeks" for the start range and for the end range
   const [startAvailableWeeks, setStartAvailableWeeks] = useState([]);
   const [endAvailableWeeks, setEndAvailableWeeks] = useState([]);
 
-  // -------------------------
-  // The fetched result data
-  // -------------------------
-  const [teamData, setTeamData] = useState([]);
+  // The fetched data
+  // { employee, filteredRatings, averageRating, ratingCount }
+  const [employeeData, setEmployeeData] = useState(null);
+  const [filteredRatings, setFilteredRatings] = useState([]);
 
   // -------------------------
-  // On mount, or whenever frequency changes, set defaults
-  // (like you had before).
+  // When frequency changes, set defaults
+  // (like "today" for daily, or current month for monthly, etc.)
   // -------------------------
   useEffect(() => {
     const today = new Date();
-    const isoToday = today.toISOString().split("T")[0]; // e.g. "2025-04-21"
+    const isoToday = today.toISOString().split("T")[0];
     const currentYear = today.getFullYear();
-    const currentMonth = today.getMonth() + 1; // 1-based
+    const currentMonth = String(today.getMonth() + 1).padStart(2, "0");
 
     switch (frequency) {
       case "daily":
+        // default start/end date to today
         setStartDate(isoToday);
         setEndDate(isoToday);
-        // Clear other fields
+        // clear everything else
         setStartYear("");
         setEndYear("");
         setStartMonth("");
         setEndMonth("");
         setStartWeek("");
         setEndWeek("");
-        // Also clear the availableWeeks arrays
         setStartAvailableWeeks([]);
         setEndAvailableWeeks([]);
         break;
 
       case "weekly":
-        // Default to current year and month
+        // default startYear/endYear to current, startMonth/endMonth to current
         setStartYear(String(currentYear));
         setEndYear(String(currentYear));
-        const paddedMonth = String(currentMonth).padStart(2, "0");
-        setStartMonth(paddedMonth);
-        setEndMonth(paddedMonth);
-        // We'll pick a default for startWeek / endWeek once we load the available weeks
+        setStartMonth(currentMonth);
+        setEndMonth(currentMonth);
+        // clear weeks until we fetch them
         setStartWeek("");
         setEndWeek("");
-        // Clear daily date fields
+        // clear daily
         setStartDate("");
         setEndDate("");
         break;
 
       case "monthly":
-        // For monthly, default year = current year, month = current month
+        // default startYear/endYear to current, startMonth/endMonth to current
         setStartYear(String(currentYear));
         setEndYear(String(currentYear));
-        setStartMonth(String(currentMonth).padStart(2, "0"));
-        setEndMonth(String(currentMonth).padStart(2, "0"));
-        // Clear weekly fields
-        setStartWeek("");
-        setEndWeek("");
-        // Clear daily
+        setStartMonth(currentMonth);
+        setEndMonth(currentMonth);
+        // clear daily/weekly
         setStartDate("");
         setEndDate("");
-        // Also clear the availableWeeks arrays
+        setStartWeek("");
+        setEndWeek("");
         setStartAvailableWeeks([]);
         setEndAvailableWeeks([]);
         break;
 
       case "yearly":
-        // For yearly, default start/end year to current
+        // default startYear/endYear to current
         setStartYear(String(currentYear));
         setEndYear(String(currentYear));
-        // Clear everything else
+        // clear daily/week/month
+        setStartDate("");
+        setEndDate("");
         setStartMonth("");
         setEndMonth("");
         setStartWeek("");
         setEndWeek("");
-        setStartDate("");
-        setEndDate("");
-        // Also clear the availableWeeks arrays
         setStartAvailableWeeks([]);
         setEndAvailableWeeks([]);
         break;
@@ -456,25 +500,26 @@ function TeamRatingsAdvanced() {
   }, [frequency]);
 
   // -------------------------
-  // If frequency=weekly, whenever startYear or startMonth changes,
-  // compute the "startAvailableWeeks"
+  // If frequency=weekly, load the "start" weeks
+  // whenever startYear or startMonth changes
   // -------------------------
   useEffect(() => {
-    if (frequency === "weekly" && startYear && startMonth) {
+    if (frequency !== "weekly") return;
+
+    if (startYear && startMonth) {
       const y = parseInt(startYear, 10);
       const m = parseInt(startMonth, 10) - 1; // 0-based
       if (y >= 0 && m >= 0) {
-        const weeks = getWeeksInMonth(y, m);
-        setStartAvailableWeeks(weeks);
+        const weeksArr = getWeeksInMonth(y, m);
+        setStartAvailableWeeks(weeksArr);
 
-        // If there's no startWeek chosen yet, or it's invalid, default to the first
-        if (!startWeek || !weeks.find((w) => w.value === startWeek)) {
-          // or if you want to pick today's week if it is found, do that:
-          const foundWeek = weeks.find(
-            (w) => new Date() >= w.startDate && new Date() <= w.endDate
+        // If there's no startWeek selected or it's invalid, pick a default
+        if (!startWeek || !weeksArr.find((w) => w.value === startWeek)) {
+          // Optionally pick today's week if found
+          const found = weeksArr.find(
+            (w) => todayInRange(w.startDate, w.endDate)
           );
-          const defaultWeek = foundWeek ? foundWeek.value : weeks[0]?.value || "";
-          setStartWeek(defaultWeek);
+          setStartWeek(found ? found.value : weeksArr[0]?.value || "");
         }
       } else {
         setStartAvailableWeeks([]);
@@ -485,24 +530,25 @@ function TeamRatingsAdvanced() {
   }, [frequency, startYear, startMonth, startWeek]);
 
   // -------------------------
-  // Similarly for "endYear" and "endMonth"
-  // -> endAvailableWeeks
+  // If frequency=weekly, load the "end" weeks
+  // whenever endYear or endMonth changes
   // -------------------------
   useEffect(() => {
-    if (frequency === "weekly" && endYear && endMonth) {
-      const y = parseInt(endYear, 10);
-      const m = parseInt(endMonth, 10) - 1;
-      if (y >= 0 && m >= 0) {
-        const weeks = getWeeksInMonth(y, m);
-        setEndAvailableWeeks(weeks);
+    if (frequency !== "weekly") return;
 
-        // If no endWeek or invalid, default similarly
-        if (!endWeek || !weeks.find((w) => w.value === endWeek)) {
-          const foundWeek = weeks.find(
-            (w) => new Date() >= w.startDate && new Date() <= w.endDate
+    if (endYear && endMonth) {
+      const y = parseInt(endYear, 10);
+      const m = parseInt(endMonth, 10) - 1; // 0-based
+      if (y >= 0 && m >= 0) {
+        const weeksArr = getWeeksInMonth(y, m);
+        setEndAvailableWeeks(weeksArr);
+
+        // If there's no endWeek selected or it's invalid, pick a default
+        if (!endWeek || !weeksArr.find((w) => w.value === endWeek)) {
+          const found = weeksArr.find(
+            (w) => todayInRange(w.startDate, w.endDate)
           );
-          const defaultWeek = foundWeek ? foundWeek.value : weeks[0]?.value || "";
-          setEndWeek(defaultWeek);
+          setEndWeek(found ? found.value : weeksArr[0]?.value || "");
         }
       } else {
         setEndAvailableWeeks([]);
@@ -512,84 +558,93 @@ function TeamRatingsAdvanced() {
     }
   }, [frequency, endYear, endMonth, endWeek]);
 
+  // A tiny helper to check if "today" is in [start, end]
+  const todayInRange = (start, end) => {
+    const now = new Date();
+    return now >= start && now <= end;
+  };
+
   // -------------------------
-  // handleFetchRatings -> build params
+  // Fetch Ratings
   // -------------------------
   const handleFetchRatings = async () => {
+    if (!employeeId) {
+      toast.error("No employee selected or invalid route param.");
+      return;
+    }
     try {
       const params = { frequency };
 
-      if (frequency === "daily") {
-        if (startDate && endDate) {
-          params.startDate = startDate;
-          params.endDate = endDate;
-        }
-      }
-      if (frequency === "weekly") {
-        // We'll pass startYear, endYear, startMonth, endMonth, startWeek, endWeek
-        if (startYear && endYear && startMonth && endMonth && startWeek && endWeek) {
-          params.startYear = startYear;
-          params.endYear = endYear;
-          params.startMonth = startMonth;
-          params.endMonth = endMonth;
-          params.startWeek = startWeek;
-          params.endWeek = endWeek;
-        }
-      }
-      if (frequency === "monthly") {
-        if (startYear && endYear && startMonth && endMonth) {
-          params.startYear = startYear;
-          params.endYear = endYear;
-          params.startMonth = startMonth;
-          params.endMonth = endMonth;
-        }
-      }
-      if (frequency === "yearly") {
-        if (startYear && endYear) {
-          params.startYear = startYear;
-          params.endYear = endYear;
-        }
+      // daily
+      if (frequency === "daily" && startDate && endDate) {
+        params.startDate = startDate;
+        params.endDate = endDate;
       }
 
-      const res = await getTeamRatingsAdvanced(params);
+      // weekly
+      if (
+        frequency === "weekly" &&
+        startYear &&
+        endYear &&
+        startMonth &&
+        endMonth &&
+        startWeek &&
+        endWeek
+      ) {
+        params.startYear = startYear;
+        params.endYear = endYear;
+        params.startMonth = startMonth;
+        params.endMonth = endMonth;
+        params.startWeek = startWeek;
+        params.endWeek = endWeek;
+      }
+
+      // monthly
+      if (
+        frequency === "monthly" &&
+        startYear &&
+        endYear &&
+        startMonth &&
+        endMonth
+      ) {
+        params.startYear = startYear;
+        params.endYear = endYear;
+        params.startMonth = startMonth;
+        params.endMonth = endMonth;
+      }
+
+      // yearly
+      if (frequency === "yearly" && startYear && endYear) {
+        params.startYear = startYear;
+        params.endYear = endYear;
+      }
+
+      const res = await getEmployeeRatingsAdvanced(employeeId, params);
       if (res.success) {
-        setTeamData(res.data);
+        const { employee, filteredRatings, averageRating, ratingCount } = res.data;
+        setEmployeeData({
+          ...employee,
+          averageRating,
+          ratingCount,
+        });
+        setFilteredRatings(filteredRatings);
       } else {
         toast.error(res.message || "Could not fetch data");
       }
     } catch (err) {
-      toast.error(err.message || "Error fetching advanced ratings");
+      toast.error(err.message || "Error fetching employee advanced ratings");
     }
   };
 
-  // -------------------------
-  // "View Full Rating" -> navigate
-  // -------------------------
-  const handleViewFullRating = (employeeId) => {
-    navigate(`/dashboard/employee-advanced/${employeeId}`);
-  };
-
-  // -------------------------
-  // Helpers for label
-  // -------------------------
-  const months = [
-    "January","February","March","April","May","June",
-    "July","August","September","October","November","December"
-  ];
-  const getMonthName = (m) => months[parseInt(m, 10) - 1] || "??";
-
-  // -------------------------
-  // Render
-  // -------------------------
   return (
     <div className="p-4 min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors">
-      <h2 className="text-2xl font-bold mb-4">Team Ratings (Advanced)</h2>
+      <h1 className="text-2xl font-bold mb-4">Employee Rating (Advanced)</h1>
 
       {loading && <p className="text-blue-500 mb-2">Loading...</p>}
       {error && <p className="text-red-500 mb-2">Error: {error}</p>}
 
-      {/* Filters card */}
-      <div className="bg-white dark:bg-gray-800 rounded p-4 mb-4 shadow">
+      {/* Filter Panel */}
+      <div className="bg-white dark:bg-gray-800 rounded p-4 mb-6 shadow">
         <label className="block font-medium mb-1">Frequency</label>
         <select
           className="border p-2 rounded w-48 dark:bg-gray-700 dark:border-gray-600"
@@ -603,7 +658,7 @@ function TeamRatingsAdvanced() {
           ))}
         </select>
 
-        {/* DAILY */}
+        {/* daily => date range */}
         {frequency === "daily" && (
           <div className="mt-4 flex space-x-4">
             <div>
@@ -627,38 +682,30 @@ function TeamRatingsAdvanced() {
           </div>
         )}
 
-        {/* WEEKLY */}
+        {/* weekly => year+month => week range */}
         {frequency === "weekly" && (
           <>
-            {/* For "start" range */}
+            {/* START range */}
             <div className="mt-4 flex space-x-4">
               <div>
                 <label className="block font-medium mb-1">Start Year</label>
                 <input
                   type="number"
                   className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
-                  placeholder="2025"
                   value={startYear}
                   onChange={(e) => setStartYear(e.target.value)}
+                  placeholder="2025"
                 />
               </div>
               <div>
                 <label className="block font-medium mb-1">Start Month</label>
-                <select
-                  className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
+                <input
+                  type="number"
+                  className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
                   value={startMonth}
                   onChange={(e) => setStartMonth(e.target.value)}
-                >
-                  <option value="">--</option>
-                  {months.map((mName, idx) => {
-                    const mVal = String(idx + 1).padStart(2, "0");
-                    return (
-                      <option key={mVal} value={mVal}>
-                        {mName}
-                      </option>
-                    );
-                  })}
-                </select>
+                  placeholder="1-12"
+                />
               </div>
               <div>
                 <label className="block font-medium mb-1">Start Week</label>
@@ -668,44 +715,36 @@ function TeamRatingsAdvanced() {
                   onChange={(e) => setStartWeek(e.target.value)}
                 >
                   <option value="">Select Week</option>
-                  {startAvailableWeeks.map((wObj) => (
-                    <option key={wObj.value} value={wObj.value}>
-                      {wObj.label}
+                  {startAvailableWeeks.map((w) => (
+                    <option key={w.value} value={w.value}>
+                      {w.label}
                     </option>
                   ))}
                 </select>
               </div>
             </div>
 
-            {/* For "end" range */}
+            {/* END range */}
             <div className="mt-4 flex space-x-4">
               <div>
                 <label className="block font-medium mb-1">End Year</label>
                 <input
                   type="number"
                   className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
-                  placeholder="2025"
                   value={endYear}
                   onChange={(e) => setEndYear(e.target.value)}
+                  placeholder="2025"
                 />
               </div>
               <div>
                 <label className="block font-medium mb-1">End Month</label>
-                <select
-                  className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
+                <input
+                  type="number"
+                  className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
                   value={endMonth}
                   onChange={(e) => setEndMonth(e.target.value)}
-                >
-                  <option value="">--</option>
-                  {months.map((mName, idx) => {
-                    const mVal = String(idx + 1).padStart(2, "0");
-                    return (
-                      <option key={mVal} value={mVal}>
-                        {mName}
-                      </option>
-                    );
-                  })}
-                </select>
+                  placeholder="1-12"
+                />
               </div>
               <div>
                 <label className="block font-medium mb-1">End Week</label>
@@ -715,9 +754,9 @@ function TeamRatingsAdvanced() {
                   onChange={(e) => setEndWeek(e.target.value)}
                 >
                   <option value="">Select Week</option>
-                  {endAvailableWeeks.map((wObj) => (
-                    <option key={wObj.value} value={wObj.value}>
-                      {wObj.label}
+                  {endAvailableWeeks.map((w) => (
+                    <option key={w.value} value={w.value}>
+                      {w.label}
                     </option>
                   ))}
                 </select>
@@ -726,7 +765,7 @@ function TeamRatingsAdvanced() {
           </>
         )}
 
-        {/* MONTHLY */}
+        {/* monthly => year+month range */}
         {frequency === "monthly" && (
           <div className="mt-4 flex space-x-4">
             <div>
@@ -741,21 +780,13 @@ function TeamRatingsAdvanced() {
             </div>
             <div>
               <label className="block font-medium mb-1">Start Month</label>
-              <select
-                className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
+              <input
+                type="number"
+                className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
                 value={startMonth}
                 onChange={(e) => setStartMonth(e.target.value)}
-              >
-                <option value="">--</option>
-                {months.map((mName, idx) => {
-                  const mVal = String(idx + 1).padStart(2, "0");
-                  return (
-                    <option key={mVal} value={mVal}>
-                      {mName}
-                    </option>
-                  );
-                })}
-              </select>
+                placeholder="1-12"
+              />
             </div>
             <div>
               <label className="block font-medium mb-1">End Year</label>
@@ -769,26 +800,18 @@ function TeamRatingsAdvanced() {
             </div>
             <div>
               <label className="block font-medium mb-1">End Month</label>
-              <select
-                className="border p-2 rounded w-20 dark:bg-gray-700 dark:border-gray-600"
+              <input
+                type="number"
+                className="border p-2 rounded w-16 dark:bg-gray-700 dark:border-gray-600"
                 value={endMonth}
                 onChange={(e) => setEndMonth(e.target.value)}
-              >
-                <option value="">--</option>
-                {months.map((mName, idx) => {
-                  const mVal = String(idx + 1).padStart(2, "0");
-                  return (
-                    <option key={mVal} value={mVal}>
-                      {mName}
-                    </option>
-                  );
-                })}
-              </select>
+                placeholder="1-12"
+              />
             </div>
           </div>
         )}
 
-        {/* YEARLY */}
+        {/* yearly => year range */}
         {frequency === "yearly" && (
           <div className="mt-4 flex space-x-4">
             <div>
@@ -822,68 +845,99 @@ function TeamRatingsAdvanced() {
         </button>
       </div>
 
-      {/* Results */}
-      <div className="bg-white dark:bg-gray-800 rounded p-4 shadow">
-        <h3 className="text-lg font-semibold mb-4">Results</h3>
-        {teamData.length === 0 ? (
-          <p className="text-gray-500 dark:text-gray-400">
-            No data fetched or no ratings found.
-          </p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-gray-900/50">
-                <tr>
-                  <th className="px-4 py-2 text-left">Employee</th>
-                  <th className="px-4 py-2 text-left">Designation</th>
-                  <th className="px-4 py-2 text-left">Rating Count</th>
-                  <th className="px-4 py-2 text-left">Average Rating</th>
-                  <th className="px-4 py-2 text-center">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                {teamData.map((item) => {
-                  const { employee, averageRating, ratingCount } = item;
-                  return (
-                    <tr key={employee._id}>
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        <div className="flex items-center space-x-2">
-                          <img
-                            src={employee.user_Avatar}
-                            alt="avatar"
-                            className="w-8 h-8 rounded-full"
-                          />
-                          <div>
-                            {employee.first_Name} {employee.last_Name} (
-                            {employee.employee_Id})
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-2 whitespace-nowrap">
-                        {employee.designation}
-                      </td>
-                      <td className="px-4 py-2">{ratingCount}</td>
-                      <td className="px-4 py-2">
-                        {averageRating.toFixed(2)}
-                      </td>
-                      <td className="px-4 py-2 text-center">
-                        <button
-                          onClick={() => handleViewFullRating(employee._id)}
-                          className="inline-flex items-center px-3 py-1 text-sm bg-green-600 hover:bg-green-700 text-white rounded"
-                        >
-                          View Full Rating
-                        </button>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+      {/* Employee Info + Ratings */}
+      {employeeData ? (
+        <div className="bg-white dark:bg-gray-800 rounded p-4 shadow">
+          <div className="flex items-center space-x-4 mb-4">
+            <img
+              src={employeeData.user_Avatar}
+              alt="avatar"
+              className="w-16 h-16 rounded-full"
+            />
+            <div>
+              <h2 className="text-xl font-semibold">
+                {employeeData.first_Name} {employeeData.last_Name} (
+                {employeeData.employee_Id})
+              </h2>
+              <p className="text-gray-600 dark:text-gray-400">
+                {employeeData.designation}
+              </p>
+            </div>
+            <div className="ml-auto text-right">
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Ratings Found: {employeeData.ratingCount}
+              </p>
+              <p className="font-bold">
+                Avg Rating: {employeeData.averageRating.toFixed(2)}
+              </p>
+            </div>
           </div>
-        )}
-      </div>
+
+          {filteredRatings.length === 0 ? (
+            <p className="text-gray-500 dark:text-gray-400">
+              No rating docs match your filters.
+            </p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead className="bg-gray-50 dark:bg-gray-900/50">
+                  <tr>
+                    <th className="px-4 py-2 text-left">Frequency</th>
+                    <th className="px-4 py-2 text-left">Date/Period</th>
+                    <th className="px-4 py-2 text-left">TotalScore</th>
+                    <th className="px-4 py-2 text-left"># of KPIs</th>
+                    <th className="px-4 py-2 text-left">Comment</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  {filteredRatings.map((rdoc) => {
+                    return (
+                      <tr key={rdoc._id}>
+                        <td className="px-4 py-2">{rdoc.frequency}</td>
+                        <td className="px-4 py-2">{renderPeriod(rdoc)}</td>
+                        <td className="px-4 py-2">{rdoc.totalScore}</td>
+                        <td className="px-4 py-2">
+                          {rdoc.kpis ? rdoc.kpis.length : 0}
+                        </td>
+                        <td className="px-4 py-2">{rdoc.comment || "—"}</td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      ) : (
+        <p className="text-gray-500 dark:text-gray-400">
+          No employee data loaded yet. Choose filters and click "Fetch Ratings."
+        </p>
+      )}
     </div>
   );
 }
 
-export default TeamRatingsAdvanced;
+/**
+ * Helper to render the "date or period" for a rating doc.
+ */
+function renderPeriod(rdoc) {
+  if (rdoc.frequency === "daily") {
+    if (!rdoc.date) return "No date";
+    const d = new Date(rdoc.date);
+    return d.toLocaleDateString(); // e.g. "4/05/2025"
+  } else if (rdoc.frequency === "weekly") {
+    // e.g. "2025-Wk2 (Month:05?)"
+    return `Yr${rdoc.year}-M${rdoc.month}-Wk${rdoc.week}`;
+  } else if (rdoc.frequency === "monthly") {
+    // e.g. "2025-04"
+    return `${rdoc.year || "??"}-${rdoc.month || "??"}`;
+  } else if (rdoc.frequency === "yearly") {
+    // e.g. "2025"
+    return rdoc.year || "??";
+  } else {
+    // fallback
+    return "??";
+  }
+}
+
+export default EmployeeRatingAdvanced;

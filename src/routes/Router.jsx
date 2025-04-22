@@ -80,6 +80,7 @@ import {
   ViewPerformerPage,
   SetKpisNewPage,
   RatingDashboardPage,
+  EmployeeRatingAdvancedPage,
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -428,6 +429,10 @@ const router = createBrowserRouter([
       {
         path: "post-top-performers-new",
         element: <RatingDashboardPage />,
+      },
+      {
+        path: "employee-advanced/:employeeId",
+        element: <EmployeeRatingAdvancedPage />,
       },
     ],
   },

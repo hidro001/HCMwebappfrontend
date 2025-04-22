@@ -120,6 +120,73 @@ const useRatingStore = create((set, get) => ({
       throw err;
     }
   },
+
+    // 6) GET team advanced ratings
+    getTeamRatingsAdvanced: async (params) => {
+      /**
+       * params = {
+       *   frequency?: 'daily' | 'weekly' | 'monthly' | 'yearly',
+       *   startDate?: 'YYYY-MM-DD',
+       *   endDate?: 'YYYY-MM-DD',
+       *   startYear?: '2024',
+       *   endYear?: '2025',
+       *   startMonth?: '01',
+       *   endMonth?: '12',
+       *   startWeek?: '1',
+       *   endWeek?: '8',
+       *   ...
+       * }
+       */
+      try {
+        set({ loading: true, error: null });
+        // Build query
+        const queryParams = new URLSearchParams(params).toString();
+        const res = await axiosInstance.get(`/ratings/team-advanced?${queryParams}`);
+  
+        set({ loading: false, error: null });
+        return res.data; // { success: true, data: [...] }
+      } catch (err) {
+        set({
+          loading: false,
+          error: err.response?.data?.message || err.message,
+        });
+        throw err;
+      }
+    },
+
+     // Get advanced ratings for a SINGLE employee with date-range filters.
+  getEmployeeRatingsAdvanced: async (employeeId, params) => {
+    /**
+     * params = {
+     *   frequency?: 'daily' | 'weekly' | 'monthly' | 'yearly',
+     *   startDate?: 'YYYY-MM-DD',
+     *   endDate?: 'YYYY-MM-DD',
+     *   startYear?: '2025',
+     *   endYear?: '2025',
+     *   startMonth?: '01',
+     *   endMonth?: '12',
+     *   startWeek?: '1',
+     *   endWeek?: '8',
+     *   ...
+     * }
+     */
+    try {
+      set({ loading: true, error: null });
+      const queryParams = new URLSearchParams(params).toString();
+
+      // example: /ratings/employee-advanced/67610bfe4afcd581b8c7abde?frequency=daily&startDate=...
+      const res = await axiosInstance.get(`/ratings/employee-advanced/${employeeId}?${queryParams}`);
+
+      set({ loading: false, error: null });
+      return res.data; // { success: true, data: { employee, filteredRatings, averageRating, ... } }
+    } catch (err) {
+      set({
+        loading: false,
+        error: err.response?.data?.message || err.message,
+      });
+      throw err;
+    }
+  },
 }));
 
 export default useRatingStore;
