@@ -22,15 +22,41 @@ import {
 } from "react-icons/bs";
 
 const FREQUENCIES = [
-  { value: "daily", label: "Daily", icon: <MdOutlineDateRange className="text-lg" /> },
-  { value: "weekly", label: "Weekly", icon: <BsCalendar3Week className="text-lg" /> },
-  { value: "monthly", label: "Monthly", icon: <BsCalendar2Month className="text-lg" /> },
-  { value: "yearly", label: "Yearly", icon: <BsCalendar2Range className="text-lg" /> },
+  {
+    value: "daily",
+    label: "Daily",
+    icon: <MdOutlineDateRange className="text-lg" />,
+  },
+  {
+    value: "weekly",
+    label: "Weekly",
+    icon: <BsCalendar3Week className="text-lg" />,
+  },
+  {
+    value: "monthly",
+    label: "Monthly",
+    icon: <BsCalendar2Month className="text-lg" />,
+  },
+  {
+    value: "yearly",
+    label: "Yearly",
+    icon: <BsCalendar2Range className="text-lg" />,
+  },
 ];
 
 const months = [
-  "January","February","March","April","May","June",
-  "July","August","September","October","November","December",
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
 function TeamRatingsAdvanced() {
@@ -263,7 +289,12 @@ function TeamRatingsAdvanced() {
                 stroke="currentColor"
                 viewBox="0 0 24 24"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M19 9l-7 7-7-7"
+                ></path>
               </svg>
             </button>
           </div>
@@ -596,64 +627,67 @@ function TeamRatingsAdvanced() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                    {teamData.map(({ employee, averageRating, ratingCount }) => (
-                      <tr
-                        key={employee._id}
-                        className="hover:bg-gray-50 dark:hover:bg-gray-700/20 transition-colors duration-150"
-                      >
-                        <td className="px-6 py-4">
-                          <div className="flex items-center space-x-3">
-                            <div className="relative">
-                              <img
-                                src={employee.user_Avatar || "/placeholder-avatar.jpg"}
-                                alt="avatar"
-                                className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-gray-800 shadow"
-                                onError={(e) => {
-                                  e.target.onerror = null;
-                                  e.target.src =
-                                    "https://via.placeholder.com/40";
-                                }}
-                              />
-                              {averageRating >= 4.5 && (
-                                <div className="absolute -top-1 -right-1 bg-yellow-400 text-white text-xs px-1 py-0.5 rounded-full font-bold">
-                                  TOP
-                                </div>
-                              )}
+                    {teamData.map(
+                      ({ employee, averageRating, ratingCount }) => (
+                        <tr
+                          key={employee._id}
+                          className="hover:bg-gray-50 dark:hover:bg-gray-700/20 transition-colors duration-150"
+                        >
+                          <td className="px-6 py-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="relative">
+                                <img
+                                  src={
+                                    employee.user_Avatar ||
+                                    "/placeholder-avatar.jpg"
+                                  }
+                                  alt="avatar"
+                                  className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-gray-800 shadow"
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src =
+                                      "https://via.placeholder.com/40";
+                                  }}
+                                />
+                                {averageRating >= 4.5 && (
+                                  <div className="absolute -top-1 -right-1 bg-yellow-400 text-white text-xs px-1 py-0.5 rounded-full font-bold">
+                                    TOP
+                                  </div>
+                                )}
+                              </div>
+                              <div>
+                                <p className="font-semibold">
+                                  {employee.first_Name} {employee.last_Name} (
+                                  {employee.employee_Id})
+                                </p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                  {employee.department || "No department"}
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <p className="font-semibold">
-                                {employee.first_Name} {employee.last_Name} (
-                                {employee.employee_Id})
-                              </p>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">
-                                {employee.department || "No department"}
-                              </p>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">
-                          {employee.designation || "N/A"}
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          {ratingCount || 0}
-                        </td>
-                        {/* Replaced stars with a numeric average rating */}
-                        <td className="px-6 py-4">
-                          {averageRating
-                            ? averageRating.toFixed(2)
-                            : "N/A"}
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <button
-                            onClick={() => handleViewFullRating(employee._id)}
-                            className="inline-flex items-center px-3 py-2 text-sm bg-green-500 hover:bg-green-600 text-white rounded transition-colors duration-200"
-                          >
-                            <FiEye className="mr-1" />
-                            View Full Rating
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                          <td className="px-6 py-4">
+                            {employee.designation || "N/A"}
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            {ratingCount || 0}
+                          </td>
+                          {/* Replaced stars with a numeric average rating */}
+                          <td className="px-6 py-4">
+                            {averageRating ? averageRating.toFixed(2) : "N/A"}
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <button
+                              onClick={() => handleViewFullRating(employee._id)}
+                              className="inline-flex items-center px-3 py-2 text-sm bg-green-500 hover:bg-green-600 text-white rounded transition-colors duration-200"
+                            >
+                              <FiEye className="mr-1" />
+                              View Full Rating
+                            </button>
+                          </td>
+                        </tr>
+                      )
+                    )}
                   </tbody>
                 </table>
               </div>
