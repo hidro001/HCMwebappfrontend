@@ -31,7 +31,7 @@ function RateEmployee() {
   const [showModal, setShowModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterDesignation, setFilterDesignation] = useState("");
-  const [sortOrder, setSortOrder] = useState("name-asc"); // name-asc, name-desc, designation
+  const [sortOrder, setSortOrder] = useState("name-asc"); 
 
   const [frequency, setFrequency] = useState("daily");
   const [date, setDate] = useState(defaultDate);
