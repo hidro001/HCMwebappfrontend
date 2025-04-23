@@ -1,3 +1,5 @@
+
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -19,7 +21,6 @@ import {
   FiMoon,
   FiAlertCircle,
 } from "react-icons/fi";
-
 import { RiDashboardLine } from "react-icons/ri";
 import {
   BsCalendarWeek,
@@ -27,19 +28,78 @@ import {
   BsCalendar2Range,
 } from "react-icons/bs";
 
+// ===== IMPORT KPIDetailModal HERE =====
+import KPIDetailModal from "./modal/KPIDetailModal";
+
 const FREQUENCIES = [
   { value: "daily", label: "Daily", icon: <FiCalendar className="mr-2" /> },
-  { value: "weekly", label: "Weekly", icon: <BsCalendarWeek className="mr-2" /> },
-  { value: "monthly", label: "Monthly", icon: <BsCalendarMonth className="mr-2" /> },
-  { value: "yearly", label: "Yearly", icon: <BsCalendar2Range className="mr-2" /> },
+  {
+    value: "weekly",
+    label: "Weekly",
+    icon: <BsCalendarWeek className="mr-2" />,
+  },
+  {
+    value: "monthly",
+    label: "Monthly",
+    icon: <BsCalendarMonth className="mr-2" />,
+  },
+  {
+    value: "yearly",
+    label: "Yearly",
+    icon: <BsCalendar2Range className="mr-2" />,
+  },
 ];
 
-// Color-codes a 0-100 score.
+/**
+ * Returns the text color classes for a 0-100 score.
+ * @param {number} scoreOutOf100
+ */
 function getScoreColor(scoreOutOf100) {
   if (scoreOutOf100 >= 80) return "text-emerald-500";
   if (scoreOutOf100 >= 60) return "text-blue-500";
   if (scoreOutOf100 >= 40) return "text-amber-500";
   return "text-red-500";
+}
+
+/**
+ * Helper to render the date/period for a rating doc
+ * @param {object} rdoc rating doc
+ */
+function renderPeriod(rdoc) {
+  if (rdoc.frequency === "daily") {
+    if (!rdoc.date) return "No date";
+    const d = new Date(rdoc.date);
+    // Format e.g. "Apr 20, 2023"
+    return d.toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  } else if (rdoc.frequency === "weekly") {
+    return `${rdoc.year} • Month ${rdoc.month} • Week ${rdoc.week}`;
+  } else if (rdoc.frequency === "monthly") {
+    // Convert month number to month name
+    const monthNames = [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ];
+    const monthIndex = parseInt(rdoc.month) - 1;
+    const monthName = monthNames[monthIndex] || `Month ${rdoc.month}`;
+    return `${monthName} ${rdoc.year}`;
+  } else if (rdoc.frequency === "yearly") {
+    return rdoc.year || "Unknown Year";
+  }
+  return "Unknown Period";
 }
 
 function EmployeeRatingAdvanced() {
@@ -88,21 +148,6 @@ function EmployeeRatingAdvanced() {
   const isoToday = today.toISOString().split("T")[0];
   const currentYear = today.getFullYear();
   const currentMonth = String(today.getMonth() + 1).padStart(2, "0");
-
-  // Toggle dark mode
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle("dark");
-  };
-
-  // Apply dark mode class to root element
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDarkMode]);
 
   // reset frequency defaults whenever frequency changes
   useEffect(() => {
@@ -156,7 +201,7 @@ function EmployeeRatingAdvanced() {
       default:
         break;
     }
-  }, [frequency]);
+  }, [frequency, isoToday, currentYear, currentMonth]);
 
   // if weekly => recalc startWeek
   useEffect(() => {
@@ -206,6 +251,7 @@ function EmployeeRatingAdvanced() {
     }
     try {
       const params = { frequency };
+
       // daily
       if (frequency === "daily" && startDate && endDate) {
         params.startDate = startDate;
@@ -254,8 +300,7 @@ function EmployeeRatingAdvanced() {
 
         setEmployeeData({
           ...employee,
-          // `averageRating` from the API is already 0-100
-          averageRating,
+          averageRating, // already 0-100 from API
           ratingCount,
         });
         setFilteredRatings(filteredRatings);
@@ -274,6 +319,7 @@ function EmployeeRatingAdvanced() {
     setShowModal(true);
   };
 
+  // handler to close the KPI detail modal
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedRating(null);
@@ -282,7 +328,7 @@ function EmployeeRatingAdvanced() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
       {/* Top navigation bar */}
-      <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700">
+      {/* <div className="sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <RiDashboardLine className="text-blue-600 dark:text-blue-400 text-2xl" />
@@ -290,12 +336,7 @@ function EmployeeRatingAdvanced() {
           </div>
 
           <div className="flex items-center space-x-4">
-            <button
-              onClick={toggleDarkMode}
-              className="p-2 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-            >
-              {isDarkMode ? <FiSun className="text-lg" /> : <FiMoon className="text-lg" />}
-            </button>
+          
 
             {employeeData && (
               <div className="flex items-center space-x-2">
@@ -315,28 +356,28 @@ function EmployeeRatingAdvanced() {
             )}
           </div>
         </div>
-      </div>
+      </div> */}
 
-      <div className="container mx-auto px-4 py-6">
+      <div className="container mx-auto px-4 py-6 mt-6">
         {/* Dashboard header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 sticky top-0 z-10 bg-white dark:bg-gray-800 shadow-md border-b border-gray-200 dark:border-gray-700 px-4 rounded-xl">
           <div className="mb-4 md:mb-0">
             <h2 className="text-2xl font-bold mb-1 flex items-center">
               <FiUser className="mr-2 text-blue-500" />
               Employee Performance Dashboard
             </h2>
             <p className="text-gray-600 dark:text-gray-400 text-sm">
-              View and analyze employee performance metrics across different time periodss
+              View and analyze employee performance metrics across different
+              time periods
             </p>
           </div>
 
           {employeeData && (
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-3 flex items-center">
               <div className="mr-4">
-                <div className="text-xs text-gray-500 dark:text-gray-400">Average Score</div>
-                {/**
-                 * averageRating is 0-100 from API
-                 */}
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  Average Score
+                </div>
                 <div className="text-2xl font-bold flex items-center">
                   <span className={getScoreColor(employeeData.averageRating)}>
                     {employeeData.averageRating.toFixed(1)}
@@ -345,8 +386,12 @@ function EmployeeRatingAdvanced() {
                 </div>
               </div>
               <div>
-                <div className="text-xs text-gray-500 dark:text-gray-400">Total Reviews</div>
-                <div className="text-lg font-semibold">{employeeData.ratingCount}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  Total Reviews
+                </div>
+                <div className="text-lg font-semibold">
+                  {employeeData.ratingCount}
+                </div>
               </div>
             </div>
           )}
@@ -397,7 +442,6 @@ function EmployeeRatingAdvanced() {
 
               {/* Time period filters based on frequency */}
               <div className="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-4">
-                {/* daily => date range */}
                 {frequency === "daily" && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -431,7 +475,6 @@ function EmployeeRatingAdvanced() {
                   </div>
                 )}
 
-                {/* weekly => start Year/Month/Week + end Year/Month/Week */}
                 {frequency === "weekly" && (
                   <div className="space-y-4">
                     <div>
@@ -526,7 +569,6 @@ function EmployeeRatingAdvanced() {
                   </div>
                 )}
 
-                {/* monthly => startYear/Month + endYear/Month */}
                 {frequency === "monthly" && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -590,7 +632,6 @@ function EmployeeRatingAdvanced() {
                   </div>
                 )}
 
-                {/* yearly => startYear + endYear */}
                 {frequency === "yearly" && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -723,7 +764,9 @@ function EmployeeRatingAdvanced() {
                         Average
                       </div>
                       <div className="font-bold text-xl">
-                        <span className={getScoreColor(employeeData.averageRating)}>
+                        <span
+                          className={getScoreColor(employeeData.averageRating)}
+                        >
                           {employeeData.averageRating.toFixed(1)}
                         </span>
                       </div>
@@ -929,8 +972,8 @@ function EmployeeRatingAdvanced() {
                 No Employee Data
               </h3>
               <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
-                Select a time period using the filters above and click &quot;Apply
-                Filters&quot; to view employee performance data.
+                Select a time period using the filters above and click
+                &quot;Apply Filters&quot; to view employee performance data.
               </p>
               <button
                 onClick={handleFetchRatings}
@@ -944,161 +987,16 @@ function EmployeeRatingAdvanced() {
         )}
       </div>
 
-      {/* KPI Detail Modal */}
-      {showModal && selectedRating && (
-        <div className="fixed inset-0 z-50 overflow-y-auto">
-          <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-              <div className="absolute inset-0 bg-gray-900 dark:bg-gray-900 opacity-75"></div>
-            </div>
-
-            <span
-              className="hidden sm:inline-block sm:align-middle sm:h-screen"
-              aria-hidden="true"
-            >
-              &#8203;
-            </span>
-
-            <div className="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full relative">
-              <div className="absolute top-3 right-3">
-                <button
-                  onClick={handleCloseModal}
-                  className="text-gray-400 hover:text-gray-500 dark:text-gray-300 dark:hover:text-gray-200 focus:outline-none"
-                >
-                  <FiX className="h-6 w-6" />
-                </button>
-              </div>
-
-              <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 rounded-t-lg border-b border-gray-200 dark:border-gray-600">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
-                    Performance Details
-                  </h3>
-                  <span className="px-2 py-1 text-xs font-medium rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
-                    {renderPeriod(selectedRating)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-6">
-                <div className="mb-4">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">
-                    Total Score (0-100)
-                  </span>
-                  <div className="flex items-center mt-1">
-                    <span
-                      className={`text-2xl font-bold ${getScoreColor(
-                        selectedRating.totalScore
-                      )}`}
-                    >
-                      {selectedRating.totalScore.toFixed(1)}
-                    </span>
-                    <span className="text-gray-500 dark:text-gray-400 text-sm ml-1">
-                      /100
-                    </span>
-                  </div>
-                </div>
-
-                {selectedRating.comment && (
-                  <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-md">
-                    <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Feedback:
-                    </h4>
-                    <p className="text-gray-600 dark:text-gray-400 text-sm italic">
-                      &quot;{selectedRating.comment}&quot;
-                    </p>
-                  </div>
-                )}
-
-                <h4 className="font-medium text-gray-700 dark:text-gray-300 mb-2 mt-4">
-                  KPI Breakdown ({selectedRating.kpis?.length || 0})
-                </h4>
-
-                {selectedRating.kpis.length === 0 ? (
-                  <p className="text-gray-500 dark:text-gray-400">
-                    No KPIs recorded for this period.
-                  </p>
-                ) : (
-                  <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
-                    {selectedRating.kpis.map((kpi, idx) => (
-                      <div
-                        key={idx}
-                        className="border border-gray-200 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700"
-                      >
-                        <div className="flex items-start justify-between mb-1">
-                          <div className="font-medium">{kpi.kpiName}</div>
-                          <div className={`font-bold ${(kpi.score)}`}>
-                            {kpi.score.toFixed(1)}
-                          </div>
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                          Type: {kpi.type}
-                        </div>
-                        {kpi.comment && (
-                          <div className="mt-2 text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-600/50 p-2 rounded">
-                            {kpi.comment}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="bg-gray-50 dark:bg-gray-700 px-4 py-3 sm:px-6 flex justify-end rounded-b-lg border-t border-gray-200 dark:border-gray-600">
-                <button
-                  onClick={handleCloseModal}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* === KPI DETAIL MODAL (Imported) === */}
+      <KPIDetailModal
+        showModal={showModal}
+        selectedRating={selectedRating}
+        onClose={handleCloseModal}
+        renderPeriod={renderPeriod}
+        getScoreColor={getScoreColor}
+      />
     </div>
   );
-}
-
-/**
- * Helper to render the date/period
- */
-function renderPeriod(rdoc) {
-  if (rdoc.frequency === "daily") {
-    if (!rdoc.date) return "No date";
-    const d = new Date(rdoc.date);
-    // Format to show month name, day, and year
-    return d.toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  } else if (rdoc.frequency === "weekly") {
-    return `${rdoc.year} • Month ${rdoc.month} • Week ${rdoc.week}`;
-  } else if (rdoc.frequency === "monthly") {
-    // Convert month number to month name
-    const monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
-    ];
-    const monthName =
-      monthNames[parseInt(rdoc.month) - 1] || `Month ${rdoc.month}`;
-    return `${monthName} ${rdoc.year}`;
-  } else if (rdoc.frequency === "yearly") {
-    return rdoc.year || "Unknown Year";
-  }
-  return "Unknown Period";
 }
 
 export default EmployeeRatingAdvanced;
