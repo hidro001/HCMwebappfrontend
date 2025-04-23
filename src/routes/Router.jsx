@@ -81,6 +81,9 @@ import {
   SetKpisNewPage,
   RatingDashboardPage,
   EmployeeRatingAdvancedPage,
+  MyPerformanceAdvancedPage,
+  TeamRatingsAdvancedPage,
+  AllEmployeeRatingsPage,
 } from "../pages";
 import MainLayout from "./MainLayout";
 
@@ -427,12 +430,24 @@ const router = createBrowserRouter([
         element: <SetKpisNewPage />,
       },
       {
-        path: "post-top-performers-new",
+        path: "rate-team-members",
         element: <RatingDashboardPage />,
       },
       {
         path: "employee-advanced/:employeeId",
         element: <EmployeeRatingAdvancedPage />,
+      },
+      {
+        path: "my-performance",
+        element: <MyPerformanceAdvancedPage />,
+      },
+      {
+        path: "team-members-performance",
+        element: <TeamRatingsAdvancedPage />,
+      },
+      {
+        path: "all-employess-ratings",
+        element: <AllEmployeeRatingsPage />,
       },
     ],
   },

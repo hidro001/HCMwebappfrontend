@@ -187,6 +187,102 @@ const useRatingStore = create((set, get) => ({
       throw err;
     }
   },
+
+    // 7) new function for "my" advanced ratings
+    getMyRatingsAdvanced: async (params) => {
+      /**
+       * params might look like:
+       * {
+       *   frequency: 'daily' | 'weekly' | 'monthly' | 'yearly',
+       *   startDate: 'YYYY-MM-DD', endDate: ...,
+       *   startYear, endYear,
+       *   startMonth, endMonth,
+       *   startWeek, endWeek,
+       *   ...
+       * }
+       */
+      try {
+        set({ loading: true, error: null });
+  
+        const queryParams = new URLSearchParams(params).toString();
+        // for example => GET /ratings/my-advanced?frequency=weekly&startYear=2025&...
+  
+        const res = await axiosInstance.get(`/ratings/my-advanced?${queryParams}`);
+  
+        set({ loading: false, error: null });
+        return res.data; // expecting { success, data: { employee, filteredRatings, averageRating, ratingCount } }
+      } catch (err) {
+        set({
+          loading: false,
+          error: err.response?.data?.message || err.message,
+        });
+        throw err;
+      }
+    },
+
+    // In store/useRatingStore.js (inside createZustand):
+// getOrgRatingsAdvanced: async (params) => {
+//   /**
+//    * params can include:
+//    * {
+//    *   department?: 'IT' | 'HR' | ...,
+//    *   designation?: 'Manager' | 'Full Stack Web Developer' | ...,
+//    *   frequency?: 'daily' | 'weekly' | 'monthly' | 'yearly',
+//    *   startDate, endDate,
+//    *   startYear, endYear,
+//    *   startMonth, endMonth,
+//    *   startWeek, endWeek,
+//    * }
+//    */
+//   try {
+//     set({ loading: true, error: null });
+
+//     const queryParams = new URLSearchParams(params).toString();
+//     // e.g. /ratings/org-advanced?department=IT&designation=Manager&frequency=monthly&...
+
+//     const res = await axiosInstance.get(`/ratings/org-advanced?${queryParams}`);
+
+//     set({ loading: false, error: null });
+//     return res.data; // expecting { success: true, data: [ { employee, filteredRatings, ... }, ... ] }
+//   } catch (err) {
+//     set({
+//       loading: false,
+//       error: err.response?.data?.message || err.message,
+//     });
+//     throw err;
+//   }
+// },
+
+getOrgRatingsAdvanced: async (params) => {
+  /**
+   * params might include:
+   * {
+   *   frequency,
+   *   department,
+   *   designation,
+   *   startDate, endDate, // for daily
+   *   startYear, endYear, // for weekly/monthly/yearly
+   *   startMonth, endMonth,
+   *   startWeek, endWeek,
+   *   ...
+   * }
+   */
+  try {
+    set({ loading: true, error: null });
+    const queryParams = new URLSearchParams(params).toString();
+    // e.g. GET /ratings/org-advanced?frequency=weekly&department=IT&startYear=2025&endYear=2025...
+    const res = await axiosInstance.get(`/ratings/organization-advanced?${queryParams}`);
+    set({ loading: false, error: null });
+    return res.data; // { success: true, data: [...] }
+  } catch (err) {
+    set({
+      loading: false,
+      error: err.response?.data?.message || err.message,
+    });
+    throw err;
+  }
+},
+
 }));
 
 export default useRatingStore;

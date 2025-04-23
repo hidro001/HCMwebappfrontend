@@ -43,7 +43,7 @@ export const menuItems = [
         // repeated "superAdminRaci" => made unique
         name: "All Dashlets",
         link: "/dashboard/all-dashlets",
-        permission: "dashboard-all-dashlets", 
+        permission: "dashboard-all-dashlets",
         textAnimation: { x: 10 },
       },
       {
@@ -99,7 +99,7 @@ export const menuItems = [
   },
 
   {
-    name: "Performance Management New",
+    name: "Performance Management & KPI",
     tooltip:
       "Track, evaluate, and improve employee performance to drive team success",
     icon: <GrDocumentPerformance />,
@@ -112,23 +112,25 @@ export const menuItems = [
         permission: "engagement-view",
       },
       {
-        name: "Post Top Performer",
-        link: "/dashboard/post-top-performers-new",
+        name: "Rate Team Members",
+        link: "/dashboard/rate-team-members",
         permission: "engagement-view",
       },
       {
-        name: "View Top Performers",
-        link: "/dashboard/top-performers-new",
+        name: "Team Members Performance",
+        link: "/dashboard/team-members-performance",
         permission: "engagement-view",
       },
       {
-        name: "Team Performance",
-        link: "/dashboard/team-performance-new",
+        name: "My Performance",
+        link: "/dashboard/my-performance",
+        
         permission: "engagement-view",
       },
+
       {
         name: "All Employes Rating",
-        link: "/dashboard/all-emp-ratings-new",
+        link: "/dashboard/all-employess-ratings",
         permission: "engagement-view",
       },
     ],
@@ -287,7 +289,6 @@ export const menuItems = [
     textAnimation: { x: 10 },
     options: [
       {
-        
         name: "Main",
         link: "/dashboard/main",
         permission: "payroll-main", // NEW
@@ -296,13 +297,13 @@ export const menuItems = [
       {
         name: "Manage Payroll",
         link: "/dashboard/manage-payroll",
-        permission: "payroll-manage-calculations", 
+        permission: "payroll-manage-calculations",
         textAnimation: { x: 10 },
       },
       {
         name: "Manage Claims",
         link: "/dashboard/manage-claims",
-        permission: "payroll-manage-claims", 
+        permission: "payroll-manage-claims",
         textAnimation: { x: 10 },
       },
     ],
@@ -339,13 +340,13 @@ export const menuItems = [
       {
         name: "Assigned Task",
         link: "/dashboard/assigned-task/employee",
-        permission: "view-own-assigned-task", 
+        permission: "view-own-assigned-task",
         textAnimation: { x: 10 },
       },
       {
         name: "Daily Task",
         link: "/dashboard/daily-task",
-        permission: "view-daily-subordinates-task", 
+        permission: "view-daily-subordinates-task",
         textAnimation: { x: 10 },
       },
     ],
@@ -388,7 +389,7 @@ export const menuItems = [
       {
         name: "Vacancies List",
         link: "/dashboard/vancancies-list",
-        permission: "recruit-manage-vacancies", 
+        permission: "recruit-manage-vacancies",
         textAnimation: { x: 10 },
       },
     ],
@@ -532,17 +533,17 @@ export const menuItems = [
       {
         name: "Main",
         link: "/dashboard/main-dashboard",
-        permission: "productivity-main", 
+        permission: "productivity-main",
       },
       {
         name: "Productivity Dashboard",
         link: "/dashboard/productivity-dashboard",
-        permission: "productivity-dashboard", 
+        permission: "productivity-dashboard",
       },
       {
         name: "Team Productivity",
         link: "/dashboard/team-productivity",
-        permission: "productivity-team", 
+        permission: "productivity-team",
       },
     ],
   },
@@ -588,7 +589,7 @@ export const menuItems = [
       {
         name: " All Leaves ",
         link: "/dashboard/all-leave-history",
-        permission: "leave-view-all", 
+        permission: "leave-view-all",
         textAnimation: { x: 10 },
       },
     ],

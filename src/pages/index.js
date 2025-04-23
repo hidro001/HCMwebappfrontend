@@ -90,10 +90,9 @@ import ViewPerformerPage from "./performance management/ViewPerformerPage";
 import SetKpisNewPage from "./performance management new/SetKpisNewPage";
 import RatingDashboardPage from "./performance management new/RatingDashboardPage";
 import EmployeeRatingAdvancedPage from "./performance management new/EmployeeRatingAdvancedPage";
-
-
-
-
+import MyPerformanceAdvancedPage from "./performance management new/MyPerformanceAdvancedPage";
+import TeamRatingsAdvancedPage from "./performance management new/TeamRatingsAdvancedPage";
+import AllEmployeeRatingsPage from "./performance management new/AllEmployeeRatingsPage";
 
 export {
   Login,
@@ -141,7 +140,6 @@ export {
   CompanyInductionPage,
   BreakSettingsPage,
   PerformanceManagementDashboardPage,
- 
   SetKpiForDesignationPage,
   PostPerformerPage,
   ViewPerformerPage,
@@ -174,6 +172,8 @@ export {
   RequestDashboardPage,
   SetKpisNewPage,
   RatingDashboardPage,
-EmployeeRatingAdvancedPage
-
+  EmployeeRatingAdvancedPage,
+  MyPerformanceAdvancedPage,
+  TeamRatingsAdvancedPage,
+  AllEmployeeRatingsPage,
 };
