@@ -10,7 +10,7 @@ import useDepartmentStore from "../../store/departmentStore";
 import useDesignationStore from "../../store/designationStore";
 
 import { getWeeksInMonth } from "./calendarUtils";
-
+import { CiUser } from "react-icons/ci";
 import {
   FiFilter,
   FiSearch,
@@ -249,8 +249,27 @@ function AllEmployeeRatings() {
   };
 
   // ======== NAVIGATE to detail page if desired ========
+  // const handleViewFullRating = (employeeId) => {
+  //   navigate(`/dashboard/employee-advanced/${employeeId}`);
+  // };
+
   const handleViewFullRating = (employeeId) => {
-    navigate(`/dashboard/employee-advanced/${employeeId}`);
+    const queryParams = new URLSearchParams({
+      frequency,
+      startDate,
+      endDate,
+      startYear,
+      endYear,
+      startMonth,
+      endMonth,
+      startWeek,
+      endWeek,
+    });
+
+    window.open(
+      `/dashboard/employee-advanced/${employeeId}?${queryParams.toString()}`,
+      "_blank"
+    );
   };
 
   return (
@@ -832,12 +851,12 @@ function AllEmployeeRatings() {
                         <td className="px-6 py-4">
                           <div className="flex items-center space-x-3">
                             <img
-                              src={employee.user_Avatar || "/placeholder-avatar.jpg"}
+                              src={employee.user_Avatar || "/placeholder-avatar.svg"}
                               alt="avatar"
                               className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-gray-800 shadow"
                               onError={(e) => {
                                 e.currentTarget.onerror = null;
-                                e.currentTarget.src = "https://via.placeholder.com/40";
+                                // e.currentTarget.src = "https://via.placeholder.com/40";
                               }}
                             />
                             <div>

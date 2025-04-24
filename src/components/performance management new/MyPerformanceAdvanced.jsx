@@ -292,7 +292,7 @@ function MyPerformanceAdvanced() {
           <div className="mb-4 md:mb-0">
             <h2 className="text-2xl font-bold mb-1 flex items-center">
               <FiUser className="mr-2 text-blue-500" />
-              Employee Performance Dashboard
+              Performance Dashboard
             </h2>
             <p className="text-gray-600 dark:text-gray-400 text-sm">
               View and analyze your own performance metrics across different time periods
@@ -892,7 +892,7 @@ function MyPerformanceAdvanced() {
                 />
               </svg>
               <h3 className="text-xl font-medium text-gray-700 dark:text-gray-300 mb-2">
-                No Employee Data
+                No Data Available
               </h3>
               <p className="text-gray-500 dark:text-gray-400 max-w-md mb-6">
                 Select a time period using the filters above and click &quot;Apply Filters&quot;
@@ -903,7 +903,7 @@ function MyPerformanceAdvanced() {
                 className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-md"
               >
                 <FiSearch className="mr-2" />
-                Fetch Employee Data
+                Fetch Today Performance Data
               </button>
             </div>
           </div>
