@@ -1,21 +1,9 @@
-
-
 import React from "react";
 import BaseModal from "../../common/BaseModal";
-import {
-  FiX,
-  FiTarget,
-  FiCheckCircle,
-  FiMessageSquare,
-} from "react-icons/fi";
+import { FiX, FiTarget, FiCheckCircle, FiMessageSquare } from "react-icons/fi";
 import { motion } from "framer-motion";
 
-function KPIDetailModal({
-  showModal,
-  selectedRating,
-  onClose,
-  renderPeriod,
-}) {
+function KPIDetailModal({ showModal, selectedRating, onClose, renderPeriod }) {
   if (!showModal || !selectedRating) return null;
 
   const modalVariants = {
@@ -55,7 +43,9 @@ function KPIDetailModal({
           {/* Total Score */}
           <div className="flex items-center justify-between mb-4 bg-gray-100 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
             <div>
-              <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">TOTAL SCORE</h4>
+              <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                TOTAL SCORE
+              </h4>
               <div className="mt-2 flex items-baseline">
                 <span
                   className={`text-3xl font-bold ${
@@ -70,7 +60,9 @@ function KPIDetailModal({
                 >
                   {selectedRating.totalScore.toFixed(1)}
                 </span>
-                <span className="text-gray-500 dark:text-gray-400 text-lg ml-2">/ 100</span>
+                <span className="text-gray-500 dark:text-gray-400 text-lg ml-2">
+                  / 100
+                </span>
               </div>
             </div>
             <div className="text-right">
@@ -93,7 +85,9 @@ function KPIDetailModal({
                   ? "Average"
                   : "Needs Improvement"}
               </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">Rating</div>
+              <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                Rating
+              </div>
             </div>
           </div>
 
@@ -111,7 +105,14 @@ function KPIDetailModal({
                   <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">
                     Manager Feedback
                   </h4>
-                  <p className="mt-2 max-h-24 overflow-y-auto text-gray-600 dark:text-gray-400 text-sm">
+                  <p
+                    className="mt-2 max-h-24 overflow-y-auto text-gray-600 dark:text-gray-400 text-sm    [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+                transition-colors duration-300"
+                  >
                     {selectedRating.comment}
                   </p>
                 </div>
@@ -130,12 +131,19 @@ function KPIDetailModal({
               </span>
             </div>
 
-            {(!selectedRating.kpis || !selectedRating.kpis.length) ? (
+            {!selectedRating.kpis || !selectedRating.kpis.length ? (
               <div className="flex items-center justify-center p-8 text-gray-500 dark:text-gray-400 border border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
                 <p>No KPIs recorded for this period.</p>
               </div>
             ) : (
-              <div className="space-y-4 max-h-80 overflow-y-auto pr-2 ">
+              <div
+                className="space-y-4 max-h-80 overflow-y-auto pr-2    [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+                transition-colors duration-300"
+              >
                 {selectedRating.kpis.map((kpi, idx) => (
                   <motion.div
                     key={idx}
@@ -162,12 +170,24 @@ function KPIDetailModal({
 
                     {/* KPI Details */}
                     <div className="p-4 space-y-4 bg-gray-50 dark:bg-gray-800  ">
-                      <DetailRow icon={<FiTarget />} label="Type" value={kpi.type} />
+                      <DetailRow
+                        icon={<FiTarget />}
+                        label="Type"
+                        value={kpi.type}
+                      />
                       {kpi.target !== undefined && (
-                        <DetailRow icon={<FiTarget />} label="Target" value={kpi.target} />
+                        <DetailRow
+                          icon={<FiTarget />}
+                          label="Target"
+                          value={kpi.target}
+                        />
                       )}
                       {kpi.achieved !== undefined && (
-                        <DetailRow icon={<FiCheckCircle />} label="Achieved" value={kpi.achieved} />
+                        <DetailRow
+                          icon={<FiCheckCircle />}
+                          label="Achieved"
+                          value={kpi.achieved}
+                        />
                       )}
                     </div>
 
@@ -214,7 +234,9 @@ function DetailRow({ icon, label, value }) {
       <div className="flex gap-3 items-center dark:bg-gray-700 ">
         <div className="text-sm text-gray-600 dark:text-gray-400">{label}</div>
         <span className="text-gray-500 dark:text-gray-950">:</span>
-        <div className="text-base text-gray-800 dark:text-gray-300">{value}</div>
+        <div className="text-base text-gray-800 dark:text-gray-300">
+          {value}
+        </div>
       </div>
     </div>
   );
