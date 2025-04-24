@@ -121,61 +121,37 @@ const useRatingStore = create((set, get) => ({
     }
   },
 
-    // 6) GET team advanced ratings
-    getTeamRatingsAdvanced: async (params) => {
-      /**
-       * params = {
-       *   frequency?: 'daily' | 'weekly' | 'monthly' | 'yearly',
-       *   startDate?: 'YYYY-MM-DD',
-       *   endDate?: 'YYYY-MM-DD',
-       *   startYear?: '2024',
-       *   endYear?: '2025',
-       *   startMonth?: '01',
-       *   endMonth?: '12',
-       *   startWeek?: '1',
-       *   endWeek?: '8',
-       *   ...
-       * }
-       */
-      try {
-        set({ loading: true, error: null });
-        // Build query
-        const queryParams = new URLSearchParams(params).toString();
-        const res = await axiosInstance.get(`/ratings/team-advanced?${queryParams}`);
-  
-        set({ loading: false, error: null });
-        return res.data; // { success: true, data: [...] }
-      } catch (err) {
-        set({
-          loading: false,
-          error: err.response?.data?.message || err.message,
-        });
-        throw err;
-      }
-    },
+  // 6) GET team advanced ratings
+  getTeamRatingsAdvanced: async (params) => {
+    try {
+      set({ loading: true, error: null });
+      // Build query
+      const queryParams = new URLSearchParams(params).toString();
+      const res = await axiosInstance.get(
+        `/ratings/team-advanced?${queryParams}`
+      );
 
-     // Get advanced ratings for a SINGLE employee with date-range filters.
+      set({ loading: false, error: null });
+      return res.data; // { success: true, data: [...] }
+    } catch (err) {
+      set({
+        loading: false,
+        error: err.response?.data?.message || err.message,
+      });
+      throw err;
+    }
+  },
+
+  // Get advanced ratings for a SINGLE employee with date-range filters.
   getEmployeeRatingsAdvanced: async (employeeId, params) => {
-    /**
-     * params = {
-     *   frequency?: 'daily' | 'weekly' | 'monthly' | 'yearly',
-     *   startDate?: 'YYYY-MM-DD',
-     *   endDate?: 'YYYY-MM-DD',
-     *   startYear?: '2025',
-     *   endYear?: '2025',
-     *   startMonth?: '01',
-     *   endMonth?: '12',
-     *   startWeek?: '1',
-     *   endWeek?: '8',
-     *   ...
-     * }
-     */
     try {
       set({ loading: true, error: null });
       const queryParams = new URLSearchParams(params).toString();
 
       // example: /ratings/employee-advanced/67610bfe4afcd581b8c7abde?frequency=daily&startDate=...
-      const res = await axiosInstance.get(`/ratings/employee-advanced/${employeeId}?${queryParams}`);
+      const res = await axiosInstance.get(
+        `/ratings/employee-advanced/${employeeId}?${queryParams}`
+      );
 
       set({ loading: false, error: null });
       return res.data; // { success: true, data: { employee, filteredRatings, averageRating, ... } }
@@ -188,100 +164,80 @@ const useRatingStore = create((set, get) => ({
     }
   },
 
-    // 7) new function for "my" advanced ratings
-    getMyRatingsAdvanced: async (params) => {
-      /**
-       * params might look like:
-       * {
-       *   frequency: 'daily' | 'weekly' | 'monthly' | 'yearly',
-       *   startDate: 'YYYY-MM-DD', endDate: ...,
-       *   startYear, endYear,
-       *   startMonth, endMonth,
-       *   startWeek, endWeek,
-       *   ...
-       * }
-       */
-      try {
-        set({ loading: true, error: null });
-  
-        const queryParams = new URLSearchParams(params).toString();
-        // for example => GET /ratings/my-advanced?frequency=weekly&startYear=2025&...
-  
-        const res = await axiosInstance.get(`/ratings/my-advanced?${queryParams}`);
-  
-        set({ loading: false, error: null });
-        return res.data; // expecting { success, data: { employee, filteredRatings, averageRating, ratingCount } }
-      } catch (err) {
-        set({
-          loading: false,
-          error: err.response?.data?.message || err.message,
-        });
-        throw err;
-      }
-    },
+  // 7) new function for "my" advanced ratings
+  getMyRatingsAdvanced: async (params) => {
+    try {
+      set({ loading: true, error: null });
 
-    // In store/useRatingStore.js (inside createZustand):
-// getOrgRatingsAdvanced: async (params) => {
-//   /**
-//    * params can include:
-//    * {
-//    *   department?: 'IT' | 'HR' | ...,
-//    *   designation?: 'Manager' | 'Full Stack Web Developer' | ...,
-//    *   frequency?: 'daily' | 'weekly' | 'monthly' | 'yearly',
-//    *   startDate, endDate,
-//    *   startYear, endYear,
-//    *   startMonth, endMonth,
-//    *   startWeek, endWeek,
-//    * }
-//    */
-//   try {
-//     set({ loading: true, error: null });
+      const queryParams = new URLSearchParams(params).toString();
+      // for example => GET /ratings/my-advanced?frequency=weekly&startYear=2025&...
 
-//     const queryParams = new URLSearchParams(params).toString();
-//     // e.g. /ratings/org-advanced?department=IT&designation=Manager&frequency=monthly&...
+      const res = await axiosInstance.get(
+        `/ratings/my-advanced?${queryParams}`
+      );
 
-//     const res = await axiosInstance.get(`/ratings/org-advanced?${queryParams}`);
+      set({ loading: false, error: null });
+      return res.data; // expecting { success, data: { employee, filteredRatings, averageRating, ratingCount } }
+    } catch (err) {
+      set({
+        loading: false,
+        error: err.response?.data?.message || err.message,
+      });
+      throw err;
+    }
+  },
 
-//     set({ loading: false, error: null });
-//     return res.data; // expecting { success: true, data: [ { employee, filteredRatings, ... }, ... ] }
-//   } catch (err) {
-//     set({
-//       loading: false,
-//       error: err.response?.data?.message || err.message,
-//     });
-//     throw err;
-//   }
-// },
+  getOrgRatingsAdvanced: async (params) => {
+    try {
+      set({ loading: true, error: null });
+      const queryParams = new URLSearchParams(params).toString();
+      // e.g. GET /ratings/org-advanced?frequency=weekly&department=IT&startYear=2025&endYear=2025...
+      const res = await axiosInstance.get(
+        `/ratings/organization-advanced?${queryParams}`
+      );
+      set({ loading: false, error: null });
+      return res.data; // { success: true, data: [...] }
+    } catch (err) {
+      set({
+        loading: false,
+        error: err.response?.data?.message || err.message,
+      });
+      throw err;
+    }
+  },
 
-getOrgRatingsAdvanced: async (params) => {
-  /**
-   * params might include:
-   * {
-   *   frequency,
-   *   department,
-   *   designation,
-   *   startDate, endDate, // for daily
-   *   startYear, endYear, // for weekly/monthly/yearly
-   *   startMonth, endMonth,
-   *   startWeek, endWeek,
-   *   ...
-   * }
-   */
-  try {
+
+  getOrganizationTopPerformer: async (params) => {
     set({ loading: true, error: null });
-    const queryParams = new URLSearchParams(params).toString();
-    // e.g. GET /ratings/org-advanced?frequency=weekly&department=IT&startYear=2025&endYear=2025...
-    const res = await axiosInstance.get(`/ratings/organization-advanced?${queryParams}`);
-    set({ loading: false, error: null });
-    return res.data; // { success: true, data: [...] }
-  } catch (err) {
-    set({
-      loading: false,
-      error: err.response?.data?.message || err.message,
-    });
-    throw err;
-  }
-},
+    try {
+      const { data } = await axiosInstance.get("/ratings/top-performer", {
+        params,
+      });
+      set({ loading: false });
+      return data;
+    } catch (err) {
+      const message = err.response?.data?.message || err.message;
+      set({ loading: false, error: message });
+      return { success: false, message };
+    }
+  },
+
+
+  getDesignationTopPerformer: async (params) => {
+    set({ loading: true, error: null });
+    try {
+      const { data } = await axiosInstance.get(
+        "/ratings/top-performer/by-designation",
+        { params }
+      );
+      set({ loading: false });
+      return data;
+    } catch (err) {
+      const message = err.response?.data?.message || err.message;
+      set({ loading: false, error: message });
+      return { success: false, message };
+    }
+  },
 
 }));
 
