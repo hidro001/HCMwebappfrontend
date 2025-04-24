@@ -238,7 +238,7 @@ function TeamRatingsAdvanced() {
   };
 
   const handleViewFullRating = (employeeId) => {
-    navigate(`/dashboard/employee-advanced/${employeeId}`);
+    window.open(`/dashboard/employee-advanced/${employeeId}`, "_blank");
   };
 
   return (
