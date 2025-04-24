@@ -1,6 +1,3 @@
-
-
-
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { getWeeksInMonth } from "./calendarUtils";
@@ -19,9 +16,11 @@ import {
 } from "react-icons/fi";
 
 import { FaFileExcel as FileSpreadsheet } from "react-icons/fa";
+import { useMemo } from "react";
 
 function BulkRating() {
-  const { generateBulkTemplate, uploadBulkRatings, loading, error } = useRatingStore();
+  const { generateBulkTemplate, uploadBulkRatings, loading, error } =
+    useRatingStore();
   const {
     designations,
     loading: designationLoading,
@@ -34,7 +33,8 @@ function BulkRating() {
   }, [fetchDesignations]);
 
   // Date defaults
-  const today = new Date();
+  // const today = new Date();
+  const today = useMemo(() => new Date(), []);
   const defaultDate = today.toISOString().split("T")[0];
   const defaultYear = String(today.getFullYear());
   const defaultMonth = String(today.getMonth() + 1).padStart(2, "0");
@@ -129,7 +129,9 @@ function BulkRating() {
       toast.success("Template downloaded successfully!");
     } catch (err) {
       toast.error(
-        err?.response?.data?.message || err.message || "Error downloading template"
+        err?.response?.data?.message ||
+          err.message ||
+          "Error downloading template"
       );
     }
   };
@@ -152,7 +154,9 @@ function BulkRating() {
       setFile(null);
       setFileName("No file selected");
     } catch (err) {
-      toast.error(err?.response?.data?.message || err.message || "Error uploading file");
+      toast.error(
+        err?.response?.data?.message || err.message || "Error uploading file"
+      );
     }
   };
 
@@ -175,8 +179,18 @@ function BulkRating() {
   // Get month name
   const getMonthName = (monthNumber) => {
     const months = [
-      "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
     ];
     return months[parseInt(monthNumber, 10) - 1];
   };
@@ -186,7 +200,9 @@ function BulkRating() {
       <div className="flex items-center justify-center h-64 bg-white dark:bg-gray-950 rounded-2xl shadow-lg">
         <div className="flex flex-col items-center space-y-4">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          <p className="text-gray-700 dark:text-gray-300">Loading designations...</p>
+          <p className="text-gray-700 dark:text-gray-300">
+            Loading designations...
+          </p>
         </div>
       </div>
     );
@@ -198,7 +214,9 @@ function BulkRating() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Bulk Ratings Manager</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Bulk Ratings Manager
+            </h2>
             <p className="mt-1 text-gray-600 dark:text-gray-400">
               Generate and upload employee ratings in bulk
             </p>
@@ -229,7 +247,10 @@ function BulkRating() {
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all hover:shadow-lg h-full">
             <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-800">
               <div className="flex items-center space-x-2">
-                <Download className="text-blue-600 dark:text-blue-400" size={20} />
+                <Download
+                  className="text-blue-600 dark:text-blue-400"
+                  size={20}
+                />
                 <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
                   Download Template
                 </h3>
@@ -275,7 +296,10 @@ function BulkRating() {
                         onChange={(e) => setDate(e.target.value)}
                       />
                       <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                        <CalendarIcon size={18} className="text-gray-500 dark:text-gray-400" />
+                        <CalendarIcon
+                          size={18}
+                          className="text-gray-500 dark:text-gray-400"
+                        />
                       </div>
                     </div>
                   </div>
@@ -311,7 +335,10 @@ function BulkRating() {
                             {[...Array(12)].map((_, i) => {
                               const m = i + 1;
                               return (
-                                <option key={m} value={String(m).padStart(2, "0")}>
+                                <option
+                                  key={m}
+                                  value={String(m).padStart(2, "0")}
+                                >
                                   {getMonthName(m)}
                                 </option>
                               );
@@ -378,7 +405,10 @@ function BulkRating() {
                           {[...Array(12)].map((_, i) => {
                             const m = i + 1;
                             return (
-                              <option key={m} value={String(m).padStart(2, "0")}>
+                              <option
+                                key={m}
+                                value={String(m).padStart(2, "0")}
+                              >
                                 {getMonthName(m)}
                               </option>
                             );
@@ -411,7 +441,9 @@ function BulkRating() {
                 <div>
                   <label className="block font-medium mb-2 text-gray-700 dark:text-gray-300">
                     Designation{" "}
-                    <span className="text-gray-500 dark:text-gray-400 text-sm">(optional)</span>
+                    <span className="text-gray-500 dark:text-gray-400 text-sm">
+                      (optional)
+                    </span>
                   </label>
                   <div className="relative">
                     <select
@@ -456,7 +488,10 @@ function BulkRating() {
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all hover:shadow-lg h-full flex flex-col">
             <div className="border-b border-gray-200 dark:border-gray-700 px-6 py-4 bg-gradient-to-r from-green-50 to-teal-50 dark:from-gray-800 dark:to-gray-800">
               <div className="flex items-center space-x-2">
-                <Upload className="text-green-600 dark:text-green-400" size={20} />
+                <Upload
+                  className="text-green-600 dark:text-green-400"
+                  size={20}
+                />
                 <h3 className="font-semibold text-lg text-gray-900 dark:text-white">
                   Upload Filled Template
                 </h3>
