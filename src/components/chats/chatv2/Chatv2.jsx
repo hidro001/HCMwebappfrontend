@@ -255,7 +255,12 @@ export default function Chat() {
         </div>
 
         {/* List area with glass effect */}
-        <div className="flex-1 overflow-y-auto px-3 py-4 backdrop-blur-sm">
+        <div className="flex-1 overflow-y-auto px-3 py-4 backdrop-blur-sm    [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+                transition-colors duration-300">
           <div className="text-sm uppercase tracking-wider text-slate-400 font-medium mb-3 pl-2">
             {activeTab}
           </div>

@@ -101,7 +101,13 @@ export default function GroupChatWindow() {
           flex-1 overflow-y-auto p-3
           bg-gradient-to-br from-gray-100 to-white
           dark:from-gray-800 dark:to-gray-900
-          transition-all
+        [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+                transition-colors duration-300
+          
         "
       >
         {groupMessagesLoading ? (

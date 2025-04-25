@@ -115,7 +115,6 @@
 //   All Member- {totalCount}
 // </h2> */}
 
-
 //       {/* Search Input */}
 //       <input
 //         value={searchQuery}
@@ -142,8 +141,13 @@
 //   );
 // }
 
-
-import React, { useState, useEffect, useContext, useMemo, useCallback } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useMemo,
+  useCallback,
+} from "react";
 import { ChatContextv2 } from "../../../contexts/ChatContextv2";
 import { FiSearch, FiUsers, FiAlertCircle } from "react-icons/fi";
 import { BiLoaderAlt } from "react-icons/bi";
@@ -216,9 +220,7 @@ export default function UserList() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <span className="text-white text-base font-bold">
-                {initials}
-              </span>
+              <span className="text-white text-base font-bold">{initials}</span>
             )}
           </div>
           <div className="flex-1">
@@ -259,16 +261,21 @@ export default function UserList() {
             <FiAlertCircle className="mr-2" />
             Error
           </div>
-          <p className="text-sm text-slate-300">
-            {error}
-          </p>
+          <p className="text-sm text-slate-300">{error}</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col flex-1 overflow-y-auto">
+    <div
+      className="flex flex-col flex-1 overflow-y-auto    [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+                transition-colors duration-300 "
+    >
       {/* Header with member count */}
       {totalCount > 0 && (
         <div className="flex items-center justify-between mb-3 px-1">
@@ -309,9 +316,7 @@ export default function UserList() {
             <div className="flex items-center justify-center mb-3 text-2xl text-slate-400">
               <FiUsers />
             </div>
-            <p className="text-sm text-slate-400">
-              No matching members found
-            </p>
+            <p className="text-sm text-slate-400">No matching members found</p>
           </div>
         </div>
       )}

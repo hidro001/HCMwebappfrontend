@@ -252,20 +252,19 @@
 //   );
 // }
 
-
 // src/components/chats/groups/GroupList.jsx
 import React, { useState, useEffect, useContext } from "react";
 import { ChatContextv2 } from "../../../contexts/ChatContextv2";
-import { 
-  FiUsers, 
-  FiUserPlus, 
-  FiX, 
-  FiArrowLeft, 
-  FiArrowRight, 
+import {
+  FiUsers,
+  FiUserPlus,
+  FiX,
+  FiArrowLeft,
+  FiArrowRight,
   FiCheck,
   FiLoader,
   FiAlertCircle,
-  FiPlus
+  FiPlus,
 } from "react-icons/fi";
 
 export default function GroupList() {
@@ -349,13 +348,15 @@ export default function GroupList() {
             className="w-12 h-12 rounded-full mr-3 object-cover ring-2 ring-blue-500/30 group-hover:ring-blue-500/50"
           />
         ) : (
-          <div className="
+          <div
+            className="
             w-12 h-12 
             bg-gradient-to-br from-indigo-500 to-purple-600 group-hover:from-indigo-400 group-hover:to-purple-500
             rounded-full mr-3 flex items-center justify-center
             shadow-lg shadow-indigo-500/20
             transition-all
-          ">
+          "
+          >
             <span className="text-white text-xl font-bold">
               {g.groupName.charAt(0)}
             </span>
@@ -423,13 +424,23 @@ export default function GroupList() {
           </div>
         </div>
       ) : (
-        <div className="overflow-y-auto">
+        <div
+          className="overflow-y-auto    [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+                transition-colors duration-300"
+        >
           {groups.map(renderGroupItem)}
         </div>
       )}
 
       {showCreateModal && (
-        <CreateGroupModal onClose={handleCloseModal} onCreateGroup={handleCreateGroup} />
+        <CreateGroupModal
+          onClose={handleCloseModal}
+          onCreateGroup={handleCreateGroup}
+        />
       )}
     </div>
   );
@@ -482,14 +493,14 @@ function CreateGroupModal({ onClose, onCreateGroup }) {
               <h2 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
                 Select Group Members
               </h2>
-              <button 
+              <button
                 onClick={onClose}
                 className="text-slate-400 hover:text-white p-1 rounded-full hover:bg-slate-800"
               >
                 <FiX />
               </button>
             </div>
-            
+
             <div className="max-h-64 overflow-y-auto pr-1 mb-4">
               {available.map((user) => {
                 const isSelected = selectedIds.includes(user.employeeId);
@@ -507,15 +518,22 @@ function CreateGroupModal({ onClose, onCreateGroup }) {
                       }
                     `}
                   >
-                    <div className={`
+                    <div
+                      className={`
                       w-8 h-8 rounded-full flex items-center justify-center mr-2
-                      ${isSelected ? "bg-white/20" : "bg-gradient-to-br from-blue-500 to-purple-600"}
-                    `}>
+                      ${
+                        isSelected
+                          ? "bg-white/20"
+                          : "bg-gradient-to-br from-blue-500 to-purple-600"
+                      }
+                    `}
+                    >
                       {isSelected ? (
                         <FiCheck className="text-white" />
                       ) : (
                         <span className="text-white text-xs font-bold">
-                          {user.firstName?.[0]}{user.lastName?.[0]}
+                          {user.firstName?.[0]}
+                          {user.lastName?.[0]}
                         </span>
                       )}
                     </div>
@@ -529,7 +547,7 @@ function CreateGroupModal({ onClose, onCreateGroup }) {
                 );
               })}
             </div>
-            
+
             <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-700/50">
               <div className="text-slate-400 text-sm">
                 {selectedIds.length} selected
@@ -564,14 +582,14 @@ function CreateGroupModal({ onClose, onCreateGroup }) {
               <h2 className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500">
                 Name Your Group
               </h2>
-              <button 
+              <button
                 onClick={onClose}
                 className="text-slate-400 hover:text-white p-1 rounded-full hover:bg-slate-800"
               >
                 <FiX />
               </button>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-slate-400 text-xs mb-1 ml-1">
@@ -594,7 +612,7 @@ function CreateGroupModal({ onClose, onCreateGroup }) {
                   "
                 />
               </div>
-              
+
               <div>
                 <label className="block text-slate-400 text-xs mb-1 ml-1">
                   Group Icon URL (Optional)
@@ -617,7 +635,7 @@ function CreateGroupModal({ onClose, onCreateGroup }) {
                 />
               </div>
             </div>
-            
+
             <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-700/50">
               <button
                 onClick={() => setStage("selectMembers")}
