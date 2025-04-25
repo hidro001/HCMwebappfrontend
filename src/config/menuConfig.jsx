@@ -476,7 +476,7 @@ export const menuItems = [
         textAnimation: { x: 10 },
       },
       {
-        name: "Break Settings",
+        name: "Productivity Lens Settings",
         link: "/dashboard/break-settings",
         permission: "company-break-settings",
         textAnimation: { x: 10 },
