@@ -78,7 +78,9 @@ import {
   RequestDashboardPage,
   PostPerformerPage,
   ViewPerformerPage,
+
 } from "../pages";
+import EmployeeFullStatisticsPage from "../pages/attendence management/EmployeeFullStatisticsPage";
 import MainLayout from "./MainLayout";
 
 import {
@@ -89,6 +91,9 @@ import {
   NotificationsPage,
 } from "../components";
 import DailyTaskPage from "../pages/task/DailyTaskPage";
+import EmployeeDailyStats from "../components/attendence management/EmployeeDailyStats";
+import GeolocationPage from "../pages/geolocation/GeolocationPage";
+import FiledworkerPage from "../pages/geolocation/FiledworkerPage";
 
 const router = createBrowserRouter([
   {
@@ -217,6 +222,15 @@ const router = createBrowserRouter([
       {
         path: "attendance/:empID",
         element: <EmployeeFullAttendancePage />,
+      },
+      {
+        path: "statistics/:empID",
+        element: <EmployeeFullStatisticsPage />,
+      },
+      {
+        // NEW ROUTE to handle /dashboard/statistics/EMP_ID/DATE
+        path: "statistics/:empID/:date",
+        element: <EmployeeDailyStats />, 
       },
       {
         path: "view-attendance",
@@ -418,7 +432,28 @@ const router = createBrowserRouter([
       {
         path: "request-hike-advance-reimbursement",
         element: <RequestDashboardPage />,
+      }, 
+
+
+       {
+        path: "/dashboard/geo-location",
+        element: <GeolocationPage />,
       },
+
+
+      {
+        path: "/dashboard/field-worker",
+        element: <FiledworkerPage />,
+      },
+
+
+
+
+
+
+
+
+      
     ],
   },
   {

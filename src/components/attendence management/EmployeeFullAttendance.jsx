@@ -900,10 +900,11 @@ export default function EmployeeFullAttendance() {
 
           {/* ExportButtons */}
           <ExportButtons
-            data={displayedData}
-            columns={columns}
-            filename={`Attendance_${employeeCode}_${selectedMonth}`}
-          />
+  data={filteredData}  // <-- Replace displayedData with filteredData
+  columns={columns}
+  filename={`Attendance_${employeeCode}_${selectedMonth}`}
+/>
+
         </div>
       </motion.div>
 
