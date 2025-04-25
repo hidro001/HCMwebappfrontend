@@ -13,8 +13,16 @@ export default function App() {
   return (
     <>
       {/* <Toaster position="top-right" reverseOrder={false} /> */}
-      <Toaster reverseOrder={false} />
-      
+      <Toaster
+        reverseOrder={false}
+        toastOptions={{
+          style: {
+            // Something higher than your modal overlay
+            zIndex: 9999999,
+          },
+        }}
+      />
+
       <RouterProvider router={router} />
     </>
   );
