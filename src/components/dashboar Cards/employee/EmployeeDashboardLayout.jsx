@@ -8,6 +8,7 @@ import AnnouncementCard from "./AnnouncementCard";
 import AssignedTaskListCard from "./AssignedTaskListCard";
 import UpcomingHolidaysCard from "./UpcomingHolidaysCard";
 import PerformanceCard from "./PerformanceCard";
+import TopPerformerCard from "./TopPerformerCard";
 
 function EmployeeDashboardLayout() {
   return (
@@ -60,6 +61,7 @@ function EmployeeDashboardLayout() {
          
             <AttendanceCard />
             <AnnouncementCard />
+            <TopPerformerCard />
           </motion.aside>
         </div>
       </main>

@@ -1,504 +1,6 @@
-// import React, {
-//   createContext,
-//   useState,
-//   useEffect,
-//   useRef,
-//   useCallback,
-//   useMemo,
-// } from "react";
-// import {
-//   initSocket,
-//   joinRoom,
-//   sendPrivateMessage,
-//   disconnectSocket,
-// } from "../service/socketService";
-// import { fetchChatHistory, fetchAllMember } from "../service/chatService";
-// import useAuthStore from "../store/store";
-// import axios from "axios";
-// import { toast } from "react-hot-toast";
-
-// export const ChatContextv2 = createContext();
-
-// const baseUrlSocket = import.meta.env.VITE_SOCKET_URL;
-
-// export function ChatProviderv2({ children }) {
-//   // ------------------------------------------------------------------
-//   // Basic user info
-//   // ------------------------------------------------------------------
-//   const { employeeId: storeEmployeeId, userName: storeUserName } = useAuthStore();
-//   const [employeeId, setEmployeeId] = useState("");
-//   const [username, setUsername] = useState("");
-
-//   useEffect(() => {
-//     if (storeEmployeeId) setEmployeeId(storeEmployeeId);
-//     if (storeUserName) setUsername(storeUserName);
-//   }, [storeEmployeeId, storeUserName]);
-
-//   // ------------------------------------------------------------------
-//   // Member list
-//   // ------------------------------------------------------------------
-//   const [members, setMembers] = useState([]);
-//   const [totalCount, setTotalCount] = useState(0);
-//   const [loading, setLoading] = useState(false);
-//   const [error, setError] = useState(null);
-
-//   const fetchMembers = useCallback(async () => {
-//     try {
-//       setLoading(true);
-//       setError(null);
-//       const { success, count, data } = await fetchAllMember();
-//       if (success) {
-//         const normalized = data.map((m) => ({
-//           ...m,
-//           employeeId: m.employee_Id,
-//           userAvatar: m.user_Avatar,
-//           firstName: m.first_Name,
-//           lastName: m.last_Name,
-//         }));
-//         setMembers(normalized);
-//         setTotalCount(count);
-//       } else {
-//         setError("Failed to fetch members from server.");
-//       }
-//     } catch (err) {
-//       console.error("Error fetching members:", err);
-//       setError("Error fetching members. Please try again later.");
-//     } finally {
-//       setLoading(false);
-//     }
-//   }, []);
-
-//   useEffect(() => {
-//     fetchMembers();
-//   }, [fetchMembers]);
-
-//   // ------------------------------------------------------------------
-//   // Conversations
-//   // ------------------------------------------------------------------
-//   const [conversations, setConversations] = useState([]);
-//   const [conversationsLoading, setConversationsLoading] = useState(false);
-//   const [conversationsError, setConversationsError] = useState(null);
-
-//   // Current or active conversation
-//   const [selectedUser, setSelectedUser] = useState(null);
-//   const [selectedConversation, setSelectedConversation] = useState(null);
-
-//   const activeConversation = useMemo(() => {
-//     return selectedUser || selectedConversation || null;
-//   }, [selectedUser, selectedConversation]);
-
-//   // ------------------------------------------------------------------
-//   // Chat messages & input
-//   // ------------------------------------------------------------------
-//   const [messages, setMessages] = useState([]);
-//   const [messagesLoading, setMessagesLoading] = useState(false);
-//   const [message, setMessage] = useState("");
-
-//   // ------------------------------------------------------------------
-//   // Socket references & initialization
-//   // ------------------------------------------------------------------
-//   const socketRef = useRef(null);
-//   const employeeIdRef = useRef("");
-//   const activeConversationIdRef = useRef("");
-//   const token = localStorage.getItem("accessToken");
-
-//   useEffect(() => {
-//     employeeIdRef.current = employeeId;
-//   }, [employeeId]);
-
-//   useEffect(() => {
-//     activeConversationIdRef.current = activeConversation?.employeeId || "";
-//   }, [activeConversation]);
-
-//   useEffect(() => {
-//     if (!employeeId) return;
-
-//     // Connect the socket
-//     socketRef.current = initSocket(baseUrlSocket, employeeId, token);
-
-//     // Fetch conversation list
-//     const fetchConversations = () => {
-//       setConversationsLoading(true);
-//       setConversationsError(null);
-//       socketRef.current.emit("getAllConverationUser", employeeId);
-//     };
-
-//     // Handle conversation list response
-//     const handleAllRoomIds = (data) => {
-//       setConversationsLoading(false);
-//       if (!data.success) {
-//         setConversationsError(data.message || "Error fetching conversations");
-//         return;
-//       }
-//       const normalized = data.data.map((item) => ({
-//         ...item,
-//         employeeId: item.employee_Id,
-//         firstName: item.first_Name,
-//         lastName: item.last_Name,
-//         userAvatar: item.user_Avatar,
-//         unreadCount: item.unreadCount || 0,
-//       }));
-//       setConversations(normalized);
-//     };
-
-//     // Real-time new messages
-//     const handleNewMessage = (data) => {
-//       const { sender, receiver } = data;
-//       const fromMe = sender === employeeIdRef.current;
-//       const partnerId = fromMe ? receiver : sender;
-
-//       if (partnerId === activeConversationIdRef.current) {
-//         setMessages((prev) => [...prev, data]);
-//       } else if (!fromMe) {
-//         setConversations((prev) => {
-//           const index = prev.findIndex((c) => c.employeeId === partnerId);
-//           if (index === -1) {
-//             return [
-//               {
-//                 employeeId: partnerId,
-//                 firstName: data.senderName || "Unknown",
-//                 lastName: "",
-//                 userAvatar: null,
-//                 unreadCount: 1,
-//               },
-//               ...prev,
-//             ];
-//           }
-//           const oldConv = prev[index];
-//           const updated = {
-//             ...oldConv,
-//             unreadCount: (oldConv.unreadCount || 0) + 1,
-//           };
-//           const newList = [...prev];
-//           newList.splice(index, 1);
-//           return [updated, ...newList];
-//         });
-//       }
-//     };
-
-//     fetchConversations();
-//     socketRef.current.on("allRoomIds", handleAllRoomIds);
-//     socketRef.current.on("receiveMessage", handleNewMessage);
-
-//     return () => {
-//       if (socketRef.current) {
-//         socketRef.current.off("allRoomIds", handleAllRoomIds);
-//         socketRef.current.off("receiveMessage", handleNewMessage);
-//       }
-//       disconnectSocket();
-//     };
-//   }, [employeeId, token]);
-
-//   // ------------------------------------------------------------------
-//   // Selecting a conversation
-//   // ------------------------------------------------------------------
-//   const clearActiveConversation = useCallback(() => {
-//     setSelectedUser(null);
-//     setSelectedConversation(null);
-//     setMessages([]);
-//   }, []);
-
-//   const handleSelectConversation = useCallback(
-//     (conv) => {
-//       if (!socketRef.current || !employeeId) return;
-//       setSelectedConversation(conv);
-//       setSelectedUser(null);
-//       setMessages([]);
-
-//       // Reset unreadCount for this conversation
-//       setConversations((prev) =>
-//         prev.map((c) =>
-//           c.employeeId === conv.employeeId ? { ...c, unreadCount: 0 } : c
-//         )
-//       );
-
-//       joinRoom(socketRef.current, employeeId, conv.employeeId);
-//       socketRef.current.emit("markRead", {
-//         sender: employeeId,
-//         receiver: conv.employeeId,
-//       });
-//     },
-//     [employeeId]
-//   );
-
-//   const handleSelectUser = useCallback(
-//     (user) => {
-//       if (!socketRef.current || !employeeId) return;
-//       setSelectedUser(user);
-//       setSelectedConversation(null);
-//       setMessages([]);
-
-//       // Reset unreadCount for this user (if present in conversations)
-//       setConversations((prev) =>
-//         prev.map((c) =>
-//           c.employeeId === user.employeeId ? { ...c, unreadCount: 0 } : c
-//         )
-//       );
-
-//       joinRoom(socketRef.current, employeeId, user.employeeId);
-//       socketRef.current.emit("markRead", {
-//         sender: employeeId,
-//         receiver: user.employeeId,
-//       });
-//     },
-//     [employeeId]
-//   );
-
-//   // ------------------------------------------------------------------
-//   // Fetch message history
-//   // ------------------------------------------------------------------
-//   const fetchMessagesHistory = useCallback(async () => {
-//     if (!activeConversation?.employeeId) {
-//       setMessages([]);
-//       return;
-//     }
-//     setMessagesLoading(true);
-//     try {
-//       const res = await fetchChatHistory(employeeId, activeConversation.employeeId);
-//       if (res?.success) {
-//         setMessages(res.data || []);
-//       }
-//     } catch (err) {
-//       console.error("Error fetching chat history:", err);
-//     } finally {
-//       setMessagesLoading(false);
-//     }
-//   }, [employeeId, activeConversation]);
-
-//   useEffect(() => {
-//     fetchMessagesHistory();
-//   }, [fetchMessagesHistory]);
-
-//   // ------------------------------------------------------------------
-//   // Sending text messages
-//   // ------------------------------------------------------------------
-//   const sendMessageHandler = useCallback(() => {
-//     if (!message.trim() || !activeConversation?.employeeId) return;
-//     if (!socketRef.current) return;
-
-//     const msgData = {
-//       sender: employeeId,
-//       receiver: activeConversation.employeeId,
-//       message,
-//       time: new Date().toISOString(),
-//     };
-//     sendPrivateMessage(socketRef.current, msgData);
-//     setMessage("");
-//   }, [employeeId, message, activeConversation]);
-
-//   // ------------------------------------------------------------------
-//   // Sending files (with progress callback)
-//   // ------------------------------------------------------------------
-//   const MAX_FILE_SIZE_MB = 20;
-//   const MAX_FILES = 10;
-  
-//   const sendFileHandler = useCallback(
-//     async (files, onProgress) => {
-//       if (!files?.length || !socketRef.current || !activeConversation?.employeeId) {
-//         return;
-//       }
-  
-//       // Check total files limit
-//       if (files.length > MAX_FILES) {
-//         toast.error(`Please select at most ${MAX_FILES} files at a time.`);
-//         return;
-//       }
-  
-//       // We'll pass this down to the backend
-//       const totalFileCount = files.length;
-  
-//       for (const file of files) {
-//         if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-//           toast.error(`${file.name} is too large (max ${MAX_FILE_SIZE_MB} MB).`);
-//           if (onProgress) onProgress(file.name, -1);
-//           continue;
-//         }
-  
-//         try {
-//           // --- Pass totalFileCount in the data object ---
-//           const { success, data, message: errorMsg } = await new Promise((resolve) => {
-//             socketRef.current.emit(
-//               "getPreSignedUploadURL",
-//               {
-//                 key: file.name,
-//                 contentType: file.type,
-//                 size: file.size,
-//                 totalFileCount, // <=== sending number of files here
-//               },
-//               (response) => resolve(response)
-//             );
-//           });
-  
-//           if (!success || !data?.uploadUrl) {
-//             console.error("Failed to generate upload URL:", errorMsg);
-//             toast.error(`Upload URL generation failed for ${file.name}.`);
-//             if (onProgress) onProgress(file.name, -1);
-//             continue;
-//           }
-  
-//           const { uploadUrl, uniqueKey } = data;
-  
-//           await axios.put(uploadUrl, file, {
-//             headers: { "Content-Type": file.type },
-//             onUploadProgress: (event) => {
-//               if (onProgress) {
-//                 const percent = Math.round((event.loaded * 100) / event.total);
-//                 onProgress(file.name, percent);
-//               }
-//             },
-//           });
-  
-//           // Confirm with server
-//           const roomId = [employeeId, activeConversation.employeeId].sort().join("_");
-//           const confirmResponse = await new Promise((resolve) => {
-//             socketRef.current.emit(
-//               "confirmUpload",
-//               {
-//                 uniqueKey,
-//                 roomId,
-//                 sender: employeeId,
-//                 receiver: activeConversation.employeeId,
-//                 fileName: file.name,
-//                 fileType: file.type,
-//               },
-//               (cbResp) => resolve(cbResp)
-//             );
-//           });
-  
-//           if (confirmResponse.success) {
-//             if (confirmResponse.data?.newMessage) {
-//               setMessages((prev) => [...prev, confirmResponse.data.newMessage]);
-//             }
-//             if (onProgress) onProgress(file.name, 100);
-//           } else {
-//             console.error("Failed to save file metadata:", confirmResponse.message);
-//             toast.error(`Failed to save file metadata for ${file.name}.`);
-//             if (onProgress) onProgress(file.name, -1);
-//           }
-//         } catch (err) {
-//           console.error("File upload error:", err);
-//           toast.error(`Upload error: ${file.name}.`);
-//           if (onProgress) onProgress(file.name, -1);
-//         }
-//       }
-//     },
-//     [employeeId, activeConversation]
-//   );
-  
-//   // ------------------------------------------------------------------
-//   // requestFileURL for on-click
-//   // ------------------------------------------------------------------
-//   const requestFileURL = useCallback((fileName) => {
-//     return new Promise((resolve, reject) => {
-//       if (!socketRef.current) {
-//         return reject(new Error("Socket not connected"));
-//       }
-//       socketRef.current.emit("requestFileURL", { fileName }, (response) => {
-//         if (response?.success) {
-//           resolve(response.data.url);
-//         } else {
-//           reject(response?.message || "No URL returned");
-//         }
-//       });
-//     });
-//   }, []);
-
-//   // ------------------------------------------------------------------
-//   // Derive unread counts
-//   // ------------------------------------------------------------------
-//   const unreadCounts = useMemo(() => {
-//     const map = {};
-//     conversations.forEach((c) => {
-//       if (c.employeeId) {
-//         map[c.employeeId] = c.unreadCount || 0;
-//       }
-//     });
-//     return map;
-//   }, [conversations]);
-
-//   // ------------------------------------------------------------------
-//   // Final context value
-//   // ------------------------------------------------------------------
-//   const contextValue = useMemo(() => {
-//     return {
-//       // Basic user info
-//       employeeId,
-//       username,
-
-//       // Members
-//       members,
-//       totalCount,
-//       loading,
-//       error,
-//       fetchMembers,
-
-//       // Conversations
-//       conversations,
-//       conversationsLoading,
-//       conversationsError,
-//       clearActiveConversation,
-//       handleSelectConversation,
-//       handleSelectUser,
-
-//       // Active conversation
-//       selectedUser,
-//       setSelectedUser,
-//       selectedConversation,
-//       setSelectedConversation,
-//       activeConversation,
-
-//       // Chat messages
-//       messages,
-//       messagesLoading,
-//       message,
-//       setMessage,
-//       sendMessageHandler,
-
-//       // File sending
-//       sendFileHandler,
-
-//       // requestFileURL
-//       requestFileURL,
-
-//       // Unread counts
-//       unreadCounts,
-//     };
-//   }, [
-//     employeeId,
-//     username,
-//     members,
-//     totalCount,
-//     loading,
-//     error,
-//     fetchMembers,
-//     conversations,
-//     conversationsLoading,
-//     conversationsError,
-//     selectedUser,
-//     selectedConversation,
-//     activeConversation,
-//     messages,
-//     messagesLoading,
-//     message,
-//     sendMessageHandler,
-//     sendFileHandler,
-//     clearActiveConversation,
-//     handleSelectConversation,
-//     handleSelectUser,
-//     requestFileURL,
-//     unreadCounts,
-//   ]);
-
-//   return (
-//     <ChatContextv2.Provider value={contextValue}>
-//       {children}
-//     </ChatContextv2.Provider>
-//   );
-// }
 
 
-// src/contexts/ChatContextv2.js
-
+// ChatProviderv2.jsx
 import React, {
   createContext,
   useState,
@@ -511,21 +13,15 @@ import { toast } from "react-hot-toast";
 import axios from "axios";
 import io from "socket.io-client";
 
-// 1) Your custom service calls & store (you had these in your code):
-import {
-  fetchChatHistory,
-  fetchAllMember,
-} from "../service/chatService";
+// 1) Your custom service calls & store:
+import { fetchChatHistory, fetchAllMember } from "../service/chatService";
 import useAuthStore from "../store/store";
 
 // 2) Provide the context
 export const ChatContextv2 = createContext();
 
-/////////////////////////////////////////////////////////////////
-// NOTE: This example references certain socket events for group chat.
-// Make sure your backend (chat.socket.js) has "getUserGroups", "createGroup",
-// "joinGroupRoom", "sendGroupMessage", "updateGroupInfo", etc.
-/////////////////////////////////////////////////////////////////
+// --- IMPORT THE GROUP SETTINGS MODAL HERE ---
+import GroupSettingsModal from "../components/chats/chatv2/GroupSettingsModal";
 
 export function ChatProviderv2({ children }) {
   //----------------------------------------------------------------
@@ -645,7 +141,7 @@ export function ChatProviderv2({ children }) {
       socket.emit("getAllConverationUser", employeeId);
     });
 
-    // 3) On allRoomIds => update conversation list
+    // 3) On "allRoomIds" => update conversation list
     const handleAllRoomIds = (data) => {
       setConversationsLoading(false);
       if (!data.success) {
@@ -666,6 +162,13 @@ export function ChatProviderv2({ children }) {
 
     // 4) On receiveMessage => handle new messages
     const handleNewMessage = (data) => {
+      // 1) Filter out system or unknown messages
+      if (!data.sender || data.sender === "system" || data.sender === "Unknown") {
+        // simply ignore them so they don't appear as a phantom user
+        return;
+      }
+
+      // Normal handling for real user messages:
       const { sender, receiver } = data;
       const fromMe = sender === employeeIdRef.current;
       const partnerId = fromMe ? receiver : sender;
@@ -896,7 +399,6 @@ export function ChatProviderv2({ children }) {
           toast.error(`Error saving file metadata for ${file.name}`);
           if (onProgress) onProgress(file.name, -1);
         } else {
-          // If success, mark 100%
           if (onProgress) onProgress(file.name, 100);
         }
       }
@@ -976,7 +478,7 @@ export function ChatProviderv2({ children }) {
     setGroupsLoading(true);
     setGroupsError(null);
 
-    // We'll assume you have a "getUserGroups" event:
+    // We'll assume you have a "getUserGroups" event
     socketRef.current.emit("getUserGroups", employeeId, (response) => {
       setGroupsLoading(false);
       if (!response.success) {
@@ -1022,27 +524,30 @@ export function ChatProviderv2({ children }) {
   const sendGroupTextMessage = useCallback(
     (groupId, text) => {
       if (!socketRef.current) return;
-      const data = { groupId, sender: employeeId,senderName: username, text };
+      const data = { groupId, sender: employeeId, senderName: username, text };
       socketRef.current.emit("sendGroupMessage", data, (resp) => {
         if (!resp.success) {
           toast.error(resp.message || "Error sending group message");
         }
       });
     },
-    [employeeId]
+    [employeeId, username]
   );
 
   // ============= handleIncomingGroupMessage =============
-  const handleIncomingGroupMessage = useCallback((data) => {
-    // data: { groupId, sender, text, createdAt }
-    if (!selectedGroup) return;
-    if (data.groupId === selectedGroup._id) {
-      setGroupMessages((prev) => [...prev, data]);
-    } else {
-      // It's for a different group (not currently viewing)
-      // e.g. show a toast or increment unread
-    }
-  }, [selectedGroup]);
+  const handleIncomingGroupMessage = useCallback(
+    (data) => {
+      // data: { groupId, sender, text, createdAt }
+      if (!selectedGroup) return;
+      if (data.groupId === selectedGroup._id) {
+        setGroupMessages((prev) => [...prev, data]);
+      } else {
+        // It's for a different group (not currently viewing)
+        // e.g. show a toast or increment unread
+      }
+    },
+    [selectedGroup]
+  );
 
   // ============= fetchGroupMessages =============
   const fetchGroupMessages = useCallback((groupId) => {
@@ -1143,15 +648,17 @@ export function ChatProviderv2({ children }) {
       socketRef.current.emit("deleteGroup", payload, (resp) => {
         if (resp.success) {
           toast.success("Group deleted");
-          // remove from local
-          setGroups((prev) => prev.filter((g) => g._id !== groupId));
-          if (selectedGroup && selectedGroup._id === groupId) {
+          // Also do a fresh fetch from the server if you want to be 100% sure
+          fetchUserGroups(); 
+          // If it was the currently-selected group, clear it
+          if (selectedGroup && String(selectedGroup._id) === String(resp.groupId)) {
             clearActiveGroup();
           }
         } else {
           toast.error(resp.message || "Failed to delete group");
         }
       });
+      
     },
     [employeeId, selectedGroup, clearActiveGroup]
   );
@@ -1180,12 +687,26 @@ export function ChatProviderv2({ children }) {
       handleIncomingGroupMessage(data);
     };
 
-    // groupDeleted => remove from local, close if current
+    // // groupDeleted => remove from local, close if current
+    // const handleGroupDeleted = ({ groupId }) => {
+    //   setGroups((prev) => prev.filter((g) => g._id !== groupId));
+    //   if (selectedGroup && selectedGroup._id === groupId) {
+    //     clearActiveGroup();
+    //   }
+    //   toast("A group was deleted");
+    // };
+
     const handleGroupDeleted = ({ groupId }) => {
-      setGroups((prev) => prev.filter((g) => g._id !== groupId));
-      if (selectedGroup && selectedGroup._id === groupId) {
+      // `groupId` here is the string the server emitted
+      // Make sure we compare it to our local groups by converting to string:
+      setGroups((prev) =>
+        prev.filter((g) => String(g._id) !== String(groupId))
+      );
+    
+      if (selectedGroup && String(selectedGroup._id) === String(groupId)) {
         clearActiveGroup();
       }
+    
       toast("A group was deleted");
     };
 
@@ -1309,6 +830,7 @@ export function ChatProviderv2({ children }) {
   return (
     <ChatContextv2.Provider value={contextValue}>
       {children}
+
       {/* Conditionally show the Group Settings Modal */}
       {showGroupSettingsModal && groupInSettings && (
         <GroupSettingsModal
@@ -1317,193 +839,5 @@ export function ChatProviderv2({ children }) {
         />
       )}
     </ChatContextv2.Provider>
-  );
-}
-
-//----------------------------------------------------------------
-// 14) GroupSettingsModal sub-component
-//----------------------------------------------------------------
-function GroupSettingsModal({ group, onClose }) {
-  const {
-    isGroupAdmin,
-    employeeId,
-    members,
-    addMemberToGroup,
-    removeMemberFromGroup,
-    updateGroupInfo,
-    deleteGroup,
-    fetchUserGroups,
-  } = React.useContext(ChatContextv2);
-
-  const [newName, setNewName] = useState(group.groupName);
-  const [newIcon, setNewIcon] = useState(group.groupIcon || "");
-  // For picking a user to add:
-  const [userToAdd, setUserToAdd] = useState("");
-  // Confirm delete
-  const [deleteConfirm, setDeleteConfirm] = useState("");
-
-  // Filter out existing members
-  const existingIds = new Set(group.members || []);
-  const possibleNewMembers = members.filter((m) => !existingIds.has(m.employeeId));
-
-  // The group’s current members
-  // We can remove them if we’re admin
-  const handleRemove = (memberId) => {
-    if (!window.confirm("Remove this user from the group?")) return;
-    removeMemberFromGroup(group._id, memberId);
-  };
-
-  const handleAdd = () => {
-    if (!userToAdd) return;
-    addMemberToGroup(group._id, userToAdd);
-    setUserToAdd("");
-  };
-
-  const handleUpdateGroupInfo = () => {
-    if (!newName.trim()) {
-      alert("Group name cannot be blank");
-      return;
-    }
-    updateGroupInfo(group._id, newName.trim(), newIcon.trim());
-  };
-
-  const handleDelete = () => {
-    if (deleteConfirm !== "DELETE") {
-      alert('Type "DELETE" in the box if you really want to delete this group.');
-      return;
-    }
-    if (!window.confirm("Are you sure you want to permanently delete this group?"))
-      return;
-    deleteGroup(group._id);
-    onClose();
-  };
-
-  return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center px-3">
-      <div className="bg-white dark:bg-gray-800 w-full max-w-md rounded p-4 space-y-4 relative">
-        <button
-          onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-800"
-        >
-          ✕
-        </button>
-
-        <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-2">
-          Group Settings
-        </h2>
-
-        {/* If admin, show rename options */}
-        {isGroupAdmin(group) ? (
-          <>
-            <div className="mb-2">
-              <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">
-                Group Name
-              </label>
-              <input
-                className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-              />
-            </div>
-
-            <div className="mb-2">
-              <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">
-                Group Icon (URL)
-              </label>
-              <input
-                className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-                value={newIcon}
-                onChange={(e) => setNewIcon(e.target.value)}
-              />
-            </div>
-
-            <button
-              className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 mb-4"
-              onClick={handleUpdateGroupInfo}
-            >
-              Update Group Info
-            </button>
-
-            <hr />
-
-            {/* Add member */}
-            <div className="mb-2">
-              <label className="block text-sm text-gray-600 dark:text-gray-300 mb-1">
-                Add New Member
-              </label>
-              <select
-                className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white"
-                value={userToAdd}
-                onChange={(e) => setUserToAdd(e.target.value)}
-              >
-                <option value="">-- Select a user --</option>
-                {possibleNewMembers.map((m) => (
-                  <option key={m.employeeId} value={m.employeeId}>
-                    {m.firstName} {m.lastName} ({m.employeeId})
-                  </option>
-                ))}
-              </select>
-              <button
-                className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 mt-2"
-                onClick={handleAdd}
-              >
-                Add Member
-              </button>
-            </div>
-
-            <hr />
-
-            {/* Existing members */}
-            <div>
-              <p className="text-sm font-semibold mb-1">
-                Current Members ({group.members?.length || 0})
-              </p>
-              {group.members?.map((mId) => (
-                <div key={mId} className="flex items-center justify-between mb-1">
-                  <span className="text-xs text-gray-700 dark:text-gray-200">
-                    {mId}
-                    {mId === group.admin && (
-                      <strong className="ml-1 text-pink-600">(Admin)</strong>
-                    )}
-                  </span>
-                  {mId !== group.admin && (
-                    <button
-                      className="text-red-600 hover:text-red-800 text-xs"
-                      onClick={() => handleRemove(mId)}
-                    >
-                      Remove
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <hr />
-            {/* Delete group */}
-            <div>
-              <p className="text-sm text-gray-700 dark:text-gray-200 mb-1">
-                Type <strong>DELETE</strong> to confirm:
-              </p>
-              <input
-                className="w-full p-2 border rounded dark:bg-gray-700 dark:text-white mb-2"
-                placeholder="DELETE"
-                value={deleteConfirm}
-                onChange={(e) => setDeleteConfirm(e.target.value)}
-              />
-              <button
-                onClick={handleDelete}
-                className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-              >
-                Delete Group
-              </button>
-            </div>
-          </>
-        ) : (
-          <div className="text-sm text-gray-600 dark:text-gray-300">
-            You are <strong>not</strong> the admin, so you cannot update this group.
-          </div>
-        )}
-      </div>
-    </div>
   );
 }

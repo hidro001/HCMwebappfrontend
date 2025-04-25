@@ -1,7 +1,8 @@
 // src/store/useRatingStore.js
 import { create } from "zustand";
 import { toast } from "react-hot-toast";
-import axiosInstance from "../service/axiosInstance"; 
+import axiosInstance from "../service/axiosInstance";
+import useAuthStore from "../store/store";
 
 export const useRatingStore = create((set, get) => ({
   // =========================
@@ -11,16 +12,25 @@ export const useRatingStore = create((set, get) => ({
   loadingSubordinates: false,
 
   fetchSubordinates: async () => {
+    const user = useAuthStore.getState();
+    const userId = user._id;
+
+    if (!userId) {
+      toast.error("User ID not found.");
+      return;
+    }
     set({ loadingSubordinates: true });
     try {
-      const managerId = localStorage.getItem("_id");
+      const managerId = userId;
       if (!managerId) {
-        toast.error("Manager ID not found in localStorage.");
+        toast.error("Manager ID not found in store login again.");
         set({ loadingSubordinates: false });
         return;
       }
 
-      const response = await axiosInstance.get(`/kpi/subordinates/${managerId}`);
+      const response = await axiosInstance.get(
+        `/kpi/subordinates/${managerId}`
+      );
       set({ subordinates: response.data.data || [] });
     } catch (error) {
       console.error("Error fetching subordinates:", error);
@@ -54,7 +64,14 @@ export const useRatingStore = create((set, get) => ({
   // =========================
   // 3) Submit Ratings
   // =========================
-  submitRatings: async ({ ratedTo, ratings, comments, month, year, onSuccess }) => {
+  submitRatings: async ({
+    ratedTo,
+    ratings,
+    comments,
+    month,
+    year,
+    onSuccess,
+  }) => {
     // payload structure:
     // {
     //   ratedTo: String,
@@ -124,7 +141,9 @@ export const useRatingStore = create((set, get) => ({
   fetchEmployeeRatings: async (employeeId) => {
     set({ loadingEmployeeRatings: true });
     try {
-      const response = await axiosInstance.get(`/kpi/ratings/employee/${employeeId}`);
+      const response = await axiosInstance.get(
+        `/kpi/ratings/employee/${employeeId}`
+      );
       const data = response.data.data || [];
       const overallAvg = response.data.overallAverage || 0;
 

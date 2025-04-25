@@ -78,7 +78,12 @@ import {
   RequestDashboardPage,
   PostPerformerPage,
   ViewPerformerPage,
-
+  SetKpisNewPage,
+  RatingDashboardPage,
+  EmployeeRatingAdvancedPage,
+  MyPerformanceAdvancedPage,
+  TeamRatingsAdvancedPage,
+  AllEmployeeRatingsPage,
 } from "../pages";
 import EmployeeFullStatisticsPage from "../pages/attendence management/EmployeeFullStatisticsPage";
 import MainLayout from "./MainLayout";
@@ -230,7 +235,7 @@ const router = createBrowserRouter([
       {
         // NEW ROUTE to handle /dashboard/statistics/EMP_ID/DATE
         path: "statistics/:empID/:date",
-        element: <EmployeeDailyStats />, 
+        element: <EmployeeDailyStats />,
       },
       {
         path: "view-attendance",
@@ -432,28 +437,42 @@ const router = createBrowserRouter([
       {
         path: "request-hike-advance-reimbursement",
         element: <RequestDashboardPage />,
-      }, 
+      },
 
-
-       {
+      {
         path: "/dashboard/geo-location",
         element: <GeolocationPage />,
       },
-
 
       {
         path: "/dashboard/field-worker",
         element: <FiledworkerPage />,
       },
 
-
-
-
-
-
-
-
-      
+      {
+        path: "set-kpis-new",
+        element: <SetKpisNewPage />,
+      },
+      {
+        path: "rate-team-members",
+        element: <RatingDashboardPage />,
+      },
+      {
+        path: "employee-advanced/:employeeId",
+        element: <EmployeeRatingAdvancedPage />,
+      },
+      {
+        path: "my-performance",
+        element: <MyPerformanceAdvancedPage />,
+      },
+      {
+        path: "team-members-performance",
+        element: <TeamRatingsAdvancedPage />,
+      },
+      {
+        path: "all-employess-ratings",
+        element: <AllEmployeeRatingsPage />,
+      },
     ],
   },
   {

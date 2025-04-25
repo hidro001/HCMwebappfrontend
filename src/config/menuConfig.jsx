@@ -44,7 +44,7 @@ export const menuItems = [
         // repeated "superAdminRaci" => made unique
         name: "All Dashlets",
         link: "/dashboard/all-dashlets",
-        permission: "dashboard-all-dashlets", 
+        permission: "dashboard-all-dashlets",
         textAnimation: { x: 10 },
       },
       {
@@ -98,6 +98,8 @@ export const menuItems = [
       },
     ],
   },
+
+
 
   // ------------------------------ Manage Employees ------------------------------
   {
@@ -252,7 +254,6 @@ export const menuItems = [
     textAnimation: { x: 10 },
     options: [
       {
-        
         name: "Main",
         link: "/dashboard/main",
         permission: "payroll-main", // NEW
@@ -261,13 +262,13 @@ export const menuItems = [
       {
         name: "Manage Payroll",
         link: "/dashboard/manage-payroll",
-        permission: "payroll-manage-calculations", 
+        permission: "payroll-manage-calculations",
         textAnimation: { x: 10 },
       },
       {
         name: "Manage Claims",
         link: "/dashboard/manage-claims",
-        permission: "payroll-manage-claims", 
+        permission: "payroll-manage-claims",
         textAnimation: { x: 10 },
       },
     ],
@@ -304,13 +305,13 @@ export const menuItems = [
       {
         name: "Assigned Task",
         link: "/dashboard/assigned-task/employee",
-        permission: "view-own-assigned-task", 
+        permission: "view-own-assigned-task",
         textAnimation: { x: 10 },
       },
       {
         name: "Daily Task",
         link: "/dashboard/daily-task",
-        permission: "view-daily-subordinates-task", 
+        permission: "view-daily-subordinates-task",
         textAnimation: { x: 10 },
       },
     ],
@@ -353,7 +354,7 @@ export const menuItems = [
       {
         name: "Vacancies List",
         link: "/dashboard/vancancies-list",
-        permission: "recruit-manage-vacancies", 
+        permission: "recruit-manage-vacancies",
         textAnimation: { x: 10 },
       },
     ],
@@ -400,6 +401,46 @@ export const menuItems = [
         link: "/dashboard/all-emp-ratings",
         permission: "view-all-employee-rating",
         textAnimation: { x: 10 },
+      },
+    ],
+  },
+
+  // ------------------------------ Performance Management & KPI quantitative-qualitative ------------------------------
+
+  {
+    name: "Performance Management & KPI quantitative-qualitative",
+    tooltip:
+      "Track, evaluate, and improve employee performance to drive team success",
+    icon: <GrDocumentPerformance />,
+    color: "text-blue-400",
+    iconAnimation: { rotate: 360 },
+    options: [
+      {
+        name: "Set KPIs",
+        link: "/dashboard/set-kpis-new",
+        permission: "set-kpis-quantitative-qualitative",
+      },
+      {
+        name: "Rate Team Members",
+        link: "/dashboard/rate-team-members",
+        permission: "rate-team-members-quantitative-qualitative",
+      },
+      {
+        name: "Team Members Performance",
+        link: "/dashboard/team-members-performance",
+        permission: "team-members-performance-quantitative-qualitative",
+      },
+      {
+        name: "My Performance",
+        link: "/dashboard/my-performance",
+
+        permission: "own-performance-quantitative-qualitative",
+      },
+
+      {
+        name: "All Employes Rating",
+        link: "/dashboard/all-employess-ratings",
+        permission: "view-all-employee-rating-quantitative-qualitative",
       },
     ],
   },
@@ -497,17 +538,17 @@ export const menuItems = [
       {
         name: "Main",
         link: "/dashboard/main-dashboard",
-        permission: "productivity-main", 
+        permission: "productivity-main",
       },
       {
         name: "Productivity Dashboard",
         link: "/dashboard/productivity-dashboard",
-        permission: "productivity-dashboard", 
+        permission: "productivity-dashboard",
       },
       {
         name: "Team Productivity",
         link: "/dashboard/team-productivity",
-        permission: "productivity-team", 
+        permission: "productivity-team",
       },
     ],
   },
@@ -553,7 +594,7 @@ export const menuItems = [
       {
         name: " All Leaves ",
         link: "/dashboard/all-leave-history",
-        permission: "leave-view-all", 
+        permission: "leave-view-all",
         textAnimation: { x: 10 },
       },
     ],
