@@ -332,21 +332,21 @@ const availablePermissionManager = [
   },
 
   // ------------------------------ Performance Management Permissions ------------------------------
-  {
-    name: "Performance Management Main Dashboard",
-    permission: "performance-main",
-  },
-  { name: "Post Top Performer", permission: "post-top-performer" },
-  { name: "View Top Performers", permission: "view-top-performers" },
-  { name: "Set KPIs", permission: "performance-set-kpis" },
-  {
-    name: "Rate Subordinate Employees",
-    permission: "performance-rate-subordinate",
-  },
-  {
-    name: "SuperAdmin View All Employee Ratings",
-    permission: "view-all-employee-rating",
-  },
+  // {
+  //   name: "Performance Management Main Dashboard",
+  //   permission: "performance-main",
+  // },
+  // { name: "Post Top Performer", permission: "post-top-performer" },
+  // { name: "View Top Performers", permission: "view-top-performers" },
+  // { name: "Set KPIs", permission: "performance-set-kpis" },
+  // {
+  //   name: "Rate Subordinate Employees",
+  //   permission: "performance-rate-subordinate",
+  // },
+  // {
+  //   name: "SuperAdmin View All Employee Ratings",
+  //   permission: "view-all-employee-rating",
+  // },
 
   // ------------------------------ Performance Management & KPI quantitative-qualitative Permissions ------------------------------
 
