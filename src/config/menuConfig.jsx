@@ -361,49 +361,49 @@ export const menuItems = [
   },
 
   // ------------------------------ Performance Management ------------------------------
-  {
-    name: "Performance management",
-    tooltip:
-      "Track, evaluate, and improve employee performance to drive team success",
-    icon: <GrDocumentPerformance />,
-    color: "text-green-400",
-    iconAnimation: { scale: 1.2 },
-    textAnimation: { x: 10 },
-    options: [
-      {
-        name: "Main",
-        link: "/dashboard/performance-dashboard",
-        permission: "performance-main",
-      },
-      {
-        name: "Post Top Performer",
-        link: "/dashboard/post-top-performers",
-        permission: "post-top-performer",
-      },
-      {
-        name: "View Top Performers",
-        link: "/dashboard/top-performers",
-        permission: "view-top-performers",
-      },
-      {
-        name: "Set KPIs",
-        link: "/dashboard/set-kpis",
-        permission: "performance-set-kpis",
-      },
-      {
-        name: "Team Performance",
-        link: "/dashboard/team-performance",
-        permission: "performance-rate-subordinate",
-        textAnimation: { x: 10 },
-      },
-      {
-        name: "All Employes Rating",
-        link: "/dashboard/all-emp-ratings",
-        permission: "view-all-employee-rating",
-        textAnimation: { x: 10 },
-      },
-    ],
-  },
+  // {
+  //   name: "Performance management",
+  //   tooltip:
+  //     "Track, evaluate, and improve employee performance to drive team success",
+  //   icon: <GrDocumentPerformance />,
+  //   color: "text-green-400",
+  //   iconAnimation: { scale: 1.2 },
+  //   textAnimation: { x: 10 },
+  //   options: [
+  //     {
+  //       name: "Main",
+  //       link: "/dashboard/performance-dashboard",
+  //       permission: "performance-main",
+  //     },
+  //     {
+  //       name: "Post Top Performer",
+  //       link: "/dashboard/post-top-performers",
+  //       permission: "post-top-performer",
+  //     },
+  //     {
+  //       name: "View Top Performers",
+  //       link: "/dashboard/top-performers",
+  //       permission: "view-top-performers",
+  //     },
+  //     {
+  //       name: "Set KPIs",
+  //       link: "/dashboard/set-kpis",
+  //       permission: "performance-set-kpis",
+  //     },
+  //     {
+  //       name: "Team Performance",
+  //       link: "/dashboard/team-performance",
+  //       permission: "performance-rate-subordinate",
+  //       textAnimation: { x: 10 },
+  //     },
+  //     {
+  //       name: "All Employes Rating",
+  //       link: "/dashboard/all-emp-ratings",
+  //       permission: "view-all-employee-rating",
+  //       textAnimation: { x: 10 },
+  //     },
+  //   ],
+  // },
 
   // ------------------------------ Performance Management & KPI quantitative-qualitative ------------------------------
 
