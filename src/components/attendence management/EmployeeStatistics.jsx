@@ -370,6 +370,9 @@ export default function EmployeeStatistics() {
   const {
     stats, dailyStats, deptCategories,
     fetchStats, fetchDailyStats, fetchDeptCategories,
+    fetchTopProductivityStats,
+  topProductivityStats,
+  loading: prodStatsLoading,
     loading: usageLoading, error: usageError
   } = useUsageStatsStore();
 
@@ -388,13 +391,19 @@ export default function EmployeeStatistics() {
     });
   }, [empID]);
 
+
+
   /* --------------------------------------------------------------------- */
   /*  FILTER STATE                                                          */
   /* --------------------------------------------------------------------- */
   const today         = dayjs();
   const [mode, setMode] = useState('daily');               // daily | weekly | monthly | yearly
   const [month, setMonth] = useState(today.month()+1);     // 1…12  (only for monthly)
-  const [year,  setYear]  = useState(today.year());        // for monthly & yearly
+  const [year,  setYear]  = useState(today.year());  
+  
+  useEffect(() => {
+    fetchTopProductivityStats(empID, mode);
+  }, [empID, mode]);// for monthly & yearly
 
   /* --------------------------------------------------------------------- */
   /*  Derive time window                                                   */
@@ -523,7 +532,7 @@ export default function EmployeeStatistics() {
             onChange={e => setMode(e.target.value)}
             className="mt-1 border rounded-lg px-3 py-1.5 bg-white"
           >
-            <option value="daily">Daily</option>
+            <option value="daily">Today</option>
             <option value="weekly">Weekly (last 7 days)</option>
             <option value="monthly">Monthly</option>
             <option value="yearly">Yearly</option>
@@ -577,11 +586,14 @@ export default function EmployeeStatistics() {
         <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-4">
           {[
             { color:'green',  label:'Total Working Hours', value: attendanceTotals.totalWorkingHours },
-            { color:'yellow', label:'Total Break Taken',  value: `${attendanceTotals.totalBreakTaken} mins` },
+            
             { color:'blue',   label:'Keyboard Minutes',   value: totalUsage.keyboardMinutes },
-            { color:'purple', label:'Mouse Minutes',      value: totalUsage.mouseMinutes },
             { color:'pink',   label:'Keyboard Presses',   value: totalUsage.keyboardPresses },
+            { color:'purple', label:'Mouse Minutes',      value: totalUsage.mouseMinutes },
             { color:'red',    label:'Mouse Clicks',       value: totalUsage.mouseClicks },
+            
+            { color:'yellow', label:'Total Break Taken',  value: `${attendanceTotals.totalBreakTaken} mins` },
+            
           ].map(({ color,label,value }) => (
             <div key={label} className={`bg-${color}-100 p-4 sm:p-6 rounded-xl shadow text-center`}>
               <h3 className="text-sm sm:text-base font-semibold">{label}</h3>
@@ -602,7 +614,8 @@ export default function EmployeeStatistics() {
       </div>
 
       {/* ─── Usage table ───────────────────────────────────── */}
-      <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
+
         <div className="px-6 py-4 bg-gradient-to-r from-indigo-500 to-purple-600">
           <h2 className="text-xl sm:text-2xl font-semibold text-white">
             Usage Statistics ({empID})&nbsp;
@@ -617,7 +630,8 @@ export default function EmployeeStatistics() {
 
         <div className="overflow-x-auto p-4">
           <table className="w-full text-xs sm:text-sm text-gray-700">
-            <thead className="bg-gray-50">
+          <thead className="bg-gray-50 dark:bg-gray-700">
+
               <tr>
                 {['Date','Keyboard Min.','Mouse Min.','Key Presses','Mouse Clicks','Details'].map(h=>(
                   <th key={h} className="py-3 px-4 text-center font-semibold border-b">{h}</th>
@@ -643,12 +657,70 @@ export default function EmployeeStatistics() {
                 </tr>
               ))}
               {!filteredStats.length && (
-                <tr><td colSpan={6} className="py-6 text-center text-gray-500">No data</td></tr>
+                <tr><td colSpan={6} className="py-6 text-center text-gray-500 dark:text-gray-400">No data</td></tr>
               )}
             </tbody>
           </table>
         </div>
+        {/* Productivity Stats Section */}
+{/* Productivity Stats Section */}
+<div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden mt-10">
+  <div className="px-6 py-4 bg-gradient-to-r from-green-500 to-teal-500">
+    <h2 className="text-xl sm:text-2xl font-semibold text-white">
+      Productivity Insights ({mode.charAt(0).toUpperCase() + mode.slice(1)})
+    </h2>
+  </div>
+
+  {prodStatsLoading ? (
+    <p className="text-center py-6 text-gray-500 dark:text-gray-300">
+      Loading Productivity Stats...
+    </p>
+  ) : (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
+      {[{
+          title: 'Top Productive Apps',
+          data: topProductivityStats?.topApps,
+        }, {
+          title: 'Top Productive Websites',
+          data: topProductivityStats?.topWebsites,
+        }, {
+          title: 'Least Productive Apps',
+          data: topProductivityStats?.leastApps,
+        }, {
+          title: 'Least Productive Websites',
+          data: topProductivityStats?.leastWebsites,
+        }].map(({ title, data }) => (
+          <div key={title} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 shadow-inner">
+            <h3 className="font-semibold text-md border-b border-gray-200 dark:border-gray-600 pb-2 mb-2 text-gray-800 dark:text-gray-100">
+              {title}
+            </h3>
+
+            {data?.length ? (
+              <ul className="space-y-1">
+                {data.map((item) => (
+                  <li key={item.appName || item.url} className="text-gray-600 dark:text-gray-300">
+                    <span className="font-medium text-gray-700 dark:text-gray-200">
+                      {item.appName || item.url}
+                    </span>
+                    <span className="ml-2 text-sm font-semibold text-teal-600 dark:text-teal-400">
+                      – {item.minutesUsed || item.minutesVisited} mins
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                No data available.
+              </p>
+            )}
+          </div>
+      ))}
+    </div>
+  )}
+</div>
+
       </div>
+      
     </div>
   );
 }

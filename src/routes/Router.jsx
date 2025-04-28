@@ -99,6 +99,7 @@ import DailyTaskPage from "../pages/task/DailyTaskPage";
 import EmployeeDailyStats from "../components/attendence management/EmployeeDailyStats";
 import GeolocationPage from "../pages/geolocation/GeolocationPage";
 import FiledworkerPage from "../pages/geolocation/FiledworkerPage";
+import ProductivityLensAll from "../components/product-lense/ProductivityLensAll";
 
 const router = createBrowserRouter([
   {
@@ -232,6 +233,11 @@ const router = createBrowserRouter([
         path: "statistics/:empID",
         element: <EmployeeFullStatisticsPage />,
       },
+      {
+        path: "all-employee-productivity",
+        element: <ProductivityLensAll />,
+      },
+
       {
         // NEW ROUTE to handle /dashboard/statistics/EMP_ID/DATE
         path: "statistics/:empID/:date",

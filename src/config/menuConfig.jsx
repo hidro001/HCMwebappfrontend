@@ -550,6 +550,12 @@ export const menuItems = [
         link: "/dashboard/team-productivity",
         permission: "productivity-team",
       },
+      {
+        name: "All Employee Productivity",
+        link: "/dashboard/all-employee-productivity",
+        permission: "productivity-view-all",
+        textAnimation: { x: 10 },
+      },
     ],
   },
 

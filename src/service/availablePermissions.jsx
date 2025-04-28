@@ -439,6 +439,8 @@ const availablePermissionManager = [
 
    { name: "Geolocation Panel", permission: "geolocation-all-permission" },
 
+   {name: "View all Employee Productivity", permission: "productivity-view-all"}
+
 
 
 ];

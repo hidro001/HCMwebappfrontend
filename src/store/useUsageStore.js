@@ -35,6 +35,22 @@ const useUsageStatsStore = create((set) => ({
       set({ loading: false });
     }
   },
+  fetchTopProductivityStats: async (employeeId, filterType) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await axiosInstance.get(
+        `/usage-stats/productivity/${employeeId}?filter=${filterType}`
+      );
+      set({ topProductivityStats: res.data.data });
+    } catch (err) {
+      set({ error: err.message });
+      toast.error(err.message);
+    } finally {
+      set({ loading: false });
+    }
+  },
+  topProductivityStats: null,
+  
   
 
   fetchDeptCategories: async (deptName) => {
