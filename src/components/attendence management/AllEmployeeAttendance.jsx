@@ -509,11 +509,11 @@ export default function AllEmployeeAttendance() {
     ) {
       return false;
     }
-    const q = searchTerm.toLowerCase();
-    return (
-      emp.name.toLowerCase().includes(q) ||
-      emp.empID.toLowerCase().includes(q)
-    );
+    const q = searchTerm.toLowerCase().trim();
+  // make name/ID safe strings before lowercasing
+  const name = (emp.name || "").toLowerCase();
+  const id   = (emp.empID  || "").toLowerCase();
+  return name.includes(q) || id.includes(q);
   });
 
   // Pagination calculations
