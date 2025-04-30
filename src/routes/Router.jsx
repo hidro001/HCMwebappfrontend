@@ -100,6 +100,7 @@ import EmployeeDailyStats from "../components/attendence management/EmployeeDail
 import GeolocationPage from "../pages/geolocation/GeolocationPage";
 import FiledworkerPage from "../pages/geolocation/FiledworkerPage";
 import ProductivityLensAll from "../components/product-lense/ProductivityLensAll";
+import SubordinateProductivityLens from "../components/product-lense/SubordinateProductivityLens";
 
 const router = createBrowserRouter([
   {
@@ -236,6 +237,10 @@ const router = createBrowserRouter([
       {
         path: "all-employee-productivity",
         element: <ProductivityLensAll />,
+      },
+      {
+        path: "subordinate-productivity",
+        element: <SubordinateProductivityLens />,
       },
 
       {

@@ -556,6 +556,12 @@ export const menuItems = [
         permission: "productivity-view-all",
         textAnimation: { x: 10 },
       },
+      {
+        name: "Subordinate Productivity",
+        link: "/dashboard/subordinate-productivity",
+        permission: "productivity-view-subordinate",
+        textAnimation: { x: 10 },
+      },
     ],
   },
 

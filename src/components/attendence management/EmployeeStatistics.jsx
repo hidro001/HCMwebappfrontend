@@ -330,7 +330,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Doughnut } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import dayjs from 'dayjs';
-
+import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from 'recharts';
 import useUsageStatsStore     from '../../store/useUsageStore';
 import useFullAttendanceStore from '../../store/useFullAttendanceStore';
 
@@ -400,6 +400,49 @@ export default function EmployeeStatistics() {
   const [mode, setMode] = useState('daily');               // daily | weekly | monthly | yearly
   const [month, setMonth] = useState(today.month()+1);     // 1…12  (only for monthly)
   const [year,  setYear]  = useState(today.year());  
+  const getFavicon = (url) => `https://www.google.com/s2/favicons?domain=${url}&sz=64`;
+  const appIconMap = {
+    'google chrome': 'https://img.icons8.com/color/48/chrome--v1.png',
+    'slack': 'https://img.icons8.com/color/48/slack-new-logo.png',
+    'excel': 'https://img.icons8.com/color/48/microsoft-excel-2019--v1.png',
+    'word': 'https://img.icons8.com/color/48/ms-word.png',
+    'anydesk': 'https://img.icons8.com/color/48/anydesk.png',
+    'calculator': 'https://img.icons8.com/color/48/calculator.png',
+    'docker desktop': 'https://img.icons8.com/color/48/docker.png',
+    'electron': 'https://img.icons8.com/color/48/electron.png',
+    'lockapp.exe': 'https://img.icons8.com/color/48/lock-2.png',
+    'microsoft 365 copilot app': 'https://img.icons8.com/color/48/microsoft-365.png',
+    'microsoft copilot': 'https://img.icons8.com/color/48/microsoft-365.png',
+    'microsoft edge': 'https://img.icons8.com/color/48/ms-edge-new.png',
+    'mongodbcompass': 'https://img.icons8.com/color/48/mongodb.png',
+    'notepad': 'https://img.icons8.com/color/48/notepad.png',
+    'photos.exe': 'https://img.icons8.com/color/48/windows-photos.png',
+    'postman': 'https://img.icons8.com/color/48/postman-api.png',
+    'python 3.13.3 (64-bit)': 'https://img.icons8.com/color/48/python.png',
+    'screenclippinghost.exe': 'https://img.icons8.com/color/48/screenshot.png',
+    'search application': 'https://img.icons8.com/color/48/search--v1.png',
+    'settings': 'https://img.icons8.com/color/48/settings--v1.png',
+    'setup/uninstall': 'https://img.icons8.com/color/48/uninstalling-updates.png',
+    'ssh, telnet, rlogin, and supdup client': 'https://img.icons8.com/color/48/console.png',
+    'task manager': 'https://img.icons8.com/color/48/task-manager.png',
+    'tcp/ip ping command': 'https://img.icons8.com/color/48/console.png',
+    'visual studio code': 'https://img.icons8.com/color/48/visual-studio-code-2019.png',
+    'whatsapp.exe': 'https://img.icons8.com/color/48/whatsapp--v1.png',
+    'windows command processor': 'https://img.icons8.com/color/48/command-line.png',
+    'windows explorer': 'https://img.icons8.com/color/48/windows-explorer.png',
+    'windows shell experience host': 'https://img.icons8.com/color/48/windows-10.png',
+    'windows® installer': 'https://img.icons8.com/color/48/windows-installer.png',
+    'winscp: sftp, ftp, webdav, s3 and scp client': 'https://img.icons8.com/color/48/ftp.png',
+    'wps office': 'https://img.icons8.com/color/48/wps-office.png',
+    'wps spreadsheets': 'https://img.icons8.com/color/48/wps-office.png',
+    'x-lite.exe': 'https://img.icons8.com/color/48/phone-office.png',
+    'a desktop app for humanmaximizer': 'https://img.icons8.com/color/48/monitor--v1.png',
+  };
+  
+  const getAppIcon = (appName) => {
+    const key = appName.toLowerCase();
+    return appIconMap[key] || 'https://img.icons8.com/fluency-systems-regular/48/application-window.png';
+  };
   
   useEffect(() => {
     fetchTopProductivityStats(empID, mode);
@@ -454,7 +497,7 @@ export default function EmployeeStatistics() {
   /* --------------------------------------------------------------------- */
   const attendanceTotals = useMemo(() => {
     let workMin = 0, breakMin = 0;
-
+  
     filteredAttendance.forEach(rec => {
       if (rec.login && rec.logout) {
         const s = new Date(`1970-01-01T${convertTo24Hour(rec.login)}`);
@@ -467,9 +510,13 @@ export default function EmployeeStatistics() {
         }
       });
     });
+  
+    const hours = Math.floor(workMin / 60);
+    const minutes = Math.round(workMin % 60);
+  
     return {
-      totalWorkingHours: (workMin/60).toFixed(2),
-      totalBreakTaken  : breakMin
+      totalWorkingHours: `${hours} hrs ${minutes} mins`,
+      totalBreakTaken: breakMin
     };
   }, [filteredAttendance]);
 
@@ -520,6 +567,187 @@ export default function EmployeeStatistics() {
   /* --------------------------------------------------------------------- */
   /*  RENDER                                                                */
   /* --------------------------------------------------------------------- */
+
+  const StatsTableCard = ({
+    title,
+    data = [],
+    isWebsite = false,
+    onSeeAll = () => {},
+  }) => {
+    const BLUE = "#487FFF";
+    const GRAY = "#e2e8f0";
+  
+    const css = {
+      card: {
+        border: `1px solid ${GRAY}`,
+        borderRadius: 12,
+        background: "#fff",
+        boxShadow: "0 2px 6px rgba(0,0,0,.05)",
+      },
+      header: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: 16,
+        borderBottom: `1px solid ${GRAY}`,
+      },
+      title: { fontWeight: 600, color: "#374151", fontSize: 16 },
+      tableWrapper: {
+        overflowX: "auto",
+        padding: "0",
+        border: `1px solid ${BLUE}`,
+        borderRadius: 8,
+        margin: "16px",
+      },
+      table: {
+        width: "100%",
+        borderCollapse: "collapse",
+        fontSize: 14,
+        color: "#374151",
+      },
+      thBase: {
+        background: "#F0F7FF",
+        padding: 10,
+        color: "#1f2937",
+        fontWeight: 500,
+        textAlign: "left",
+      },
+      tdBase: {
+        padding: 10,
+        borderBottom: `1px solid ${BLUE}`,
+        color: "#374151",
+      },
+      icon: {
+        width: 24,
+        height: 24,
+        marginRight: 8,
+        verticalAlign: "middle",
+      },
+    };
+  
+    const renderHeader = () => (
+      <thead>
+        <tr>
+          <th style={{ ...css.thBase, width: 60, textAlign: "center", borderRight: `1px solid ${BLUE}` }}>#</th>
+          <th style={{ ...css.thBase, borderRight: `1px solid ${BLUE}` }}>
+            {isWebsite ? "Website Name" : "App Name"}
+          </th>
+          <th style={{ ...css.thBase, width: 160, textAlign: "center" }}>Time (Min)</th>
+        </tr>
+      </thead>
+    );
+  
+    const renderRows = () =>
+      data.length ? (
+        data.slice(0, 5).map((row, i) => {
+          const name = isWebsite ? row.url : row.appName;
+          const icon = isWebsite ? getFavicon(row.url) : getAppIcon(row.appName);
+  
+          return (
+            <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#F9FBFF" }}>
+              <td style={{ ...css.tdBase, textAlign: "center", borderRight: `1px solid ${BLUE}` }}>
+                {String(i + 1).padStart(2, "0")}
+              </td>
+              <td style={{ ...css.tdBase, textAlign: "left", borderRight: `1px solid ${BLUE}` }}>
+                <img src={icon} alt="" style={css.icon} />
+                {name}
+              </td>
+              <td style={{ ...css.tdBase, textAlign: "center" }}>
+                {(row.minutesVisited ?? row.minutesUsed) || 0}
+              </td>
+            </tr>
+          );
+        })
+      ) : (
+        <tr>
+          <td colSpan={3} style={{ padding: 12, textAlign: "center", color: "#9ca3af" }}>No data available.</td>
+        </tr>
+      );
+  
+    return (
+      <div style={css.card}>
+        <div style={css.header}>
+          <span style={css.title}>{title}</span>
+        </div>
+  
+        <div style={css.tableWrapper}>
+          <table style={css.table}>
+            {renderHeader()}
+            <tbody>{renderRows()}</tbody>
+          </table>
+        </div>
+      </div>
+    );
+  };
+  
+  
+  const ProductivityBarGraph = ({ data }) => {
+    const productivityMap = {
+      less: 1,
+      avg: 2,
+      top: 3,
+    };
+  
+    const productivityColor = {
+      less: '#FF8A80',
+      avg: '#90CAF9',
+      top: '#B9F6CA',
+    };
+  
+    const formattedData = data.map(app => ({
+      name: app.appName,
+      productivityLevel: app.productivityLevel,
+      productivityValue: productivityMap[app.productivityLevel] || 0,
+    }));
+  
+    return (
+      <div className="p-6 bg-white rounded-xl shadow-xl mt-10">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">
+          Productive Websites & Apps
+        </h3>
+  
+        <ResponsiveContainer width="100%" height={formattedData.length * 50 + 50}>
+          <BarChart layout="vertical" data={formattedData}>
+            <XAxis type="number" hide domain={[0, 3]} />
+            <YAxis
+              type="category"
+              dataKey="name"
+              tick={{ fontSize: 12 }}
+              width={150}
+            />
+            <RechartsTooltip
+              formatter={(value, name, props) =>
+                props?.payload?.productivityLevel
+                  ? props.payload.productivityLevel.toUpperCase()
+                  : 'N/A'
+              }
+            />
+  
+            <Bar dataKey="productivityValue" barSize={25} radius={[0, 10, 10, 0]}>
+              {formattedData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={productivityColor[entry.productivityLevel]} />
+              ))}
+            </Bar>
+          </BarChart>
+        </ResponsiveContainer>
+  
+        <div className="flex justify-around mt-4 text-xs font-semibold">
+          <span className="flex items-center">
+            <span className="block w-3 h-3 rounded-full mr-1 bg-[#B9F6CA]"></span>Top
+          </span>
+          <span className="flex items-center">
+            <span className="block w-3 h-3 rounded-full mr-1 bg-[#90CAF9]"></span>Avg
+          </span>
+          <span className="flex items-center">
+            <span className="block w-3 h-3 rounded-full mr-1 bg-[#FF8A80]"></span>Less
+          </span>
+        </div>
+      </div>
+    );
+  };
+  
+ 
+  
   return (
     <div className="p-6 sm:p-10 bg-gray-100 min-h-screen space-y-10">
 
@@ -664,7 +892,10 @@ export default function EmployeeStatistics() {
         </div>
         {/* Productivity Stats Section */}
 {/* Productivity Stats Section */}
-<div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden mt-10">
+<div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden mt-10" style={{marginTop: "100px"}}>
+  
+
+  <div className="bg-white rounded-2xl shadow-xl overflow-hidden mt-10">
   <div className="px-6 py-4 bg-gradient-to-r from-green-500 to-teal-500">
     <h2 className="text-xl sm:text-2xl font-semibold text-white">
       Productivity Insights ({mode.charAt(0).toUpperCase() + mode.slice(1)})
@@ -672,55 +903,42 @@ export default function EmployeeStatistics() {
   </div>
 
   {prodStatsLoading ? (
-    <p className="text-center py-6 text-gray-500 dark:text-gray-300">
-      Loading Productivity Stats...
-    </p>
+    <p className="text-center py-6 text-gray-500">Loading Productivity Stats...</p>
   ) : (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6">
-      {[{
-          title: 'Top Productive Apps',
-          data: topProductivityStats?.topApps,
-        }, {
-          title: 'Top Productive Websites',
-          data: topProductivityStats?.topWebsites,
-        }, {
-          title: 'Least Productive Apps',
-          data: topProductivityStats?.leastApps,
-        }, {
-          title: 'Least Productive Websites',
-          data: topProductivityStats?.leastWebsites,
-        }].map(({ title, data }) => (
-          <div key={title} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 shadow-inner">
-            <h3 className="font-semibold text-md border-b border-gray-200 dark:border-gray-600 pb-2 mb-2 text-gray-800 dark:text-gray-100">
-              {title}
-            </h3>
-
-            {data?.length ? (
-              <ul className="space-y-1">
-                {data.map((item) => (
-                  <li key={item.appName || item.url} className="text-gray-600 dark:text-gray-300">
-                    <span className="font-medium text-gray-700 dark:text-gray-200">
-                      {item.appName || item.url}
-                    </span>
-                    <span className="ml-2 text-sm font-semibold text-teal-600 dark:text-teal-400">
-                      – {item.minutesUsed || item.minutesVisited} mins
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-                No data available.
-              </p>
-            )}
-          </div>
-      ))}
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+      <StatsTableCard
+        title="Top Productive Websites"
+        data={topProductivityStats?.topWebsites || []}
+        isWebsite
+        onSeeAll={() => navigate('/full-list/productive-websites')}
+      />
+      <StatsTableCard
+        title="Less Productive Websites"
+        data={topProductivityStats?.leastWebsites || []}
+        isWebsite
+        onSeeAll={() => navigate('/full-list/unproductive-websites')}
+      />
+      <StatsTableCard
+        title="Top Apps Used"
+        data={topProductivityStats?.topApps || []}
+        onSeeAll={() => navigate('/full-list/productive-apps')}
+      />
+      <StatsTableCard
+        title="Less Productive Apps"
+        data={topProductivityStats?.leastApps || []}
+        onSeeAll={() => navigate('/full-list/unproductive-apps')}
+      />
     </div>
   )}
 </div>
 
+</div>
+
       </div>
-      
+      {/* {topProductivityStats && topProductivityStats.topApps && (
+  <ProductivityBarGraph data={topProductivityStats.topApps} />
+)} */}
+
     </div>
   );
 }

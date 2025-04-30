@@ -393,6 +393,8 @@ const availablePermissionManager = [
   },
   { name: "Productivity Dashboard", permission: "productivity-dashboard" },
   { name: "Team Productivity", permission: "productivity-team" },
+  { name: "All Employee Productivity", permission: "productivity-view-all" },
+  { name: "Subordinate Productivity", permission: "productivity-view-subordinate" },
 
   // ------------------------------ Chat Management Permissions ------------------------------
   { name: "Chats", permission: "chat-user" },
