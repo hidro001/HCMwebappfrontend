@@ -587,9 +587,9 @@ export default function EmployeeStatistics() {
   /*  Load / Error states                                                   */
   /* --------------------------------------------------------------------- */
   if (usageLoading || attendanceLoading)
-    return <p className="text-center py-6 text-gray-500">Loading…</p>;
+    return <p className="text-center py-6 text-gray-500 dark:text-gray-300">Loading…</p>;
   if (usageError || attendanceError)
-    return <p className="text-center py-6 text-red-500">{usageError || attendanceError}</p>;
+    return <p className="text-center py-6 text-gray-500 dark:text-gray-300">{usageError || attendanceError}</p>;
 
   /* --------------------------------------------------------------------- */
   /*  RENDER                                                                */
@@ -692,13 +692,18 @@ export default function EmployeeStatistics() {
       );
   
     return (
-      <div style={css.card}>
-        <div style={css.header}>
-          <span style={css.title}>{title}</span>
+      <div className="border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow"
+>
+        <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700"
+        >
+          <span className="font-semibold text-gray-700 dark:text-gray-200 text-base"
+          >{title}</span>
         </div>
   
-        <div style={css.tableWrapper}>
-          <table style={css.table}>
+        <div className="overflow-x-auto p-0 border border-blue-500 dark:border-blue-400 rounded-lg m-4"
+        >
+          <table className="w-full table-auto text-sm text-gray-700 dark:text-gray-300"
+          >
             {renderHeader()}
             <tbody>{renderRows()}</tbody>
           </table>
@@ -776,7 +781,8 @@ export default function EmployeeStatistics() {
  
   
   return (
-    <div className="p-6 sm:p-10 bg-gray-100 min-h-screen space-y-10">
+    <div className="p-6 sm:p-10 bg-gray-100 dark:bg-gray-900 min-h-screen space-y-10">
+
 
       {/* ─── Filter‑bar ─────────────────────────────────────── */}
       <div className="flex flex-wrap gap-4 items-end">
@@ -785,7 +791,8 @@ export default function EmployeeStatistics() {
           <select
             value={mode}
             onChange={e => setMode(e.target.value)}
-            className="mt-1 border rounded-lg px-3 py-1.5 bg-white"
+            className="mt-1 border rounded-lg px-3 py-1.5 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+
           >
             <option value="daily">Today</option>
             <option value="weekly">Weekly (last 7 days)</option>
@@ -850,7 +857,8 @@ export default function EmployeeStatistics() {
             { color:'yellow', label:'Total Break Taken',  value: `${attendanceTotals.totalBreakTaken} mins` },
             
           ].map(({ color,label,value }) => (
-            <div key={label} className={`bg-${color}-100 p-4 sm:p-6 rounded-xl shadow text-center`}>
+            <div key={label} className={`bg-${color}-100 dark:bg-${color}-800 dark:text-${color}-100 p-4 sm:p-6 rounded-xl shadow text-center`}
+>
               <h3 className="text-sm sm:text-base font-semibold">{label}</h3>
               <p className="text-2xl sm:text-3xl font-bold">{value}</p>
             </div>
@@ -859,7 +867,8 @@ export default function EmployeeStatistics() {
 
         {/* Doughnut (only for daily) */}
         {showProductivity && (
-          <div className="bg-white p-6 rounded-xl shadow-lg">
+          <div  className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"
+>
             <h3 className="text-lg font-semibold text-gray-800 mb-4">
               Today’s Productivity
             </h3>
@@ -889,19 +898,27 @@ export default function EmployeeStatistics() {
 
               <tr>
                 {['Date','Keyboard Min.','Mouse Min.','Key Presses','Mouse Clicks','Details'].map(h=>(
-                  <th key={h} className="py-3 px-4 text-center font-semibold border-b">{h}</th>
+                  <th key={h} className="py-3 px-4 text-center font-semibold border-b bg-gray-50 dark:bg-gray-700 dark:text-gray-200"
+>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {filteredStats.map(stat => (
-                <tr key={stat._id} className="hover:bg-gray-50">
-                  <td className="py-3 px-4 text-center border-b">{stat.date}</td>
-                  <td className="py-3 px-4 text-center border-b">{stat.keyboardMinutes}</td>
-                  <td className="py-3 px-4 text-center border-b">{stat.mouseMinutes}</td>
-                  <td className="py-3 px-4 text-center border-b">{stat.keyboardPressCount}</td>
-                  <td className="py-3 px-4 text-center border-b">{stat.mouseClickCount}</td>
-                  <td className="py-3 px-4 text-center border-b">
+                <tr key={stat._id} className="hover:bg-gray-50 dark:hover:bg-gray-700"
+>
+                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
+>{stat.date}</td>
+                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
+>{stat.keyboardMinutes}</td>
+                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
+>{stat.mouseMinutes}</td>
+                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
+>{stat.keyboardPressCount}</td>
+                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
+>{stat.mouseClickCount}</td>
+                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
+>
                     <button
                       onClick={()=>navigate(`/dashboard/statistics/${empID}/${stat.date}`)}
                       className="bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg px-3 py-1 text-xs sm:text-sm"
@@ -923,14 +940,14 @@ export default function EmployeeStatistics() {
   
 
   <div className="bg-white rounded-2xl shadow-xl overflow-hidden mt-10">
-  <div className="px-6 py-4 bg-gradient-to-r from-green-500 to-teal-500">
+  <div className="px-6 py-4 bg-gradient-to-r from-green-500 to-teal-500 dark:from-green-600 dark:to-teal-600">
     <h2 className="text-xl sm:text-2xl font-semibold text-white">
       Productivity Insights ({mode.charAt(0).toUpperCase() + mode.slice(1)})
     </h2>
   </div>
 
   {prodStatsLoading ? (
-    <p className="text-center py-6 text-gray-500">Loading Productivity Stats...</p>
+    <p className="text-center py-6 text-gray-500 dark:text-gray-300">Loading Productivity Stats...</p>
   ) : (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
       <StatsTableCard
