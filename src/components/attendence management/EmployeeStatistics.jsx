@@ -500,25 +500,52 @@ export default function EmployeeStatistics() {
   
     filteredAttendance.forEach(rec => {
       if (rec.login && rec.logout) {
-        const s = new Date(`1970-01-01T${convertTo24Hour(rec.login)}`);
-        const e = new Date(`1970-01-01T${convertTo24Hour(rec.logout)}`);
-        workMin += (e - s) / 60000;
+        const loginTime = dayjs(`${rec.date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
+        const logoutTime = dayjs(`${rec.date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
+  
+        if (logoutTime.isBefore(loginTime)) {
+          console.warn(`Invalid logout before login detected on ${rec.date}`);
+          return;
+        }
+  
+        workMin += logoutTime.diff(loginTime, 'minute');
       }
+  
       rec.breaks?.forEach(br => {
         if (br.start && br.end) {
-          breakMin += Math.floor((new Date(br.end) - new Date(br.start)) / 60000);
+          const breakStart = dayjs(br.start);
+          const breakEnd = dayjs(br.end);
+  
+          if (breakEnd.isAfter(breakStart)) {
+            breakMin += breakEnd.diff(breakStart, 'minute');
+          }
         }
       });
     });
   
+    // Conditionally apply daily logic or default logic
+    if (mode === 'daily') {
+      const usageMinutes = Math.max(totalUsage.keyboardMinutes, totalUsage.mouseMinutes);
+      const dailyHours = Math.floor(usageMinutes / 60);
+      const dailyMinutes = usageMinutes % 60;
+  
+      return {
+        totalWorkingHours: `${dailyHours} hrs ${dailyMinutes} mins`,
+        totalBreakTaken: breakMin
+      };
+    }
+  
+    // Original logic for weekly/monthly/yearly
     const hours = Math.floor(workMin / 60);
-    const minutes = Math.round(workMin % 60);
+    const minutes = workMin % 60;
   
     return {
       totalWorkingHours: `${hours} hrs ${minutes} mins`,
       totalBreakTaken: breakMin
     };
-  }, [filteredAttendance]);
+  }, [filteredAttendance, mode, totalUsage]);
+  
+  
 
   /* --------------------------------------------------------------------- */
   /*  Productivity (Daily ONLY) – show doughnut                            */
