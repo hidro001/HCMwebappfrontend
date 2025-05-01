@@ -452,6 +452,9 @@ export default function EmployeeStatistics() {
   /*  Derive time window                                                   */
   /* --------------------------------------------------------------------- */
   const period = useMemo(() => {
+    if (mode === 'yesterday') {
+      return { start: today.subtract(1, 'day').startOf('day'), end: today.subtract(1, 'day').endOf('day') };
+    }
     if (mode === 'daily') {
       return { start: today.startOf('day'), end: today.endOf('day') };
     }
@@ -470,6 +473,19 @@ export default function EmployeeStatistics() {
     const end   = start.endOf('year');
     return { start, end };
   }, [mode, month, year]);
+
+  useEffect(() => {
+    // Fetch stats based on mode selected (daily, weekly, monthly, yearly, yesterday)
+    const fetchStats = async () => {
+      if (mode === 'yesterday') {
+        const yesterday = today.subtract(1, 'day').format('YYYY-MM-DD');
+        await fetchDailyStats(empID, yesterday);  // Pass yesterday's date here
+      } else {
+        fetchDailyStats(empID, today.format('YYYY-MM-DD')); // For daily or other modes
+      }
+    };
+    fetchStats();
+  }, [empID, mode, month, year]);
 
   /* --------------------------------------------------------------------- */
   /*  Filter helpers                                                        */
@@ -581,7 +597,22 @@ export default function EmployeeStatistics() {
       borderColor:'#FFF', borderWidth:4,
     }]
   };
-  const doughnutOptions = { responsive:true, plugins:{ legend:{ position:'bottom' } } };
+  const doughnutOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          boxWidth: 10, // Adjust legend box size for better alignment
+          padding: 15,  // Adjust spacing around the legend
+          font: {
+            size: 14,  // Adjust font size of the legend
+          },
+        },
+      },
+    },
+  };
+  
 
   /* --------------------------------------------------------------------- */
   /*  Load / Error states                                                   */
@@ -795,6 +826,7 @@ export default function EmployeeStatistics() {
 
           >
             <option value="daily">Today</option>
+            <option value="yesterday">Yesterday</option>
             <option value="weekly">Weekly (last 7 days)</option>
             <option value="monthly">Monthly</option>
             <option value="yearly">Yearly</option>
@@ -845,36 +877,46 @@ export default function EmployeeStatistics() {
       {/* ─── Metric boxes + (optional) chart ───────────────── */}
       <div className="grid lg:grid-cols-4 gap-4">
         {/* Metrics */}
-        <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {[
-            { color:'green',  label:'Total Working Hours', value: attendanceTotals.totalWorkingHours },
-            
-            { color:'blue',   label:'Keyboard Minutes',   value: totalUsage.keyboardMinutes },
-            { color:'pink',   label:'Keyboard Presses',   value: totalUsage.keyboardPresses },
-            { color:'purple', label:'Mouse Minutes',      value: totalUsage.mouseMinutes },
-            { color:'red',    label:'Mouse Clicks',       value: totalUsage.mouseClicks },
-            
-            { color:'yellow', label:'Total Break Taken',  value: `${attendanceTotals.totalBreakTaken} mins` },
-            
-          ].map(({ color,label,value }) => (
-            <div key={label} className={`bg-${color}-100 dark:bg-${color}-800 dark:text-${color}-100 p-4 sm:p-6 rounded-xl shadow text-center`}
->
-              <h3 className="text-sm sm:text-base font-semibold">{label}</h3>
-              <p className="text-2xl sm:text-3xl font-bold">{value}</p>
-            </div>
-          ))}
-        </div>
+        <div className="lg:col-span-3 grid grid-cols-2 gap-4">
+  {[
+    { color: 'green', label: 'Total Working Hours', value: attendanceTotals.totalWorkingHours },
+    { color: 'yellow', label: 'Total Break Taken', value: `${attendanceTotals.totalBreakTaken} mins` },
+    { color: 'blue', label: 'Keyboard Minutes', value: totalUsage.keyboardMinutes },
+    { color: 'pink', label: 'Keyboard Presses', value: totalUsage.keyboardPresses },
+    { color: 'purple', label: 'Mouse Minutes', value: totalUsage.mouseMinutes },
+    { color: 'red', label: 'Mouse Clicks', value: totalUsage.mouseClicks },
+     ].map(({ color, label, value }) => (
+    <div
+      key={label}
+      className={`bg-${color}-100 dark:bg-${color}-800 dark:text-${color}-100 p-4 sm:p-6 rounded-xl shadow text-center`}
+      style={{
+        borderLeft: `8px solid ${color === 'green' ? '#10B981' : color === 'blue' ? '#2563EB' : color === 'pink' ? '#EC4899' : color === 'purple' ? '#8B5CF6' : color === 'red' ? '#F87171' : color === 'yellow' ? '#FBBF24' : '#FFFFFF'}`,
+      }}
+    >
+      <h3 className="text-sm sm:text-base font-semibold">{label}</h3>
+      <p className="text-2xl sm:text-3xl font-bold">{value}</p>
+    </div>
+  ))}
+</div>
+
 
         {/* Doughnut (only for daily) */}
-        {showProductivity && (
-          <div  className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"
->
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              Today’s Productivity
-            </h3>
-            <Doughnut data={doughnutData} options={doughnutOptions}/>
-          </div>
-        )}
+       {/* Doughnut (only for daily) */}
+{showProductivity && (
+  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+    <h3 className="text-lg font-semibold text-gray-800 mb-4">
+      Today’s Productivity
+    </h3>
+    <div className="flex justify-center items-center">
+      <Doughnut data={doughnutData} options={doughnutOptions}/>
+    </div>
+    {/* Optional: Show percentage change */}
+    <div className="mt-4 text-center text-lg text-gray-700">
+      <p className="font-semibold text-gray-800">+{((productiveTime / (productiveTime + unproductiveTime)) * 100).toFixed(0)}% Productivity</p>
+    </div>
+  </div>
+)}
+
       </div>
 
       {/* ─── Usage table ───────────────────────────────────── */}
