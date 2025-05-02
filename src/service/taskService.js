@@ -40,7 +40,11 @@ export const deleteTasks = async (id) => {
 
 export const submitTask = async (taskData) => {
   try {
-    const response = await axiosInstance.post("/admin/assign", taskData);
+    // const response = await axiosInstance.post("/admin/assign", taskData);
+
+    const response = await axiosInstance.post("/admin/assignv2", taskData);
+
+    
     console.log("Task Submitted Successfully:", response.data);
     return response.data;
   } catch (error) {
