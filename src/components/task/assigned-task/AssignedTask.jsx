@@ -144,7 +144,7 @@ const AssignedTask = () => {
                   <td className="p-3 border text-blue-600 dark:border-gray-700">
                     {task.assignedToEmployeeId}
                   </td>
-                  <td className="p-3 border dark:border-gray-700">{task.assignedByName}</td>
+                  <td className="p-3 border dark:border-gray-700">{task.assignedToName}</td>
                   <td className="p-3 border dark:border-gray-700">
                     {new Date(task.createdAt).toLocaleDateString("en-IN", {
                       timeZone: "Asia/Kolkata",
