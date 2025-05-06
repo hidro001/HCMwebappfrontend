@@ -228,7 +228,7 @@ const Navbar = () => {
       {/* Right Section */}
       <div className="flex items-center space-x-6">
         {/* Current Date */}
-        <div className="font-bold">{currentDate}</div>
+        {/* <div className="font-bold">{currentDate}</div> */}
 
         {/* If user is on break, show timer in the center */}
         {onBreak && (
