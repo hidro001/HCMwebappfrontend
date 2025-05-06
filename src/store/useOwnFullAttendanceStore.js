@@ -964,7 +964,7 @@ export const useOwnFullAttendanceStore = create(
       fetchAttendanceData: async () => {
         try {
           // 1) User profile
-          const userProfileRes = await axiosInstance.get("/user/user-profile");
+          const userProfileRes = await axiosInstance.get("/user/profile");
           if (!userProfileRes.data.success) {
             throw new Error(
               userProfileRes.data.message || "Failed to fetch user profile"

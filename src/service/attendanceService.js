@@ -6,7 +6,7 @@ import axiosInstance from "./axiosInstance";
 export async function fetchOverview() {
   try {
 
-    const response = await axiosInstance.get(`/admin/attendance-dashboard/overview`, );
+    const response = await axiosInstance.get(`/attendance/overview`, );
     return response.data; // or response.data.data if you prefer
   } catch (error) {
     console.error("Error in fetchOverview:", error);
@@ -20,7 +20,7 @@ export async function fetchOverview() {
 export async function fetchAbsenteeismChart() {
   try {
 
-    const response = await axiosInstance.get(`/admin/attendance-dashboard/absenteeism`, );
+    const response = await axiosInstance.get(`/attendance/absenteeism`, );
     return response.data;
   } catch (error) {
     console.error("Error in fetchAbsenteeismChart:", error);
@@ -34,7 +34,7 @@ export async function fetchAbsenteeismChart() {
 export async function fetchAttendanceToday() {
   try {
 
-    const response = await axiosInstance.get(`/admin/attendance-dashboard/attendance-today`, );
+    const response = await axiosInstance.get(`/attendance/attendance-today`, );
     return response.data;
   } catch (error) {
     console.error("Error in fetchAttendanceToday:", error);
@@ -48,7 +48,7 @@ export async function fetchAttendanceToday() {
 export async function fetchEmployeeOverview() {
   try {
 
-    const response = await axiosInstance.get(`/admin/attendance-dashboard/employee-overview`, );
+    const response = await axiosInstance.get(`/attendance/employee-overview`, );
     return response.data;
   } catch (error) {
     console.error("Error in fetchEmployeeOverview:", error);
@@ -62,7 +62,7 @@ export async function fetchEmployeeOverview() {
 export async function fetchLateInToday() {
   try {
 
-    const response = await axiosInstance.get(`/admin/attendance-dashboard/late-in-today`, );
+    const response = await axiosInstance.get(`/attendance/late-in-today`, );
     return response.data;
   } catch (error) {
     console.error("Error in fetchLateInToday:", error);
@@ -77,7 +77,7 @@ export async function fetchPunchStatusToday() {
   try {
     // Adjust the URL if you have a different route
     const response = await axiosInstance.get(
-      "/admin/attendance-dashboard/punch-status-today"
+      "/attendance/punch-status-today"
     );
     return response.data; // This should be { success: true, data: { onTime: [...], late: [...] } }
   } catch (error) {
@@ -90,7 +90,7 @@ export async function fetchPunchStatusToday() {
 export async function fetchDepartmentAttendanceSummary() {
   try {
     const response = await axiosInstance.get(
-      "/admin/attendance-dashboard/getDepartmentAttendanceSummary"
+      "/attendance/getDepartmentAttendanceSummary"
     );
     return response.data; // => { success: true, data: [ { department, present, absent, totalEmployees } ] }
   } catch (error) {

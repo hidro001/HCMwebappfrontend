@@ -21,7 +21,7 @@ const useAttendanceStore = create((set, get) => ({
     try {
       if (!userId) throw new Error("User ID is not available.");
 
-      const response = await axiosInstance.get("/admin/subordinates", {
+      const response = await axiosInstance.get("/subordinates", {
         params: { userId },
       });
       const data = response.data;
@@ -66,7 +66,7 @@ const useAttendanceStore = create((set, get) => ({
   fetchDepartments: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.get("/superadmin/departments");
+      const response = await axiosInstance.get("/departments");
       const data = response.data;
 
       if (data.success) {
@@ -109,7 +109,7 @@ const useAttendanceStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       // Call your new endpoint
-      const response = await axiosInstance.get("/admin/attendance-dashboard/getSubordinateStats");
+      const response = await axiosInstance.get("/attendance/getSubordinateStats");
       if (response.data.success) {
         // Save just the "data" object from the response
         // which has totalSubordinates, presentCount, lateCount, onLeaveCount, etc.

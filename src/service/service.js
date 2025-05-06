@@ -4,7 +4,7 @@ import axiosInstance from "./axiosInstance";
 // Login function
 export const login = async (employeeId, password) => {
   try {
-    const response = await axiosInstance.post("/user/login", {
+    const response = await axiosInstance.post("/auth/login", {
       employee_Id: employeeId,
       password,
     });
