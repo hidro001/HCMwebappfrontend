@@ -36,6 +36,7 @@
     "jspdf-autotable": "^3.8.4",
     "leaflet": "^1.9.4",
     "lodash.debounce": "^4.0.8",
+    "mediasoup-client": "^3.10.1",
     "prop-types": "^15.8.1",
     "react": "18.2.0",
     "react-apexcharts": "^1.7.0",
