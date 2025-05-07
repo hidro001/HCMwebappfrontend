@@ -511,42 +511,58 @@ export default function EmployeeStatistics() {
   /* --------------------------------------------------------------------- */
   /*  Aggregate Attendance totals                                           */
   /* --------------------------------------------------------------------- */
+
+  //LOGIC FOR 
   const attendanceTotals = useMemo(() => {
     let workMin = 0, breakMin = 0;
   
     filteredAttendance.forEach(rec => {
-      if (rec.login && rec.logout) {
+      if (rec.login) {
         const loginTime = dayjs(`${rec.date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
-        const logoutTime = dayjs(`${rec.date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
+        const shiftStart = dayjs(`${rec.date} 10:00:00`, 'YYYY-MM-DD HH:mm:ss');
+        const shiftEnd = dayjs(`${rec.date} 19:00:00`, 'YYYY-MM-DD HH:mm:ss');
   
-        if (logoutTime.isBefore(loginTime)) {
-          console.warn(`Invalid logout before login detected on ${rec.date}`);
-          return;
+        let effectiveEnd;
+  
+        if (rec.logout && rec.logout !== rec.login) {
+          effectiveEnd = dayjs(`${rec.date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
+        } else if (dayjs(rec.date).isBefore(dayjs(), 'day')) {
+          effectiveEnd = shiftEnd;
+        } else if (dayjs(rec.date).isSame(dayjs(), 'day')) {
+          effectiveEnd = dayjs().isBefore(shiftEnd) ? dayjs() : shiftEnd;
+        } else {
+          effectiveEnd = shiftEnd;
         }
   
-        workMin += logoutTime.diff(loginTime, 'minute');
-      }
+        const effectiveStart = loginTime.isAfter(shiftStart) ? loginTime : shiftStart;
   
-      rec.breaks?.forEach(br => {
-        if (br.start && br.end) {
-          const breakStart = dayjs(br.start);
-          const breakEnd = dayjs(br.end);
+        if (effectiveEnd.isAfter(effectiveStart)) {
+          workMin += effectiveEnd.diff(effectiveStart, 'minute');
+        }
   
-          if (breakEnd.isAfter(breakStart)) {
-            breakMin += breakEnd.diff(breakStart, 'minute');
+        rec.breaks?.forEach(br => {
+          if (br.start && br.end) {
+            const breakStart = dayjs(br.start);
+            const breakEnd = dayjs(br.end);
+            if (breakEnd.isAfter(breakStart)) {
+              breakMin += breakEnd.diff(breakStart, 'minute');
+            }
           }
-        }
-      });
+        });
+      }
     });
   
-    const hours = Math.floor(workMin / 60);
-    const minutes = workMin % 60;
+    const netWorkMin = Math.max(workMin - breakMin, 0);  // prevent negative values
+    const hours = Math.floor(netWorkMin / 60);
+    const minutes = netWorkMin % 60;
   
     return {
-      totalWorkingHours: `${hours} hrs ${minutes} mins`,
+      totalWorkingHours: netWorkMin > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
       totalBreakTaken: breakMin
     };
   }, [filteredAttendance]);
+  
+  
   
   
   //11
