@@ -131,7 +131,7 @@ const useAttendanceStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       // Assuming your new endpoint is "/api/attendance/today"
-      const response = await axiosInstance.get("/employee/today");
+      const response = await axiosInstance.get("/attendance-user/today");
       const data = response.data;
 
       if (data.success) {

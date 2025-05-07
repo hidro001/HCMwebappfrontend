@@ -81,7 +81,7 @@ const useFullAttendanceStore = create((set, get) => ({
       set({ isLoading: true, error: null });
 
       // 1) user profile
-      const userProfileResponse = await axiosInstance.post(`/user/getuser/${employeeId}`);
+      const userProfileResponse = await axiosInstance.get(`/user/profile/${employeeId}`);
       if (!userProfileResponse.data?.success) {
         throw new Error(
           userProfileResponse.data?.message || "Failed to fetch user profile data"
@@ -90,7 +90,7 @@ const useFullAttendanceStore = create((set, get) => ({
       const userData = userProfileResponse.data.data;
 
       // 2) approved leaves
-      const approvedLeavesResponse = await axiosInstance.get(`/leave/employee/leaves`, {
+      const approvedLeavesResponse = await axiosInstance.get(`/leaves/employee/`, {
         params: {
           status: "approved",
           employee_Id: employeeId,
@@ -112,7 +112,7 @@ const useFullAttendanceStore = create((set, get) => ({
       }
 
       // 3) attendance
-      const attendanceResponse = await axiosInstance.get(`/employee/attendencev2`, {
+      const attendanceResponse = await axiosInstance.get(`/attendance-user/employee`, {
         params: {
           employee_Id: employeeId,
         },
@@ -131,7 +131,7 @@ const useFullAttendanceStore = create((set, get) => ({
 
       // 4) company settings
       const companySettingsResponse = await axiosInstance.get(
-        `/superadmin/companysettings/settings`
+        `/company-settings`
       );
       if (!companySettingsResponse.data?.success) {
         throw new Error(

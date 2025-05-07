@@ -75,7 +75,7 @@ export default function EmployeeFullAttendance() {
     if (empID) {
       fetchAllData(empID);
     } else {
-      fetchAllData("RI0546"); // fallback example
+      fetchAllData(""); // fallback example
     }
   }, [empID, fetchAllData]);
 
