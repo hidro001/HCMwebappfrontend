@@ -219,7 +219,7 @@ const RequestModal = ({ isOpen, onClose }) => {
                 <div>
                   <label
                     htmlFor="type"
-                    className="block mb-2 font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2"
+                    className=" mb-2 font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2"
                   >
                     <FaTags className="text-blue-600 dark:text-blue-400" />
                     Request Type <span className="text-red-500">*</span>
@@ -253,7 +253,7 @@ const RequestModal = ({ isOpen, onClose }) => {
                   <div>
                     <label
                       htmlFor="amount"
-                      className="block mb-2 font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2"
+                      className=" mb-2 font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2"
                     >
                       <FaMoneyBillWave className="text-blue-600 dark:text-blue-400" />
                       Amount <span className="text-red-500">*</span>
@@ -293,7 +293,7 @@ const RequestModal = ({ isOpen, onClose }) => {
                     <div>
                       <label
                         htmlFor="tenure"
-                        className="block mb-2 font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2"
+                        className=" mb-2 font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2"
                       >
                         <FaRegCalendarAlt className="text-blue-600 dark:text-blue-400" />
                         Tenure (months) <span className="text-red-500">*</span>
@@ -319,7 +319,7 @@ const RequestModal = ({ isOpen, onClose }) => {
                     <div>
                       <label
                         htmlFor="interestRate"
-                        className="block mb-2 font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2"
+                        className=" mb-2 font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2"
                       >
                         <FaPercentage className="text-blue-600 dark:text-blue-400" />
                         Interest Rate <span className="text-red-500">*</span>
@@ -354,7 +354,7 @@ const RequestModal = ({ isOpen, onClose }) => {
                 <div>
                   <label
                     htmlFor="reason"
-                    className="block mb-2 font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2"
+                    className=" mb-2 font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2"
                   >
                     <FaRegFileAlt className="text-blue-600 dark:text-blue-400" />
                     Reason <span className="text-red-500">*</span>
@@ -385,7 +385,7 @@ const RequestModal = ({ isOpen, onClose }) => {
                   >
                     <label
                       htmlFor="documents"
-                      className="block mb-2 font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2"
+                      className=" mb-2 font-medium text-gray-700 dark:text-gray-200 flex items-center gap-2"
                     >
                       <FaFileUpload className="text-blue-600 dark:text-blue-400" />
                       Upload Documents <span className="text-red-500">*</span>
