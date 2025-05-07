@@ -539,19 +539,6 @@ export default function EmployeeStatistics() {
       });
     });
   
-    // Conditionally apply daily logic or default logic
-    if (mode === 'daily') {
-      const usageMinutes = Math.max(totalUsage.keyboardMinutes, totalUsage.mouseMinutes);
-      const dailyHours = Math.floor(usageMinutes / 60);
-      const dailyMinutes = usageMinutes % 60;
-  
-      return {
-        totalWorkingHours: `${dailyHours} hrs ${dailyMinutes} mins`,
-        totalBreakTaken: breakMin
-      };
-    }
-  
-    // Original logic for weekly/monthly/yearly
     const hours = Math.floor(workMin / 60);
     const minutes = workMin % 60;
   
@@ -559,7 +546,8 @@ export default function EmployeeStatistics() {
       totalWorkingHours: `${hours} hrs ${minutes} mins`,
       totalBreakTaken: breakMin
     };
-  }, [filteredAttendance, mode, totalUsage]);
+  }, [filteredAttendance]);
+  
   
   
 
