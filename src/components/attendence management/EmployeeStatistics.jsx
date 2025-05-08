@@ -513,58 +513,177 @@ export default function EmployeeStatistics() {
   /* --------------------------------------------------------------------- */
 
   //LOGIC FOR 
+  // const attendanceTotals = useMemo(() => {
+  //   let workMin = 0, breakMin = 0;
+  
+  //   filteredAttendance.forEach(rec => {
+  //     if (rec.login) {
+  //       const loginTime = dayjs(`${rec.date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
+  //       const shiftStart = dayjs(`${rec.date} 10:00:00`, 'YYYY-MM-DD HH:mm:ss');
+  //       const shiftEnd = dayjs(`${rec.date} 19:00:00`, 'YYYY-MM-DD HH:mm:ss');
+  
+  //       let effectiveEnd;
+  
+  //       if (rec.logout && rec.logout !== rec.login) {
+  //         effectiveEnd = dayjs(`${rec.date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
+  //       } else if (dayjs(rec.date).isBefore(dayjs(), 'day')) {
+  //         effectiveEnd = shiftEnd;
+  //       } else if (dayjs(rec.date).isSame(dayjs(), 'day')) {
+  //         effectiveEnd = dayjs().isBefore(shiftEnd) ? dayjs() : shiftEnd;
+  //       } else {
+  //         effectiveEnd = shiftEnd;
+  //       }
+  
+  //       const effectiveStart = loginTime.isAfter(shiftStart) ? loginTime : shiftStart;
+  
+  //       if (effectiveEnd.isAfter(effectiveStart)) {
+  //         workMin += effectiveEnd.diff(effectiveStart, 'minute');
+  //       }
+  
+  //       rec.breaks?.forEach(br => {
+  //         if (br.start && br.end) {
+  //           const breakStart = dayjs(br.start);
+  //           const breakEnd = dayjs(br.end);
+  //           if (breakEnd.isAfter(breakStart)) {
+  //             breakMin += breakEnd.diff(breakStart, 'minute');
+  //           }
+  //         }
+  //       });
+  //     }
+  //   });
+  
+  //   const netWorkMin = Math.max(workMin - breakMin, 0);  // prevent negative values
+  //   const hours = Math.floor(netWorkMin / 60);
+  //   const minutes = netWorkMin % 60;
+  
+  //   return {
+  //     totalWorkingHours: netWorkMin > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
+  //     totalBreakTaken: breakMin
+  //   };
+  // }, [filteredAttendance]);
+  
+  
+  // const attendanceTotals = useMemo(() => {
+  //   let totalWorkMinutes = 0;
+  //   let totalBreakMinutes = 0;
+  
+  //   filteredAttendance.forEach(rec => {
+  //     if (!rec.login) return;  // Skip if no login
+      
+  //     const loginTime = dayjs(`${rec.date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
+  
+  //     // Prioritize punch-out if available; otherwise, use current time if it's today
+  //     let logoutTime;
+  //     if (rec.logout && rec.logout !== rec.login) {
+  //       logoutTime = dayjs(`${rec.date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
+  //     } else if (dayjs(rec.date).isSame(dayjs(), 'day')) {
+  //       logoutTime = dayjs(); // Use current time if logout isn't available today
+  //     } else {
+  //       logoutTime = dayjs(`${rec.date} 19:00:00`, 'YYYY-MM-DD HH:mm:ss'); // Default to shift end for past days
+  //     }
+  
+  //     // Compute total work minutes from punch-in to punch-out/current time
+  //     if (logoutTime.isAfter(loginTime)) {
+  //       totalWorkMinutes += logoutTime.diff(loginTime, 'minute');
+  //     }
+  
+  //     // Calculate total break minutes
+  //     rec.breaks?.forEach(br => {
+  //       if (br.start && br.end) {
+  //         const breakStart = dayjs(br.start);
+  //         const breakEnd = dayjs(br.end);
+  //         if (breakEnd.isAfter(breakStart)) {
+  //           totalBreakMinutes += breakEnd.diff(breakStart, 'minute');
+  //         }
+  //       }
+  //     });
+  //   });
+  
+  //   // Subtract breaks from total work time
+  //   const netWorkMinutes = Math.max(totalWorkMinutes - totalBreakMinutes, 0);
+  //   const hours = Math.floor(netWorkMinutes / 60);
+  //   const minutes = netWorkMinutes % 60;
+  
+  //   return {
+  //     totalWorkingHours: netWorkMinutes > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
+  //     totalBreakTaken: totalBreakMinutes
+  //   };
+  // }, [filteredAttendance]);  
+
   const attendanceTotals = useMemo(() => {
-    let workMin = 0, breakMin = 0;
+    const SHIFT_START = "10:00:00";
+    const SHIFT_END = "19:00:00";
+  
+    let totalWorkMinutes = 0;
+    let totalBreakMinutes = 0;
   
     filteredAttendance.forEach(rec => {
-      if (rec.login) {
-        const loginTime = dayjs(`${rec.date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
-        const shiftStart = dayjs(`${rec.date} 10:00:00`, 'YYYY-MM-DD HH:mm:ss');
-        const shiftEnd = dayjs(`${rec.date} 19:00:00`, 'YYYY-MM-DD HH:mm:ss');
+      if (!rec.login) return;
   
-        let effectiveEnd;
+      const date = rec.date;
+      const shiftStart = dayjs(`${date} ${SHIFT_START}`, 'YYYY-MM-DD HH:mm:ss');
+      const shiftEnd = dayjs(`${date} ${SHIFT_END}`, 'YYYY-MM-DD HH:mm:ss');
+      const loginTime = dayjs(`${date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
   
-        if (rec.logout && rec.logout !== rec.login) {
-          effectiveEnd = dayjs(`${rec.date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
-        } else if (dayjs(rec.date).isBefore(dayjs(), 'day')) {
-          effectiveEnd = shiftEnd;
-        } else if (dayjs(rec.date).isSame(dayjs(), 'day')) {
-          effectiveEnd = dayjs().isBefore(shiftEnd) ? dayjs() : shiftEnd;
-        } else {
-          effectiveEnd = shiftEnd;
-        }
-  
-        const effectiveStart = loginTime.isAfter(shiftStart) ? loginTime : shiftStart;
-  
-        if (effectiveEnd.isAfter(effectiveStart)) {
-          workMin += effectiveEnd.diff(effectiveStart, 'minute');
-        }
-  
-        rec.breaks?.forEach(br => {
-          if (br.start && br.end) {
-            const breakStart = dayjs(br.start);
-            const breakEnd = dayjs(br.end);
-            if (breakEnd.isAfter(breakStart)) {
-              breakMin += breakEnd.diff(breakStart, 'minute');
-            }
-          }
-        });
+      let logoutTime = null;
+      if (rec.logout && rec.logout !== rec.login) {
+        logoutTime = dayjs(`${date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
       }
+  
+      const now = dayjs();
+  
+      let effectiveEndTime;
+  
+      if (dayjs(date).isSame(now, 'day')) {
+        if (now.isBefore(shiftEnd)) {
+          effectiveEndTime = now;
+        } else if (logoutTime && logoutTime.isAfter(shiftEnd)) {
+          effectiveEndTime = logoutTime;
+        } else {
+          effectiveEndTime = shiftEnd;
+        }
+      } else {
+        effectiveEndTime = logoutTime ? logoutTime : shiftEnd;
+      }
+  
+      if (effectiveEndTime.isAfter(loginTime)) {
+        totalWorkMinutes += effectiveEndTime.diff(loginTime, 'minute');
+      }
+  
+      rec.breaks?.forEach(br => {
+        if (br.start && br.end) {
+          let breakStart = dayjs(br.start);
+          let breakEnd = dayjs(br.end);
+  
+          if (breakEnd.isBefore(shiftStart) || breakStart.isAfter(shiftEnd)) return;
+  
+          breakStart = breakStart.isBefore(shiftStart) ? shiftStart : breakStart;
+  
+          breakEnd = [breakEnd, effectiveEndTime, shiftEnd].reduce((min, cur) =>
+            cur.isBefore(min) ? cur : min
+          );
+  
+          if (breakEnd.isAfter(breakStart)) {
+            totalBreakMinutes += breakEnd.diff(breakStart, 'minute');
+          }
+        }
+      });
     });
   
-    const netWorkMin = Math.max(workMin - breakMin, 0);  // prevent negative values
-    const hours = Math.floor(netWorkMin / 60);
-    const minutes = netWorkMin % 60;
+    const netWorkMinutes = Math.max(totalWorkMinutes - totalBreakMinutes, 0);
+    const hours = Math.floor(netWorkMinutes / 60);
+    const minutes = netWorkMinutes % 60;
   
     return {
-      totalWorkingHours: netWorkMin > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
-      totalBreakTaken: breakMin
+      totalWorkingHours: netWorkMinutes > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
+      totalBreakTaken: totalBreakMinutes
     };
   }, [filteredAttendance]);
   
   
   
   
+
   //11
 
   /* --------------------------------------------------------------------- */
