@@ -23,7 +23,7 @@ const useLeaveStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       const response = await axiosInstance.get(
-        `/leave/employee/leaves?status=${status}`
+        `/leaves/employee/?status=${status}`
       );
       // Assume the leaves array is in response.data or response.data.data
       set({ leaves: response.data || [] });
@@ -39,7 +39,7 @@ const useLeaveStore = create((set, get) => ({
   // Fetch user profile
   fetchUserProfile: async () => {
     try {
-      const response = await axiosInstance.get("/user/user-profile");
+      const response = await axiosInstance.get("/user/profile");
       if (response.data.success) {
         set({ userProfile: response.data.response });
         return response.data.response;
@@ -57,7 +57,7 @@ const useLeaveStore = create((set, get) => ({
   fetchCompanySettings: async () => {
     try {
       const response = await axiosInstance.get(
-        "/superadmin/companysettings/settings"
+        "/company-settings"
       );
       if (response.data.success) {
         set({ companySettings: response.data.data });
@@ -126,7 +126,7 @@ const useLeaveStore = create((set, get) => ({
   applyLeave: async (leaveData) => {
     try {
       const response = await axiosInstance.post(
-        "/leave/apply-leave",
+        "/leaves/apply",
         leaveData
       );
       if (response.status === 201) {

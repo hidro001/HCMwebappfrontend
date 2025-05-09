@@ -13,7 +13,7 @@ const useLeaveStore = create((set, get) => ({
   fetchAssignedLeaves: async (status = 'all') => {
     set({ isLoading: true });
     try {
-      let url = '/leave/assigned/leaves';
+      let url = '/leaves/assigned';
       if (status !== 'all') {
         url += `?status=${status}`;
       }
@@ -32,7 +32,7 @@ const useLeaveStore = create((set, get) => ({
     set({ isLoading: true });
     try {
       const data = { action, ...extraData };
-      await axiosInstance.put(`/leave/handle-leave/${leaveId}`, data);
+      await axiosInstance.put(`/leaves/handle-leave/${leaveId}`, data);
       toast.success(`Leave request ${action} successfully`);
       // Refresh leaves after the update
       await get().fetchAssignedLeaves();
@@ -47,7 +47,7 @@ const useLeaveStore = create((set, get) => ({
   applyLeave: async (leaveData) => {
     set({ isLoading: true });
     try {
-      const response = await axiosInstance.post('/leave/apply-leave', leaveData);
+      const response = await axiosInstance.post('/leaves/apply', leaveData);
       toast.success('Leave applied successfully');
       // Refresh leaves after applying
       await get().fetchAssignedLeaves();
@@ -64,7 +64,7 @@ const useLeaveStore = create((set, get) => ({
   fetchUserProfile: async () => {
     set({ isLoading: true });
     try {
-      const response = await axiosInstance.get('/user/user-profile');
+      const response = await axiosInstance.get('/user/profile');
       set({ userProfile: response.data.response });
       return response.data.response;
     } catch (error) {
@@ -79,7 +79,7 @@ const useLeaveStore = create((set, get) => ({
   fetchCompanySettings: async () => {
     set({ isLoading: true });
     try {
-      const response = await axiosInstance.get('/superadmin/companysettings/settings');
+      const response = await axiosInstance.get('/company-settings');
       set({ companySettings: response.data.data });
       return response.data.data;
     } catch (error) {
