@@ -23,7 +23,7 @@ export const login = async (employeeId, password) => {
 // OTP Verification function
 export const verifyOtp = async (employeeId, otp) => {
   try {
-    const response = await axiosInstance.post("/user/verify-otp", {
+    const response = await axiosInstance.post("/auth/verify-otp", {
       employee_Id: employeeId,
       otp,
     });
@@ -42,7 +42,7 @@ export const verifyOtp = async (employeeId, otp) => {
 // Resend OTP function
 export const resendOtp = async (employeeId) => {
   try {
-    const response = await axiosInstance.post("/user/resend-otp", {
+    const response = await axiosInstance.post("/auth/resend-otp", {
       employee_Id: employeeId,
     });
 
