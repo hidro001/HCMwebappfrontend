@@ -3,7 +3,6 @@
 import { create } from "zustand";
 import axiosInstance from "../service/axiosInstance";
 
-// Create an axios instance (or import from a shared service)
 
 const useRatingStore = create((set, get) => ({
   subordinates: [],
@@ -17,7 +16,7 @@ const useRatingStore = create((set, get) => ({
   fetchSubordinates: async () => {
     try {
       set({ loading: true, error: null });
-      const res = await axiosInstance.get("/admin/subordinates");
+      const res = await axiosInstance.get("/subordinates");
       set({
         loading: false,
         subordinates: res.data.data || [],
@@ -42,7 +41,7 @@ const useRatingStore = create((set, get) => ({
     try {
       set({ loading: true, error: null });
       const query = `designation=${designation}&frequency=${frequency}`;
-      const res = await axiosInstance.get(`/kpi-new?${query}`);
+      const res = await axiosInstance.get(`/kpis?${query}`);
       set({
         loading: false,
         kpiSet: res.data.data,
