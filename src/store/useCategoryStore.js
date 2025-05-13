@@ -14,7 +14,7 @@ const useCategoryStore = create(
       fetchCategories: async () => {
         set({ loading: true, error: null });
         try {
-          const response = await axiosInstance.get("/categories");
+          const response = await axiosInstance.get("/policies/categories");
           const data = response.data;
           if (data.success) {
             set({ categories: data.data });
@@ -33,7 +33,7 @@ const useCategoryStore = create(
       createCategory: async (name) => {
         set({ loading: true });
         try {
-          const response = await axiosInstance.post("/categories", { name });
+          const response = await axiosInstance.post("/policies/categories", { name });
           const data = response.data;
           if (data.success) {
             // Update local store
@@ -56,7 +56,7 @@ const useCategoryStore = create(
       deleteCategory: async (id) => {
         set({ loading: true });
         try {
-          const response = await axiosInstance.delete(`/categories/${id}`);
+          const response = await axiosInstance.delete(`/policies/categories/${id}`);
           const data = response.data;
           if (data.success) {
             // Remove category from the store
