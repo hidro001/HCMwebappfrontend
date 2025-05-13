@@ -57,7 +57,7 @@ const useLeaveStore = create((set, get) => ({
   fetchCompanySettings: async () => {
     try {
       const response = await axiosInstance.get(
-        "/company-settings"
+        "/company-settings/settings"
       );
       if (response.data.success) {
         set({ companySettings: response.data.data });
