@@ -82,7 +82,7 @@ import UpdateEmployeeManagerPage from "./Employeee Management/UpdateEmployee/Upd
 import CompanyPoliciesViewPage from "./Policies-Induction/CompanyPoliciesViewPage";
 import CompanyInductionViewPage from "./Policies-Induction/CompanyInductionViewPage";
 import TrainingMaterialsPage from "./Policies-Induction/TrainingMaterialsPage";
-import AdminPanelTrainingPage from "./Policies-Induction/AdminPanelTrainingPage";
+import AdminPanelTrainingPage from "./company setting/AdminPanelTrainingPage";
 import EmployeeTreemapPage from "./Org Chart/EmployeeTreemapPage";
 import RequestDashboardPage from "./attendence management/RequestDashboardPage";
 import PostPerformerPage from "./performance management/PostPerformerPage";
