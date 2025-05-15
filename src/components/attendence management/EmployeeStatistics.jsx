@@ -886,6 +886,36 @@ export default function EmployeeStatistics() {
       productivityValue: productivityMap[app.productivityLevel] || 0,
     }));
   
+    // Function to post daily attendance
+const postDailyAttendance = async (employeeId, date, workingMinutes, status = "Present") => {
+  try {
+    const response = await fetch('/api/attendance/daily', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ employeeId, date, workingMinutes, status }),
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      console.log('Attendance posted:', result.data);
+    } else {
+      console.error('Failed to post attendance:', result.message);
+    }
+  } catch (error) {
+    console.error('Error posting attendance:', error);
+  }
+};
+
+// Hook to automatically post attendance daily if attendance is present
+useEffect(() => {
+  if (attendanceTotals && attendanceTotals.totalWorkingHours !== "0 hrs 0 mins") {
+    const today = dayjs().format('YYYY-MM-DD');
+    const [hours, , mins] = attendanceTotals.totalWorkingHours.split(' ');
+    const workingMinutes = parseInt(hours) * 60 + parseInt(mins);
+
+    postDailyAttendance(empID, today, workingMinutes, "Present");
+  }
+}, [attendanceTotals, empID]);
     return (
       <div className="p-6 bg-white rounded-xl shadow-xl mt-10">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">
