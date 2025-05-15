@@ -13,7 +13,7 @@ export async function fetchShiftTimings() {
  * Fetch Employment Types
  */
 export async function fetchEmploymentTypes() {
-  const response = await axiosInstance.get("/superadmin/companysettings/employment-types");
+  const response = await axiosInstance.get("/company-settings/employment-types");
   return response.data?.data || [];
 }
 
@@ -37,7 +37,7 @@ export async function fetchAllEmployees() {
  * Fetch Permission Roles
  */
 export async function fetchPermissionRoles() {
-  const response = await axiosInstance.get("/PermissionRole/get");
+  const response = await axiosInstance.get("/permission-role/get");
   return response.data?.data || [];
 }
 
