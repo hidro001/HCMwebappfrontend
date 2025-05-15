@@ -15,7 +15,7 @@ const useDashboardEmpStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       // Example: GET /api/dashboard
-      const response = await axiosInstance.get('/superadmin/allemployees/dashboarddata');
+      const response = await axiosInstance.get('/user-management/dashboard');
       if (response.data.success) {
         const { lineChart, overview, employees } = response.data.data;
 

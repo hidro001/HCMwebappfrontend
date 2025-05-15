@@ -5,7 +5,7 @@ import axiosInstance from "./axiosInstance"; // your configured axios instance
  * Fetch Shift Timings from server
  */
 export async function fetchShiftTimings() {
-  const response = await axiosInstance.get("/superadmin/companysettings/shift-timings");
+  const response = await axiosInstance.get("/company-settings/shift-timings");
   return response.data?.data || [];
 }
 
@@ -21,7 +21,7 @@ export async function fetchEmploymentTypes() {
  * Fetch Departments
  */
 export async function fetchDepartments() {
-  const response = await axiosInstance.get("/superadmin/departments");
+  const response = await axiosInstance.get("/departments");
   return response.data?.data || [];
 }
 
@@ -29,7 +29,7 @@ export async function fetchDepartments() {
  * Fetch All Employees (for manager assignment)
  */
 export async function fetchAllEmployees() {
-  const response = await axiosInstance.get("/user/all-user");
+  const response = await axiosInstance.get("/user/get-all");
   return response.data?.data || [];
 }
 
@@ -45,7 +45,7 @@ export async function fetchPermissionRoles() {
  * Fetch Company Info (Addresses)
  */
 export async function fetchCompanyInfo() {
-  const response = await axiosInstance.get("/superadmin/info/getCompanyInfo");
+  const response = await axiosInstance.get("/company-settings/info/getCompany");
   const companyArray = response.data?.data || [];
   return companyArray.length > 0 ? companyArray[0] : null;
 }
@@ -54,7 +54,7 @@ export async function fetchCompanyInfo() {
  * Fetch Designations
  */
 export async function fetchDesignations() {
-  const response = await axiosInstance.get("/designations/get");
+  const response = await axiosInstance.get("/designation/get");
   return response.data?.data || [];
 }
 
