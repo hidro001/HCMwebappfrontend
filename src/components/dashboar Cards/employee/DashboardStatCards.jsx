@@ -51,6 +51,7 @@ function DashboardStatCards() {
       label: "Total Logged In",
       chartLight: waveLightGreen,
       chartDark: waveDarkGreen,
+      viewAllLink: "/dashboard/view-attendance", // <-- Add this link
     },
     {
       icon: <FaUserCheck className="text-green-600" />,
@@ -58,6 +59,7 @@ function DashboardStatCards() {
       label: "Total Leaves Taken",
       chartLight: waveLightYellow,
       chartDark: waveDarkYellow,
+      viewAllLink: "/dashboard/leave-history", // <-- Add this link
     },
     {
       icon: <FaUserTimes className="text-red-600" />,
@@ -65,8 +67,10 @@ function DashboardStatCards() {
       label: "Total Task Pending",
       chartLight: waveLightRed,
       chartDark: waveDarkRed,
+      viewAllLink: "/dashboard/assigned-task/employee", // <-- Add this link
     },
   ];
+  
 
   return (
     <div className="flex flex-col gap-5 md:flex-row bg-blend-darken">

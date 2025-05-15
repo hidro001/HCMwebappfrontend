@@ -23,7 +23,7 @@ import {
   BsCalendarDate,
   BsChevronRight
 } from "react-icons/bs";
-import { FiFilter, FiSearch, FiAward } from "react-icons/fi";
+import { FiFilter, FiSearch, FiAward, FiUser } from "react-icons/fi";
 import { HiOutlineSparkles } from "react-icons/hi";
 
 const FREQUENCIES = [
