@@ -54,14 +54,14 @@ function SuperAdminDashboard() {
             {/* Row: WhoIsInCard + Performance */}
             <div className="flex flex-col md:flex-row gap-7">
               <WhoIsInCard />
-              <PerformanceChart />
+              {/* <PerformanceChart /> */}
             </div>
 
             {/* Monthly Hiring Chart */}
             <MonthlyHiringChart />
 
             {/* RACI Operations Chart */}
-            <RaciOperationsChart />
+            {/* <RaciOperationsChart /> */}
           </motion.div>
 
           {/* Right Column (Sidebar) with slide-in from the right */}
