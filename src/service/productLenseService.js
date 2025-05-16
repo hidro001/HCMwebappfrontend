@@ -65,7 +65,7 @@ export const fetchLessSubordinates = async (
 
 export const fetchBreakStats = async (interval = "daily", date = "", page = 1, limit = 10) => {
   try {
-    const res = await axiosInstance.get("/break/productivity/break", {
+    const res = await axiosInstance.get("/productivity-lens/productivity/break", {
       params: { interval, date, page, limit },
     });
     // Expected response structure:
