@@ -1,6 +1,6 @@
 // src/store/usePanCardStatsStore.js
-import { create } from 'zustand';
-import axiosInstance from '../../service/axiosInstance'; // Adjust the path
+import { create } from "zustand";
+import axiosInstance from "../../service/axiosInstance"; // Adjust the path
 
 const usePanCardStatsStore = create((set) => ({
   data: null,
@@ -11,7 +11,9 @@ const usePanCardStatsStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       // Calls GET /api/v1/pan-card-stats
-      const response = await axiosInstance.get('/dashboard-card/pan-card-stats');
+      const response = await axiosInstance.get(
+        "/analytics-dashboards-cards/pan-card-stats"
+      );
       set({ data: response.data.data, loading: false });
     } catch (err) {
       set({

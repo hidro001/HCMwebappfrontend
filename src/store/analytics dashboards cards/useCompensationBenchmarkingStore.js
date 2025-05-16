@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import axiosInstance from '../../service/axiosInstance'; // adjust path if needed
+import { create } from "zustand";
+import axiosInstance from "../../service/axiosInstance"; // adjust path if needed
 
 const useCompensationBenchmarkingStore = create((set) => ({
   data: null,
@@ -10,7 +10,9 @@ const useCompensationBenchmarkingStore = create((set) => ({
   fetchCompensationData: async () => {
     set({ loading: true, error: null });
     try {
-      const res = await axiosInstance.get('/dashboard-card/compensation-benchmarking');
+      const res = await axiosInstance.get(
+        "/analytics-dashboards-cards/compensation-benchmarking"
+      );
       // The response should have shape: { labels, joiningSalary, currentSalary }
       set({ data: res.data.data, loading: false });
     } catch (err) {
