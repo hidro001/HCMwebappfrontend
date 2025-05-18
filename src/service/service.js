@@ -80,7 +80,7 @@ export const passwordResetRequest = async (employeeId) => {
 // Fetch Company Info
 export const fetchCompanyInfo = async () => {
   try {
-    const response = await axiosInstance.get("/superadmin/info/getCompanyInfo");
+    const response = await axiosInstance.get("/company-settings/info/company-logo");
 
     if (response.data.success && response.data.data) {
       return response.data.data;
@@ -126,7 +126,7 @@ export const resetPassword = async (
 export const markNotificationAsRead = async (notificationId) => {
   try {
     const response = await axiosInstance.put(
-      `/notification/mark-as-read`,
+      `/notifications/mark-as-read`,
       { notificationId },
       {
         headers: {
@@ -143,7 +143,7 @@ export const markNotificationAsRead = async (notificationId) => {
 // New function: Fetch all notifications
 export const fetchNotifications = async () => {
   try {
-    const response = await axiosInstance.get("/notification");
+    const response = await axiosInstance.get("/notifications");
     if (response.data.success) {
       return response.data.data;
     } else {
