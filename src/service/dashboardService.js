@@ -30,7 +30,7 @@ export async function getRaciScores(startDate, endDate) {
 
 export async function getDashboardStats() {
 
-  const response = await axiosInstance.get("/employee/dashboard/stats");
+  const response = await axiosInstance.get("/dashboard-stats-user");
   return response.data; 
 }
 
