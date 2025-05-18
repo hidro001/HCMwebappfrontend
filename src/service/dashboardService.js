@@ -39,6 +39,6 @@ export async function getDashboardStats() {
 
 export async function getAttendanceStats() {
 
-  const res = await axiosInstance.get("/employee/attendance/summary");
+  const res = await axiosInstance.get("/dashboard-stats-user/attendance");
   return res.data; 
 }
