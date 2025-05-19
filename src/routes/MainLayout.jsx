@@ -148,6 +148,8 @@ import useAuthStore from "../store/store"; // We'll read the user's permissions
 import ChatNotification from "../components/chats/ChatNotification";
 
 const MainLayout = () => {
+
+  const [collapsed, setCollapsed] = useState(true)
   const navigate = useNavigate();
   const location = useLocation();
   const [darkMode, setDarkMode] = useState(false);
@@ -209,11 +211,10 @@ const MainLayout = () => {
   return (
     <div className="">
       <div className="h-auto w-full overflow-y-auto text-text-primary bg-bg-primary">
-        <Navbar />
+        <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />
 
         <div className="h-full w-full flex">
-          {/* SIDEBAR */}
-          <Sidebar onSectionSelect={handleSectionSelect} />
+          <Sidebar onSectionSelect={handleSectionSelect} collapsed={collapsed}  />
 
           <div className="flex-1 h-screen flex flex-col w-full overflow-x-scroll hide-horizontal-scrollbar">
             <Breadcrumb />

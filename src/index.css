@@ -98,3 +98,23 @@ html {
   fill: #dddddd !important;
 }
 
+
+.sidebar-scrollbar {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #00000020 transparent; 
+}
+
+.sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px; 
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent; 
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+  margin-block: 20px; 
+}
