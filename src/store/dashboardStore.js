@@ -10,7 +10,7 @@ const useDashboardStore = create((set, get) => ({
   fetchPreferences: async () => {
     set({ loadingPreferences: true });
     try {
-      const response = await axiosInstance.get("/dashboard/preferences");
+      const response = await axiosInstance.get("/analytics-dashboards-cards/preferences");
       set({
         preferences: response.data?.preferences || [],
         loadingPreferences: false,
@@ -24,7 +24,7 @@ const useDashboardStore = create((set, get) => ({
   // Update preferences in backend
   updatePreferences: async (newPreferences) => {
     try {
-      const response = await axiosInstance.post("/dashboard/preferences", {
+      const response = await axiosInstance.post("/analytics-dashboards-cards/preferences", {
         preferences: newPreferences,
       });
       set({ preferences: response.data?.preferences || [] });

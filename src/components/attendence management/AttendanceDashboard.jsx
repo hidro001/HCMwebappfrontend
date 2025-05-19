@@ -11,7 +11,7 @@ import {
   fetchAttendanceToday,
   fetchEmployeeOverview,
   fetchPunchStatusToday,
-  // Remove old fetchAbsenteeismChart
+ 
   fetchDepartmentAttendanceSummary, // <-- new function
 } from "../../service/attendanceService";
 

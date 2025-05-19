@@ -12,7 +12,7 @@ const useCompanyStore = create((set, get) => ({
   fetchCompanies: async () => {
     set({ loading: true });
     try {
-      const response = await axiosInstance.get('/superadmin/info/getCompanyInfo');
+      const response = await axiosInstance.get('/company-settings/info/getCompany');
       if (response.data.success) {
         // Format the addresses array if missing
         const formatted = response.data.data.map((info) => ({
@@ -35,7 +35,7 @@ const useCompanyStore = create((set, get) => ({
     set({ loading: true });
     try {
       const response = await axiosInstance.post(
-        '/superadmin/info/saveCompanyInfo',
+        '/company-settings/info/saveCompany',
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
@@ -60,7 +60,7 @@ const useCompanyStore = create((set, get) => ({
     set({ loading: true });
     try {
       const response = await axiosInstance.put(
-        `/superadmin/info/editCompanyInfo/${id}`,
+        `/company-settings/info/editCompany/${id}`,
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
@@ -85,7 +85,7 @@ const useCompanyStore = create((set, get) => ({
     set({ loading: true });
     try {
       const response = await axiosInstance.delete(
-        `/superadmin/info/deleteCompanyInfo/${id}`
+        `/company-settings/info/deleteCompany/${id}`
       );
       if (response.data.success) {
         toast.success('Company information deleted successfully!');

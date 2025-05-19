@@ -10,7 +10,7 @@ const useVacancyStore = create((set) => ({
   fetchAllVacancies: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.get('/admin/jobs');
+      const response = await axiosInstance.get('/recruitment/jobs');
       // response.data.data should be the array of jobs
       set({ vacancies: response.data.data, loading: false });
     } catch (err) {
@@ -27,7 +27,7 @@ const useVacancyStore = create((set) => ({
   // or just use the data from the list if it's already there.
   fetchVacancyById: async (id) => {
     try {
-      const response = await axiosInstance.get(`/admin/jobs/${id}`);
+      const response = await axiosInstance.get(`/recruitment/jobs/${id}`);
       return response.data.data; // return the job object
     } catch (err) {
       console.error('Error fetching job by ID:', err);
@@ -39,7 +39,7 @@ const useVacancyStore = create((set) => ({
   updateVacancy: async (id, payload) => {
     try {
       set({ loading: true });
-      const response = await axiosInstance.put(`/admin/jobs/${id}`, payload);
+      const response = await axiosInstance.put(`/recruitment/jobs/${id}`, payload);
       const updatedJob = response.data.data;
 
       // Update local list in store (so UI refreshes automatically)
@@ -62,7 +62,7 @@ const useVacancyStore = create((set) => ({
   deleteVacancy: async (id) => {
     try {
       set({ loading: true });
-      await axiosInstance.delete(`/admin/jobs/${id}`);
+      await axiosInstance.delete(`/recruitment/jobs/${id}`);
       set((state) => {
         const filtered = state.vacancies.filter((v) => v._id !== id);
         return { vacancies: filtered, loading: false };
@@ -75,28 +75,7 @@ const useVacancyStore = create((set) => ({
   },
 
 
-    // 2) Create a Referral (POST /referrals)
-  // If you want to handle referral submissions in the same store:
-  // createReferral: async (payload) => {
-  //   try {
-  //     // payload should be FormData if you are uploading a resume
-  //     // or standard JSON if not uploading files
-  //     set({ loading: true, error: null });
-  //     const response = await axiosInstance.post('job-referral/referrals', payload
 
-        
-  //     );
-  //     set({ loading: false });
-  //     return response.data; 
-  //   } catch (err) {
-  //     console.error('Error creating referral:', err);
-  //     set({
-  //       error: err?.response?.data?.message || 'Error creating referral',
-  //       loading: false,
-  //     });
-  //     throw err;
-  //   }
-  // },
   createReferral: async (payload) => {
     try {
       // payload should be FormData if you are uploading a resume
@@ -104,7 +83,7 @@ const useVacancyStore = create((set) => ({
       set({ loading: true, error: null });
   
       const response = await axiosInstance.post(
-        'job-referral/referrals',
+        'recruitment/referrals',
         payload,
         {
           headers: {

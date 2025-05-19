@@ -1,5 +1,5 @@
 import React from "react";
-import TrainingMaterials from "../../components/Policies-Induction/Training Materials/TrainingMaterials";
+import TrainingMaterials from "../../components/company setting/Training Materials/TrainingMaterials";
 
 const TrainingMaterialsPage = () => {
   return (

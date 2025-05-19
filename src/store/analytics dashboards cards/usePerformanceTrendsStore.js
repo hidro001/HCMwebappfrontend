@@ -19,7 +19,7 @@
 //     set({ loading: true, error: null, data: null });
 //     try {
 //       const { timeframe, year } = get(); // read store state
-//       let url = `/dashboard-card/performance-trends?timeframe=${timeframe}`;
+//       let url = `/analytics-dashboards-cards/performance-trends?timeframe=${timeframe}`;
 //       if (timeframe === 'monthly') {
 //         url += `&year=${year}`;
 //       }
@@ -42,16 +42,15 @@
 
 // export default usePerformanceTrendsStore;
 
-
-import { create } from 'zustand';
-import axiosInstance from '../../service/axiosInstance';
+import { create } from "zustand";
+import axiosInstance from "../../service/axiosInstance";
 
 const usePerformanceTrendsStore = create((set, get) => ({
   data: null,
   loading: false,
   error: null,
 
-  timeframe: 'monthly',
+  timeframe: "monthly",
   year: new Date().getFullYear(),
   setTimeframe: (timeframe) => set({ timeframe }),
   setYear: (year) => set({ year }),
@@ -60,8 +59,8 @@ const usePerformanceTrendsStore = create((set, get) => ({
     set({ loading: true, error: null, data: null });
     try {
       const { timeframe, year } = get();
-      let url = `/dashboard-card/performance-trends?timeframe=${timeframe}`;
-      if (timeframe === 'monthly') {
+      let url = `/analytics-dashboards-cards/performance-trends?timeframe=${timeframe}`;
+      if (timeframe === "monthly") {
         url += `&year=${year}`;
       }
       const res = await axiosInstance.get(url);

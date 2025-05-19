@@ -4,7 +4,7 @@ import axiosInstance from "./axiosInstance";
 // Login function
 export const login = async (employeeId, password) => {
   try {
-    const response = await axiosInstance.post("/user/login", {
+    const response = await axiosInstance.post("/auth/login", {
       employee_Id: employeeId,
       password,
     });
@@ -23,7 +23,7 @@ export const login = async (employeeId, password) => {
 // OTP Verification function
 export const verifyOtp = async (employeeId, otp) => {
   try {
-    const response = await axiosInstance.post("/user/verify-otp", {
+    const response = await axiosInstance.post("/auth/verify-otp", {
       employee_Id: employeeId,
       otp,
     });
@@ -42,7 +42,7 @@ export const verifyOtp = async (employeeId, otp) => {
 // Resend OTP function
 export const resendOtp = async (employeeId) => {
   try {
-    const response = await axiosInstance.post("/user/resend-otp", {
+    const response = await axiosInstance.post("/auth/resend-otp", {
       employee_Id: employeeId,
     });
 
@@ -80,7 +80,7 @@ export const passwordResetRequest = async (employeeId) => {
 // Fetch Company Info
 export const fetchCompanyInfo = async () => {
   try {
-    const response = await axiosInstance.get("/superadmin/info/getCompanyInfo");
+    const response = await axiosInstance.get("/company-settings/info/company-logo");
 
     if (response.data.success && response.data.data) {
       return response.data.data;
@@ -126,7 +126,7 @@ export const resetPassword = async (
 export const markNotificationAsRead = async (notificationId) => {
   try {
     const response = await axiosInstance.put(
-      `/notification/mark-as-read`,
+      `/notifications/mark-as-read`,
       { notificationId },
       {
         headers: {
@@ -143,7 +143,7 @@ export const markNotificationAsRead = async (notificationId) => {
 // New function: Fetch all notifications
 export const fetchNotifications = async () => {
   try {
-    const response = await axiosInstance.get("/notification");
+    const response = await axiosInstance.get("/notifications");
     if (response.data.success) {
       return response.data.data;
     } else {
@@ -175,7 +175,7 @@ export const markAllNotificationsAsRead = async () => {
 
 export const fetchDepartments = async () => {
   try {
-    const response = await axiosInstance.get(`/superadmin/departments`);
+    const response = await axiosInstance.get(`/departments`);
     return response.data;
   } catch (error) {
     throw error.response?.data || error;

@@ -5,7 +5,7 @@ export const fetchProductivityData = async (
   date = "2025-01"
 ) => {
   try {
-    const res = await axiosInstance.get("/break/productivity", {
+    const res = await axiosInstance.get("/break/productivity/employee-productivity", {
       params: { interval, date },
     });
 
@@ -35,7 +35,7 @@ export const fetchTopSubordinates = async (
   search = ""
 ) => {
   try {
-    const res = await axiosInstance.get("/break/productivity/top", {
+    const res = await axiosInstance.get("/break/productivity/top-productivity-subordinates", {
       params: { interval, date, search },
     });
     return res.data.data;
@@ -51,7 +51,7 @@ export const fetchLessSubordinates = async (
   search = ""
 ) => {
   try {
-    const res = await axiosInstance.get("/break/productivity/less", {
+    const res = await axiosInstance.get("/break/productivity/less-productivity-subordinates", {
       params: { interval, date, search },
     });
     return res.data.data;
@@ -65,7 +65,7 @@ export const fetchLessSubordinates = async (
 
 export const fetchBreakStats = async (interval = "daily", date = "", page = 1, limit = 10) => {
   try {
-    const res = await axiosInstance.get("/break/productivity/break", {
+    const res = await axiosInstance.get("/productivity-lens/productivity/break", {
       params: { interval, date, page, limit },
     });
     // Expected response structure:

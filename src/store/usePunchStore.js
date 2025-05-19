@@ -72,7 +72,7 @@ const usePunchStore = create((set, get) => ({
       set({ isLoading: true, error: null });
 
       // Call your endpoint: /employee/punchtime
-      const res = await axiosInstance.get("/employee/punchtime");
+      const res = await axiosInstance.get("/attendance-user/punchtime");
       if (res.data?.success) {
         const data = res.data.data || {};
         // Convert lat/long to numbers
@@ -125,7 +125,7 @@ const usePunchStore = create((set, get) => ({
   fetchAttendanceData: async () => {
     try {
       set({ isLoading: true, error: null });
-      const res = await axiosInstance.get("/employee/attendence");
+      const res = await axiosInstance.get("/attendance-user");
       if (res.data.success) {
         const allAttendance = res.data.data || [];
         set({ attendanceData: allAttendance });
@@ -258,7 +258,7 @@ startMeetingRequest: async (userId) => {
   fetchUserBreakType: async (employeeId) => {
     try {
       const res = await axiosInstance.get(
-        `/employee/attendence/getUserBreakType/${employeeId}`
+        `/attendance-user/break-type/${employeeId}`
       );
       if (res.data.success && res.data.data?.break_Type) {
         const bType = res.data.data.break_Type; // e.g. { breakHours: 1, ... }
@@ -348,7 +348,7 @@ startMeetingRequest: async (userId) => {
 
       set({ isLoading: true });
 
-      const res = await axiosInstance.post("/employee/attendence/punchin", {
+      const res = await axiosInstance.post("/attendance-user/punchin", {
         date,
         day,
         login: loginTime,
@@ -380,7 +380,7 @@ startMeetingRequest: async (userId) => {
 
       set({ isLoading: true });
 
-      const res = await axiosInstance.post("/employee/attendence/punchout", {
+      const res = await axiosInstance.post("/attendance-user/punchout", {
         date,
         day,
         logout: logoutTime,
@@ -420,7 +420,7 @@ startMeetingRequest: async (userId) => {
 
     try {
       set({ isLoading: true });
-      const res = await axiosInstance.post("/employee/attendence/startBreak", {
+      const res = await axiosInstance.post("/attendance-user/start-break", {
         employeeId,
       });
       if (res.data.success) {
@@ -456,7 +456,7 @@ startMeetingRequest: async (userId) => {
     }
     try {
       set({ isLoading: true });
-      const res = await axiosInstance.post("/employee/attendence/endBreak", {
+      const res = await axiosInstance.post("/attendance-user/end-break", {
         employeeId,
       });
       if (res.data.success) {

@@ -22,7 +22,7 @@ export const useDashboardStore = create((set) => ({
   // ----------------------------
   fetchDashboardStats: async () => {
     try {
-      const response = await axiosInstance.get("/admin/stats");
+      const response = await axiosInstance.get("/dashboard-stats/super-admin");
       if (response.data.success) {
         set({
           totalUsers: response.data.totalUsers ?? 0,
@@ -72,7 +72,7 @@ fetchAttendanceDetails: async () => {
     // Optional: set a loading state if you want
     set({ attendanceDetailsLoading: true });
 
-    const response = await axiosInstance.get('/admin/attendance-details');
+    const response = await axiosInstance.get('/dashboard-stats/super-admin/attendance-details');
     if (response.data.success) {
       // Save the fetched array into the Zustand store
       set({

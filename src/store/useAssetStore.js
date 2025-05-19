@@ -23,7 +23,7 @@ const useAssetStore = create((set, get) => ({
     set({ loadingSubordinates: true, errorSubordinates: '' });
     try {
       // Example: add employeeId to query if needed
-      const response = await axiosInstance.get('/admin/subordinates', {
+      const response = await axiosInstance.get('/subordinates', {
         params: { employeeId },
       });
       if (response.data?.success) {
@@ -50,7 +50,7 @@ const useAssetStore = create((set, get) => ({
   getAssetGroups: async () => {
     set({ loadingAssetGroups: true, errorAssetGroups: '' });
     try {
-      const response = await axiosInstance.get('/superadmin/assetGroup/get');
+      const response = await axiosInstance.get('/asset-management/group/get');
       if (response.data?.success) {
         set({
           assetGroups: response.data.data || [],
@@ -74,7 +74,7 @@ const useAssetStore = create((set, get) => ({
   // -----------------------------
   createAssetGroup: async (groupName, groupDescription) => {
     try {
-      const response = await axiosInstance.post('/superadmin/assetGroup/add', {
+      const response = await axiosInstance.post('/asset-management/group/add', {
         name: groupName,
         description: groupDescription,
       });
@@ -97,7 +97,7 @@ const useAssetStore = create((set, get) => ({
   deleteAssetGroup: async (groupId) => {
     try {
       const response = await axiosInstance.delete(
-        `/superadmin/assetGroup/delete/${groupId}`
+        `/asset-management/group/delete/${groupId}`
       );
       if (response.data?.success) {
         toast.success('Asset group deleted successfully!');
@@ -120,7 +120,7 @@ const useAssetStore = create((set, get) => ({
   fetchAssignedAssets: async (employeeId) => {
     set({ loadingAssignedAssets: true, errorAssignedAssets: '' });
     try {
-      const response = await axiosInstance.get(`/superadmin/asset/get/${employeeId}`);
+      const response = await axiosInstance.get(`/asset-management/asset/get/${employeeId}`);
       if (response.data?.success) {
         const oldAssignedAssets = get().assignedAssets;
         set({
@@ -155,7 +155,7 @@ const useAssetStore = create((set, get) => ({
       });
       formData.append('assignedTo', employeeId);
 
-      const response = await axiosInstance.post('/superadmin/asset/add', formData,
+      const response = await axiosInstance.post('/asset-management/asset/add', formData,
 
         {
           headers: {
@@ -185,7 +185,7 @@ const useAssetStore = create((set, get) => ({
   updateAssetStatus: async (employeeId, assetId, newStatus) => {
     try {
       const response = await axiosInstance.put(
-        `/superadmin/asset/updateStatus/${assetId}`,
+        `/asset-management/asset/updateStatus/${assetId}`,
         { status: newStatus }
       );
       if (response.data?.success) {
@@ -207,7 +207,7 @@ const useAssetStore = create((set, get) => ({
   deleteAsset: async (employeeId, assetId) => {
     try {
       const response = await axiosInstance.delete(
-        `/superadmin/asset/delete/${assetId}`
+        `/asset-management/asset/delete/${assetId}`
       );
       if (response.data?.success) {
         toast.success('Asset deleted successfully!');

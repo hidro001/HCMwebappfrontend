@@ -87,7 +87,7 @@ const RaciBusiness = () => {
         date: new Date().toISOString(),
       };
 
-      const response = await axiosInstance.post("/raci2/saveScores", payload);
+      const response = await axiosInstance.post("/raci/business/saveScores", payload);
       if (response.data?.success) {
         alert("Scores saved successfully!");
         fetchPreviousScores(); // Refresh
@@ -109,7 +109,7 @@ const RaciBusiness = () => {
         return;
       }
 
-      const response = await axiosInstance.post("/raci2/getScores", {
+      const response = await axiosInstance.post("/raci/business/getScores", {
         employee_Id,
       });
 
