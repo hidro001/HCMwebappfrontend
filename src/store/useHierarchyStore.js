@@ -1,4 +1,3 @@
-
 import { create } from "zustand";
 import axiosInstance from "../service/axiosInstance"; // your configured axios
 
@@ -15,7 +14,7 @@ export const useHierarchyStore = create((set) => ({
   fetchDepartments: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.get("/superadmin/departments");
+      const response = await axiosInstance.get("/departments");
       if (response.data.success) {
         set({ departments: response.data.data || [] });
       } else {
@@ -33,7 +32,7 @@ export const useHierarchyStore = create((set) => ({
   addDepartment: async (departmentName) => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.post("/superadmin/departments", {
+      const response = await axiosInstance.post("/departments", {
         department: departmentName,
       });
       if (response.data.success) {
@@ -55,10 +54,9 @@ export const useHierarchyStore = create((set) => ({
   updateDepartment: async (departmentId, newName) => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.put(
-        `/superadmin/departments/${departmentId}`,
-        { department: newName }
-      );
+      const response = await axiosInstance.put(`/departments/${departmentId}`, {
+        department: newName,
+      });
       if (response.data.success) {
         set((state) => ({
           departments: state.departments.map((dept) =>
@@ -81,7 +79,7 @@ export const useHierarchyStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       const response = await axiosInstance.delete(
-        `/superadmin/departments/${departmentId}`
+        `/departments/${departmentId}`
       );
       if (response.data.success) {
         set((state) => ({
@@ -106,7 +104,7 @@ export const useHierarchyStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       // GET /designations/get
-      const response = await axiosInstance.get("/designations/get");
+      const response = await axiosInstance.get("/designation/get");
       if (response.data.success) {
         // Map "id" -> "_id" and "designation" stays the same
         const mapped = response.data.data.map((item) => ({
@@ -132,7 +130,7 @@ export const useHierarchyStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       // POST /designations/add expects { designation_name: "X" }
-      const response = await axiosInstance.post("/designations/add", {
+      const response = await axiosInstance.post("/designation/add", {
         designation_name: designationName,
       });
       if (response.data.success) {
@@ -147,9 +145,7 @@ export const useHierarchyStore = create((set) => ({
         }));
       } else {
         set({ error: response.data.message || "Failed to add designation" });
-        throw new Error(
-          response.data.message || "Failed to add designation"
-        );
+        throw new Error(response.data.message || "Failed to add designation");
       }
     } catch (err) {
       set({ error: err.message });
@@ -163,9 +159,12 @@ export const useHierarchyStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       // PUT /designations/:id expects { designation_name: "X" }
-      const response = await axiosInstance.put(`/designations/${designationId}`, {
-        designation_name: newName,
-      });
+      const response = await axiosInstance.put(
+        `/designation/${designationId}`,
+        {
+          designation_name: newName,
+        }
+      );
       if (response.data.success) {
         // Suppose server returns updated data in response.data.data
         const updated = response.data.data;
@@ -200,7 +199,7 @@ export const useHierarchyStore = create((set) => ({
     try {
       // DELETE /designations/:id
       const response = await axiosInstance.delete(
-        `/designations/${designationId}`
+        `/designation/${designationId}`
       );
       if (response.data.success) {
         set((state) => ({
@@ -224,132 +223,16 @@ export const useHierarchyStore = create((set) => ({
     }
   },
 
-  // ---------------- ROLE Logic ----------------
-//   fetchRoles: async () => {
-//     set({ loading: true, error: null });
-//     try {
-//       const response = await axiosInstance.get("/PermissionRole/get");
-//       if (response.data.success) {
-//         set({ roles: response.data.data || [] });
-//       } else {
-//         set({ error: response.data.message || "Failed to fetch roles" });
-//         throw new Error(response.data.message || "Failed to fetch roles");
-//       }
-//     } catch (err) {
-//       set({ error: err.message });
-//       throw err;
-//     } finally {
-//       set({ loading: false });
-//     }
-//   },
-
-//   addRole: async (roleName, permissionArray) => {
-//     set({ loading: true, error: null });
-//     try {
-//       const payload = {
-//         role_name: roleName,
-//         permission: permissionArray.map((perm) => ({
-//           name: perm.label,
-//           permission: perm.value,
-//         })),
-//       };
-//       const response = await axiosInstance.post("/PermissionRole/add", payload);
-//       if (response.data.success) {
-//         set((state) => ({
-//           roles: [...state.roles, response.data.data],
-//         }));
-//       } else {
-//         set({ error: response.data.message || "Failed to add role" });
-//         throw new Error(response.data.message || "Failed to add role");
-//       }
-//     } catch (err) {
-//       set({ error: err.message });
-//       throw err;
-//     } finally {
-//       set({ loading: false });
-//     }
-//   },
-
-//   updateRole: async (roleId, updatedRoleName, updatedPermissions) => {
-//     set({ loading: true, error: null });
-//     try {
-//       const payload = {
-//         role_name: updatedRoleName,
-//         permission: updatedPermissions.map((p) => {
-//           return { name: p, permission: p };
-//         }),
-//       };
-//       const response = await axiosInstance.put(`/PermissionRole/${roleId}`, payload);
-//       if (response.data.success) {
-//         set((state) => ({
-//           roles: state.roles.map((r) =>
-//             r._id === roleId
-//               ? {
-//                   ...r,
-//                   name: updatedRoleName, 
-//                   permissions: updatedPermissions,
-//                 }
-//               : r
-//           ),
-//         }));
-//       } else {
-//         set({ error: response.data.message || "Failed to update role" });
-//         throw new Error(response.data.message || "Failed to update role");
-//       }
-//     } catch (err) {
-//       set({ error: err.message });
-//       throw err;
-//     } finally {
-//       set({ loading: false });
-//     }
-//   },
-
-//   deleteRole: async (roleId) => {
-//     set({ loading: true, error: null });
-//     try {
-//       const response = await axiosInstance.delete(`/PermissionRole/${roleId}`);
-//       if (response.data.success) {
-//         set((state) => ({
-//           roles: state.roles.filter((r) => r._id !== roleId),
-//         }));
-//       } else {
-//         set({ error: response.data.message || "Failed to delete role" });
-//         throw new Error(response.data.message || "Failed to delete role");
-//       }
-//     } catch (err) {
-//       set({ error: err.message });
-//       throw err;
-//     } finally {
-//       set({ loading: false });
-//     }
-//   },
-fetchRoles: async () => {
+  fetchRoles: async () => {
     set({ loading: true, error: null });
     try {
-      // GET /api/v1/permission_roles
-      const response = await axiosInstance.get("/PermissionRole/get"); 
-      // (the baseURL presumably includes /api/v1)
-      
+      const response = await axiosInstance.get("/permission-role/get");
+
       if (response.data.success) {
-        // The server returns data like:
-        // {
-        //   "success": true,
-        //   "count": ...,
-        //   "data": [
-        //     {
-        //       id: "...",
-        //       role_name: "...",
-        //       permission: [{ name: "...", permission: "..." }],
-        //       ...
-        //     },
-        //     ...
-        //   ]
-        // }
-        // We'll store them in `roles` but rename `id` -> `_id` for consistency
         const mapped = response.data.data.map((r) => ({
           _id: r.id,
           role_name: r.role_name,
-          permission: r.permission, 
+          permission: r.permission,
           // or rename if you want consistency
         }));
         set({ roles: mapped });
@@ -378,7 +261,10 @@ fetchRoles: async () => {
           permission: perm.value,
         })),
       };
-      const response = await axiosInstance.post("/PermissionRole/add", payload);
+      const response = await axiosInstance.post(
+        "/permission-role/add",
+        payload
+      );
       if (response.data.success) {
         // The newly created role is in response.data.data
         const newRole = response.data.data;
@@ -417,7 +303,10 @@ fetchRoles: async () => {
         })),
       };
       // PUT /api/v1/permission_roles/:id
-      const response = await axiosInstance.put(`/PermissionRole/${roleId}`, payload);
+      const response = await axiosInstance.put(
+        `/permission-role/${roleId}`,
+        payload
+      );
       if (response.data.success) {
         // The updated role is in response.data.data
         const updatedRole = response.data.data;
@@ -430,9 +319,7 @@ fetchRoles: async () => {
 
         // Replace old role in local state
         set((state) => ({
-          roles: state.roles.map((r) =>
-            r._id === roleId ? mappedRole : r
-          ),
+          roles: state.roles.map((r) => (r._id === roleId ? mappedRole : r)),
         }));
       } else {
         set({ error: response.data.message || "Failed to update role" });
@@ -451,7 +338,7 @@ fetchRoles: async () => {
     set({ loading: true, error: null });
     try {
       // DELETE /api/v1/permission_roles/:id
-      const response = await axiosInstance.delete(`/PermissionRole/${roleId}`);
+      const response = await axiosInstance.delete(`/permission-role/${roleId}`);
       if (response.data.success) {
         set((state) => ({
           roles: state.roles.filter((r) => r._id !== roleId),
@@ -468,4 +355,3 @@ fetchRoles: async () => {
     }
   },
 }));
-

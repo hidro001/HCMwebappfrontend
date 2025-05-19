@@ -517,6 +517,12 @@ export const menuItems = [
         textAnimation: { x: 10 },
       },
       {
+        name: "Update Training Materials",
+        link: "/dashboard/admin-panel-training",
+        permission: "training-manage",
+        textAnimation: { x: 10 },
+      },
+      {
         name: "Productivity Lens Settings",
         link: "/dashboard/break-settings",
         permission: "company-break-settings",
@@ -655,12 +661,12 @@ export const menuItems = [
     iconAnimation: { scale: 1.2 },
     textAnimation: { x: 10 },
     options: [
-      {
-        name: "Admin Panel Training",
-        link: "/dashboard/admin-panel-training",
-        permission: "training-manage",
-        textAnimation: { x: 10 },
-      },
+      // {
+      //   name: "Admin Panel Training",
+      //   link: "/dashboard/admin-panel-training",
+      //   permission: "training-manage",
+      //   textAnimation: { x: 10 },
+      // },
       {
         name: "Induction PPT's",
         link: "/dashboard/induction-ppt",

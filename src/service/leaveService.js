@@ -5,7 +5,7 @@ import axiosInstance from "./axiosInstance";
 
 export const getEmployeeLeaveCount = async () => {
   try {
-    const response = await axiosInstance.get(`/leave/leavestats`);
+    const response = await axiosInstance.get(`/leaves/leavestats`);
 
     return response.data;
     
@@ -18,7 +18,7 @@ export const getEmployeeLeaveCount = async () => {
 
 export const fetchSubordinateLeaveStats=async()=> {
     try {
-      const response = await axiosInstance.get("/leave/subordinate-stats", {
+      const response = await axiosInstance.get("/leaves/subordinate-stats", {
       });
       return response.data;
     } catch (error) {
@@ -31,7 +31,7 @@ export const fetchSubordinateLeaveStats=async()=> {
 
 export const fetchGlobalLeaveStats=async()=> {
   try {
-    const response = await axiosInstance.get("/leave/all-stats", {
+    const response = await axiosInstance.get("/leaves/all-stats", {
      
     });
    

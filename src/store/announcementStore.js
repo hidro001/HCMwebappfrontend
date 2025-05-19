@@ -15,7 +15,7 @@ const useAnnouncementStore = create(
       fetchAnnouncements: async () => {
         set({ loading: true, error: null });
         try {
-          const response = await axiosInstance.get("/admin/announcement");
+          const response = await axiosInstance.get("/announcements");
           const data = response.data;
           if (data.success) {
             set({ announcements: data.data });
@@ -36,7 +36,7 @@ const useAnnouncementStore = create(
       fetchAnnouncementsuser: async () => {
         set({ loading: true, error: null });
         try {
-          const response = await axiosInstance.get("/admin/announcement-user");
+          const response = await axiosInstance.get("/announcements/user-department");
           const data = response.data;
           if (data.success) {
             set({ announcements: data.data });
@@ -60,7 +60,7 @@ const useAnnouncementStore = create(
         set({ loading: true, error: null });
         try {
           const response = await axiosInstance.post(
-            "/admin/announcement",
+            "/announcements",
             announcementDetails,
             {
               headers: {
@@ -92,7 +92,7 @@ const useAnnouncementStore = create(
         set({ loading: true, error: null });
         try {
           const token = localStorage.getItem("accessToken");
-          const response = await axiosInstance.delete(`/admin/announcement/${id}`, {
+          const response = await axiosInstance.delete(`/announcements/${id}`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -121,7 +121,7 @@ const useAnnouncementStore = create(
         try {
           const token = localStorage.getItem("accessToken");
           const response = await axiosInstance.put(
-            `/admin/announcement/${id}`,
+            `/announcements/${id}`,
             announcementDetails,
             {
               headers: {

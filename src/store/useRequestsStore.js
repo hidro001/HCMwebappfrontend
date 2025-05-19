@@ -19,7 +19,7 @@ export const useRequestsStore = create((set, get) => ({
       }
 
       const response = await axiosInstance.get(
-        "/superadmin/companysettings/my-requests"
+        "/payroll/reimbursement-request",
       );
       if (response.data.success) {
         set({ requests: response.data.data });
@@ -38,7 +38,7 @@ export const useRequestsStore = create((set, get) => ({
     try {
       set({ loading: true });
       const response = await axiosInstance.post(
-        "/superadmin/companysettings/submit-request",
+        "/payroll/reimbursement-request",
         formData,
         {
           headers: {

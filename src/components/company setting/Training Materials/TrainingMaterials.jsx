@@ -1,6 +1,3 @@
-
-
-
 import React, { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import StepIndicator from "./StepIndicator";
@@ -8,7 +5,7 @@ import CompaniesList from "./CompaniesList";
 import ModulesList from "./ModulesList";
 import MaterialsList from "./MaterialsList";
 import usePublicTrainingStore from "../../../store/usePublicTrainingStore";
-import FullScreenLoader from "../../../components/common/FullScreenLoader";
+import FullScreenLoader from "../../common/FullScreenLoader";
 
 const stepVariants = {
   hidden: { opacity: 0, x: 20 },
@@ -72,7 +69,10 @@ export default function TrainingMaterials() {
           exit="exit"
           className="mt-8"
         >
-          <CompaniesList companies={companies} onSelectCompany={handleSelectCompany} />
+          <CompaniesList
+            companies={companies}
+            onSelectCompany={handleSelectCompany}
+          />
         </motion.div>
       );
     } else if (selectedCompany && !selectedModule) {

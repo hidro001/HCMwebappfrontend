@@ -14,7 +14,7 @@ const allLeaveStore = create((set) => ({
     set({ isLoading: true });
     try {
       const queryParam = status && status !== "all" ? `?status=${status}` : "";
-      const response = await axiosInstance.get(`/leave/subordinates/leaves${queryParam}`);
+      const response = await axiosInstance.get(`/leaves/subordinates/${queryParam}`);
       // Depending on your API response structure, it might be in response.data.leaves or response.data
       const fetchedLeaves = response.data.leaves || response.data;
       set({ leaves: fetchedLeaves || [] });

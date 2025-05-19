@@ -9,7 +9,7 @@ const useDesignationStore = create((set) => ({
   fetchDesignations: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.get("/designations/get");
+      const response = await axiosInstance.get("/designation/get");
       set({ 
         designations: response.data.data || [], 
         loading: false,

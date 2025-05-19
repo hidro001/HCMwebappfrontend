@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import axiosInstance from '../../service/axiosInstance'; // Adjust path if needed
+import { create } from "zustand";
+import axiosInstance from "../../service/axiosInstance"; // Adjust path if needed
 
 const useAddressDistributionStore = create((set) => ({
   data: null,
@@ -11,7 +11,9 @@ const useAddressDistributionStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       // GET /api/v1/address-distribution
-      const response = await axiosInstance.get('/dashboard-card/address-distribution');
+      const response = await axiosInstance.get(
+        "/analytics-dashboards-cards/address-distribution"
+      );
       set({
         data: response.data.data, // { currentCount, permanentCount, currentPct, permanentPct }
         loading: false,
