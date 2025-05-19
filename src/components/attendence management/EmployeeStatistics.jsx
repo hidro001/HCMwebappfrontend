@@ -452,6 +452,9 @@ export default function EmployeeStatistics() {
   /*  Derive time window                                                   */
   /* --------------------------------------------------------------------- */
   const period = useMemo(() => {
+    if (mode === 'yesterday') {
+      return { start: today.subtract(1, 'day').startOf('day'), end: today.subtract(1, 'day').endOf('day') };
+    }
     if (mode === 'daily') {
       return { start: today.startOf('day'), end: today.endOf('day') };
     }
@@ -470,6 +473,19 @@ export default function EmployeeStatistics() {
     const end   = start.endOf('year');
     return { start, end };
   }, [mode, month, year]);
+
+  useEffect(() => {
+    // Fetch stats based on mode selected (daily, weekly, monthly, yearly, yesterday)
+    const fetchStats = async () => {
+      if (mode === 'yesterday') {
+        const yesterday = today.subtract(1, 'day').format('YYYY-MM-DD');
+        await fetchDailyStats(empID, yesterday);  // Pass yesterday's date here
+      } else {
+        fetchDailyStats(empID, today.format('YYYY-MM-DD')); // For daily or other modes
+      }
+    };
+    fetchStats();
+  }, [empID, mode, month, year]);
 
   /* --------------------------------------------------------------------- */
   /*  Filter helpers                                                        */
@@ -495,57 +511,180 @@ export default function EmployeeStatistics() {
   /* --------------------------------------------------------------------- */
   /*  Aggregate Attendance totals                                           */
   /* --------------------------------------------------------------------- */
+
+  //LOGIC FOR 
+  // const attendanceTotals = useMemo(() => {
+  //   let workMin = 0, breakMin = 0;
+  
+  //   filteredAttendance.forEach(rec => {
+  //     if (rec.login) {
+  //       const loginTime = dayjs(`${rec.date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
+  //       const shiftStart = dayjs(`${rec.date} 10:00:00`, 'YYYY-MM-DD HH:mm:ss');
+  //       const shiftEnd = dayjs(`${rec.date} 19:00:00`, 'YYYY-MM-DD HH:mm:ss');
+  
+  //       let effectiveEnd;
+  
+  //       if (rec.logout && rec.logout !== rec.login) {
+  //         effectiveEnd = dayjs(`${rec.date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
+  //       } else if (dayjs(rec.date).isBefore(dayjs(), 'day')) {
+  //         effectiveEnd = shiftEnd;
+  //       } else if (dayjs(rec.date).isSame(dayjs(), 'day')) {
+  //         effectiveEnd = dayjs().isBefore(shiftEnd) ? dayjs() : shiftEnd;
+  //       } else {
+  //         effectiveEnd = shiftEnd;
+  //       }
+  
+  //       const effectiveStart = loginTime.isAfter(shiftStart) ? loginTime : shiftStart;
+  
+  //       if (effectiveEnd.isAfter(effectiveStart)) {
+  //         workMin += effectiveEnd.diff(effectiveStart, 'minute');
+  //       }
+  
+  //       rec.breaks?.forEach(br => {
+  //         if (br.start && br.end) {
+  //           const breakStart = dayjs(br.start);
+  //           const breakEnd = dayjs(br.end);
+  //           if (breakEnd.isAfter(breakStart)) {
+  //             breakMin += breakEnd.diff(breakStart, 'minute');
+  //           }
+  //         }
+  //       });
+  //     }
+  //   });
+  
+  //   const netWorkMin = Math.max(workMin - breakMin, 0);  // prevent negative values
+  //   const hours = Math.floor(netWorkMin / 60);
+  //   const minutes = netWorkMin % 60;
+  
+  //   return {
+  //     totalWorkingHours: netWorkMin > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
+  //     totalBreakTaken: breakMin
+  //   };
+  // }, [filteredAttendance]);
+  
+  
+  // const attendanceTotals = useMemo(() => {
+  //   let totalWorkMinutes = 0;
+  //   let totalBreakMinutes = 0;
+  
+  //   filteredAttendance.forEach(rec => {
+  //     if (!rec.login) return;  // Skip if no login
+      
+  //     const loginTime = dayjs(`${rec.date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
+  
+  //     // Prioritize punch-out if available; otherwise, use current time if it's today
+  //     let logoutTime;
+  //     if (rec.logout && rec.logout !== rec.login) {
+  //       logoutTime = dayjs(`${rec.date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
+  //     } else if (dayjs(rec.date).isSame(dayjs(), 'day')) {
+  //       logoutTime = dayjs(); // Use current time if logout isn't available today
+  //     } else {
+  //       logoutTime = dayjs(`${rec.date} 19:00:00`, 'YYYY-MM-DD HH:mm:ss'); // Default to shift end for past days
+  //     }
+  
+  //     // Compute total work minutes from punch-in to punch-out/current time
+  //     if (logoutTime.isAfter(loginTime)) {
+  //       totalWorkMinutes += logoutTime.diff(loginTime, 'minute');
+  //     }
+  
+  //     // Calculate total break minutes
+  //     rec.breaks?.forEach(br => {
+  //       if (br.start && br.end) {
+  //         const breakStart = dayjs(br.start);
+  //         const breakEnd = dayjs(br.end);
+  //         if (breakEnd.isAfter(breakStart)) {
+  //           totalBreakMinutes += breakEnd.diff(breakStart, 'minute');
+  //         }
+  //       }
+  //     });
+  //   });
+  
+  //   // Subtract breaks from total work time
+  //   const netWorkMinutes = Math.max(totalWorkMinutes - totalBreakMinutes, 0);
+  //   const hours = Math.floor(netWorkMinutes / 60);
+  //   const minutes = netWorkMinutes % 60;
+  
+  //   return {
+  //     totalWorkingHours: netWorkMinutes > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
+  //     totalBreakTaken: totalBreakMinutes
+  //   };
+  // }, [filteredAttendance]);  
+
   const attendanceTotals = useMemo(() => {
-    let workMin = 0, breakMin = 0;
+    const SHIFT_START = "10:00:00";
+    const SHIFT_END = "19:00:00";
+  
+    let totalWorkMinutes = 0;
+    let totalBreakMinutes = 0;
   
     filteredAttendance.forEach(rec => {
-      if (rec.login && rec.logout) {
-        const loginTime = dayjs(`${rec.date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
-        const logoutTime = dayjs(`${rec.date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
+      if (!rec.login) return;
   
-        if (logoutTime.isBefore(loginTime)) {
-          console.warn(`Invalid logout before login detected on ${rec.date}`);
-          return;
+      const date = rec.date;
+      const shiftStart = dayjs(`${date} ${SHIFT_START}`, 'YYYY-MM-DD HH:mm:ss');
+      const shiftEnd = dayjs(`${date} ${SHIFT_END}`, 'YYYY-MM-DD HH:mm:ss');
+      const loginTime = dayjs(`${date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
+  
+      let logoutTime = null;
+      if (rec.logout && rec.logout !== rec.login) {
+        logoutTime = dayjs(`${date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
+      }
+  
+      const now = dayjs();
+  
+      let effectiveEndTime;
+  
+      if (dayjs(date).isSame(now, 'day')) {
+        if (now.isBefore(shiftEnd)) {
+          effectiveEndTime = now;
+        } else if (logoutTime && logoutTime.isAfter(shiftEnd)) {
+          effectiveEndTime = logoutTime;
+        } else {
+          effectiveEndTime = shiftEnd;
         }
+      } else {
+        effectiveEndTime = logoutTime ? logoutTime : shiftEnd;
+      }
   
-        workMin += logoutTime.diff(loginTime, 'minute');
+      if (effectiveEndTime.isAfter(loginTime)) {
+        totalWorkMinutes += effectiveEndTime.diff(loginTime, 'minute');
       }
   
       rec.breaks?.forEach(br => {
         if (br.start && br.end) {
-          const breakStart = dayjs(br.start);
-          const breakEnd = dayjs(br.end);
+          let breakStart = dayjs(br.start);
+          let breakEnd = dayjs(br.end);
+  
+          if (breakEnd.isBefore(shiftStart) || breakStart.isAfter(shiftEnd)) return;
+  
+          breakStart = breakStart.isBefore(shiftStart) ? shiftStart : breakStart;
+  
+          breakEnd = [breakEnd, effectiveEndTime, shiftEnd].reduce((min, cur) =>
+            cur.isBefore(min) ? cur : min
+          );
   
           if (breakEnd.isAfter(breakStart)) {
-            breakMin += breakEnd.diff(breakStart, 'minute');
+            totalBreakMinutes += breakEnd.diff(breakStart, 'minute');
           }
         }
       });
     });
   
-    // Conditionally apply daily logic or default logic
-    if (mode === 'daily') {
-      const usageMinutes = Math.max(totalUsage.keyboardMinutes, totalUsage.mouseMinutes);
-      const dailyHours = Math.floor(usageMinutes / 60);
-      const dailyMinutes = usageMinutes % 60;
-  
-      return {
-        totalWorkingHours: `${dailyHours} hrs ${dailyMinutes} mins`,
-        totalBreakTaken: breakMin
-      };
-    }
-  
-    // Original logic for weekly/monthly/yearly
-    const hours = Math.floor(workMin / 60);
-    const minutes = workMin % 60;
+    const netWorkMinutes = Math.max(totalWorkMinutes - totalBreakMinutes, 0);
+    const hours = Math.floor(netWorkMinutes / 60);
+    const minutes = netWorkMinutes % 60;
   
     return {
-      totalWorkingHours: `${hours} hrs ${minutes} mins`,
-      totalBreakTaken: breakMin
+      totalWorkingHours: netWorkMinutes > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
+      totalBreakTaken: totalBreakMinutes
     };
-  }, [filteredAttendance, mode, totalUsage]);
+  }, [filteredAttendance]);
   
   
+  
+  
+
+  //11
 
   /* --------------------------------------------------------------------- */
   /*  Productivity (Daily ONLY) – show doughnut                            */
@@ -581,7 +720,22 @@ export default function EmployeeStatistics() {
       borderColor:'#FFF', borderWidth:4,
     }]
   };
-  const doughnutOptions = { responsive:true, plugins:{ legend:{ position:'bottom' } } };
+  const doughnutOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: 'bottom',
+        labels: {
+          boxWidth: 10, // Adjust legend box size for better alignment
+          padding: 15,  // Adjust spacing around the legend
+          font: {
+            size: 14,  // Adjust font size of the legend
+          },
+        },
+      },
+    },
+  };
+  
 
   /* --------------------------------------------------------------------- */
   /*  Load / Error states                                                   */
@@ -732,6 +886,36 @@ export default function EmployeeStatistics() {
       productivityValue: productivityMap[app.productivityLevel] || 0,
     }));
   
+    // Function to post daily attendance
+const postDailyAttendance = async (employeeId, date, workingMinutes, status = "Present") => {
+  try {
+    const response = await fetch('/api/attendance/daily', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ employeeId, date, workingMinutes, status }),
+    });
+
+    const result = await response.json();
+    if (result.success) {
+      console.log('Attendance posted:', result.data);
+    } else {
+      console.error('Failed to post attendance:', result.message);
+    }
+  } catch (error) {
+    console.error('Error posting attendance:', error);
+  }
+};
+
+// Hook to automatically post attendance daily if attendance is present
+useEffect(() => {
+  if (attendanceTotals && attendanceTotals.totalWorkingHours !== "0 hrs 0 mins") {
+    const today = dayjs().format('YYYY-MM-DD');
+    const [hours, , mins] = attendanceTotals.totalWorkingHours.split(' ');
+    const workingMinutes = parseInt(hours) * 60 + parseInt(mins);
+
+    postDailyAttendance(empID, today, workingMinutes, "Present");
+  }
+}, [attendanceTotals, empID]);
     return (
       <div className="p-6 bg-white rounded-xl shadow-xl mt-10">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">
@@ -795,6 +979,7 @@ export default function EmployeeStatistics() {
 
           >
             <option value="daily">Today</option>
+            <option value="yesterday">Yesterday</option>
             <option value="weekly">Weekly (last 7 days)</option>
             <option value="monthly">Monthly</option>
             <option value="yearly">Yearly</option>
@@ -845,36 +1030,46 @@ export default function EmployeeStatistics() {
       {/* ─── Metric boxes + (optional) chart ───────────────── */}
       <div className="grid lg:grid-cols-4 gap-4">
         {/* Metrics */}
-        <div className="lg:col-span-3 grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {[
-            { color:'green',  label:'Total Working Hours', value: attendanceTotals.totalWorkingHours },
-            
-            { color:'blue',   label:'Keyboard Minutes',   value: totalUsage.keyboardMinutes },
-            { color:'pink',   label:'Keyboard Presses',   value: totalUsage.keyboardPresses },
-            { color:'purple', label:'Mouse Minutes',      value: totalUsage.mouseMinutes },
-            { color:'red',    label:'Mouse Clicks',       value: totalUsage.mouseClicks },
-            
-            { color:'yellow', label:'Total Break Taken',  value: `${attendanceTotals.totalBreakTaken} mins` },
-            
-          ].map(({ color,label,value }) => (
-            <div key={label} className={`bg-${color}-100 dark:bg-${color}-800 dark:text-${color}-100 p-4 sm:p-6 rounded-xl shadow text-center`}
->
-              <h3 className="text-sm sm:text-base font-semibold">{label}</h3>
-              <p className="text-2xl sm:text-3xl font-bold">{value}</p>
-            </div>
-          ))}
-        </div>
+        <div className="lg:col-span-3 grid grid-cols-2 gap-4">
+  {[
+    { color: 'green', label: 'Total Working Hours', value: attendanceTotals.totalWorkingHours },
+    { color: 'yellow', label: 'Total Break Taken', value: `${attendanceTotals.totalBreakTaken} mins` },
+    { color: 'blue', label: 'Keyboard Minutes', value: totalUsage.keyboardMinutes },
+    { color: 'pink', label: 'Keyboard Presses', value: totalUsage.keyboardPresses },
+    { color: 'purple', label: 'Mouse Minutes', value: totalUsage.mouseMinutes },
+    { color: 'red', label: 'Mouse Clicks', value: totalUsage.mouseClicks },
+     ].map(({ color, label, value }) => (
+    <div
+      key={label}
+      className={`bg-${color}-100 dark:bg-${color}-800 dark:text-${color}-100 p-4 sm:p-6 rounded-xl shadow text-center`}
+      style={{
+        borderLeft: `8px solid ${color === 'green' ? '#10B981' : color === 'blue' ? '#2563EB' : color === 'pink' ? '#EC4899' : color === 'purple' ? '#8B5CF6' : color === 'red' ? '#F87171' : color === 'yellow' ? '#FBBF24' : '#FFFFFF'}`,
+      }}
+    >
+      <h3 className="text-sm sm:text-base font-semibold">{label}</h3>
+      <p className="text-2xl sm:text-3xl font-bold">{value}</p>
+    </div>
+  ))}
+</div>
+
 
         {/* Doughnut (only for daily) */}
-        {showProductivity && (
-          <div  className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg"
->
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              Today’s Productivity
-            </h3>
-            <Doughnut data={doughnutData} options={doughnutOptions}/>
-          </div>
-        )}
+       {/* Doughnut (only for daily) */}
+{showProductivity && (
+  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+    <h3 className="text-lg font-semibold text-gray-800 mb-4">
+      Today’s Productivity
+    </h3>
+    <div className="flex justify-center items-center">
+      <Doughnut data={doughnutData} options={doughnutOptions}/>
+    </div>
+    {/* Optional: Show percentage change */}
+    <div className="mt-4 text-center text-lg text-gray-700">
+      <p className="font-semibold text-gray-800">+{((productiveTime / (productiveTime + unproductiveTime)) * 100).toFixed(0)}% Productivity</p>
+    </div>
+  </div>
+)}
+
       </div>
 
       {/* ─── Usage table ───────────────────────────────────── */}

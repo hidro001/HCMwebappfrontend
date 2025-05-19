@@ -12,7 +12,7 @@ import { MdOutlineDarkMode, MdLightMode } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
+import dayjs from 'dayjs';
 import useAuthStore from "../../store/store";
 import useNotificationStore from "../../store/notificationStore";
 import usePunchStore from "../../store/usePunchStore";
@@ -49,6 +49,8 @@ const Navbar = () => {
 
 
 
+  
+
     const personsWithUnread = Object.values(unreadCounts).filter(
       (count) => count > 0
     ).length;
@@ -72,6 +74,9 @@ const Navbar = () => {
 
   // Auth store
   const authStore = useAuthStore();
+const hasApprovalPerm = authStore.permissions.includes(
+    "productivity-view-subordinate"
+  );
 
   // Notification store
   const fetchNotifications = useNotificationStore(
@@ -90,6 +95,11 @@ const Navbar = () => {
     fetchTargetCoordinates,
     fetchUserBreakType,
     getUserLocation,
+    startMeetingRequest,
+    fetchPendingMeetings,
+    approveMeetingRequest,
+    rejectMeetingRequest,
+    pendingMeetings,
   } = usePunchStore();
 
   // Local timer in the navbar
@@ -208,6 +218,22 @@ const Navbar = () => {
     }
   };
 
+  
+
+ useEffect(() => {
+    if (hasApprovalPerm) {
+      // pass your manager's authStore._id (or employeeId) as route expects
+      fetchPendingMeetings(authStore._id);
+    }
+  }, [hasApprovalPerm, authStore._id, fetchPendingMeetings]);
+
+  // Navbar.jsx
+
+const onStartMeeting = () => startMeetingRequest(authStore._id); // ⬅️ MongoDB ObjectId (_id), not employeeId
+
+
+  
+
   return (
     <nav
       className={
@@ -228,7 +254,7 @@ const Navbar = () => {
       {/* Right Section */}
       <div className="flex items-center space-x-6">
         {/* Current Date */}
-        <div className="font-bold">{currentDate}</div>
+        {/* <div className="font-bold">{currentDate}</div> */}
 
         {/* If user is on break, show timer in the center */}
         {onBreak && (
@@ -257,7 +283,15 @@ const Navbar = () => {
             )}
           </AnimatePresence>
         </div>
-
+{/* <div>
+  <button
+    className="flex items-center bg-blue-500 text-white px-3 py-2 rounded-lg shadow hover:bg-blue-600 transition duration-300"
+   onClick={onStartMeeting}
+  >
+    <FaComments className="mr-2" />
+    Start Meeting
+  </button>
+</div> */}
         {/* Notification Icon with Unread Count */}
         <div className="relative">
           <FaBell
@@ -324,7 +358,42 @@ const Navbar = () => {
               className="w-8 h-8 rounded-full object-cover"
             />
           </button>
-
+  {/* → Pending approvals */}
+      {hasApprovalPerm && pendingMeetings.length > 0 && (
+        <div className="absolute right-6 top-16 w-80 bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-lg space-y-2">
+          <h4 className="font-semibold text-gray-700 dark:text-gray-200">
+            Meeting Requests
+          </h4>
+          {pendingMeetings.map((m) => (
+            <div
+              key={m._id}
+              className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300"
+            >
+              <span>
+                {m.employeeName} on {dayjs(m.date).format("DD MMM")}
+              </span>
+              <div className="flex space-x-1">
+                <button
+                  className="bg-green-500 px-2 rounded text-white"
+                  onClick={() =>
+                    approveMeetingRequest(m._id, authStore._id)
+                  }
+                >
+                  ✓
+                </button>
+                <button
+                  className="bg-red-500 px-2 rounded text-white"
+                  onClick={() =>
+                    rejectMeetingRequest(m._id, authStore._id)
+                  }
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
           <AnimatePresence>
             {showProfileDropdown && (
               <motion.div

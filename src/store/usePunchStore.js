@@ -56,7 +56,7 @@ const usePunchStore = create((set, get) => ({
   canPunchOut: false,
   error: null,
   isLoading: false,
-
+ pendingMeetings: [],
   // For location-based states
   userCoordinates: null,
   distance: null,
@@ -174,6 +174,83 @@ const usePunchStore = create((set, get) => ({
       set({ error: `Attendance Error: ${err.message}` });
     } finally {
       set({ isLoading: false });
+    }
+  },
+
+ // frontend store (usePunchStore.js)
+
+startMeetingRequest: async (userId) => {
+  try {
+    const res = await axiosInstance.post("/break/attendance/start-meeting", {
+      employeeId: userId, // Use MongoDB ObjectId (_id), not employeeId like "RI0015"
+    });
+
+    if (res.data.success) {
+      toast.success(res.data.message || "Meeting request sent!");
+    } else {
+      throw new Error(res.data.message);
+    }
+  } catch (err) {
+    toast.error(err.message || "Failed to start meeting");
+  }
+},
+
+
+  /**
+   * Fetch all pending meeting requests that this manager should approve
+   */
+  fetchPendingMeetings: async (managerId) => {
+    try {
+      const res = await axiosInstance.get(
+        `/break/attendance/pending-meetings/${managerId}`
+      );
+      if (res.data.success) {
+        set({ pendingMeetings: res.data.data || [] });
+      } else {
+        throw new Error(res.data.message);
+      }
+    } catch (err) {
+      console.error("fetchPendingMeetings:", err.message);
+    }
+  },
+
+  /**
+   * Approve a meeting request
+   */
+  approveMeetingRequest: async (attendanceId, managerId) => {
+    try {
+      const res = await axiosInstance.post("/break/attendance/meeting/approve", {
+        attendanceId,
+      });
+      if (res.data.success) {
+        toast.success("Meeting approved!");
+        // refresh list
+        get().fetchPendingMeetings(managerId);
+      } else {
+        throw new Error(res.data.message);
+      }
+    } catch (err) {
+      toast.error(err.message || "Failed to approve");
+    }
+  },
+
+  /**
+   * Reject a meeting request
+   */
+  rejectMeetingRequest: async (attendanceId, managerId) => {
+    try {
+      const res = await axiosInstance.post(
+        "/break/attendance/meeting/disapprove",
+        { attendanceId }
+      );
+      if (res.data.success) {
+        toast.success("Meeting rejected");
+        get().fetchPendingMeetings(managerId);
+      } else {
+        throw new Error(res.data.message);
+      }
+    } catch (err) {
+      toast.error(err.message || "Failed to reject");
     }
   },
 

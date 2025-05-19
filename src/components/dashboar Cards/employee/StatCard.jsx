@@ -1,6 +1,7 @@
 
 
 import React from "react";
+import { Link } from "react-router-dom";
 
 function StatCard({ 
   icon, 
@@ -8,7 +9,8 @@ function StatCard({
   label, 
   chartLight, 
   chartDark,    // <-- We’ll accept two image URLs
-  onClickDetail 
+  onClickDetail,
+  viewAllLink
 }) {
   return (
     <div
@@ -67,6 +69,12 @@ function StatCard({
           >
             {icon}
           </div>
+          <Link
+          to={viewAllLink}
+          className="text-sm font-semibold text-blue-500 hover:text-blue-700 ml-[100px]"
+        >
+          View All
+        </Link>
         </div>
 
         {/* Count / Label */}

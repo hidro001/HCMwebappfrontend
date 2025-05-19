@@ -6,10 +6,11 @@ import React, {
   useState,
   useEffect,
   useRef,
+  useCallback
 } from "react";
 import io from "socket.io-client";
 import { toast } from "react-hot-toast";
-
+import * as mediasoupClient from 'mediasoup-client';
 const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL;
 
 // Use your TURN server configuration here.
@@ -104,6 +105,8 @@ export const CallProvider = ({ children }) => {
       socketRef.current.disconnect();
     };
   }, [currentUser]);
+
+  
 
   // ----------------------------
   // Event Handlers
@@ -319,78 +322,100 @@ export const CallProvider = ({ children }) => {
     }
   };
 
+  // Set up Mediasoup device
+const setupMediasoupDevice = async (socket) => {
+  const device = new mediasoupClient.Device();
+  const routerRtpCapabilities = await new Promise((resolve) => {
+    socket.emit('getRouterRtpCapabilities', (data) => resolve(data));
+  });
+  await device.load({ routerRtpCapabilities });
+  return device;
+};
+
+// Create WebRTC Transport (Send or Receive)
+const createTransport = async (socket, device, direction = 'send') => {
+  const transportOptions = await new Promise((resolve) => {
+    socket.emit('createWebRtcTransport', { direction }, (data) => resolve(data));
+  });
+
+  const transport = direction === 'send'
+    ? device.createSendTransport(transportOptions)
+    : device.createRecvTransport(transportOptions);
+
+  transport.on('connect', ({ dtlsParameters }, callback) => {
+    socket.emit('connectTransport', { transportId: transportOptions.id, dtlsParameters }, callback);
+  });
+
+  if (direction === 'send') {
+    transport.on('produce', ({ kind, rtpParameters }, callback) => {
+      socket.emit('produce', { transportId: transportOptions.id, kind, rtpParameters }, callback);
+    });
+  }
+
+  return transport;
+};
+
+// Produce local stream
+const produceStream = async (sendTransport, stream) => {
+  stream.getTracks().forEach(async (track) => {
+    await sendTransport.produce({ track });
+  });
+};
+
+// Consume remote streams
+const consumeStream = async (socket, device, recvTransport, producerId) => {
+  const consumerOptions = await new Promise((resolve) => {
+    socket.emit('consume', {
+      transportId: recvTransport.id,
+      producerId,
+      rtpCapabilities: device.rtpCapabilities
+    }, resolve);
+  });
+
+  const consumer = await recvTransport.consume(consumerOptions);
+  const remoteStream = new MediaStream([consumer.track]);
+  return remoteStream;
+};
+
+
   // ----------------------------
   // Initiate Call
   // ----------------------------
   const initiateCall = async ({ callType, participants }) => {
     try {
       const callId = generateUniqueCallId();
-      setOutgoingCall({
-        callType,
-        participants,
-        caller: currentUser,
-        callId,
-      });
-
-      const constraints =
-        callType === "video"
-          ? {
-              video: {
-                width: { ideal: 1280 },
-                height: { ideal: 720 },
-                frameRate: { ideal: 30 },
-              },
-              audio: {
-                sampleRate: 48000,
-                channelCount: 2,
-                echoCancellation: true,
-                noiseSuppression: true,
-              },
-            }
-          : {
-              video: false,
-              audio: {
-                sampleRate: 48000,
-                channelCount: 2,
-                echoCancellation: true,
-                noiseSuppression: true,
-              },
-            };
-
-      // Acquire local camera/mic
+      setOutgoingCall({ callType, participants, caller: currentUser, callId });
+  
+      const constraints = callType === "video"
+        ? { video: true, audio: true }
+        : { video: false, audio: true };
+  
+      // Get local stream
       await getLocalMedia(constraints);
-
-      // Notify server
+  
+      // Notify server of the call initiation
       socketRef.current.emit("initiateCall", {
         caller: currentUser,
         callType,
         participants,
         callId,
       });
-
-      // Update call state
-      setCall({
-        callId,
-        callType,
-        participants: [currentUser, ...participants],
-      });
-
-      // Create PeerConnections & send offers
-      for (let remoteUserId of participants) {
-        const { peer } = await createPeerConnection(callId, remoteUserId);
-        const offer = await peer.createOffer();
-        await peer.setLocalDescription(offer);
-        socketRef.current.emit("offer", {
-          callId,
-          userId: currentUser,
-          sdp: offer.sdp,
-        });
-      }
+  
+      setCall({ callId, callType, participants: [currentUser, ...participants] });
+  
+      // MEDIASOUP SETUP HERE
+      const device = await setupMediasoupDevice(socketRef.current);
+      const sendTransport = await createTransport(socketRef.current, device, 'send');
+      await produceStream(sendTransport, localStreamRef.current);
+  
+      peersRef.current.mediasoup = { device, sendTransport, recvTransports: {} };
+  
     } catch (err) {
       console.error("Error initiating call:", err);
       setOutgoingCall(null);
     }
   };
+  
 
   // ----------------------------
   // Answer Call
@@ -398,56 +423,67 @@ export const CallProvider = ({ children }) => {
   const answerCall = async () => {
     if (!incomingCall) return;
     const { callId, callType, participants } = incomingCall;
-
+  
     try {
-      const constraints =
-        callType === "video"
-          ? {
-              video: {
-                width: { ideal: 1280 },
-                height: { ideal: 720 },
-                frameRate: { ideal: 30 },
-              },
-              audio: {
-                sampleRate: 48000,
-                channelCount: 2,
-                echoCancellation: true,
-                noiseSuppression: true,
-              },
-            }
-          : {
-              video: false,
-              audio: {
-                sampleRate: 48000,
-                channelCount: 2,
-                echoCancellation: true,
-                noiseSuppression: true,
-              },
-            };
-
+      const constraints = callType === "video"
+        ? { video: true, audio: true }
+        : { video: false, audio: true };
+  
       await getLocalMedia(constraints);
-
-      // Notify server
-      socketRef.current.emit("answerCall", {
-        callId,
-        userId: currentUser,
-      });
-
-      // Update state
+  
+      socketRef.current.emit("answerCall", { callId, userId: currentUser });
+  
       setCall({ callId, callType, participants });
       setIncomingCall(null);
-
-      // Create PeerConnections for each participant
-      participants.forEach(async (pId) => {
-        if (pId !== currentUser) {
-          await createPeerConnection(callId, pId);
-        }
-      });
+  
+      // MEDIASOUP SETUP HERE
+      const device = await setupMediasoupDevice(socketRef.current);
+      const sendTransport = await createTransport(socketRef.current, device, 'send');
+      await produceStream(sendTransport, localStreamRef.current);
+  
+      peersRef.current.mediasoup = { device, sendTransport, recvTransports: {} };
+  
     } catch (err) {
       console.error("Error answering call:", err);
     }
   };
+  // Paste this function inside your CallProvider component:
+  const handleNewProducer = useCallback(async (producerId, remoteUserId) => {
+    if (!peersRef.current.mediasoup) {
+      console.error('Mediasoup setup incomplete');
+      return;
+    }
 
+    const { device, recvTransports } = peersRef.current.mediasoup;
+
+    if (!recvTransports[remoteUserId]) {
+      recvTransports[remoteUserId] = await createTransport(socketRef.current, device, 'recv');
+    }
+
+    const remoteStream = await consumeStream(
+      socketRef.current,
+      device,
+      recvTransports[remoteUserId],
+      producerId
+    );
+
+    setRemoteStreams(prev => [
+      ...prev,
+      { userId: remoteUserId, stream: remoteStream, type: 'camera' }
+    ]);
+  }, [setRemoteStreams]);
+
+  useEffect(() => {
+    if (!socketRef.current) return;
+
+    socketRef.current.on('newProducer', ({ producerId, userId }) => {
+      handleNewProducer(producerId, userId);
+    });
+
+    return () => {
+      socketRef.current.off('newProducer');
+    };
+  }, [handleNewProducer]);
   // ----------------------------
   // Reject Call
   // ----------------------------
@@ -501,6 +537,19 @@ export const CallProvider = ({ children }) => {
     cleanupCall();
   };
 
+  useEffect(() => {
+    if (!socketRef.current) return;
+  
+    socketRef.current.on('newProducer', ({ producerId, userId }) => {
+      handleNewProducer(producerId, userId);
+    });
+  
+    return () => {
+      socketRef.current.off('newProducer');
+    };
+  }, [handleNewProducer]);
+  
+
   // ----------------------------
   // Cleanup Call
   // ----------------------------
@@ -544,6 +593,8 @@ export const CallProvider = ({ children }) => {
       {children}
     </CallContext.Provider>
   );
+
+  
 };
 
 export const useCall = () => useContext(CallContext);
