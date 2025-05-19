@@ -14,7 +14,7 @@ const useKpiSetStore = create((set, get) => ({
   createKpiSet: async (payload) => {
     set({ loading: true, error: null });
     try {
-      const res = await axiosInstance.post("/kpi-new/create", payload);
+      const res = await axiosInstance.post("/kpis/create", payload);
       set({ loading: false, error: null });
       return res.data;
     } catch (err) {
@@ -28,7 +28,7 @@ const useKpiSetStore = create((set, get) => ({
     set({ loading: true, error: null });
     try {
       const query = `designation=${designation}&frequency=${frequency}${version ? `&version=${version}` : ""}`;
-      const res = await axiosInstance.get(`/kpi-new?${query}`);
+      const res = await axiosInstance.get(`/kpis?${query}`);
       set({ kpiSet: res.data.data, loading: false, error: null });
       return res.data.data;
     } catch (err) {
@@ -41,7 +41,7 @@ const useKpiSetStore = create((set, get) => ({
   getAllKpiSets: async () => {
     set({ loading: true, error: null });
     try {
-      const res = await axiosInstance.get("/kpi-new/all");
+      const res = await axiosInstance.get("/kpis/all");
       set({ kpiSets: res.data.data, loading: false, error: null });
       return res.data.data;
     } catch (err) {
@@ -54,7 +54,7 @@ const useKpiSetStore = create((set, get) => ({
   updateKpiSet: async (id, payload) => {
     set({ loading: true, error: null });
     try {
-      const res = await axiosInstance.put(`/kpi-new/update/${id}`, payload);
+      const res = await axiosInstance.put(`/kpis/update/${id}`, payload);
       set({ loading: false, error: null });
       return res.data.data;
     } catch (err) {
@@ -67,7 +67,7 @@ const useKpiSetStore = create((set, get) => ({
   deleteKpiSet: async (id) => {
     set({ loading: true, error: null });
     try {
-      await axiosInstance.delete(`/kpi-new/delete/${id}`);
+      await axiosInstance.delete(`/kpis/delete/${id}`);
       set({ loading: false, error: null });
       return true;
     } catch (err) {

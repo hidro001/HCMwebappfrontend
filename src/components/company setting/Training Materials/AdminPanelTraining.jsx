@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -12,8 +11,8 @@ import {
 import { toast } from "react-hot-toast";
 
 import useTrainingMaterialStore from "../../../store/useTrainingMaterialStore";
-import ConfirmationDialog from "../../../components/common/ConfirmationDialog";
-import FullScreenLoader from "../../../components/common/FullScreenLoader";
+import ConfirmationDialog from "../../common/ConfirmationDialog";
+import FullScreenLoader from "../../common/FullScreenLoader";
 
 /**
  * Simple fade-in variant for tab content transitions.
@@ -508,7 +507,9 @@ export default function AdminPanelTraining() {
     <div className="dark:bg-gray-900 dark:text-white min-h-screen px-6 py-8 relative">
       {loading && <FullScreenLoader />}
 
-      <h1 className="text-3xl font-bold mb-6">Training Materials - Admin Panel</h1>
+      <h1 className="text-3xl font-bold mb-6">
+        Training Materials - Admin Panel
+      </h1>
 
       {/* Tabs Navigation */}
       <div className="flex space-x-4 border-b border-gray-200 dark:border-gray-700 pb-2 mb-6 overflow-x-auto">
@@ -579,6 +580,3 @@ export default function AdminPanelTraining() {
     </div>
   );
 }
-
-
-

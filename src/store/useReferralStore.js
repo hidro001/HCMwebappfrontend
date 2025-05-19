@@ -10,7 +10,7 @@ const useReferralStore = create((set, get) => ({
   fetchAllReferrals: async () => {
     try {
       set({ loading: true, error: null });
-      const response = await axiosInstance.get('job-referral/referrals');
+      const response = await axiosInstance.get('recruitment/referrals');
       // response.data.data should be the array of referrals
       set({
         referrals: response.data.data, // shaped similarly to your DUMMY_REFERRALS
@@ -31,7 +31,7 @@ const useReferralStore = create((set, get) => ({
       set({ loading: true });
       const payload = { status: newStatus, feedback };
       const response = await axiosInstance.put(
-        `job-referral/referrals/${referralId}/status`,
+        `recruitment/referrals/${referralId}/status`,
         payload
       );
       const updatedData = response.data.data; // e.g. { id, designation, status, etc. }
@@ -51,6 +51,8 @@ const useReferralStore = create((set, get) => ({
       throw err;
     }
   },
+
+  
 }));
 
 export default useReferralStore;

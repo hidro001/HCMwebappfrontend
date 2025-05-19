@@ -36,7 +36,7 @@ const useCompanySettingsStore = create((set, get) => ({
   fetchAttendancePolicies: async () => {
     try {
       // Fetch company settings
-      const res = await axiosInstance.get('/superadmin/companysettings/settings')
+      const res = await axiosInstance.get('/company-settings/settings')
       if (res.data?.success && res.data?.data) {
         const settingsData = res.data.data
         set({
@@ -55,7 +55,7 @@ const useCompanySettingsStore = create((set, get) => ({
   updateAttendancePolicies: async (updatedSettings) => {
     try {
       await axiosInstance.post(
-        '/superadmin/companysettings/update-policies',
+        '/company-settings/update-policies',
         updatedSettings
       )
       toast.success('Attendance Policies updated successfully.')
@@ -74,7 +74,7 @@ const useCompanySettingsStore = create((set, get) => ({
 
   fetchShiftTimings: async () => {
     try {
-      const res = await axiosInstance.get('/superadmin/companysettings/shift-timings')
+      const res = await axiosInstance.get('/company-settings/shift-timings')
       set({ shiftTimings: res.data?.data || [] })
     } catch (error) {
       console.error(error)
@@ -86,11 +86,11 @@ const useCompanySettingsStore = create((set, get) => ({
     try {
       // If shiftData contains an id, we do an update
       if (shiftData.id) {
-        await axiosInstance.post('/superadmin/companysettings/shift-timings', shiftData)
+        await axiosInstance.post('/company-settings/shift-timings', shiftData)
         toast.success('Shift Timing updated successfully.')
       } else {
         // Otherwise, add new
-        await axiosInstance.post('/superadmin/companysettings/shift-timings', shiftData)
+        await axiosInstance.post('/company-settings/shift-timings', shiftData)
         toast.success('Shift Timing added successfully.')
       }
       get().fetchShiftTimings()
@@ -102,7 +102,7 @@ const useCompanySettingsStore = create((set, get) => ({
 
   deleteShiftTiming: async (id) => {
     try {
-      await axiosInstance.delete(`/superadmin/companysettings/shift-timings/${id}`)
+      await axiosInstance.delete(`/company-settings/shift-timings/${id}`)
       toast.success('Shift Timing deleted successfully.')
       get().fetchShiftTimings()
     } catch (error) {
@@ -118,7 +118,7 @@ const useCompanySettingsStore = create((set, get) => ({
 
   fetchHolidays: async () => {
     try {
-      const res = await axiosInstance.get('/superadmin/companysettings/holidays')
+      const res = await axiosInstance.get('/company-settings/holidays')
       set({ holidays: res.data?.data || [] })
     } catch (error) {
       console.error(error)
@@ -129,10 +129,10 @@ const useCompanySettingsStore = create((set, get) => ({
   addOrUpdateHoliday: async (holidayData) => {
     try {
       if (holidayData.id) {
-        await axiosInstance.post('/superadmin/companysettings/holidays', holidayData)
+        await axiosInstance.post('/company-settings/holidays', holidayData)
         toast.success('Holiday updated successfully.')
       } else {
-        await axiosInstance.post('/superadmin/companysettings/holidays', holidayData)
+        await axiosInstance.post('/company-settings/holidays', holidayData)
         toast.success('Holiday declared successfully.')
       }
       get().fetchHolidays()
@@ -144,7 +144,7 @@ const useCompanySettingsStore = create((set, get) => ({
 
   deleteHoliday: async (id) => {
     try {
-      await axiosInstance.delete(`/superadmin/companysettings/holidays/${id}`)
+      await axiosInstance.delete(`/company-settings/holidays/${id}`)
       toast.success('Holiday deleted successfully.')
       get().fetchHolidays()
     } catch (error) {
@@ -160,7 +160,7 @@ const useCompanySettingsStore = create((set, get) => ({
 
   fetchDeductions: async () => {
     try {
-      const res = await axiosInstance.get('/superadmin/companysettings/deductions')
+      const res = await axiosInstance.get('/company-settings/deductions')
       set({ deductions: res.data?.data || [] })
     } catch (error) {
       console.error(error)
@@ -171,10 +171,10 @@ const useCompanySettingsStore = create((set, get) => ({
   addOrUpdateDeduction: async (deductionData) => {
     try {
       if (deductionData.id) {
-        await axiosInstance.post('/superadmin/companysettings/deductions', deductionData)
+        await axiosInstance.post('/company-settings/deductions', deductionData)
         toast.success('Deduction updated successfully.')
       } else {
-        await axiosInstance.post('/superadmin/companysettings/deductions', deductionData)
+        await axiosInstance.post('/company-settings/deductions', deductionData)
         toast.success('Deduction added successfully.')
       }
       get().fetchDeductions()
@@ -186,7 +186,7 @@ const useCompanySettingsStore = create((set, get) => ({
 
   deleteDeduction: async (id) => {
     try {
-      await axiosInstance.delete(`/superadmin/companysettings/deductions/${id}`)
+      await axiosInstance.delete(`/company-settings/deductions/${id}`)
       toast.success('Deduction deleted successfully.')
       get().fetchDeductions()
     } catch (error) {
@@ -202,7 +202,7 @@ const useCompanySettingsStore = create((set, get) => ({
 
   fetchPayrollCycles: async () => {
     try {
-      const res = await axiosInstance.get('/superadmin/companysettings/payroll-cycles')
+      const res = await axiosInstance.get('/company-settings/payroll-cycles')
       set({ payrollCycles: res.data?.data || [] })
     } catch (error) {
       console.error(error)
@@ -213,10 +213,10 @@ const useCompanySettingsStore = create((set, get) => ({
   addOrUpdatePayrollCycle: async (cycleData) => {
     try {
       if (cycleData.id) {
-        await axiosInstance.post('/superadmin/companysettings/payroll-cycles', cycleData)
+        await axiosInstance.post('/company-settings/payroll-cycles', cycleData)
         toast.success('Payroll Cycle updated successfully.')
       } else {
-        await axiosInstance.post('/superadmin/companysettings/payroll-cycles', cycleData)
+        await axiosInstance.post('/company-settings/payroll-cycles', cycleData)
         toast.success('Payroll Cycle added successfully.')
       }
       get().fetchPayrollCycles()
@@ -228,7 +228,7 @@ const useCompanySettingsStore = create((set, get) => ({
 
   deletePayrollCycle: async (id) => {
     try {
-      await axiosInstance.delete(`/superadmin/companysettings/payroll-cycles/${id}`)
+      await axiosInstance.delete(`/company-settings/payroll-cycles/${id}`)
       toast.success('Payroll Cycle deleted successfully.')
       get().fetchPayrollCycles()
     } catch (error) {
@@ -244,7 +244,7 @@ const useCompanySettingsStore = create((set, get) => ({
 
   fetchLeaveSystems: async () => {
     try {
-      const res = await axiosInstance.get('/superadmin/companysettings/leave-systems')
+      const res = await axiosInstance.get('/company-settings/leave-systems')
       set({ leaveSystems: res.data?.data || [] })
     } catch (error) {
       console.error(error)
@@ -255,10 +255,10 @@ const useCompanySettingsStore = create((set, get) => ({
   addOrUpdateLeaveSystem: async (leaveData) => {
     try {
       if (leaveData.id) {
-        await axiosInstance.post('/superadmin/companysettings/leave-systems', leaveData)
+        await axiosInstance.post('/company-settings/leave-systems', leaveData)
         toast.success('Leave System updated successfully.')
       } else {
-        await axiosInstance.post('/superadmin/companysettings/leave-systems', leaveData)
+        await axiosInstance.post('/company-settings/leave-systems', leaveData)
         toast.success('Leave System added successfully.')
       }
       get().fetchLeaveSystems()
@@ -270,7 +270,7 @@ const useCompanySettingsStore = create((set, get) => ({
 
   deleteLeaveSystem: async (id) => {
     try {
-      await axiosInstance.delete(`/superadmin/companysettings/leave-systems/${id}`)
+      await axiosInstance.delete(`/company-settings/leave-systems/${id}`)
       toast.success('Leave System deleted successfully.')
       get().fetchLeaveSystems()
     } catch (error) {
@@ -286,7 +286,7 @@ const useCompanySettingsStore = create((set, get) => ({
 
   fetchEmploymentTypes: async () => {
     try {
-      const res = await axiosInstance.get('/superadmin/companysettings/employment-types')
+      const res = await axiosInstance.get('/company-settings/employment-types')
       set({ employmentTypes: res.data?.data || [] })
     } catch (error) {
       console.error(error)
@@ -297,10 +297,10 @@ const useCompanySettingsStore = create((set, get) => ({
   addOrUpdateEmploymentType: async (empData) => {
     try {
       if (empData.id) {
-        await axiosInstance.post('/superadmin/companysettings/employment-types', empData)
+        await axiosInstance.post('/company-settings/employment-types', empData)
         toast.success('Employment Type updated successfully.')
       } else {
-        await axiosInstance.post('/superadmin/companysettings/employment-types', empData)
+        await axiosInstance.post('/company-settings/employment-types', empData)
         toast.success('Employment Type added successfully.')
       }
       get().fetchEmploymentTypes()
@@ -312,7 +312,7 @@ const useCompanySettingsStore = create((set, get) => ({
 
   deleteEmploymentType: async (id) => {
     try {
-      await axiosInstance.delete(`/superadmin/companysettings/employment-types/${id}`)
+      await axiosInstance.delete(`/company-settings/employment-types/${id}`)
       toast.success('Employment Type deleted successfully.')
       get().fetchEmploymentTypes()
     } catch (error) {

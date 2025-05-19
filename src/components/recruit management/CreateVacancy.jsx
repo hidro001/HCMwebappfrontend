@@ -41,7 +41,7 @@ export default function CreateVacancy() {
     const employeeId = localStorage.getItem("employeeId");
     const fetchDepartments = async () => {
       try {
-        const response = await axiosInstance.get(`/superadmin/departmentAlocated/${employeeId}`);
+        const response = await axiosInstance.get(`/department-allocations/users/${employeeId}`);
         const validDepartments = response.data.departmentAlocated.filter(
           (dept) => !dept.includes("[") && !dept.includes("]")
         );

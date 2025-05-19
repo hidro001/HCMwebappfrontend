@@ -1,6 +1,6 @@
 // src/store/usePassportStore.js
-import { create } from 'zustand';
-import axiosInstance from '../../service/axiosInstance'; // Adjust path
+import { create } from "zustand";
+import axiosInstance from "../../service/axiosInstance"; // Adjust path
 
 const usePassportStore = create((set) => ({
   data: null,
@@ -10,7 +10,9 @@ const usePassportStore = create((set) => ({
   fetchPassportValidity: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.get('/dashboard-card/passport-validity');
+      const response = await axiosInstance.get(
+        "/analytics-dashboards-cards/passport-validity"
+      );
       set({ data: response.data.data, loading: false });
     } catch (err) {
       set({

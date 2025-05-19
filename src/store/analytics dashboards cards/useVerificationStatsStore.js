@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import axiosInstance from '../../service/axiosInstance'; // or your axios setup
+import { create } from "zustand";
+import axiosInstance from "../../service/axiosInstance"; // or your axios setup
 
 const useVerificationStatsStore = create((set) => ({
   data: null, // => [ { department, backgroundCleared, backgroundPending, policeCleared, policePending }, ...]
@@ -9,9 +9,11 @@ const useVerificationStatsStore = create((set) => ({
   fetchVerificationStats: async () => {
     set({ loading: true, error: null, data: null });
     try {
-      const res = await axiosInstance.get('/dashboard-card/verification-department-stats');
+      const res = await axiosInstance.get(
+        "/analytics-dashboards-cards/verification-department-stats"
+      );
       set({
-        data: res.data.data, 
+        data: res.data.data,
         loading: false,
       });
     } catch (err) {
