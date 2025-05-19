@@ -1,29 +1,19 @@
 import { useEffect, useState, useRef, useContext } from "react";
-import {
-  FaBell,
-  FaCog,
-  FaSignOutAlt,
-  FaHome,
-  FaComments,
-  FaUserCircle,
-  FaBusinessTime,
-} from "react-icons/fa";
-import { MdOutlineDarkMode, MdLightMode } from "react-icons/md";
+import { FaBell, FaSignOutAlt, FaComments, FaUserCircle, FaBusinessTime} from "react-icons/fa";
+import { MdChat } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import dayjs from 'dayjs';
+import logo from '../../assets/logo/logo-eye.webp';
 import useAuthStore from "../../store/store";
 import useNotificationStore from "../../store/notificationStore";
 import usePunchStore from "../../store/usePunchStore";
 import ThemeToggleButton from "../theme toggle button/ThemeToggleButton";
 import NotificationDropdown from "../Notification/NotificationDropdown";
-import BreakCard from "./BreakCard";
-
+import { GoSidebarCollapse } from "react-icons/go";
 import { ChatContextv2 } from "../../contexts/ChatContextv2";
-import { useCall } from "../../contexts/CallContext";
+import ProfileSidebar from "./ProfileCard";
 
-// Helper to format seconds into HH:MM:SS
+// Format seconds into HH:MM:SS
 function formatHMS(totalSeconds) {
   const hrs = Math.floor(totalSeconds / 3600);
   const mins = Math.floor((totalSeconds % 3600) / 60);
@@ -35,50 +25,28 @@ function formatHMS(totalSeconds) {
   return `${hh}:${mm}:${ss}`;
 }
 
-const Navbar = () => {
+const Navbar = ({ collapsed, setCollapsed }) => {
+
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const [showNotificationDropdown, setShowNotificationDropdown] =
-    useState(false);
-  // const [showChatDropdown, setShowChatDropdown] = useState(false);
+  const [showNotificationDropdown, setShowNotificationDropdown] =useState(false);
   const [showBreakCard, setShowBreakCard] = useState(false);
   const [currentDate, setCurrentDate] = useState("");
 
-  // chat related ###################
+  const { unreadCounts = {} } = useContext(ChatContextv2);
+  const personsWithUnread = Object.values(unreadCounts).filter(
+    (count) => count > 0
+  ).length;
 
-    const { unreadCounts = {} } = useContext(ChatContextv2);
-
-
-
-  
-
-    const personsWithUnread = Object.values(unreadCounts).filter(
-      (count) => count > 0
-    ).length;
-  
   const navigate = useNavigate();
-
-
-  // Local state to control badge visibility.
   const [showBadge, setShowBadge] = useState(true);
 
-
-
   const handleClick = () => {
-    // Hide the badge.
     setShowBadge(false);
-    // Navigate to the chat dashboard.
     navigate("/dashboard/chats");
   };
 
-  // chat end ######################
-
-  // Auth store
   const authStore = useAuthStore();
-const hasApprovalPerm = authStore.permissions.includes(
-    "productivity-view-subordinate"
-  );
 
-  // Notification store
   const fetchNotifications = useNotificationStore(
     (state) => state.fetchNotifications
   );
@@ -87,7 +55,6 @@ const hasApprovalPerm = authStore.permissions.includes(
   const loading = useNotificationStore((state) => state.loading);
   const error = useNotificationStore((state) => state.error);
 
-  // Punch store
   const {
     onBreak,
     breakStartTime,
@@ -95,17 +62,10 @@ const hasApprovalPerm = authStore.permissions.includes(
     fetchTargetCoordinates,
     fetchUserBreakType,
     getUserLocation,
-    startMeetingRequest,
-    fetchPendingMeetings,
-    approveMeetingRequest,
-    rejectMeetingRequest,
-    pendingMeetings,
   } = usePunchStore();
 
-  // Local timer in the navbar
   const [navbarTimer, setNavbarTimer] = useState("00:00:00");
-  const { disconnectCallSocke } = useCall();
-  // Fetch punch/attendance and location on mount if authenticated
+
   useEffect(() => {
     if (authStore.isAuthenticated) {
       fetchAttendanceData();
@@ -115,21 +75,18 @@ const hasApprovalPerm = authStore.permissions.includes(
     }
   }, [authStore.isAuthenticated]);
 
-  // Fetch notifications if authenticated
   useEffect(() => {
     if (authStore.isAuthenticated) {
       fetchNotifications();
     }
   }, [authStore.isAuthenticated, fetchNotifications]);
 
-  // Set current date
   useEffect(() => {
     const today = new Date();
     const options = { day: "numeric", month: "long", year: "numeric" };
     setCurrentDate(today.toLocaleDateString(undefined, options));
   }, []);
 
-  // Update break timer if on break
   useEffect(() => {
     let intervalId;
     if (onBreak && breakStartTime) {
@@ -151,31 +108,18 @@ const hasApprovalPerm = authStore.permissions.includes(
     }
   };
 
-  // Sign out
-  const handleSignOut = () => {
-    authStore.logout();
-    toast.success("Signed out successfully!");
-    navigate("/");
-   
-
-
-  };
-
-  // Company & user info
   const companyLogo =
     authStore.companyInfo?.logo ||
     "https://ems11.s3.amazonaws.com/logo-HM+(1).png";
   const userAvatar =
     authStore.userAvatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png";
   const userName = authStore.userName || "John Doe";
-  const userEmail = authStore.workingEmail || "john.doe@example.com";
+  const userID = authStore.employeeId || "john.doe@example.com";
 
-  // REFS for outside click
   const profileDropdownRef = useRef(null);
   const notificationDropdownRef = useRef(null);
   const breakCardRef = useRef(null);
 
-  // Close dropdowns on outside click
   useEffect(() => {
     function handleClickOutside(event) {
       if (
@@ -214,61 +158,61 @@ const hasApprovalPerm = authStore.permissions.includes(
       case "super-admin":
         return "/dashboard/super-employee-dashboard";
       default:
-        return "/dashboard/employee"; // or "/dashboard" or any fallback route
+        return "/dashboard/employee";
     }
   };
 
-  
-
- useEffect(() => {
-    if (hasApprovalPerm) {
-      // pass your manager's authStore._id (or employeeId) as route expects
-      fetchPendingMeetings(authStore._id);
-    }
-  }, [hasApprovalPerm, authStore._id, fetchPendingMeetings]);
-
-  // Navbar.jsx
-
-const onStartMeeting = () => startMeetingRequest(authStore._id); // ⬅️ MongoDB ObjectId (_id), not employeeId
-
-
-  
-
   return (
-    <nav
-      className={
-        "bg-white text-black dark:text-white dark:bg-gray-800 " +
-        "z-50 border-b border-gray-500 px-4 sm:px-6 lg:px-8 " +
-        "flex items-center justify-between h-16 shadow-md stickey w-full top-0 left-0"
-      }
-    >
-      {/* Left Section: Company Branding */}
-      <div className="flex items-center space-x-4">
-        <div className="text-2xl font-bold text-white">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 flex justify-between items-center pr-4 bg-white shadow-sm shadow-gray-100 w-full  navbar-shadow ">
+      
+      <div className="flex gap-4">
+        <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="text-black dark:text-white rounded-full ml-2 p-3 hover:text-gray-500 hover:bg-gray-200"
+          >
+            <GoSidebarCollapse size={25} />
+        </button>
         <Link to={getDashboardPath()}>
-            <img className="w-24" src={companyLogo} alt="Company Logo" />
-          </Link>
-        </div>
+          <img className="h-10 object-contain" src={logo} alt="Company Logo" />
+        </Link>
       </div>
 
-      {/* Right Section */}
-      <div className="flex items-center space-x-6">
-        {/* Current Date */}
-        {/* <div className="font-bold">{currentDate}</div> */}
+     
+      <div className="flex items-center gap-4">
 
-        {/* If user is on break, show timer in the center */}
-        {onBreak && (
-          <p className="font-semibold text-green-600">
-            Break Running: {navbarTimer}
-          </p>
-        )}
-
-        {/* BreakCard Dropdown Trigger */}
+      {/* Chat */}
         <div className="relative">
-          <FaBusinessTime
-            className="text-green-400 w-7 h-7 cursor-pointer"
+          <button
+            onClick={handleClick}
+            className="p-2 rounded-xl bg-green-50 hover:bg-green-100 border border-green-100"
+          >
+            <MdChat className="text-gray-700 w-5 h-5" />
+          </button>
+          {personsWithUnread > 0 && (
+            <span className="absolute -top-1 -right-1 text-[10px] font-bold bg-red-500 text-white w-4 h-4 rounded-full flex items-center justify-center">
+              {personsWithUnread}
+            </span>
+          )}
+        </div>
+
+         {/* Theme Toggle */}
+        <ThemeToggleButton />
+         
+          
+        {/* <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{currentDate}</span> */}
+
+        {/* {onBreak && (
+          <span className="text-sm font-semibold text-green-600">Break: {navbarTimer}</span>
+        )} */}
+
+        {/* Break Button */}
+        {/* <div className="relative">
+          <button
             onClick={() => setShowBreakCard((prev) => !prev)}
-          />
+            className="p-2 rounded-xl bg-green-50 hover:bg-green-100 border border-green-100"
+          >
+            <FaBusinessTime className="text-green-500 w-5 h-5" />
+          </button>
           <AnimatePresence>
             {showBreakCard && (
               <motion.div
@@ -282,164 +226,81 @@ const onStartMeeting = () => startMeetingRequest(authStore._id); // ⬅️ Mongo
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
-{/* <div>
-  <button
-    className="flex items-center bg-blue-500 text-white px-3 py-2 rounded-lg shadow hover:bg-blue-600 transition duration-300"
-   onClick={onStartMeeting}
-  >
-    <FaComments className="mr-2" />
-    Start Meeting
-  </button>
-</div> */}
-        {/* Notification Icon with Unread Count */}
-        <div className="relative">
-          <FaBell
-            className="text-yellow-400 w-6 h-6 cursor-pointer"
+        </div> */}
+
+
+        {/* Notifications */}
+       <div className="relative" ref={notificationDropdownRef}>
+          <button
             onClick={() => setShowNotificationDropdown((prev) => !prev)}
-          />
+            className="p-2 rounded-xl bg-green-50 hover:bg-green-100 border border-green-100"
+          >
+            <FaBell className="text-gray-700 w-5 h-5" />
+          </button>
+
           {unreadCount > 0 && (
-            <span
-              className="absolute top-0 right-0 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center cursor-pointer"
-              onClick={() => setShowNotificationDropdown((prev) => !prev)}
-            >
+            <span className="absolute -top-1 -right-1 text-[10px] font-bold bg-red-500 text-white w-4 h-4 rounded-full flex items-center justify-center">
               {unreadCount}
             </span>
           )}
-          <AnimatePresence>
-            {showNotificationDropdown && (
-              <motion.div
-                ref={notificationDropdownRef}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="absolute right-0 mt-2 w-64 bg-gray-700 dark:bg-gray-800 text-white rounded-md shadow-lg z-10"
-              >
-                <NotificationDropdown
-                  notifications={notifications}
-                  loading={loading}
-                  error={error}
-                  onClose={() => setShowNotificationDropdown(false)}
-                />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-        <div className="relative cursor-pointer" onClick={handleClick}>
-        {personsWithUnread > 0 && (
-            <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-full transition-opacity duration-300">
-           {personsWithUnread}
-            </span>
-          )}
-          <FaComments className="text-blue-500 w-6 h-6" />
-        </div>
-        {/* Chat Icon */}
-        {/* <div className="relative cursor-pointer" onClick={handleClick}>
-          {userCount > 0 && showBadge && (
-            <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-2 py-1 text-xs font-bold text-white bg-red-600 rounded-full transition-opacity duration-300">
-              {userCount}
-            </span>
-          )}
-          <FaComments className="text-blue-500 w-6 h-6" />
-        </div> */}
 
-        {/* Theme Toggle */}
-        <ThemeToggleButton />
+        </div>
 
-        {/* Profile Dropdown */}
+        {/* Profile */}
         <div className="relative">
-          <button
-            className="flex items-center space-x-2 focus:outline-none"
+          <div
+            className="flex items-center gap-2 cursor-pointer"
             onClick={() => setShowProfileDropdown((prev) => !prev)}
           >
+            <div className="text-right hidden sm:block">
+              <p className="text-sm font-medium text-gray-800 dark:text-white">{userName}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">ID : {userID}</p>
+            </div>
             <img
               src={userAvatar}
-              alt="Profile"
-              className="w-8 h-8 rounded-full object-cover"
+              alt="User"
+              className="h-9 w-9 rounded-full object-cover border border-gray-300"
             />
-          </button>
-  {/* → Pending approvals */}
-      {hasApprovalPerm && pendingMeetings.length > 0 && (
-        <div className="absolute right-6 top-16 w-80 bg-gray-100 dark:bg-gray-700 p-4 rounded-lg shadow-lg space-y-2">
-          <h4 className="font-semibold text-gray-700 dark:text-gray-200">
-            Meeting Requests
-          </h4>
-          {pendingMeetings.map((m) => (
-            <div
-              key={m._id}
-              className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-300"
-            >
-              <span>
-                {m.employeeName} on {dayjs(m.date).format("DD MMM")}
-              </span>
-              <div className="flex space-x-1">
-                <button
-                  className="bg-green-500 px-2 rounded text-white"
-                  onClick={() =>
-                    approveMeetingRequest(m._id, authStore._id)
-                  }
-                >
-                  ✓
-                </button>
-                <button
-                  className="bg-red-500 px-2 rounded text-white"
-                  onClick={() =>
-                    rejectMeetingRequest(m._id, authStore._id)
-                  }
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-          <AnimatePresence>
-            {showProfileDropdown && (
-              <motion.div
-                ref={profileDropdownRef}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="absolute right-0 mt-2 w-48 bg-gray-700 dark:bg-gray-800 text-white rounded-md shadow-lg z-10"
-              >
-                <div className="p-4 border-b border-gray-600">
-                  <p className="text-sm font-semibold">{userName}</p>
-                  <p className="text-xs text-gray-300">{userEmail}</p>
-                </div>
-                <ul className="py-2">
-                  {/* <li>
-                    <a
-                      href="/dashboard"
-                      className="flex items-center px-4 py-2 text-sm hover:bg-gray-600"
-                    >
-                      <FaHome className="mr-2 text-blue-400" /> Dashboard
-                    </a>
-                  </li> */}
-
-                  <li>
-                    <Link
-                      to={"/dashboard/my-profile"}
-                      className="flex items-center px-4 py-2 text-sm hover:bg-gray-600"
-                    >
-                      <FaUserCircle className="mr-2 text-green-400" /> Profile
-                    </Link>
-                  </li>
-
-                  <li>
-                    <button
-                      onClick={handleSignOut}
-                      className="flex items-center w-full px-4 py-2 text-sm hover:bg-gray-600 focus:outline-none"
-                    >
-                      <FaSignOutAlt className="mr-2 text-red-400" /> Sign Out
-                    </button>
-                  </li>
-                </ul>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          </div>
+         
         </div>
       </div>
+    <AnimatePresence>
+      {showNotificationDropdown && (
+        <motion.div
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 100 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="absolute top-16 right-1 mt-2 z-50"
+        >
+          <NotificationDropdown
+            notifications={notifications}
+            loading={loading}
+            error={error}
+            onClose={() => setShowNotificationDropdown(false)}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
+    <AnimatePresence>
+      {showProfileDropdown && (
+        <motion.div
+          initial={{ opacity: 0, x: 100 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 100 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="absolute top-16 right-1 mt-2 z-40"
+        >
+          <ProfileSidebar
+            notifications={notifications}
+            loading={loading}
+            error={error}
+            onClose={() => setShowProfileDropdown(false)}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
     </nav>
   );
 };
