@@ -4,9 +4,10 @@
 
 /* Light mode by default */
 :root {
-  --bg-primary: #ffffff;
+  --bg-primary: #f3f4f6;
   --bg-secondary: #fafafa;
   --text-primary: #333333;
+  --bg-sidebar:#f4f4f4
 }
 
 /* Dark mode overrides */
@@ -73,7 +74,6 @@ html {
   box-sizing: border-box;
 }
 
-
 .modal-body-locked {
   overflow: hidden !important;
 }
@@ -83,9 +83,17 @@ html {
   background-color: #111827  !important;
 }
 
+
+ /* #f4f4f4 !important; */
+
+ /* bo-shadow: 4px 0pc 6.5px 0px rgba(0,0,0,0.12) */
+
+ /* navar shadow: 0px 2px 2.5px 0px rgba(0,0,0,0.25) */
+ /* icon bg-borde : D2FFE9 
+    color-bg: 1E211E */
 /* For light mode */
 .light #orgchart-container > svg {
-  background-color: #fafafa !important;
+  background-color: #F3F4F6 !important;
 }
 
 /* Dark node fill override (if you want nodes to be different in dark mode) */
@@ -98,3 +106,30 @@ html {
   fill: #dddddd !important;
 }
 
+.sidebar-shadow{
+  box-shadow: 4px 0pc 6.5px 0px rgba(0,0,0,0.12);
+}
+
+.navbar-shadow{
+  box-shadow: 0px 2px 2.5px 0px rgba(0,0,0,0.25);
+}
+
+.sidebar-scrollbar {
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #00000020 transparent; 
+}
+
+.sidebar-scrollbar::-webkit-scrollbar {
+  width: 6px; 
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-track {
+  background: transparent; 
+}
+
+.sidebar-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.6);
+  border-radius: 10px;
+  margin-block: 20px; 
+}
