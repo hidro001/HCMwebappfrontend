@@ -318,7 +318,7 @@ export const useOwnFullAttendanceStore = create(
 
           // 4) Company Settings
           const settingsRes = await axiosInstance.get(
-            "/company-settings"
+            "/company-settings/settings"
           );
           if (!settingsRes.data.success) {
             throw new Error(

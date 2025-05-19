@@ -131,7 +131,7 @@ const useFullAttendanceStore = create((set, get) => ({
 
       // 4) company settings
       const companySettingsResponse = await axiosInstance.get(
-        `/company-settings`
+        `/company-settings/settings`
       );
       if (!companySettingsResponse.data?.success) {
         throw new Error(
