@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
-import { Sidebar, Breadcrumb, Navbar } from "../components";
+import { Sidebar, Breadcrumb, Navbar, SubMenuTabs } from "../components";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { menuItems } from "../config/menuConfig";
 import useAuthStore from "../store/store"; // We'll read the user's permissions
 import ChatNotification from "../components/chats/ChatNotification";
 
 const MainLayout = () => {
-
-  const [collapsed, setCollapsed] = useState(true)
+  const [collapsed, setCollapsed] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
-  const [darkMode, setDarkMode] = useState(false);
 
   const currentPath = location.pathname;
   const userPermissions = useAuthStore((state) => state.permissions);
@@ -58,69 +56,27 @@ const MainLayout = () => {
     }
   };
 
-  const handleTabClick = (option) => {
-    navigate(option.link);
-  };
-
-  const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-  };
 
   return (
     <div>
-      <div className="h-screen text-text-primary bg-bg-primary flex flex-col">
-        <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />
+      <div className="h-screen text-text-primary dark:bg-black bg-gray-50 flex flex-col">
+        <Navbar />
 
         <div className="flex flex-row flex-1 pt-[52px] overflow-hidden">
-          <Sidebar onSectionSelect={handleSectionSelect} collapsed={collapsed}  />
+          <Sidebar
+            onSectionSelect={handleSectionSelect}
+            collapsed={collapsed}
+            setCollapsed={setCollapsed}
+          />
 
           <div className="flex-1 h-screen flex flex-col w-full overflow-x-scroll hide-horizontal-scrollbar">
             <Breadcrumb />
 
             {/* Show horizontal sub-menu tabs if we have a valid activeSection */}
-            {activeSection && filteredSubOptions.length > 0 && (
-              <div
-                className={`
-                  flex items-center
-                  bg-gray-200 dark:bg-gray-900
-                  border-b border-gray-300 dark:border-gray-700
-                  backdrop-blur-sm
-                  gap-2
-                  overflow-x-auto
-                  hide-scrollbar
-                `}
-              >
-                {filteredSubOptions.map((option, idx) => {
-                  const isActive = option.link === currentPath;
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => handleTabClick(option)}
-                      className={`
-                        relative px-4 py-2 mx-1 text-base font-bold
-                        transition-colors duration-300
-                        rounded-lg
-                        ${
-                          isActive
-                            ? "text-green-600 dark:text-green-400 border-b-1 border-green-500"
-                            : "text-gray-600 dark:text-gray-200 hover:text-cyan-500 dark:hover:text-cyan-300"
-                        }
-                      `}
-                    >
-                      {option.name}
-                      {isActive && (
-                        <span
-                          className={`
-                            absolute left-0 bottom-0 w-full h-[2px] bg-green-500
-                            dark:bg-green-300
-                          `}
-                        />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+            <SubMenuTabs
+              activeSection={activeSection}
+              filteredSubOptions={filteredSubOptions}
+            />
 
             <div
               id="scrollableDiv"
@@ -149,4 +105,3 @@ const MainLayout = () => {
 };
 
 export default MainLayout;
-
