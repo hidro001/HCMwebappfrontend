@@ -471,7 +471,7 @@ export default function Sidebar({ collapsed, setCollapsed, onSectionSelect }) {
   return (
     <motion.div
       className={`dark:shadow-[0_0_20px_rgba(0,0,0,0.5)] shadow-[0_0_20px_rgba(0,0,0,0.1)] h-screen transition-all duration-300 ease-in-out flex flex-col overflow-hidden relative 
-        dark:bg-gray-950 dark:text-white bg-white text-slate-800 
+        dark:bg-black dark:text-white bg-white text-slate-800 
         ${actualCollapsed ? "w-20" : "w-64"}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

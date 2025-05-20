@@ -492,7 +492,7 @@ const Navbar = () => {
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
         onClick={onClick}
-        className={`p-2.5 rounded-full bg-opacity-20 dark:bg-opacity-20 bg-${color}-500 hover:bg-${color}-600 dark:bg-${color}-600 dark:hover:bg-${color}-500 backdrop-blur-sm text-${color}-600 dark:text-${color}-400 transition-all duration-300 ease-in-out relative group shadow-lg shadow-${color}-500/20 dark:shadow-${color}-500/10`}
+        className={`p-2.5 rounded-full bg-opacity-20 dark:bg-opacity-20 bg-${color}-500 hover:bg-${color}-400 dark:bg-${color}-600 dark:hover:bg-${color}-500 backdrop-blur-sm text-${color}-600 dark:text-${color}-400 transition-all duration-300 ease-in-out relative group shadow-lg shadow-${color}-500/20 dark:shadow-${color}-500/10`}
         aria-label={tooltip}
       >
         {icon}
@@ -537,7 +537,7 @@ const Navbar = () => {
             transition={{ delay: 0.2 }}
             className="ml-2 text-lg font-semibold text-gray-800 dark:text-white hidden md:block"
           >
-            EMS Portal
+            HCM Portal
           </motion.span>
         </Link>
       </div>

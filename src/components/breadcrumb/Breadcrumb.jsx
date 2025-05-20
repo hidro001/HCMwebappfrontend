@@ -131,7 +131,6 @@
 
 // export default Breadcrumb;
 
-
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import useAuthStore from "../../store/store";
@@ -147,7 +146,7 @@ import { IoChevronForwardOutline } from "react-icons/io5";
 const Breadcrumb = () => {
   const location = useLocation();
   const [mounted, setMounted] = useState(false);
-  
+
   // Access user data from Zustand store
   const userName = useAuthStore((state) => state.userName);
   const employeeId = useAuthStore((state) => state.employeeId);
@@ -194,12 +193,14 @@ const Breadcrumb = () => {
           transition={{ duration: 0.3 }}
           className="flex items-center"
         >
-          <Link 
-            to="/dashboard" 
+          <Link
+            to="/dashboard"
             className="flex items-center px-2 py-1 rounded-md transition-all duration-200 hover:bg-blue-100 dark:hover:bg-blue-900 group"
           >
             <FiHome className="mr-1 text-blue-500 group-hover:scale-110 transition-transform" />
-            <span className="group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">Dashboard</span>
+            <span className="group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
+              Dashboard
+            </span>
           </Link>
         </motion.div>
 
@@ -214,7 +215,7 @@ const Breadcrumb = () => {
             const displayName = formatBreadcrumb(value);
             const icon = getIcon(value);
             const isLast = index === pathnames.length - 1;
-            
+
             // Add staggered animation delay based on index
             const delay = 0.1 + index * 0.1;
 
@@ -228,7 +229,7 @@ const Breadcrumb = () => {
                 >
                   <IoChevronForwardOutline className="text-gray-400 dark:text-gray-500" />
                 </motion.div>
-                
+
                 {/* Breadcrumb item */}
                 <motion.div
                   initial={{ opacity: 0, x: -5 }}
@@ -246,8 +247,12 @@ const Breadcrumb = () => {
                       to={to}
                       className="flex items-center px-2 py-1 rounded-md transition-all duration-200 hover:bg-gray-100 dark:hover:bg-gray-800 group"
                     >
-                      <span className="mr-1 group-hover:scale-110 transition-transform">{icon}</span>
-                      <span className="group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">{displayName}</span>
+                      <span className="mr-1 group-hover:scale-110 transition-transform">
+                        {icon}
+                      </span>
+                      <span className="group-hover:text-blue-600 dark:group-hover:text-blue-300 transition-colors">
+                        {displayName}
+                      </span>
                     </Link>
                   )}
                 </motion.div>
@@ -259,28 +264,30 @@ const Breadcrumb = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row justify-between items-center px-4 py-2 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <div className="flex flex-col md:flex-row justify-between items-center px-4 py-2 bg-white/95 dark:bg-black border-b border-gray-200 dark:border-gray-700 shadow-sm">
       {/* Welcome message with pulse animation on mount */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
         className="text-sm mb-2 md:mb-0 text-gray-600 dark:text-gray-300  mt-3"
       >
         Welcome back,{" "}
-        <motion.span 
+        <motion.span
           className="font-semibold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent"
           initial={mounted ? { scale: 1 } : { scale: 1 }}
           animate={mounted ? { scale: [1, 1.05, 1] } : { scale: 1 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
           {userName ? capitalizeWords(userName) : "Guest"}{" "}
-          <span className="text-xs font-normal text-gray-500 dark:text-gray-400">({employeeId})</span>
+          <span className="text-xs font-normal text-gray-500 dark:text-gray-400">
+            ({employeeId})
+          </span>
         </motion.span>
       </motion.div>
-      
+
       {/* Breadcrumbs */}
-      <div className="overflow-x-auto w-full md:w-auto">
+      <div className="hidden md:block overflow-x-auto w-full md:w-auto">
         {generateBreadcrumbs()}
       </div>
     </div>
