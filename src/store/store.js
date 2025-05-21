@@ -4,6 +4,7 @@ import { persist } from "zustand/middleware";
 import useNotificationStore from "./notificationStore"; 
 // import useNotificationStore from "./notificationStore";
 import useEngagementStore from "./engagementStore";
+import { logout as logoutAPI } from "../service/service"; // ✅ Import API
 
 const useAuthStore = create(
   persist(
@@ -101,31 +102,38 @@ login: (userData) => {
 },
 
 
-      logout: () => {
-        set({
-          isAuthenticated: false,
-          _id: "",
-          userRole: "",
-          permissionRole: "",
-          userName: "",
-          employeeId: "",
-          department: "",
-          workingEmail: "",
-          phoneNumber: "",
-          designation: "",
-          departmentAlocated: [],
-          teams: [],
-          userAvatar: "",
-          permissions: [],
-          companyInfo: null,
-        });
+ logout: async () => {
+  try {
+    const token = localStorage.getItem("accessToken");
+    if (token) {
+      await logoutAPI(); // 🔥 API call to invalidate token in DB
+    }
+  } catch (error) {
+    console.warn("Logout API failed. Proceeding with local logout.");
+  }
 
-        localStorage.removeItem("accessToken");
+  set({
+    isAuthenticated: false,
+    _id: "",
+    userRole: "",
+    permissionRole: "",
+    userName: "",
+    employeeId: "",
+    department: "",
+    workingEmail: "",
+    phoneNumber: "",
+    designation: "",
+    departmentAlocated: [],
+    teams: [],
+    userAvatar: "",
+    permissions: [],
+    companyInfo: null,
+  });
 
-        useNotificationStore.getState().clearNotifications();
-        useEngagementStore.getState().resetPermissions();
-      },
-
+  localStorage.removeItem("accessToken");
+  useNotificationStore.getState().clearNotifications();
+  useEngagementStore.getState().resetPermissions();
+},
       setCompanyInfo: (companyData) => {
         const currentCompanyInfo = get().companyInfo;
         if (

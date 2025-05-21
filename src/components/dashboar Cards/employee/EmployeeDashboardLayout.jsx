@@ -9,8 +9,13 @@ import AssignedTaskListCard from "./AssignedTaskListCard";
 import UpcomingHolidaysCard from "./UpcomingHolidaysCard";
 import PerformanceCard from "./PerformanceCard";
 import TopPerformerCard from "./TopPerformerCard";
+import { registerFcmToken } from "../../../utils/registerFcmToken"; 
+import { useEffect } from "react";
 
 function EmployeeDashboardLayout() {
+    useEffect(() => {
+    registerFcmToken();
+  }, []);
   return (
     <motion.div
       className="min-h-screen w-full bg-gray-50 dark:bg-[#12121200] pt-2"

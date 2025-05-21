@@ -14,14 +14,19 @@ import DemographicCard from "./DemographicCard";
 import AttendanceCard from "./AttendanceCard";
 import AnnouncementCard from "./AnnouncementCard";
 import ProductLense from "./ProductLense";
+import { registerFcmToken } from "../../../utils/registerFcmToken";
+import { useEffect } from "react";
 
 function SuperAdminDashboard() {
+  useEffect(() => {
+    registerFcmToken();
+  }, []);
   return (
     // 2) Replace your outer container with motion.div to animate the entire page
     <motion.div
       className="min-h-screen w-full bg-gray-50 dark:bg-[#12121200] pt-2"
-      initial={{ opacity: 0 }}       // Starts transparent
-      animate={{ opacity: 1 }}       // Fades in
+      initial={{ opacity: 0 }} // Starts transparent
+      animate={{ opacity: 1 }} // Fades in
       transition={{ duration: 0.5 }} // Duration of half a second
     >
       {/* 1) Top Banner */}
@@ -42,8 +47,7 @@ function SuperAdminDashboard() {
           >
             {/* Row: Stat Cards */}
             <DashboardStatCards />
-            <ProductLense/>
-       
+            <ProductLense />
 
             {/* Row: Employee Status + Department */}
             <div className="flex flex-col md:flex-row gap-7">
@@ -85,4 +89,3 @@ function SuperAdminDashboard() {
 }
 
 export default SuperAdminDashboard;
-

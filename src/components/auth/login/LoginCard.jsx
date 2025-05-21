@@ -1,9 +1,7 @@
-
-
-
 import { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
+import platform from "platform";
 import MuiCard from "@mui/material/Card";
 import Checkbox from "@mui/material/Checkbox";
 import FormLabel from "@mui/material/FormLabel";
@@ -13,13 +11,13 @@ import Link from "@mui/material/Link";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { styled } from "@mui/material/styles";
-import CircularProgress from "@mui/material/CircularProgress"; // Import CircularProgress
+import CircularProgress from "@mui/material/CircularProgress";
 import { useNavigate } from "react-router-dom";
-import { toast, Toaster } from "react-hot-toast"; // Replaced react-toastify with react-hot-toast
-import { useTheme } from "@mui/material/styles"; // For theme detection
+import { toast, Toaster } from "react-hot-toast";
+import { useTheme } from "@mui/material/styles";
 
-import ForgotPassword from "./ForgotPassword"; // Ensure correct import path
-import useAuthStore from "../../../store/store"; // Zustand store
+import ForgotPassword from "./ForgotPassword";
+import useAuthStore from "../../../store/store";
 import {
   login as loginService,
   verifyOtp,
@@ -27,7 +25,7 @@ import {
   fetchCompanyInfo,
 } from "../../../service/service"; // API services
 import LockIcon from "@mui/icons-material/Lock"; // MUI Icon
-
+import axiosInstance from "../../../service/axiosInstance";
 
 // Styled Components
 
@@ -82,9 +80,6 @@ const LoginCard = () => {
   const [loading, setLoading] = useState(false);
   const [resendCooldown, setResendCooldown] = useState(30);
   const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
-
-
-
 
   // Fetch company info on mount
   useEffect(() => {
@@ -213,106 +208,7 @@ const LoginCard = () => {
     }
   };
 
-  // Handle Successful Login or OTP Verification
-  // const handleLoginSuccess = (response) => {
-  //   const { user, accessToken } = response;
-  //   const {
-  //     user_Role,
-  //     _id, // Extract _id
-  //     permission_role,
-  //     first_Name,
-  //     last_Name,
-  //     employee_Id,
-  //     department,
-  //     working_Email_Id,
-  //     mobile_No,
-  //     designation,
-  //     departmentAlocated,
-  //     teams,
-  //     user_Avatar,
-  //     permission,
-  //   } = user;
-
-  //   // Parse departmentAlocated and teams
-  //   const parseDepartmentAlocated = (deptAlloc) => {
-  //     let departmentsArray = [];
-  //     if (Array.isArray(deptAlloc)) {
-  //       deptAlloc.forEach((element) => {
-  //         if (typeof element === "string") {
-  //           try {
-  //             const parsedElement = JSON.parse(element);
-  //             if (Array.isArray(parsedElement)) {
-  //               departmentsArray = departmentsArray.concat(parsedElement);
-  //             } else {
-  //               departmentsArray = departmentsArray.concat(element.split(","));
-  //             }
-  //           } catch (e) {
-  //             departmentsArray = departmentsArray.concat(element.split(","));
-  //           }
-  //         }
-  //       });
-  //     } else if (typeof deptAlloc === "string") {
-  //       try {
-  //         const parsed = JSON.parse(deptAlloc);
-  //         if (Array.isArray(parsed)) {
-  //           departmentsArray = parsed;
-  //         } else {
-  //           departmentsArray = deptAlloc.split(",");
-  //         }
-  //       } catch (e) {
-  //         departmentsArray = deptAlloc.split(",");
-  //       }
-  //     }
-  //     return [...new Set(departmentsArray.map((dept) => dept.trim()))];
-  //   };
-
-  //   const parseTeams = (teams) => {
-  //     if (Array.isArray(teams)) {
-  //       return teams.map((team) => ({
-  //         department: team.department,
-  //         teamName: team.teamName,
-  //         teamId: team._id,
-  //       }));
-  //     }
-  //     return [];
-  //   };
-
-  //   const departmentsArray = parseDepartmentAlocated(departmentAlocated);
-  //   const teamsArray = parseTeams(teams);
-
-  //   // Update Zustand store
-  //   authStore.login({
-  //     accessToken,
-  //     _id, // Store _id
-  //     userRole: user_Role,
-  //     permissionRole: permission_role,
-  //     userName: `${first_Name} ${last_Name || ""}`,
-  //     employeeId: employee_Id,
-  //     department,
-  //     workingEmail: working_Email_Id,
-  //     phoneNumber: mobile_No,
-  //     designation,
-  //     departmentAlocated: departmentsArray,
-  //     teams: teamsArray,
-  //     userAvatar: user_Avatar, // Add user avatar
-  //     permissions: permission || [], // We'll store this in Zustand
-  //     engagement_permission: user.engagement_permission,
-  //   });
-
-  //   toast.success("Login Successful!");
-  //   switch (user_Role.toLowerCase()) {
-  //     case "employee":
-  //       navigate("/dashboard/employee");
-  //       break;
-  //     case "super-admin":
-  //       navigate("/dashboard/super-employee-dashboard");
-  //       break;
-  //     default:
-  //       toast.error("Unknown user role");
-  //   }
-  // };
-
-  const handleLoginSuccess = (response) => {
+  const handleLoginSuccess = async (response) => {
     const { user, accessToken } = response;
     const {
       user_Role,
@@ -330,13 +226,17 @@ const LoginCard = () => {
       user_Avatar,
       permission,
     } = user;
-  
-    const parseDepartmentAlocated = (deptAlloc) => { /* existing logic */ };
-    const parseTeams = (teams) => { /* existing logic */ };
-  
+
+    const parseDepartmentAlocated = (deptAlloc) => {
+      /* existing logic */
+    };
+    const parseTeams = (teams) => {
+      /* existing logic */
+    };
+
     const departmentsArray = parseDepartmentAlocated(departmentAlocated);
     const teamsArray = parseTeams(teams);
-  
+
     // Update Zustand store
     authStore.login({
       accessToken,
@@ -355,7 +255,7 @@ const LoginCard = () => {
       permissions: permission || [],
       engagement_permission: user.engagement_permission,
     });
-  
+
     // ⬇️ **NEW CODE: Send credentials to Electron main process**
     if (window.electronAPI && window.electronAPI.sendCredentials) {
       window.electronAPI.sendCredentials({
@@ -367,9 +267,12 @@ const LoginCard = () => {
     } else {
       console.warn("Electron API not available. Check preload.js.");
     }
-  
+
     toast.success("Login Successful!");
-  
+
+
+
+
     switch (user_Role.toLowerCase()) {
       case "employee":
         navigate("/dashboard/employee");
@@ -381,7 +284,6 @@ const LoginCard = () => {
         toast.error("Unknown user role");
     }
   };
-  
 
   // Handle Forgot Password Modal Open/Close
   const handleForgotPasswordOpen = () => setForgotPasswordOpen(true);
@@ -578,7 +480,6 @@ const LoginCard = () => {
       />
 
       {/* Toast Notifications */}
-
     </GlassCard>
   );
 };

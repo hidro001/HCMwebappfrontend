@@ -20,6 +20,30 @@ export const login = async (employeeId, password) => {
   }
 };
 
+export const logout = async () => {
+  const token = localStorage.getItem("accessToken");
+
+  try {
+    const res = await axiosInstance.post(
+      "/auth/logout",
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "x-device-type": "web", // Or detect dynamically
+        },
+      }
+    );
+
+    return res.data;
+  } catch (error) {
+    console.error("Logout API error:", error.response || error);
+    throw new Error(error.response?.data?.message || "Logout failed");
+  }
+};
+
+
+
 // OTP Verification function
 export const verifyOtp = async (employeeId, otp) => {
   try {
