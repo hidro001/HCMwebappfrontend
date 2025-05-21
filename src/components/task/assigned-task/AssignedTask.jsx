@@ -15,6 +15,7 @@ import AssignedTaskModal from "./AssignedTaskModal"; // View Task
 import AssignedTaskEdit from "./AssignedTaskEdit"; // Edit Task
 import ConfirmationDialog from "../../../components/common/ConfirmationDialog";
 import { deleteTasks, fetchTasks } from "../../../service/taskService";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 
 const AssignedTask = () => {
@@ -30,6 +31,11 @@ const AssignedTask = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [manualPage, setManualPage] = useState(1);
   const tasksPerPage = 10;
+  const navigate = useNavigate();
+
+  const handleEmployeeClick = (employeeId) => {
+    navigate(`/dashboard/employee-tasks/${employeeId}`);
+  };
 
   // For dark mode handling
   useEffect(() => {
@@ -70,7 +76,9 @@ const AssignedTask = () => {
     if (!deleteTaskId) return;
     const result = await deleteTasks(deleteTaskId);
     if (result !== null) {
-      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== deleteTaskId));
+      setTasks((prevTasks) =>
+        prevTasks.filter((task) => task._id !== deleteTaskId)
+      );
       toast.success("Task deleted successfully!");
     } else {
       toast.error("Failed to delete task.");
@@ -106,7 +114,10 @@ const AssignedTask = () => {
 
       {/* Assign Task Modal */}
       {isModalOpen && (
-        <AssignTask onClose={() => setIsModalOpen(false)} onAddSuccess={refreshTasks} />
+        <AssignTask
+          onClose={() => setIsModalOpen(false)}
+          onAddSuccess={refreshTasks}
+        />
       )}
 
       {/* Table */}
@@ -141,10 +152,17 @@ const AssignedTask = () => {
                   <td className="p-3 border dark:border-gray-700">
                     {index + 1 + indexOfFirstTask}
                   </td>
-                  <td className="p-3 border text-blue-600 dark:border-gray-700">
+                  <td
+                    className="p-3 border text-blue-600 dark:border-gray-700 cursor-pointer hover:underline"
+                    onClick={() =>
+                      handleEmployeeClick(task.assignedToEmployeeId)
+                    }
+                  >
                     {task.assignedToEmployeeId}
                   </td>
-                  <td className="p-3 border dark:border-gray-700">{task.assignedToName}</td>
+                  <td className="p-3 border dark:border-gray-700">
+                    {task.assignedToName}
+                  </td>
                   <td className="p-3 border dark:border-gray-700">
                     {new Date(task.createdAt).toLocaleDateString("en-IN", {
                       timeZone: "Asia/Kolkata",
@@ -155,7 +173,7 @@ const AssignedTask = () => {
                       timeZone: "Asia/Kolkata",
                     })}
                   </td>
-                 
+
                   <td
                     className={`p-3 border dark:border-gray-700 font-semibold ${
                       task.priority === "High"
@@ -167,7 +185,7 @@ const AssignedTask = () => {
                   >
                     {task.priority}
                   </td>
-           
+
                   <td className="p-3">
                     <span
                       className={`px-3 py-1 rounded text-xs font-semibold ${
@@ -181,23 +199,20 @@ const AssignedTask = () => {
                       {task.status}
                     </span>
                   </td>
-              
 
                   <td className="p-3">
-                  <span
-    className={`px-3 py-1 rounded text-xs font-semibold ${
-      task.acknowledge === "Not Acknowledge"
-        ? "bg-yellow-100 dark:bg-yellow-700 text-yellow-600 dark:text-yellow-200"
-        : task.acknowledge === "Acknowledged"
-        ? "bg-blue-100 dark:bg-blue-700 text-blue-600 dark:text-blue-200"
-        : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-200"
-    }`}
-  >
-    {task.acknowledge}
-  </span>
+                    <span
+                      className={`px-3 py-1 rounded text-xs font-semibold ${
+                        task.acknowledge === "Not Acknowledge"
+                          ? "bg-yellow-100 dark:bg-yellow-700 text-yellow-600 dark:text-yellow-200"
+                          : task.acknowledge === "Acknowledged"
+                          ? "bg-blue-100 dark:bg-blue-700 text-blue-600 dark:text-blue-200"
+                          : "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-200"
+                      }`}
+                    >
+                      {task.acknowledge}
+                    </span>
                   </td>
-
-
 
                   <td className="p-3 border dark:border-gray-700 flex justify-center gap-2">
                     <button
@@ -229,8 +244,8 @@ const AssignedTask = () => {
       {/* Pagination Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4">
         <span className="text-sm mb-2 sm:mb-0">
-          Showing {indexOfFirstTask + 1} to {Math.min(indexOfLastTask, totalItems)} of{" "}
-          {totalItems} entries
+          Showing {indexOfFirstTask + 1} to{" "}
+          {Math.min(indexOfLastTask, totalItems)} of {totalItems} entries
         </span>
         <div className="flex items-center gap-2">
           <button

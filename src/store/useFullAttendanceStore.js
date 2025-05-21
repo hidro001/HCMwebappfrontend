@@ -437,6 +437,55 @@ const useFullAttendanceStore = create((set, get) => ({
     doc.save("payroll.pdf");
     toast.success("PDF downloaded successfully!");
   },
+
+   getTimelineSegments(record) {
+    const segments = [];
+    const login = convertTo24Hour(record?.login);
+    const logout = convertTo24Hour(record?.logout);
+    if (!login || !logout) return [];
+  
+    const workStart = new Date(`1970-01-01T${login}`);
+    const workEnd = new Date(`1970-01-01T${logout}`);
+  
+    const breaks = (record?.breaks || []).map(br => ({
+      start: new Date(br.start),
+      end: new Date(br.end)
+    })).sort((a, b) => a.start - b.start);
+  
+    let pointer = new Date(workStart);
+  
+    for (const br of breaks) {
+      // Add working time before break
+      if (br.start > pointer) {
+        segments.push({
+          start: pointer.toTimeString().slice(0, 5),
+          end: br.start.toTimeString().slice(0, 5),
+          type: "Working"
+        });
+      }
+  
+      // Add break time
+      segments.push({
+        start: br.start.toTimeString().slice(0, 5),
+        end: br.end.toTimeString().slice(0, 5),
+        type: "Break"
+      });
+  
+      pointer = new Date(br.end); // move pointer forward
+    }
+  
+    // Add final working time after last break
+    if (pointer < workEnd) {
+      segments.push({
+        start: pointer.toTimeString().slice(0, 5),
+        end: workEnd.toTimeString().slice(0, 5),
+        type: "Working"
+      });
+    }
+  
+    return segments;
+  }
+  
 }));
 
 export default useFullAttendanceStore;

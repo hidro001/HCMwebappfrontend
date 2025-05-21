@@ -6,8 +6,7 @@ import useAuthStore from "../store/store"; // We'll read the user's permissions
 import ChatNotification from "../components/chats/ChatNotification";
 
 const MainLayout = () => {
-
-  const [collapsed, setCollapsed] = useState(true)
+  const [collapsed, setCollapsed] = useState(true);
   const navigate = useNavigate();
   const location = useLocation();
   const [darkMode, setDarkMode] = useState(false);
@@ -72,10 +71,13 @@ const MainLayout = () => {
         <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />
 
         <div className="flex flex-row flex-1 pt-[52px] overflow-hidden">
-          <Sidebar onSectionSelect={handleSectionSelect} collapsed={collapsed}  />
+          <Sidebar
+            onSectionSelect={handleSectionSelect}
+            collapsed={collapsed}
+          />
 
           <div className="flex-1 h-screen flex flex-col w-full overflow-x-scroll hide-horizontal-scrollbar">
-            <Breadcrumb />
+            {/* <Breadcrumb /> */}
 
             {/* Show horizontal sub-menu tabs if we have a valid activeSection */}
             {activeSection && filteredSubOptions.length > 0 && (
@@ -149,4 +151,3 @@ const MainLayout = () => {
 };
 
 export default MainLayout;
-
