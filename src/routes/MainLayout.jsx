@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Sidebar, Breadcrumb, Navbar, SubMenuTabs } from "../components";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { menuItems } from "../config/menuConfig";
-import useAuthStore from "../store/store"; // We'll read the user's permissions
+import useAuthStore from "../store/store"; 
 import ChatNotification from "../components/chats/ChatNotification";
 
 const MainLayout = () => {
