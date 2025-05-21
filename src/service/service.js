@@ -261,6 +261,6 @@ export const unbanUser = async (userId) => {
 };
 
 export const getUsers = async () => {
-  const response = await axiosInstance.get(`/user/all-user`);
+  const response = await axiosInstance.get(`/user/get-all`);
   return response.data;
 };
