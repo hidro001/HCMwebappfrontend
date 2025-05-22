@@ -43,6 +43,22 @@ export const logout = async () => {
 };
 
 
+export const removeFcmToken = async (token) => {
+  const accessToken = localStorage.getItem("accessToken");
+
+  return axiosInstance.post(
+    "/user-management/remove-fcm-token",
+    { token },
+    {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "x-device-type": "web",
+      },
+    }
+  );
+};
+
+
 
 // OTP Verification function
 export const verifyOtp = async (employeeId, otp) => {
