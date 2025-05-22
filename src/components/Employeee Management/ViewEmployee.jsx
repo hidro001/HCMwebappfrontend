@@ -1213,9 +1213,7 @@ function ViewEmployee() {
                 {orNA(employee.user_Address)}
               </li>
             </ul>
-          </div>
-
-          <div className="flex flex-col space-y-2 mt-4 px-4">
+            <div className="flex flex-col space-y-2 mt-4 px-4">
   {/* View Payroll (using Link) */}
   <Link
     to={`/dashboard/payroll/employee/${employee.employee_Id}`}
@@ -1245,6 +1243,12 @@ function ViewEmployee() {
         >
           View Performance
         </button>
+   <button
+          onClick={() => navigate(`/dashboard/attendance/${employee.employee_Id}`)}
+          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition"
+        >
+          View Attendance
+        </button>
 
   {/* View Tickets Raised */}
   <button
@@ -1254,6 +1258,9 @@ function ViewEmployee() {
     View Tickets Raised
   </button>
 </div>
+          </div>
+
+          
 
         </div>
 
