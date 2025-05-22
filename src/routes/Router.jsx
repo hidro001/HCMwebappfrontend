@@ -103,6 +103,9 @@ import ProductivityLensAll from "../components/product-lense/ProductivityLensAll
 import SubordinateProductivityLens from "../components/product-lense/SubordinateProductivityLens";
 import EmployeeTicketsPage from "../components/tickets Management/EmployeeTicketsPage";
 import IndividualAssignedTasks from "../components/task/assigned-task/IndividualAssignedTasks";
+import EmployeeDailyTaskDetail from "../components/task/daily-task/EmployeeDailyTaskDetail";
+import EmployeeDetails from "../components/payroll/manage-payroll/EmployeePayrollDetails";
+import EmployeeIndividualRatings from "../components/performance management new/EmployeeIndividualRating";
 
 const router = createBrowserRouter([
   {
@@ -141,6 +144,10 @@ const router = createBrowserRouter([
         path: "view-announcement",
         element: <ViewAnnouncements />,
       },
+      {
+        path: "employee-particular-tasks/:employeeId",
+        element: <EmployeeDailyTaskDetail />,
+      },
 
       {
         path: "engagement-feed",
@@ -149,6 +156,10 @@ const router = createBrowserRouter([
       {
         path: "engagement-permission-dashboard",
         element: <EngPermissionDashboardPage />,
+      },
+      {
+        path: "payroll/employee/:employeeId",
+        element: <EmployeeDetails />,
       },
 
       {
@@ -329,6 +340,11 @@ const router = createBrowserRouter([
         path: "assigned-task/employee",
         element: <AssignedTaskEmployeePage />,
       },
+      {
+        path: "employee/:employeeId/ratings",
+        element: <EmployeeIndividualRatings />,
+      },
+
       {
         path: "daily-task",
         element: <DailyTaskPage />,

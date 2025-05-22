@@ -211,6 +211,21 @@ export const fetchTasksByEmployeeId = async (employeeId) => {
   }
 };
 
+// e.g. "fetchDailyTasksByEmployeeId" calling the new route
+export const fetchDailyTasksByEmployeeId = async (employeeId) => {
+  try {
+    const response = await axiosInstance.get(`/task/daily/employee/${employeeId}`);
+    if (response.data.success) {
+      return response.data.data;
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching daily tasks:", error);
+    return [];
+  }
+};
+
+
 
 export const updateTaskdaily = async (taskId, payload) => {
   try {
