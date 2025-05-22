@@ -199,6 +199,19 @@ export const deleteTask = async (taskId) => {
   }
 };
 
+export const fetchTasksByEmployeeId = async (employeeId) => {
+  try {
+    const response = await axiosInstance.get(`/task/assign/employee/${employeeId}`);
+    if (response.data.success) {
+      return response.data.data;
+    }
+  } catch (error) {
+    console.error("Error fetching tasks by employee:", error);
+    return [];
+  }
+};
+
+
 export const updateTaskdaily = async (taskId, payload) => {
   try {
     const res = await axiosInstance.put(`/task/edit/${taskId}`, payload);

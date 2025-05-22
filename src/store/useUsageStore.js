@@ -7,6 +7,7 @@ const useUsageStatsStore = create((set) => ({
   dailyStats: null,
   loading: false,
   error: null,
+  timeline: [],
 
   fetchStats: async (employeeId) => {
     set({ loading: true, error: null });
@@ -66,6 +67,21 @@ const useUsageStatsStore = create((set) => ({
     }
   },
   deptCategories: { productive: [], unproductive: [], unrated: [] },
+
+  fetchTimeline: async (employeeId, date) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await axiosInstance.get(`/usage-stats/timeline/${employeeId}/${date}`);
+      set({ timeline: res.data.data });
+    } catch (err) {
+      set({ error: err.message });
+      toast.error("Failed to fetch timeline");
+    } finally {
+      set({ loading: false });
+    }
+  },
+
+
   
 }));
 

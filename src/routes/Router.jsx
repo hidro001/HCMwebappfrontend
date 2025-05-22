@@ -101,6 +101,8 @@ import GeolocationPage from "../pages/geolocation/GeolocationPage";
 import FiledworkerPage from "../pages/geolocation/FiledworkerPage";
 import ProductivityLensAll from "../components/product-lense/ProductivityLensAll";
 import SubordinateProductivityLens from "../components/product-lense/SubordinateProductivityLens";
+import EmployeeTicketsPage from "../components/tickets Management/EmployeeTicketsPage";
+import IndividualAssignedTasks from "../components/task/assigned-task/IndividualAssignedTasks";
 
 const router = createBrowserRouter([
   {
@@ -273,6 +275,11 @@ const router = createBrowserRouter([
         element: <ReferralListPage />,
       },
       {
+        path: "employee-tickets/:employeeId",
+        element: <EmployeeTicketsPage />,
+      },
+
+      {
         path: "vancancies-list",
         element: <VacanciesListPage />,
       },
@@ -313,6 +320,10 @@ const router = createBrowserRouter([
       {
         path: "assigned-task",
         element: <AssignedTaskPage />,
+      },
+      {
+        path: "employee-tasks/:employeeId",
+        element: <IndividualAssignedTasks />,
       },
       {
         path: "assigned-task/employee",
