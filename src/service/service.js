@@ -1,10 +1,11 @@
 // src/services/authService.js
 import axiosInstance from "./axiosInstance";
+import publicAxios from "./publicAxios";
 
 // Login function
 export const login = async (employeeId, password) => {
   try {
-    const response = await axiosInstance.post("/auth/login", {
+    const response = await publicAxios.post("/auth/login", {
       employee_Id: employeeId,
       password,
     });
@@ -63,7 +64,7 @@ export const removeFcmToken = async (token) => {
 // OTP Verification function
 export const verifyOtp = async (employeeId, otp) => {
   try {
-    const response = await axiosInstance.post("/auth/verify-otp", {
+    const response = await publicAxios.post("/auth/verify-otp", {
       employee_Id: employeeId,
       otp,
     });
@@ -82,7 +83,7 @@ export const verifyOtp = async (employeeId, otp) => {
 // Resend OTP function
 export const resendOtp = async (employeeId) => {
   try {
-    const response = await axiosInstance.post("/auth/resend-otp", {
+    const response = await publicAxios.post("/auth/resend-otp", {
       employee_Id: employeeId,
     });
 
@@ -100,7 +101,7 @@ export const resendOtp = async (employeeId) => {
 // Password Reset Request
 export const passwordResetRequest = async (employeeId) => {
   try {
-    const response = await axiosInstance.post("/auth/password-reset-request", {
+    const response = await publicAxios.post("/auth/password-reset-request", {
       employee_Id: employeeId,
     });
 
@@ -120,7 +121,7 @@ export const passwordResetRequest = async (employeeId) => {
 // Fetch Company Info
 export const fetchCompanyInfo = async () => {
   try {
-    const response = await axiosInstance.get("/company-settings/info/company-logo");
+    const response = await publicAxios.get("/company-settings/info/company-logo");
 
     if (response.data.success && response.data.data) {
       return response.data.data;
@@ -142,7 +143,7 @@ export const resetPassword = async (
   confirmPassword
 ) => {
   try {
-    const response = await axiosInstance.post("/auth/reset-password", {
+    const response = await publicAxios.post("/auth/reset-password", {
       resetToken,
       newPassword,
       confirmPassword,

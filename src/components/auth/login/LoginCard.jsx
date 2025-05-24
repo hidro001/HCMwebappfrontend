@@ -68,6 +68,7 @@ const ForgotPasswordLink = styled(Link)(({ theme }) => ({
 const LoginCard = () => {
   const navigate = useNavigate();
   const authStore = useAuthStore();
+    const { companyInfo, setCompanyInfo } = authStore;
   const theme = useTheme(); // Access the current theme
 
   // State Management
@@ -83,29 +84,28 @@ const LoginCard = () => {
 
   // Fetch company info on mount
   useEffect(() => {
-    let isMounted = true; // Track if component is mounted
-
+    let isMounted = true;
     const getCompanyInfo = async () => {
-      console.log("Fetching company info...");
       try {
         const data = await fetchCompanyInfo();
-        console.log("Company Info Data:", data);
-        if (data.length > 0 && isMounted) {
-          setCompanyInfoIfDifferent(data[0]); // Use the new function
+        if (isMounted && data.length > 0) {
+          // only update store if changed
+          const newInfo = data[0];
+          if (
+            JSON.stringify(companyInfo) !== JSON.stringify(newInfo)
+          ) {
+            setCompanyInfo(newInfo);
+          }
         }
       } catch (err) {
-        if (isMounted) {
-          console.error("Error fetching company info:", err);
-          toast.error(err.message || "Failed to fetch company info");
-        }
+        console.error("Error fetching company info:", err);
+        toast.error(err.message || "Failed to fetch company info");
       }
     };
     getCompanyInfo();
+    return () => { isMounted = false; };
+  }, [companyInfo, setCompanyInfo]);
 
-    return () => {
-      isMounted = false; // Cleanup flag on unmount
-    };
-  }, []); // Empty dependency array ensures this runs once
 
   // Resend OTP cooldown timer
   useEffect(() => {

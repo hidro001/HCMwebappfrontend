@@ -115,7 +115,7 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: (
       <MainLayout>
-        <PrivateRoute />
+        <PrivateRoute  requiredPermissions={[]}  />
       </MainLayout>
     ),
     children: [

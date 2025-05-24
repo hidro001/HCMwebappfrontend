@@ -469,7 +469,7 @@ const NotificationDropdown = ({ notifications, loading, error, onClose }) => {
       className="w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-700"
     >
       {/* Header */}
-      <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-3 relative">
+      <div className="bg-[#5a189a] p-3 relative">
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 flex items-center justify-center bg-white/20 rounded-full backdrop-blur-sm">
