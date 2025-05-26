@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FiPrinter, FiDownload, FiSearch } from "react-icons/fi";
@@ -721,7 +719,8 @@ export default function OwmFullAttendance() {
 
   // final salary
   // Parse the userProfileData?.salary as a number to avoid the toFixed() crash:
-  const numericBaseSalary = parseFloat(userProfileData?.current_Base_Salary) || 0;
+  const numericBaseSalary =
+    parseFloat(userProfileData?.current_Base_Salary) || 0;
 
   const {
     finalSalary,
