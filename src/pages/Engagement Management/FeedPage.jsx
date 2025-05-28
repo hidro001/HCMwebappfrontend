@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import Feed from '../../components/engagement/Feed'
-import FilterFeed from '../../components/engagement/FilterFeed'
-import GreetFeed from '../../components/engagement/GreetFeed'
-import CategoriesListCompact from '../../components/engagement/SynergyCategories'
+import FilterFeed from '../../components/engagement/FilterFeed/FilterFeed'
+import GreetFeed from '../../components/engagement/todayCelebrate/GreetFeed'
+import CategoriesListCompact from '../../components/engagement/FilterFeed/SynergyCategories'
 
 const FeedPage = () => {
 

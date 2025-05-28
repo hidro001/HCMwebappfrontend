@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { VariableSizeList as List } from 'react-window';
-import useGreetStore from "../../store/greetStore";
-import FestivalCard from './BirthdayCard';
+import useGreetStore from "../../../store/greetStore";
+import GreetCard from '../Card/GreetCard.jsx';
 
 const GreetFeed = () => {
   const { greet, fetchGreet, isLoading, error } = useGreetStore();
@@ -41,7 +41,7 @@ const GreetFeed = () => {
     return (
       <div style={style}>
         <div ref={rowRef} style={{ padding: '10px' }}>
-          <FestivalCard post={item} type={item.type} />
+          <GreetCard post={item} type={item.type} />
         </div>
       </div>
     );
@@ -60,7 +60,7 @@ const GreetFeed = () => {
         itemCount={combinedList.length}
         itemSize={getSize}
         estimatedItemSize={100}
-        style={{ overflow: 'visible' }} // let container handle scrolling and scrollbar
+        style={{ overflow: 'visible' }} 
       >
         {Row}
       </List>

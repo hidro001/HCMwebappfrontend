@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
-import axiosInstance from "../../service/axiosInstance";
+import axiosInstance from "../../../service/axiosInstance.js";
 import { toast } from "react-hot-toast";
 import ReactQuill from "react-quill";
 import DOMPurify from "dompurify";
 import "react-quill/dist/quill.snow.css";
-import BaseModal from "../common/BaseModal.jsx";
-import useDepartmentStore from "../../store/departmentStore";
+import BaseModal from "../../common/BaseModal.jsx";
+import useDepartmentStore from "../../../store/departmentStore.js";
 
 // Converts local date + time to a UTC ISO string
 const toUTCISOStringLocal = (dateStr, timeStr) => {

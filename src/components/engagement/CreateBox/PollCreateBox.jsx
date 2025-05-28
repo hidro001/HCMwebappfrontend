@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
-import axiosInstance from "../../service/axiosInstance";
-import BaseModal from "../common/BaseModal";
-import useDepartmentStore from "../../store/departmentStore";
+import axiosInstance from "../../../service/axiosInstance";
+import BaseModal from "../../common/BaseModal";
+import useDepartmentStore from "../../../store/departmentStore";
 import "react-quill/dist/quill.snow.css";
 import { FaTimes } from "react-icons/fa";
 

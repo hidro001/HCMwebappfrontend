@@ -1,5 +1,5 @@
 import { FaArrowAltCircleDown } from "react-icons/fa";
-import useDepartmentStore from "../../store/departmentStore";
+import useDepartmentStore from "../../../store/departmentStore";
 import { useEffect, useState } from "react";
 
 const FilterFeed = ({ onDepartmentChange, onSort }) => {

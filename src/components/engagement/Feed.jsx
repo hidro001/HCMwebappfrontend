@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef } from "react";
-import PostCard from "./PostCard";
-import PollCard from "./PollCard";
+import PostCard from "./Card/PostCard";
+import PollCard from "./Card/PollCard";
 import useAuthStore from "../../store/store";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { VariableSizeList as List } from "react-window";
 import useFeedStore from "../../store/feedStore";
 import useSocketStore from "../../store/socketStore";
-import PostCreateBox from "./PostCreateBox";
+import PostCreateBox from "./CreateBox/PostCreateBox";
 import { FaPoll } from "react-icons/fa";
 import { BsFileText } from "react-icons/bs";
-import PollCreateBox from "./PollCreateBox";
+import PollCreateBox from "./CreateBox/PollCreateBox";
 
 const Feed = ({ curCategory, curDepartment, curSort }) => {
   const { feed, isLoading, error, hasMore, fetchFeed, page } = useFeedStore();

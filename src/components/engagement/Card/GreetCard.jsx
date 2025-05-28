@@ -1,13 +1,12 @@
-import React from "react";
 
-const FestivalCard = ({ post, type }) => {
-  // Extract name and other details
+const GreetCard = ({ post, type }) => {
+  
   const fullName = `${post.first_Name} ${post.last_Name}`;
  
   const expiryDate = post.expire_date || "";
   const userAvatar = post.user_Avatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png";
   const yearswithus = post.years_with_us || "";
-  // Determine the greeting message based on type
+  
   let heading = "";
   let message = "";
 
@@ -49,4 +48,4 @@ const FestivalCard = ({ post, type }) => {
   );
 };
 
-export default FestivalCard;
+export default GreetCard;

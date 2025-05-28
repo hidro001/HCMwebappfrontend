@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
-import axiosInstance from "../../service/axiosInstance";
-import useAuthStore from "../../store/store";
-import useFeedStore from "../../store/feedStore";
+import axiosInstance from "../../../service/axiosInstance";
+import useAuthStore from "../../../store/store";
+import useFeedStore from "../../../store/feedStore";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import { motion } from "framer-motion";
@@ -9,7 +9,7 @@ import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import DOMPurify from "dompurify";
-import CommentDrawer from "./Comment";
+import CommentDrawer from "../Comment";
 
 const reactionEmojis = [
   { type: "good", emoji: "👍" },

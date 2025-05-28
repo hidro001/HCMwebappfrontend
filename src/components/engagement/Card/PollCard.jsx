@@ -4,9 +4,9 @@ import React from "react";
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import { motion } from "framer-motion";
-import axiosInstance from "../../service/axiosInstance";
-import useAuthStore from "../../store/store"; // Corrected import path
-import useFeedStore from "../../store/feedStore";
+import axiosInstance from "../../../service/axiosInstance";
+import useAuthStore from "../../../store/store"; // Corrected import path
+import useFeedStore from "../../../store/feedStore";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import { Button, CircularProgress, IconButton, Grid } from "@mui/material";
