@@ -484,7 +484,24 @@ const useFullAttendanceStore = create((set, get) => ({
     }
   
     return segments;
+  },
+
+  fetchInsights: async (employeeId, mode, date = "") => {
+  set({ loading: true, error: null });
+  try {
+    const res = await axiosInstance.get(
+      `/break/employee-attendance-analytics/${employeeId}?interval=${mode}&date=${date}`
+    );
+    set({ insights: res.data.data });
+  } catch (err) {
+    set({ error: err.message });
+    toast.error(err.message);
+  } finally {
+    set({ loading: false });
   }
+},
+insights: null,
+
   
 }));
 
