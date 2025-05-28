@@ -4,11 +4,6 @@ import {
   FaEdit,
   FaTrash,
   FaPlus,
-  FaSearch,
-  FaFileAlt,
-  FaFileExcel,
-  FaFilePdf,
-  FaPrint,
 } from "react-icons/fa";
 import AssignTask from "./AssignTask"; // Updated AssignTask for adding tasks
 import AssignedTaskModal from "./AssignedTaskModal"; // View Task

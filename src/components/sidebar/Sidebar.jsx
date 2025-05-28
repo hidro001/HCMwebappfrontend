@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { useLocation, Link } from "react-router-dom";
-import { Tooltip } from "react-tooltip";
-import useAuthStore from "../../store/store"; // Zustand store
-// Adjust your icon imports here if needed
+import { useLocation } from "react-router-dom";
+import useAuthStore from "../../store/store"; 
 import { menuItems } from "../../config/menuConfig";
 
 export default function Sidebar({ collapsed, onSectionSelect }) {
-
- 
 
   const permissions = useAuthStore((state) => state.permissions);
   const [filteredMenuItems, setFilteredMenuItems] = useState(menuItems);
@@ -17,8 +13,6 @@ export default function Sidebar({ collapsed, onSectionSelect }) {
 
   const [hoverExpanded, setHoverExpanded] = useState(false);
   const actualCollapsed = collapsed && !hoverExpanded;
-
-  console.log(actualCollapsed)
 
   useEffect(() => {
     filterMenuItems();
@@ -55,73 +49,64 @@ export default function Sidebar({ collapsed, onSectionSelect }) {
 
   return (
     <div
-      className={`bg-bg-sidebar h-screen transition-all duration-300 ease-in-out flex flex-col overflow-hidden sidebar-shadow ${
-        actualCollapsed ? "w-[6%]" : "w-[15%]"
-      }`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-     
-      <nav className=" overflow-y-auto overflow-x-hidden sidebar-scrollbar">
-        {filteredMenuItems.map((item, index) => {
-          const active = isItemActive(item);
-          // const tooltipHtml = `
-          //   <div style="font-weight: bold;">${item.name}</div>
-          //   <div>${item.tooltip || ""}</div>
-          // `;
+  className={`bg-bg-sidebar h-full transition-all duration-300 ease-in-out flex flex-col overflow-hidden sidebar-shadow fixed md:relative z-40
+    ${actualCollapsed ? "w-16" : "w-64"} 
+    ${collapsed ? "left-[-100%] md:left-0" : "left-0"} 
+    md:translate-x-0 
+    top-0
+  `}
+  onMouseEnter={handleMouseEnter}
+  onMouseLeave={handleMouseLeave}
+>
+  <nav className="overflow-y-auto overflow-x-hidden sidebar-scrollbar h-full">
+    {filteredMenuItems.map((item, index) => {
+      const active = isItemActive(item);
 
-          return (
-           <button
-              key={index}
-              onClick={() => onSectionSelect(item)}
-              // data-tooltip-id="sidebar-tooltip"
-              // data-tooltip-html={tooltipHtml}
-              className={`flex items-center gap-3 p-2 m-1 rounded-lg transition w-full
-                ${actualCollapsed ? "justify-center" : "mx-4 hover:bg-[#E7E7E7]"}
-                ${
-                  actualCollapsed && active
-                    ? "text-black font-semibold"
-                    : !actualCollapsed && active
-                    ? "text-black font-semibold bg-[#E7E7E7]"
-                    : "text-gray-700 hover:bg-[#E7E7E7]"
-                }
-              `}
-            >
+      return (
+        <button
+          key={index}
+          onClick={() => onSectionSelect(item)}
+          className={`flex items-center gap-3 p-2 m-1 rounded-lg transition w-full
+            ${actualCollapsed ? "justify-center" : "mx-4 hover:bg-[#E7E7E7]"}
+            ${
+              actualCollapsed && active
+                ? "text-black font-semibold"
+                : !actualCollapsed && active
+                ? "text-black font-semibold bg-[#E7E7E7]"
+                : "text-gray-700 hover:bg-[#E7E7E7]"
+            }
+          `}
+        >
+          <motion.div
+            whileHover={item.iconAnimation}
+            transition={{ duration: 0.3 }}
+            style={{
+              boxShadow: active
+                ? "none" 
+                : "inset 0px 4px 4px rgba(0, 0, 0, 0.25)",
+            }}
+            className={`text-xl p-2 rounded-md ${
+              actualCollapsed && active
+                ? "bg-[#E7E7E7]"
+                : !actualCollapsed && active
+                ? "bg-white"
+                : "bg-white "
+            }`}
+          >
+            {item.icon}
+          </motion.div>
+          <span
+            className={`text-sm whitespace-nowrap transition-opacity duration-300 truncate max-w-[150px] ${
+              actualCollapsed ? "opacity-0 hidden" : "opacity-100"
+            }`}
+          >
+            {item.name}
+          </span>
+        </button>
+      );
+    })}
+  </nav>
+</div>
 
-              <motion.div
-                whileHover={item.iconAnimation}
-                transition={{ duration: 0.3 }}
-                style={{
-                  boxShadow: active ? 'none' : 'inset 0px 4px 4px rgba(0, 0, 0, 0.25)',
-                }}
-                className={`text-xl p-2  rounded-md ${
-                   actualCollapsed && active
-                    ? "bg-[#E7E7E7]"
-                    : !actualCollapsed && active ? 'bg-white'
-                    : "bg-white inset-shadow-sm inset-shadow-indigo-500"
-                }`}
-              >
-                {item.icon}
-              </motion.div>
-              <span
-                className={`text-sm whitespace-nowrap transition-opacity duration-300 truncate max-w-[150px] ${
-                  actualCollapsed ? "opacity-0 hidden" : "opacity-100"
-                }`}
-              >
-                {item.name}
-              </span>
-            </button>
-          );
-        })}
-      </nav>
-{/* 
-      <Tooltip
-        id="sidebar-tooltip"
-        place="right"
-        effect="solid"
-        multiline={true}
-        style={{ maxWidth: "200px", marginTop: "0px" }}
-      /> */}
-    </div>
   );
 }

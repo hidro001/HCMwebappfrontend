@@ -1,171 +1,127 @@
-import React from "react";
-import FavoriteIcon from "@mui/icons-material/Favorite";
-import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import DeleteIcon from "@mui/icons-material/Delete";
-import { motion } from "framer-motion";
+import React, { useState, useMemo } from "react";
 import axiosInstance from "../../service/axiosInstance";
-import useAuthStore from "../../store/store"; 
+import useAuthStore from "../../store/store";
 import useFeedStore from "../../store/feedStore";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
-import {
-  CircularProgress,
-  IconButton,
-  Button,
-  TextField,
-  Grid,
-} from "@mui/material";
+import { motion } from "framer-motion";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
+import { FaRegComment } from "react-icons/fa";
+import { MdDelete } from "react-icons/md";
+import DOMPurify from "dompurify";
+import CommentDrawer from "./Comment";
 
-// Utility function to detect URLs in text and make them clickable
-const linkifyText = (text) => {
-  if (!text) return "";
-  
- 
-  const trimmedText = text
-    .replace(/\s+$/, '') 
-    .replace(/[ \t]+/g, ' ') 
-    .replace(/\n+/g, '\n') 
-    .trim();
-  
-  // Regular expression to match URLs
-  const urlRegex = /(https?:\/\/[^\s]+)/g;
-  
-  // Find all URLs in the text
-  const matches = trimmedText.match(urlRegex) || [];
-  
-  // If no URLs found, return the trimmed text
-  if (matches.length === 0) {
-    return trimmedText;
-  }
-
-  // Process duplicate URLs
-  const uniqueUrls = new Map();
-  matches.forEach(url => {
-    // Clean URL by removing any duplicated URL patterns
-    let cleanUrl = url;
-    if (cleanUrl.includes('https://https://')) {
-      cleanUrl = cleanUrl.replace('https://https://', 'https://');
-    }
-    uniqueUrls.set(url, cleanUrl);
-  });
-  
-  // Replace each URL in the text with a placeholder
-  let counter = 0;
-  const placeholders = {};
-  let processedText = trimmedText;
-  
-  uniqueUrls.forEach((cleanUrl, originalUrl) => {
-    const placeholder = `__URL_PLACEHOLDER_${counter}__`;
-    placeholders[placeholder] = cleanUrl;
-    processedText = processedText.split(originalUrl).join(placeholder);
-    counter++;
-  });
-  
-  // Split by placeholders and replace them with link components
-  const result = [];
-  let lastIndex = 0;
-  
-  Object.keys(placeholders).forEach(placeholder => {
-    const url = placeholders[placeholder];
-    const index = processedText.indexOf(placeholder, lastIndex);
-    
-    if (index !== -1) {
-      // Add text before the placeholder
-      if (index > lastIndex) {
-        result.push(processedText.substring(lastIndex, index));
-      }
-      
-      // Add the link
-      result.push(
-        <a 
-          key={`link-${placeholder}`}
-          href={url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-blue-500 hover:text-blue-700 break-all"
-        >
-          {url}
-        </a>
-      );
-      
-      lastIndex = index + placeholder.length;
-    }
-  });
-  
-  // Add any remaining text
-  if (lastIndex < processedText.length) {
-    result.push(processedText.substring(lastIndex));
-  }
-  
-  return result;
-};
+const reactionEmojis = [
+  { type: "good", emoji: "👍" },
+  { type: "love", emoji: "❤️" },
+  { type: "laugh", emoji: "😂" },
+  { type: "surprised", emoji: "😮" },
+  { type: "sad", emoji: "😢" },
+  { type: "angry", emoji: "😡" },
+];
 
 const PostCard = ({ post }) => {
-  // Current user info
   const user = useAuthStore((state) => state);
-  const userId = user._id; 
+  const userId = user._id;
   const permissions = user.permissionRole || [];
 
-  const liked = (post.likes || []).some(likeItem =>
-    typeof likeItem === 'string'
-      ? likeItem === userId
-      : likeItem._id === userId,
+  const [selectedReaction, setSelectedReaction] = useState(() => {
+  const userReaction = post.reactions?.find(r => {
+    const reactionUserId = typeof r.user === "object" ? r.user._id : r.user;
+    return reactionUserId === userId;
+  });
+  return userReaction?.type || null;
+  });
+
+  const liked = (post.likes || []).some((likeItem) =>
+    typeof likeItem === "string" ? likeItem === userId : likeItem._id === userId
   );
   const likeCount = (post.likes || []).length;
 
-  const [showComments, setShowComments] = React.useState(false);
-  const [commentText, setCommentText] = React.useState("");
-  const [isDeleting, setIsDeleting] = React.useState(false);
-  const [isLiking, setIsLiking] = React.useState(false);
-  const [isAddingComment, setIsAddingComment] = React.useState(false);
+  const [showComments, setShowComments] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
+  const [isAddingComment, setIsAddingComment] = useState(false);
+  const [loadingLikes, setLoadingLikes] = useState(new Set());
 
-  /**
-   * Like/Unlike post with optimistic UI update.
-   * Because your `likes` is an array of objects, we add/remove { _id: userId }.
-   */
   const handleLike = async () => {
     setIsLiking(true);
     try {
-      // 1) Optimistic toggle
       let updatedLikes;
       if (liked) {
-        // Remove user object with matching _id
-        updatedLikes = post.likes.filter(
-          (likeObj) => likeObj._id !== userId
-        );
+        updatedLikes = post.likes.filter((likeObj) => likeObj._id !== userId);
       } else {
-        // Add minimal user object (or entire user data if you want)
         updatedLikes = [...post.likes, { _id: userId }];
       }
 
-      // Update local feed store so UI changes instantly
       useFeedStore.getState().updatePost({
         ...post,
         likes: updatedLikes,
       });
 
-      // 2) Call server
-      const { data: updatedPost } = await axiosInstance.post(
-        `/posts/${post._id}/like`
-      );
-
-      // 3) Replace local post with server's final updated post
-      // The server should return `likes: [ { _id, first_Name, ...} ]`
+      const { data: updatedPost } = await axiosInstance.post(`/posts/${post._id}/like`);
       useFeedStore.getState().updatePost(updatedPost);
     } catch (error) {
-      console.error("Error liking/unliking post:", error);
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to like/unlike post. Please try again."
-      );
+      toast.error(error.response?.data?.message || "Failed to like/unlike post.");
     } finally {
       setIsLiking(false);
     }
   };
 
-  /**
-   * Delete post
-   */
+  const handleReact = async (reactionType) => {
+  if (isLiking) return;
+  setIsLiking(true);
+
+  try {
+    const userReaction = post.reactions?.find(r => {
+      const reactionUserId = typeof r.user === "object" ? r.user._id : r.user;
+      return reactionUserId === userId;
+    });
+
+    let updatedReactions;
+
+    if (userReaction && userReaction.type === reactionType) {
+      // Same reaction clicked again → remove
+      updatedReactions = post.reactions.filter(r => {
+        const reactionUserId = typeof r.user === "object" ? r.user._id : r.user;
+        return reactionUserId !== userId;
+      });
+      setSelectedReaction(null);
+    } else if (userReaction) {
+      // Update to new reaction
+      updatedReactions = post.reactions.map(r => {
+        const reactionUserId = typeof r.user === "object" ? r.user._id : r.user;
+        return reactionUserId === userId ? { ...r, type: reactionType } : r;
+      });
+      setSelectedReaction(reactionType);
+    } else {
+      // New reaction
+      updatedReactions = [...(post.reactions || []), {
+        user: userId,
+        type: reactionType,
+        _id: `temp-${Date.now()}`
+      }];
+      setSelectedReaction(reactionType);
+    }
+
+    // Optimistic UI update
+    useFeedStore.getState().updatePost({ ...post, reactions: updatedReactions });
+
+    // Sync with backend
+    const { data: updatedPost } = await axiosInstance.post(`/posts/${post._id}/react`, { reactionType });
+
+    // Replace with fresh data from server
+    useFeedStore.getState().updatePost(updatedPost);
+  } catch (error) {
+    toast.error("Failed to react to post.");
+    console.error(error);
+  } finally {
+    setIsLiking(false);
+  }
+};
+
+
   const handleDeletePost = async () => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
     setIsDeleting(true);
@@ -174,25 +130,19 @@ const PostCard = ({ post }) => {
       toast.success("Post deleted successfully!");
       useFeedStore.getState().deletePost(post._id);
     } catch (error) {
-      console.error("Error deleting post:", error);
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to delete post. Please try again."
-      );
+      toast.error(error.response?.data?.message || "Failed to delete post.");
     } finally {
       setIsDeleting(false);
     }
   };
 
-  /**
-   * Add a comment
-   */
   const handleAddComment = async (e) => {
     e.preventDefault();
     if (!commentText.trim()) {
       toast.error("Comment cannot be empty.");
       return;
     }
+    if (isAddingComment) return;
     setIsAddingComment(true);
     try {
       const { data } = await axiosInstance.post(`/comments/${post._id}`, {
@@ -206,55 +156,63 @@ const PostCard = ({ post }) => {
       }
       setCommentText("");
     } catch (error) {
-      console.error("Error adding comment:", error);
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to add comment. Please try again."
-      );
+      toast.error(error.response?.data?.message || "Failed to add comment.");
     } finally {
       setIsAddingComment(false);
     }
   };
 
-  /**
-   * Toggle comments visibility
-   */
   const handleToggleComments = () => {
     setShowComments(!showComments);
   };
 
-  /**
-   * Like/unlike a specific comment
-   */
+  const getLikeSummary = (likes = [], maxDisplay = 2) => {
+  if (!likes.length) return "";
+
+  const displayNames = likes
+    .slice(0, maxDisplay)
+    .map((u) => `${u.first_Name} ${u.last_Name}`);
+
+  const remainingCount = likes.length - displayNames.length;
+
+  if (remainingCount === 0) {
+    return displayNames.join(" and ");
+  }
+
+  return `${displayNames.join(", ")} and ${remainingCount} other${remainingCount > 1 ? "s" : ""}`;
+};
+
   const handleLikeComment = async (commentId) => {
+    if (loadingLikes.has(commentId)) return;
+    setLoadingLikes(prev => new Set(prev).add(commentId));
+
     try {
       await axiosInstance.post(`/comments/${commentId}/like`);
 
-      // Optionally do an optimistic update for that comment
-      const comment = post.comments.find((c) => c._id === commentId);
-      if (comment) {
-        const isLiked = comment.reactions.includes(userId);
-        const updatedReactions = isLiked
-          ? comment.reactions.filter((id) => id !== userId)
-          : [...comment.reactions, userId];
+      const comment = post.comments.find(c => c._id === commentId);
+      if (!comment) return;
 
-        useFeedStore.getState().updateComment(post._id, {
-          ...comment,
-          reactions: updatedReactions,
-        });
-      }
+      const isLiked = comment.reactions.some(r => r.user === userId);
+
+      const updatedReactions = isLiked
+        ? comment.reactions.filter(r => r.user !== userId)
+        : [...comment.reactions, { user: userId, type: "like", _id: `temp-${Date.now()}` }];
+
+      useFeedStore.getState().updateComment(post._id, {
+        ...comment,
+        reactions: updatedReactions,
+      });
     } catch (error) {
-      console.error("Error liking comment:", error);
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to like comment. Please try again."
-      );
+      toast.error("Failed to like comment. Please try again.");
+    } finally {
+      setLoadingLikes(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(commentId);
+        return newSet;
+      });
     }
   };
 
-  /**
-   * Delete a comment
-   */
   const handleDeleteComment = async (commentId) => {
     if (!window.confirm("Are you sure you want to delete this comment?")) return;
     try {
@@ -262,333 +220,148 @@ const PostCard = ({ post }) => {
       useFeedStore.getState().deleteComment(post._id, commentId);
       toast.success("Comment deleted successfully!");
     } catch (error) {
-      console.error("Error deleting comment:", error);
-      toast.error(
-        error.response?.data?.message ||
-          "Failed to delete comment. Please try again."
-      );
+      toast.error(error.response?.data?.message || "Failed to delete comment.");
     }
   };
 
-  // Utility to determine media type
   const getMediaType = (url) => {
-    if (typeof url !== 'string') return 'unknown';
-    const urlWithoutParams = url.split('?')[0];
-    const extension = urlWithoutParams.split('.').pop().toLowerCase();
-
+    if (typeof url !== "string") return "unknown";
+    const extension = url.split("?")[0].split(".").pop().toLowerCase();
     const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "svg", "avif"];
     const videoExtensions = ["mp4", "webm", "ogg", "mov", "avi", "wmv"];
-
-    if (imageExtensions.includes(extension)) {
-      return "image";
-    } else if (videoExtensions.includes(extension)) {
-      return "video";
-    }
+    if (imageExtensions.includes(extension)) return "image";
+    if (videoExtensions.includes(extension)) return "video";
     return "unknown";
   };
 
-  // Check permissions for deleting post
   const canDeletePost =
     permissions.includes("deleteAnyPost") ||
     userId === post.author?._id ||
     userId === post.author?.employee_Id;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl mb-2 p-4 transition-colors duration-300 max-w-full"
-    >
-      {/* Post Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-4">
-        <img
-          src={post.author?.user_Avatar || "https://via.placeholder.com/150"}
-          alt="Avatar"
-          className="w-12 h-12 rounded-full object-cover"
-          loading="lazy"
-        />
-        <div className="mt-2 sm:mt-0">
-          <p className="font-semibold text-lg text-gray-800 dark:text-gray-100">
-            {post.author?.first_Name || "Unknown"}{" "}
-            {post.author?.last_Name || "User"} (
-            {post.author?.employee_Id || "N/A"})
-          </p>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            {isNaN(new Date(post.createdAt))
-              ? "Date not available"
-              : new Date(post.createdAt).toLocaleString()}
-          </p>
-        </div>
-        {canDeletePost && (
-          <IconButton
-            onClick={handleDeletePost}
-            disabled={isDeleting}
-            className="ml-auto text-red-500 hover:text-red-700 transition-colors duration-300 mt-2 sm:mt-0"
-            title="Delete Post"
-          >
-            {isDeleting ? <CircularProgress size={24} /> : <DeleteIcon />}
-          </IconButton>
-        )}
-      </div>
-
-      {/* Post Title & Description */}
-      <div className="mt-4">
-        <p className="text-gray-700 dark:text-gray-300 text-lg font-bold">
-          {post.title}
-        </p>
-        <div className="mt-2 text-gray-600 dark:text-gray-400 break-words overflow-hidden">
-          {linkifyText(post.description)}
-        </div>
-
-        {/* Media Section */}
-        {Array.isArray(post.media) && post.media.length > 0 && (
-          <div className="mt-4 space-y-4">
-            <Grid container spacing={2} justifyContent="center" alignItems="center">
-              {post.media.map((url, index) => {
-                if (!url) return null;
-                const mediaType = getMediaType(url);
-
-                return (
-                  <Grid item xs={12} sm={6} key={index} display="flex" justifyContent="center">
-                    {mediaType === "image" ? (
-                      <img
-                        src={url}
-                        alt={`media-${index}`}
-                        className="max-w-full h-64 object-cover rounded-md"
-                        loading="lazy"
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "https://via.placeholder.com/150";
-                        }}
-                      />
-                    ) : mediaType === "video" ? (
-                      <video
-                        src={url}
-                        controls
-                        className="max-w-full h-40 object-contain rounded-md"
-                        preload="metadata"
-                      >
-                        Your browser does not support the video tag.
-                      </video>
-                    ) : (
-                      <p className="text-red-500">Unsupported media format.</p>
-                    )}
-                  </Grid>
-                );
+    <>
+      <motion.div
+        initial={{ opacity: 0, y: 30, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 20, scale: 0.95 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="max-w-lg mx-auto p-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg transition-colors border border-green-300 dark:border-green-700"
+      >
+        {/* Header */}
+        <div className="flex items-center space-x-3 mb-2">
+          <img
+            src={post.author?.user_Avatar || "https://via.placeholder.com/150"}
+            alt="Avatar"
+            className="w-9 h-9 rounded-full object-cover"
+          />
+          <div className="flex-1">
+            <p className="font-medium text-sm text-gray-900 dark:text-gray-100">
+              {post.author?.first_Name} {post.author?.last_Name} ({post.author?.employee_Id})
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              {post.author?.designation} •{" "}
+              {new Date(post.createdAt).toLocaleString("en-US", {
+                month: "long",
+                day: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+                hour12: true,
               })}
-            </Grid>
+            </p>
+          </div>
+          {canDeletePost && (
+            <button onClick={handleDeletePost} disabled={isDeleting} className="p-1 rounded-full">
+              {isDeleting ? (
+                <span className="loader h-4 w-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></span>
+              ) : (
+                <MdDelete className="w-4 h-4 text-red-600" />
+              )}
+            </button>
+          )}
+        </div>
+
+        {/* Title and Description */}
+        <h2
+          className="font-semibold text-sm text-gray-900 dark:text-gray-100 mb-1"
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.title) }}
+        />
+        <p
+          className="text-sm text-gray-700 dark:text-gray-300"
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.description) }}
+        />
+
+        {/* Media */}
+        {Array.isArray(post.media) && post.media.length > 0 && (
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {post.media.map((url, idx) => {
+              const mediaType = getMediaType(url);
+              if (mediaType === "image") {
+                return <img key={idx} src={url} className="rounded w-full max-h-40 object-cover" />;
+              } else if (mediaType === "video") {
+                return <video key={idx} src={url} controls className="rounded w-full max-h-32" />;
+              } else {
+                return <p key={idx} className="text-xs text-red-500">Unsupported media</p>;
+              }
+            })}
           </div>
         )}
-      </div>
 
-      {/* Post Actions */}
-      <div className="flex justify-between items-center mt-4">
-        <div className="flex space-x-6">
-          {/* Like Button */}
-          <button
-            onClick={handleLike}
-            disabled={isLiking}
-            className="flex items-center space-x-1 text-gray-600 dark:text-gray-300 hover:text-red-500 transition-colors duration-300"
-          >
-            {/* Heart icon turns red if liked = true */}
-            <FavoriteIcon className={`${liked ? "text-red-500" : ""}`} />
+        {/* Likes & Reactions */}
+        <div className="flex justify-between items-center mt-3 text-sm text-gray-600 dark:text-gray-300">
+          <div className="flex items-center">
+          <button onClick={handleLike} disabled={isLiking} className="flex items-center space-x-1">
+            {liked ? <AiFillHeart className="text-red-500" /> : <AiOutlineHeart />}
             <span>{likeCount}</span>
-            {isLiking && <CircularProgress size={16} className="ml-2" />}
-          </button>
+            </button>
+            <span className="text-xs pl-1 truncate max-w-[150px]">{getLikeSummary(post.likes)}</span>
+          </div>
+          <div className="flex space-x-2">
+            {reactionEmojis.map(({ type, emoji }) => {
+              const count = (post.reactions || []).filter((r) => r.type === type).length;
+              const isActive = selectedReaction === type;
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => handleReact(type)}
+                  disabled={isLiking}
+                  aria-pressed={isActive}
+                  className={`text-xl ${isActive ? "opacity-100" : "opacity-60"} hover:opacity-100 transition-opacity`}
+                  title={type}
+                >
+                  {emoji} {count > 0 && <span className="text-xs ml-1">{count}</span>}
+                </button>
+              );
+            })}
+          </div>
 
-          {/* Toggle Comments */}
-          <button
-            onClick={handleToggleComments}
-            className="flex items-center space-x-1 text-gray-600 dark:text-gray-300 hover:text-blue-500 transition-colors duration-300"
-          >
-            <ChatBubbleOutlineIcon />
+          <button onClick={handleToggleComments} className="flex items-center space-x-1">
+            <FaRegComment />
             <span>{post.comments.length}</span>
           </button>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Comments Section */}
+      {/* Comments Drawer */}
       {showComments && (
-        <div className="mt-4">
-          <h3 className="font-semibold text-gray-800 dark:text-gray-100">
-            Comments
-          </h3>
-          {/* Add Comment Form */}
-          <form onSubmit={handleAddComment} className="mt-2 flex flex-col">
-            <TextField
-              placeholder="Add a comment..."
-              variant="outlined"
-              multiline
-              rows={3}
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              required
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              className="mt-2"
-              disabled={isAddingComment}
-            >
-              {isAddingComment ? "Adding..." : "Comment"}
-            </Button>
-          </form>
-
-          {/* Existing Comments */}
-          <div className="mt-4 space-y-3">
-            {post.comments.length === 0 ? (
-              <p className="text-gray-500 dark:text-gray-400">No comments yet.</p>
-            ) : (
-              post.comments.map((comment) => (
-                <div
-                  key={comment._id}
-                  className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2"
-                >
-                  <img
-                    src={
-                      comment.commenter?.user_Avatar ||
-                      "https://via.placeholder.com/150"
-                    }
-                    alt="Avatar"
-                    className="w-8 h-8 rounded-full object-cover"
-                    loading="lazy"
-                  />
-                  <div className="bg-gray-100 dark:bg-gray-700 rounded-lg p-2 flex-1 break-words">
-                    <div className="flex justify-between items-center">
-                      <span className="font-semibold text-gray-800 dark:text-gray-100">
-                        {comment.commenter?.first_Name || "Unknown"}{" "}
-                        {comment.commenter?.last_Name || "User"} (
-                        {comment.commenter?.employee_Id || "N/A"})
-                      </span>
-                      {(permissions.includes("deleteAnyComment") ||
-                        userId === comment.commenter?._id ||
-                        userId === comment.commenter?.employee_Id) && (
-                        <IconButton
-                          onClick={() => handleDeleteComment(comment._id)}
-                          className="text-red-500 hover:text-red-700 transition-colors duration-300"
-                          title="Delete Comment"
-                          size="small"
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      )}
-                    </div>
-                    <div className="text-gray-700 dark:text-gray-300 mt-1">
-                      {typeof comment.comment === "string"
-                        ? linkifyText(comment.comment)
-                        : JSON.stringify(comment.comment)}
-                    </div>
-
-                    {/* Optional attachments */}
-                    {comment.attachments && comment.attachments.length > 0 && (
-                      <div className="mt-2">
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
-                          Attachments:
-                        </p>
-                        <ul className="list-disc list-inside">
-                          {comment.attachments.map((attachment, idx) => (
-                            <li key={idx}>
-                              <a
-                                href={attachment.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-blue-500 hover:text-blue-700 break-all"
-                              >
-                                {attachment.name}
-                              </a>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-
-                    {/* Timestamp */}
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                      {isNaN(new Date(comment.createdAt))
-                        ? "Date not available"
-                        : new Date(comment.createdAt).toLocaleString()}
-                    </p>
-
-                    {/* Like button for comment */}
-                    <div className="flex items-center mt-1">
-                      <Button
-                        onClick={() => handleLikeComment(comment._id)}
-                        startIcon={
-                          <FavoriteIcon
-                            className={`text-sm ${
-                              (comment.reactions || []).includes(userId)
-                                ? "text-red-500"
-                                : ""
-                            }`}
-                          />
-                        }
-                        size="small"
-                      >
-                        {comment.reactions.length}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+        <CommentDrawer
+          post={post}
+          commentText={commentText}
+          setCommentText={setCommentText}
+          isAddingComment={isAddingComment}
+          onAddComment={handleAddComment}
+          onClose={() => setShowComments(false)}
+          onLikeComment={handleLikeComment}
+          loadingLikes={loadingLikes}
+        />
       )}
-    </motion.div>
+    </>
   );
 };
 
 PostCard.propTypes = {
-  post: PropTypes.shape({
-    _id: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
-    description: PropTypes.string.isRequired,
-    media: PropTypes.arrayOf(PropTypes.string),
-    // Now an array of objects
-    likes: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.string.isRequired,
-        first_Name: PropTypes.string,
-        last_Name: PropTypes.string,
-        employee_Id: PropTypes.string,
-        user_Avatar: PropTypes.string,
-      })
-    ).isRequired,
-    comments: PropTypes.arrayOf(
-      PropTypes.shape({
-        _id: PropTypes.string.isRequired,
-        commenter: PropTypes.shape({
-          _id: PropTypes.string,
-          first_Name: PropTypes.string,
-          last_Name: PropTypes.string,
-          employee_Id: PropTypes.string,
-          user_Avatar: PropTypes.string,
-        }),
-        comment: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
-        attachments: PropTypes.arrayOf(
-          PropTypes.shape({
-            url: PropTypes.string,
-            name: PropTypes.string,
-          })
-        ),
-        reactions: PropTypes.arrayOf(PropTypes.string).isRequired,
-        createdAt: PropTypes.string.isRequired,
-        updatedAt: PropTypes.string,
-      })
-    ).isRequired,
-    author: PropTypes.shape({
-      _id: PropTypes.string.isRequired,
-      first_Name: PropTypes.string.isRequired,
-      last_Name: PropTypes.string.isRequired,
-      employee_Id: PropTypes.string.isRequired,
-      user_Avatar: PropTypes.string,
-    }).isRequired,
-    createdAt: PropTypes.string.isRequired,
-    updatedAt: PropTypes.string,
-    type: PropTypes.string.isRequired,
-  }).isRequired,
+  post: PropTypes.object.isRequired,
 };
 
 export default PostCard;

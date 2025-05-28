@@ -71,13 +71,12 @@ const MainLayout = () => {
       <div className="h-screen text-text-primary bg-bg-primary flex flex-col">
         <Navbar collapsed={collapsed} setCollapsed={setCollapsed} />
 
-        <div className="flex flex-row flex-1 pt-[52px] overflow-hidden">
+        <div className="flex flex-row flex-1 overflow-hidden">
           <Sidebar onSectionSelect={handleSectionSelect} collapsed={collapsed}  />
 
-          <div className="flex-1 h-screen flex flex-col w-full overflow-x-scroll hide-horizontal-scrollbar">
+          <div className="flex-1 flex flex-col w-full overflow-x-scroll hide-horizontal-scrollbar">
             <Breadcrumb />
 
-            {/* Show horizontal sub-menu tabs if we have a valid activeSection */}
             {activeSection && filteredSubOptions.length > 0 && (
               <div
                 className={`
@@ -136,7 +135,7 @@ const MainLayout = () => {
               `}
             >
               {/* Page Content */}
-              <div className="container mx-auto px-4 py-3 mb-20">
+              <div className="container w-full mx-auto px-4 py-3">
                 <Outlet />
               </div>
             </div>

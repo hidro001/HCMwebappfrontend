@@ -14,8 +14,8 @@ import { useEffect, useState } from "react";
 
 const PollCard = ({ poll }) => {
   const user = useAuthStore((state) => state);
-  const userId = user._id; // Assuming user._id is defined
-  const userEmployeeId = user.employeeId; // Assuming user.employeeId is defined
+  const userId = user._id; 
+  const userEmployeeId = user.employeeId; 
   const permissions = user.permissionRole || [];
 
   const [selectedOption, setSelectedOption] = React.useState(null);
@@ -23,14 +23,14 @@ const PollCard = ({ poll }) => {
   const [isDeleting, setIsDeleting] = React.useState(false);
   const [timeRemaining, setTimeRemaining] = useState("");
 
-  // Debugging: Log user and poll data
+ 
   React.useEffect(() => {
     console.log("Current userId:", userId);
     console.log("Current userEmployeeId:", userEmployeeId);
     console.log("Poll votes:", poll.votes);
   }, [userId, userEmployeeId, poll.votes]);
 
-  // Countdown Timer Logic
+  
   useEffect(() => {
     const updateTimeRemaining = () => {
       const now = new Date();
@@ -55,10 +55,7 @@ const PollCard = ({ poll }) => {
     return () => clearInterval(interval);
   }, [poll.endTime]);
 
-  /**
-   * Determine if the current user has already voted.
-   * Supports both object and string representations of vote.user.
-   */
+  
   const userVote = React.useMemo(() => {
     return poll.votes.find((vote) => {
       if (vote.user && typeof vote.user === "object") {
@@ -92,7 +89,9 @@ const PollCard = ({ poll }) => {
       });
       toast.success("Your vote has been recorded!");
       // Update the feed store; Socket.io will handle real-time updates across clients
-      useFeedStore.getState().updatePollVotes(poll._id, userId, selectedOption);
+      const { data: updatedPoll } = await axiosInstance.get(`/polls/${poll._id}`);
+      useFeedStore.getState().updatePoll(updatedPoll);
+
     } catch (error) {
       console.error("Error voting on poll:", error);
       toast.error(
@@ -103,9 +102,7 @@ const PollCard = ({ poll }) => {
     }
   };
 
-  /**
-   * Handle deleting a poll.
-   */
+  
   const handleDeletePoll = async () => {
     if (!window.confirm("Are you sure you want to delete this poll?")) return;
     setIsDeleting(true);
@@ -135,7 +132,7 @@ const PollCard = ({ poll }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="bg-white dark:bg-gray-800 shadow-lg rounded-2xl mb-2 p-4 transition-colors duration-300"
+      className=" max-w-lg mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-2xl mb-2 p-4 transition-colors duration-300"
     >
       {/* Poll Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-4">
