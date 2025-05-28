@@ -1,27 +1,52 @@
+
+
+// import React, { useEffect, useState } from "react";
+// import useDashboardStore from "../../../store/dashboardStore";
+
+// // Import the specific chart components:
 // import DemographicAgeGender from "./DemographicAgeGender";
 // import DemographicNationalMarital from "./DemographicNationalMarital";
-// import ValidPan from "./ValidPan";
-// import ValidAdhaar from "./ValidAdhaar";
-// import ValidPassport from "./ValidPassport";
-// import TrainingNeedsCard from "./TrainingNeedsCard";
-// import PerformanceCard from "./PerformanceCard";
 // import SkillGapAnalysisCard from "./SkillGapAnalysisCard";
-// import AddressDistributionCard from "./AddressDistributionCard";
-// import InternalMobilityTrendsCard from "./InternalMobilityTrendsCard";
 // import CompensationBenchmarkingCard from "./CompensationBenchmarkingCard";
+// import TrainingEffectivenessCard from "./TrainingEffectivenessCard";
+// import InternalMobilityTrendsCard from "./InternalMobilityTrendsCard";
 // import ImpactOnPerformanceCard from "./ImpactOnPerformanceCard";
 // import CTCChartCard from "./CTCChartCard";
-// import HighPotentialEmployeesTrendsCard from "./HighPotentialEmployeesTrendsCard";
 // import PerformanceTrendsCard from "./PerformanceTrendsCard";
-// import CorrelationTrainingPerformanceCard from "./CorrelationTrainingPerformanceCard";
-// import TrainingEffectivenessCard from "./TrainingEffectivenessCard";
+// import HighPotentialEmployeesTrendsCard from "./HighPotentialEmployeesTrendsCard";
 // import AbsenteeismPatternsCard from "./AbsenteeismPatternsCard";
 // import OvertimeCostAnalysisCard from "./OvertimeCostAnalysisCard";
 // import StaffingOptimizationCard from "./StaffingOptimizationCard";
 // import DisciplinaryAnalysisCard from "./DisciplinaryAnalysisCard";
+// import ValidPan from "./ValidPan";
+// import ValidAdhaar from "./ValidAdhaar";
+// import ValidPassport from "./ValidPassport";
+// import TrainingNeedsCard from "./TrainingNeedsCard";
+// import AddressDistributionCard from "./AddressDistributionCard";
 // import ComplianceTrainingCoverageCard from "./ComplianceTrainingCoverageCard";
+// import PerformanceCard from "./PerformanceCard";
+// import CorrelationTrainingPerformanceCard from "./CorrelationTrainingPerformanceCard";
+// import GrievanceResolutionChart from "./GrievanceResolutionChart";
+// // The modal
+// import CustomizeDashboardModal from "./model/CustomizeDashboardModal";
+// import WorkplaceHotspotsChart from "./WorkplaceHotspotsChart";
+// import StreamliningVerificationChart from "./StreamliningVerificationChart";
 
 // export default function AllDashlets() {
+//   const { preferences, fetchPreferences } = useDashboardStore();
+//   const [showModal, setShowModal] = useState(false);
+
+//   useEffect(() => {
+//     fetchPreferences(); // load user preferences when component mounts
+//   }, [fetchPreferences]);
+
+//   // If the user has no preferences => show all
+//   const hasPrefs = preferences && preferences.length > 0;
+//   const shouldShow = (cardId) => !hasPrefs || preferences.includes(cardId);
+
+//   const openModal = () => setShowModal(true);
+//   const closeModal = () => setShowModal(false);
+
 //   return (
 //     <div className="bg-bg-primary p-2">
 //       {/* Page title */}
@@ -29,106 +54,211 @@
 //         Analytics Dashboards
 //       </h1>
 
+//       {/* Button for customizing */}
+//       <div className="flex justify-center my-4">
+//         <button
+//           onClick={openModal}
+//           className="bg-blue-600 text-white px-4 py-2 rounded"
+//         >
+//           {hasPrefs ? "Edit Customization" : "Customize"}
+//         </button>
+//       </div>
+
+//       {/* 2-Column Layout */}
 //       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
 //         {/* Column 1 */}
-//         <div className=" ">
-//           <div className="mt-3">
-//             <DemographicAgeGender />
-//           </div>
-//           <div className="mt-3">
-//             <DemographicNationalMarital />
-//           </div>
+//         <div>
+//           {shouldShow("DemographicAgeGender") && (
+//             <div className="mt-3">
+//               <DemographicAgeGender />
+//             </div>
+//           )}
 
-//           <div className="mt-3">
-//             <SkillGapAnalysisCard />
-//           </div>
+//           {shouldShow("DemographicNationalMarital") && (
+//             <div className="mt-3">
+//               <DemographicNationalMarital />
+//             </div>
+//           )}
 
-//           <div className="mt-3">
-//             <CompensationBenchmarkingCard />
-//           </div>
+//           {shouldShow("DisciplinaryAnalysisCard") && (
+//             <div className="mt-3">
+//               <DisciplinaryAnalysisCard />
+//             </div>
+//           )}
 
-//           <div className="mt-3">
-//             <TrainingEffectivenessCard />
-//           </div>
+//           {shouldShow("StaffingOptimizationCard") && (
+//             <div className="mt-3">
+//               <StaffingOptimizationCard />
+//             </div>
+//           )}
+//           {shouldShow("CompensationBenchmarkingCard") && (
+//             <div className="mt-3">
+//               <CompensationBenchmarkingCard />
+//             </div>
+//           )}
+//           {shouldShow("GrievanceResolutionChart") && (
+//             <div className="mt-3">
+//               <GrievanceResolutionChart />
+//             </div>
+//           )}
 
-//           <div className="mt-3">
-//             <InternalMobilityTrendsCard />
-//           </div>
-//           <div className="mt-3">
-//             <ImpactOnPerformanceCard />
-//           </div>
-//           <div className="mt-3">
-//             <CTCChartCard />
-//           </div>
-//           <div className="mt-3">
-//             <PerformanceTrendsCard />
-//           </div>
-//           <div className="mt-3">
-//             <HighPotentialEmployeesTrendsCard />
-//           </div>
-//           <div className="mt-3">
-//             <AbsenteeismPatternsCard />
-//           </div>
-//           <div className="mt-3">
-//             <OvertimeCostAnalysisCard />
-//           </div>
-//           <div className="mt-3">
-//             <StaffingOptimizationCard />
-//           </div>
-//           <div className="mt-3">
-//             <DisciplinaryAnalysisCard />
-//           </div>
+//           {shouldShow("PerformanceTrendsCard") && (
+//             <div className="mt-3">
+//               <PerformanceTrendsCard />
+//             </div>
+//           )}
+
+//           {shouldShow("AbsenteeismPatternsCard") && (
+//             <div className="mt-3">
+//               <AbsenteeismPatternsCard />
+//             </div>
+//           )}
+//              {shouldShow("WorkplaceHotspotsChart") && (
+//             <div className="mt-3">
+//               <WorkplaceHotspotsChart />
+//             </div>
+//           )}
+//           {shouldShow("StreamliningVerificationChart") && (
+//             <div className="mt-3">
+//               <StreamliningVerificationChart />
+//             </div>
+//           )}
+//           {/* {shouldShow("SkillGapAnalysisCard") && (
+//             <div className="mt-3">
+//               <SkillGapAnalysisCard />
+//             </div>
+//           )} */}
+
+//           {/* {shouldShow("TrainingEffectivenessCard") && (
+//             <div className="mt-3">
+//               <TrainingEffectivenessCard />
+//             </div>
+//           )} */}
+
+//           {/* {shouldShow("InternalMobilityTrendsCard") && (
+//             <div className="mt-3">
+//               <InternalMobilityTrendsCard />
+//             </div>
+//           )} */}
+
+//           {/* {shouldShow("ImpactOnPerformanceCard") && (
+//             <div className="mt-3">
+//               <ImpactOnPerformanceCard />
+//             </div>
+//           )} */}
+
+//           {/* {shouldShow("CTCChartCard") && (
+//             <div className="mt-3">
+//               <CTCChartCard />
+//             </div>
+//           )} */}
+
+//           {/* {shouldShow("HighPotentialEmployeesTrendsCard") && (
+//             <div className="mt-3">
+//               <HighPotentialEmployeesTrendsCard />
+//             </div>
+//           )} */}
+
+//           {/* {shouldShow("OvertimeCostAnalysisCard") && (
+//             <div className="mt-3">
+//               <OvertimeCostAnalysisCard />
+//             </div>
+//           )} */}
+       
 //         </div>
 
-//         {/* Column 2: Stacked smaller donut charts */}
-//         <div className=" mt-3 ">
+//         {/* Column 2 */}
+//         <div className="mt-3">
 //           <div className="flex gap-3">
-//             <div className="">
-//               <ValidPan />
-//             </div>
-
-//             <div className="">
-//               <ValidAdhaar />
-//             </div>
+//             {shouldShow("ValidPan") && (
+//               <div>
+//                 <ValidPan />
+//               </div>
+//             )}
+//             {shouldShow("ValidAdhaar") && (
+//               <div>
+//                 <ValidAdhaar />
+//               </div>
+//             )}
 //           </div>
 
 //           <div className="flex gap-1">
-//             <div className="mt-3">
-//               <ValidPassport />
-//             </div>
-//             <div className="mt-3">
-//               <TrainingNeedsCard />
-//             </div>
+//             {shouldShow("ValidPassport") && (
+//               <div className="mt-3">
+//                 <ValidPassport />
+//               </div>
+//             )}
+//             {shouldShow("TrainingNeedsCard") && (
+//               <div className="mt-3">
+//                 <TrainingNeedsCard />
+//               </div>
+//             )}
 //           </div>
 
-//           <div className="flex ">
-//             {" "}
+//           <div className="flex">
+//             {shouldShow("AddressDistributionCard") && (
+//               <div className="mt-3">
+//                 <AddressDistributionCard />
+//               </div>
+//             )}
+//           </div>
+
+//           {shouldShow("ComplianceTrainingCoverageCard") && (
 //             <div className="mt-3">
-//               <AddressDistributionCard />
+//               <ComplianceTrainingCoverageCard />
 //             </div>
-//           </div>
-//           <div className="mt-3">
-//             <ComplianceTrainingCoverageCard />
-//           </div>
-//           <div className="mt-3">
-//             <PerformanceCard />
-//           </div>
-//           <div className="mt-3">
-//             <CorrelationTrainingPerformanceCard />
-//           </div>
+//           )}
+
+//           {shouldShow("PerformanceCard") && (
+//             <div className="mt-3">
+//               <PerformanceCard />
+//             </div>
+//           )}
+
+//           {/* {shouldShow("CorrelationTrainingPerformanceCard") && (
+//             <div className="mt-3">
+//               <CorrelationTrainingPerformanceCard />
+//             </div>
+//           )} */}
 //         </div>
 //       </div>
+
+//       {/* Modal */}
+//       {showModal && <CustomizeDashboardModal onClose={closeModal} />}
 //     </div>
 //   );
 // }
 
-// src/components/dashboard/AllDashlets.js
 
 
 import React, { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  FiSettings, 
+  FiUsers, 
+  FiTrendingUp, 
+  FiTarget,
+  FiDollarSign,
+  FiClock,
+  FiShield,
+  FiMapPin,
+  FiBookOpen,
+  FiAward,
+  FiAlertTriangle,
+  FiGrid,
+  FiList
+} from "react-icons/fi";
+import { TfiBarChartAlt } from "react-icons/tfi";
+
+import { 
+  MdDashboard,
+  MdAnalytics,
+  MdSecurity,
+  MdLocationOn
+} from "react-icons/md";
 import useDashboardStore from "../../../store/dashboardStore";
 
-// Import the specific chart components:
+// Import all your chart components
 import DemographicAgeGender from "./DemographicAgeGender";
 import DemographicNationalMarital from "./DemographicNationalMarital";
 import SkillGapAnalysisCard from "./SkillGapAnalysisCard";
@@ -152,204 +282,283 @@ import ComplianceTrainingCoverageCard from "./ComplianceTrainingCoverageCard";
 import PerformanceCard from "./PerformanceCard";
 import CorrelationTrainingPerformanceCard from "./CorrelationTrainingPerformanceCard";
 import GrievanceResolutionChart from "./GrievanceResolutionChart";
-// The modal
 import CustomizeDashboardModal from "./model/CustomizeDashboardModal";
 import WorkplaceHotspotsChart from "./WorkplaceHotspotsChart";
 import StreamliningVerificationChart from "./StreamliningVerificationChart";
 
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const cardVariants = {
+  hidden: { 
+    opacity: 0, 
+    y: 20,
+    scale: 0.95
+  },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    scale: 1,
+    transition: {
+      duration: 0.5,
+      ease: "easeOut"
+    }
+  }
+};
+
+const headerVariants = {
+  hidden: { opacity: 0, y: -30 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.6, ease: "easeOut" }
+  }
+};
+
 export default function AllDashlets() {
   const { preferences, fetchPreferences } = useDashboardStore();
   const [showModal, setShowModal] = useState(false);
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'masonry'
 
   useEffect(() => {
-    fetchPreferences(); // load user preferences when component mounts
+    fetchPreferences();
   }, [fetchPreferences]);
 
-  // If the user has no preferences => show all
   const hasPrefs = preferences && preferences.length > 0;
   const shouldShow = (cardId) => !hasPrefs || preferences.includes(cardId);
 
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
 
+  // Dashboard sections configuration
+  const dashboardSections = [
+    {
+      title: "Demographics & Workforce",
+      icon: <FiUsers className="w-5 h-5" />,
+      cards: [
+        { id: "DemographicAgeGender", component: <DemographicAgeGender />, size: "large" },
+        { id: "DemographicNationalMarital", component: <DemographicNationalMarital />, size: "large" },
+        { id: "AddressDistributionCard", component: <AddressDistributionCard />, size: "medium" }
+      ]
+    },
+    {
+      title: "Verification & Compliance",
+      icon: <FiShield className="w-5 h-5" />,
+      cards: [
+        { id: "ValidPan", component: <ValidPan />, size: "small" },
+        { id: "ValidAdhaar", component: <ValidAdhaar />, size: "small" },
+        { id: "ValidPassport", component: <ValidPassport />, size: "small" },
+        { id: "ComplianceTrainingCoverageCard", component: <ComplianceTrainingCoverageCard />, size: "large" },
+        { id: "StreamliningVerificationChart", component: <StreamliningVerificationChart />, size: "medium" }
+      ]
+    },
+    {
+      title: "Performance & Analytics",
+      icon: <TfiBarChartAlt  className="w-5 h-5" />,
+      cards: [
+        { id: "PerformanceCard", component: <PerformanceCard />, size: "large" },
+        { id: "PerformanceTrendsCard", component: <PerformanceTrendsCard />, size: "large" },
+        { id: "GrievanceResolutionChart", component: <GrievanceResolutionChart />, size: "medium" },
+        { id: "WorkplaceHotspotsChart", component: <WorkplaceHotspotsChart />, size: "medium" }
+      ]
+    },
+    {
+      title: "Training & Development",
+      icon: <FiBookOpen className="w-5 h-5" />,
+      cards: [
+        { id: "TrainingNeedsCard", component: <TrainingNeedsCard />, size: "medium" },
+        { id: "TrainingEffectivenessCard", component: <TrainingEffectivenessCard />, size: "large" },
+        { id: "CorrelationTrainingPerformanceCard", component: <CorrelationTrainingPerformanceCard />, size: "large" }
+      ]
+    },
+    {
+      title: "Financial & Compensation",
+      icon: <FiDollarSign className="w-5 h-5" />,
+      cards: [
+        { id: "CompensationBenchmarkingCard", component: <CompensationBenchmarkingCard />, size: "large" },
+        { id: "CTCChartCard", component: <CTCChartCard />, size: "large" },
+        { id: "OvertimeCostAnalysisCard", component: <OvertimeCostAnalysisCard />, size: "medium" }
+      ]
+    },
+    {
+      title: "Operations & Management",
+      icon: <FiTarget className="w-5 h-5" />,
+      cards: [
+        { id: "StaffingOptimizationCard", component: <StaffingOptimizationCard />, size: "large" },
+        { id: "AbsenteeismPatternsCard", component: <AbsenteeismPatternsCard />, size: "medium" },
+        { id: "DisciplinaryAnalysisCard", component: <DisciplinaryAnalysisCard />, size: "medium" },
+        { id: "InternalMobilityTrendsCard", component: <InternalMobilityTrendsCard />, size: "large" },
+        { id: "HighPotentialEmployeesTrendsCard", component: <HighPotentialEmployeesTrendsCard />, size: "large" }
+      ]
+    }
+  ];
+
+  const getSizeClasses = (size) => {
+    switch (size) {
+      case 'small':
+        return 'col-span-1 row-span-1';
+      case 'medium':
+        return 'col-span-1 md:col-span-2 row-span-1';
+      case 'large':
+        return 'col-span-1 md:col-span-2 lg:col-span-3 row-span-1';
+      default:
+        return 'col-span-1';
+    }
+  };
+
   return (
-    <div className="bg-bg-primary p-2">
-      {/* Page title */}
-      <h1 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100 text-center">
-        Analytics Dashboards
-      </h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
+      {/* Header Section */}
+      <motion.div
+        variants={headerVariants}
+        initial="hidden"
+        animate="visible"
+        className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-700 shadow-sm"
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            {/* Title Section */}
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl shadow-lg">
+                <MdDashboard className="w-8 h-8 text-white" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 dark:from-slate-100 dark:to-slate-300 bg-clip-text text-transparent">
+                  Analytics Dashboard
+                </h1>
+                <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+                  Comprehensive HR analytics and insights
+                </p>
+              </div>
+            </div>
 
-      {/* Button for customizing */}
-      <div className="flex justify-center my-4">
-        <button
-          onClick={openModal}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+            {/* Controls Section */}
+            <div className="flex items-center space-x-3">
+              {/* View Mode Toggle */}
+              <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded-md transition-all duration-200 ${
+                    viewMode === 'grid'
+                      ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                  }`}
+                >
+                  <FiGrid className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setViewMode('masonry')}
+                  className={`p-2 rounded-md transition-all duration-200 ${
+                    viewMode === 'masonry'
+                      ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400'
+                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                  }`}
+                >
+                  <FiList className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Customize Button */}
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={openModal}
+                className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white rounded-lg shadow-lg transition-all duration-200 font-medium"
+              >
+                <FiSettings className="w-4 h-4" />
+                <span>{hasPrefs ? "Edit Layout" : "Customize"}</span>
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="space-y-12"
         >
-          {hasPrefs ? "Edit Customization" : "Customize"}
-        </button>
-      </div>
+          {dashboardSections.map((section, sectionIndex) => {
+            const visibleCards = section.cards.filter(card => shouldShow(card.id));
+            
+            if (visibleCards.length === 0) return null;
 
-      {/* 2-Column Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-        {/* Column 1 */}
-        <div>
-          {shouldShow("DemographicAgeGender") && (
-            <div className="mt-3">
-              <DemographicAgeGender />
-            </div>
-          )}
+            return (
+              <motion.div
+                key={section.title}
+                variants={cardVariants}
+                className="space-y-6"
+              >
+                {/* Section Header */}
+                <div className="flex items-center space-x-3 pb-4 border-b border-slate-200 dark:border-slate-700">
+                  <div className="p-2 bg-gradient-to-r from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 rounded-lg">
+                    {section.icon}
+                  </div>
+                  <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200">
+                    {section.title}
+                  </h2>
+                  <div className="h-px bg-gradient-to-r from-slate-200 to-transparent dark:from-slate-700 flex-1" />
+                </div>
 
-          {shouldShow("DemographicNationalMarital") && (
-            <div className="mt-3">
-              <DemographicNationalMarital />
-            </div>
-          )}
-
-          {shouldShow("DisciplinaryAnalysisCard") && (
-            <div className="mt-3">
-              <DisciplinaryAnalysisCard />
-            </div>
-          )}
-
-          {shouldShow("StaffingOptimizationCard") && (
-            <div className="mt-3">
-              <StaffingOptimizationCard />
-            </div>
-          )}
-          {shouldShow("CompensationBenchmarkingCard") && (
-            <div className="mt-3">
-              <CompensationBenchmarkingCard />
-            </div>
-          )}
-          {shouldShow("GrievanceResolutionChart") && (
-            <div className="mt-3">
-              <GrievanceResolutionChart />
-            </div>
-          )}
-
-          {shouldShow("PerformanceTrendsCard") && (
-            <div className="mt-3">
-              <PerformanceTrendsCard />
-            </div>
-          )}
-
-          {shouldShow("AbsenteeismPatternsCard") && (
-            <div className="mt-3">
-              <AbsenteeismPatternsCard />
-            </div>
-          )}
-             {shouldShow("WorkplaceHotspotsChart") && (
-            <div className="mt-3">
-              <WorkplaceHotspotsChart />
-            </div>
-          )}
-          {shouldShow("StreamliningVerificationChart") && (
-            <div className="mt-3">
-              <StreamliningVerificationChart />
-            </div>
-          )}
-          {/* {shouldShow("SkillGapAnalysisCard") && (
-            <div className="mt-3">
-              <SkillGapAnalysisCard />
-            </div>
-          )} */}
-
-          {/* {shouldShow("TrainingEffectivenessCard") && (
-            <div className="mt-3">
-              <TrainingEffectivenessCard />
-            </div>
-          )} */}
-
-          {/* {shouldShow("InternalMobilityTrendsCard") && (
-            <div className="mt-3">
-              <InternalMobilityTrendsCard />
-            </div>
-          )} */}
-
-          {/* {shouldShow("ImpactOnPerformanceCard") && (
-            <div className="mt-3">
-              <ImpactOnPerformanceCard />
-            </div>
-          )} */}
-
-          {/* {shouldShow("CTCChartCard") && (
-            <div className="mt-3">
-              <CTCChartCard />
-            </div>
-          )} */}
-
-          {/* {shouldShow("HighPotentialEmployeesTrendsCard") && (
-            <div className="mt-3">
-              <HighPotentialEmployeesTrendsCard />
-            </div>
-          )} */}
-
-          {/* {shouldShow("OvertimeCostAnalysisCard") && (
-            <div className="mt-3">
-              <OvertimeCostAnalysisCard />
-            </div>
-          )} */}
-       
-        </div>
-
-        {/* Column 2 */}
-        <div className="mt-3">
-          <div className="flex gap-3">
-            {shouldShow("ValidPan") && (
-              <div>
-                <ValidPan />
-              </div>
-            )}
-            {shouldShow("ValidAdhaar") && (
-              <div>
-                <ValidAdhaar />
-              </div>
-            )}
-          </div>
-
-          <div className="flex gap-1">
-            {shouldShow("ValidPassport") && (
-              <div className="mt-3">
-                <ValidPassport />
-              </div>
-            )}
-            {shouldShow("TrainingNeedsCard") && (
-              <div className="mt-3">
-                <TrainingNeedsCard />
-              </div>
-            )}
-          </div>
-
-          <div className="flex">
-            {shouldShow("AddressDistributionCard") && (
-              <div className="mt-3">
-                <AddressDistributionCard />
-              </div>
-            )}
-          </div>
-
-          {shouldShow("ComplianceTrainingCoverageCard") && (
-            <div className="mt-3">
-              <ComplianceTrainingCoverageCard />
-            </div>
-          )}
-
-          {shouldShow("PerformanceCard") && (
-            <div className="mt-3">
-              <PerformanceCard />
-            </div>
-          )}
-
-          {/* {shouldShow("CorrelationTrainingPerformanceCard") && (
-            <div className="mt-3">
-              <CorrelationTrainingPerformanceCard />
-            </div>
-          )} */}
-        </div>
+                {/* Cards Grid */}
+                <div className={`grid gap-6 ${
+                  viewMode === 'grid' 
+                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+                    : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                }`}>
+                  {visibleCards.map((card, cardIndex) => (
+                    <motion.div
+                      key={card.id}
+                      variants={cardVariants}
+                      whileHover={{ 
+                        y: -4,
+                        transition: { duration: 0.2 }
+                      }}
+                      className={`
+                        ${viewMode === 'grid' ? getSizeClasses(card.size) : ''}
+                        bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl 
+                        transition-all duration-300 border border-slate-100 dark:border-slate-700
+                        hover:border-blue-200 dark:hover:border-blue-600
+                        overflow-hidden group
+                      `}
+                    >
+                      <div className="p-1">
+                        {card.component}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
       </div>
 
       {/* Modal */}
-      {showModal && <CustomizeDashboardModal onClose={closeModal} />}
+      <AnimatePresence>
+        {showModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50"
+          >
+            <CustomizeDashboardModal onClose={closeModal} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
