@@ -89,25 +89,31 @@ const Dashboard = () => {
         <Card title="Absent" value={stats.absent} color="bg-gray-800 text-white" />
         <Card title="Late In" value={stats.lateIn} color="bg-orange-400" />
       </div>
-
-      {/* Percentages */}
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <Gauge title="Attendance Percentage" percentage={(stats.checkedIn / stats.totalEmployees) * 100} />
-        <Gauge title="Absent Percentage" percentage={(stats.absent / stats.totalEmployees) * 100} />
-      </div>
-
+    <div className='flex justify-between'>
       {/* Placeholder for Bar Chart */}
-      <div className="bg-white p-4 rounded shadow-md mb-6">
+      <div className=" w-full bg-white mr-2 p-4 rounded shadow-md mb-6">
         <h2 className="font-semibold text-lg mb-2">Today Department Attendance</h2>
         <Bar data={data} options={options} />
       </div>
 
-      {/* Attendance Sources */}
-      <div className="grid grid-cols-3 gap-4">
-        <SourceCard title="Device Check-in" count={200} />
-        <SourceCard title="App Check-in" count={200} />
-        <SourceCard title="Manual Check-in" count={200} />
+      <div >
+           {/* Percentages */}
+          <div className="w-full grid grid-cols-2 gap-4 mb-6">
+            <Gauge title="Attendance Percentage" percentage={(stats.checkedIn / stats.totalEmployees) * 100} />
+            <Gauge title="Absent Percentage" percentage={(stats.absent / stats.totalEmployees) * 100} />
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <SourceCard title="Device Check-in" count={200} />
+            <SourceCard title="App Check-in" count={200} />
+            <SourceCard title="Manual Check-in" count={200} />
+          </div>
       </div>
+      
+
+    </div>
+      {/* Attendance Sources */}
+     
     </div>
   );
 };
