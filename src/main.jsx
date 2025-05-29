@@ -29,9 +29,12 @@ if ("serviceWorker" in navigator) {
 
 
 
+const employee = localStorage.getItem("employeeId");
+console.log("Employee ID:", employee);
+
 createRoot(document.getElementById("root")).render(
   <ThemeProvider>
-    <CallProvider>
+    <CallProvider currentUserId={employee}>
       <CallModal />
       <CallWindow />
       <VideoCallModal />
