@@ -16,7 +16,7 @@ const useRatingStore = create((set, get) => ({
   fetchSubordinates: async () => {
     try {
       set({ loading: true, error: null });
-      const res = await axiosInstance.get("/subordinates");
+      const res = await axiosInstance.get("/subordinates"); //fetch employee
       set({
         loading: false,
         subordinates: res.data.data || [],
@@ -235,6 +235,42 @@ const useRatingStore = create((set, get) => ({
       const message = err.response?.data?.message || err.message;
       set({ loading: false, error: message });
       return { success: false, message };
+    }
+  },
+
+
+    generatePastRatingsTemplate: async (params) => {
+    try {
+      set({ loading: true, error: null });
+      const queryParams = new URLSearchParams(params).toString();
+      const res = await axiosInstance.get(`/ratings/past-template?${queryParams}`, {
+        responseType: "arraybuffer", // important for Excel binary data
+      });
+      set({ loading: false, error: null });
+      return res; // caller handles blob
+    } catch (err) {
+      set({
+        loading: false,
+        error: err.response?.data?.message || err.message || "Failed to generate past ratings template",
+      });
+      throw err;
+    }
+  },
+
+    uploadPastRatings: async (formData) => {
+    try {
+      set({ loading: true, error: null });
+      const res = await axiosInstance.post("/ratings/bulk-upload-past", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      set({ loading: false, error: null });
+      return res.data;
+    } catch (err) {
+      set({
+        loading: false,
+        error: err.response?.data?.message || err.message || "Failed to upload past ratings",
+      });
+      throw err;
     }
   },
 

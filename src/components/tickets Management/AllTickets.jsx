@@ -34,7 +34,7 @@ export default function AllTickets() {
     issues,
     fetchAllIssues,
     createIssue,
-    editIssue,
+    changeIssueStatus,
     removeIssue,
     fetchComments,
     postComment,
@@ -102,7 +102,7 @@ export default function AllTickets() {
         attachment: formData.attachment,
       });
     } else if (selectedIssue) {
-      await editIssue(selectedIssue._id, {
+      await changeIssueStatus(selectedIssue._id, {
         issueTitle: formData.ticketTitle,
         issueDescription: formData.description,
         priority: formData.priority,
