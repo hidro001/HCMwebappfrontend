@@ -235,7 +235,7 @@
 
 //   return (
 //     <div className="p-10 bg-gray-100 min-h-screen space-y-10">
-      
+
 //       {/* top metrics + chart */}
 //       <div className="grid md:grid-cols-4 gap-4">
 //         {/* 6 Boxes */}
@@ -321,40 +321,51 @@
 //   return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
 // }
 
-
 /* --------------------------------------------------
  * EmployeeStatistics.jsx
  * -------------------------------------------------- */
-import React, { useEffect, useMemo, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Doughnut } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import dayjs from 'dayjs';
-import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from 'recharts';
-import useUsageStatsStore     from '../../store/useUsageStore';
-import useFullAttendanceStore from '../../store/useFullAttendanceStore';
+import React, { useEffect, useMemo, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Doughnut } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import dayjs from "dayjs";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
+import useUsageStatsStore from "../../store/useUsageStore";
+import useFullAttendanceStore from "../../store/useFullAttendanceStore";
+import ActivityTrendChart from "./ActivityTrendChart"; // <--- example chart component
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 // ────────────────────────────────────────────────────────────────────────────
 //  Utilities
 // ────────────────────────────────────────────────────────────────────────────
-const isSameISO = (d1, d2) => dayjs(d1).format('YYYY-MM-DD') === dayjs(d2).format('YYYY-MM-DD');
+const isSameISO = (d1, d2) =>
+  dayjs(d1).format("YYYY-MM-DD") === dayjs(d2).format("YYYY-MM-DD");
 
 /** Returns true if date lies between (inclusive) start .. end. */
 const isBetween = (date, start, end) =>
-  dayjs(date).isAfter(dayjs(start).subtract(1, 'day')) &&
-  dayjs(date).isBefore(dayjs(end).add(1, 'day'));
+  dayjs(date).isAfter(dayjs(start).subtract(1, "day")) &&
+  dayjs(date).isBefore(dayjs(end).add(1, "day"));
 
 /** Parse “hh:mm:ss AM/PM” → “HH:mm:ss” */
 function convertTo24Hour(timeStr) {
   if (!timeStr) return timeStr;
-  const [time, ampm] = timeStr.split(' ');
+  const [time, ampm] = timeStr.split(" ");
   if (!ampm) return timeStr;
-  let [h, m, s] = time.split(':').map(Number);
-  if (ampm === 'PM' && h !== 12) h += 12;
-  if (ampm === 'AM' && h === 12) h = 0;
-  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  let [h, m, s] = time.split(":").map(Number);
+  if (ampm === "PM" && h !== 12) h += 12;
+  if (ampm === "AM" && h === 12) h = 0;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(
+    s
+  ).padStart(2, "0")}`;
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -362,126 +373,188 @@ function convertTo24Hour(timeStr) {
 // ────────────────────────────────────────────────────────────────────────────
 export default function EmployeeStatistics() {
   const { empID } = useParams();
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
 
   /* --------------------------------------------------------------------- */
   /*  Stores – pull data + loaders/errors                                   */
   /* --------------------------------------------------------------------- */
   const {
-    stats, dailyStats, deptCategories,
-    fetchStats, fetchDailyStats, fetchDeptCategories,
+    stats,
+    dailyStats,
+    deptCategories,
+    fetchStats,
+    fetchDailyStats,
+    fetchDeptCategories,
     fetchTopProductivityStats,
-  topProductivityStats,
-  loading: prodStatsLoading,
-    loading: usageLoading, error: usageError
+    topProductivityStats,
+    loading: prodStatsLoading,
+    fetchMostUsedStats, // <-- NEW
+    mostUsedStats, // <-- NEW
+    loading: usageLoading,
+    error: usageError,
+
+    fetchActivityTrend,
   } = useUsageStatsStore();
 
-  const {
-    attendanceData, fetchAllData,
-    isLoading: attendanceLoading, error: attendanceError
-  } = useFullAttendanceStore();
+  const attendanceData = useFullAttendanceStore(
+    (state) => state.attendanceData
+  );
+  const fetchAllData = useFullAttendanceStore((state) => state.fetchAllData);
+  const fetchInsights = useFullAttendanceStore((state) => state.fetchInsights);
+  const insights = useFullAttendanceStore((state) => state.insights);
+  const attendanceLoading = useFullAttendanceStore((state) => state.isLoading);
+  const attendanceError = useFullAttendanceStore((state) => state.error);
 
   /* --------------------------------------------------------------------- */
   /*  Initial data fetch                                                    */
   /* --------------------------------------------------------------------- */
-  useEffect(() => { fetchStats(empID); fetchAllData(empID); }, [empID]);
   useEffect(() => {
-    fetchDailyStats(empID, dayjs().format('YYYY-MM-DD')).then(d => {
+    fetchStats(empID);
+    fetchAllData(empID);
+  }, [empID]);
+  useEffect(() => {
+    fetchDailyStats(empID, dayjs().format("YYYY-MM-DD")).then((d) => {
       if (d?.department) fetchDeptCategories(d.department);
     });
   }, [empID]);
 
-
+  // For the shift-based activity chart, we’ll pick “today” if mode === "daily"
 
   /* --------------------------------------------------------------------- */
   /*  FILTER STATE                                                          */
   /* --------------------------------------------------------------------- */
-  const today         = dayjs();
-  const [mode, setMode] = useState('daily');               // daily | weekly | monthly | yearly
-  const [month, setMonth] = useState(today.month()+1);     // 1…12  (only for monthly)
-  const [year,  setYear]  = useState(today.year());  
-  const getFavicon = (url) => `https://www.google.com/s2/favicons?domain=${url}&sz=64`;
+  const today = dayjs();
+  const [mode, setMode] = useState("daily"); // daily | weekly | monthly | yearly
+  const [month, setMonth] = useState(today.month() + 1); // 1…12  (only for monthly)
+  const [year, setYear] = useState(today.year());
+  const getFavicon = (url) =>
+    `https://www.google.com/s2/favicons?domain=${url}&sz=64`;
   const appIconMap = {
-    'google chrome': 'https://img.icons8.com/color/48/chrome--v1.png',
-    'slack': 'https://img.icons8.com/color/48/slack-new-logo.png',
-    'excel': 'https://img.icons8.com/color/48/microsoft-excel-2019--v1.png',
-    'word': 'https://img.icons8.com/color/48/ms-word.png',
-    'anydesk': 'https://img.icons8.com/color/48/anydesk.png',
-    'calculator': 'https://img.icons8.com/color/48/calculator.png',
-    'docker desktop': 'https://img.icons8.com/color/48/docker.png',
-    'electron': 'https://img.icons8.com/color/48/electron.png',
-    'lockapp.exe': 'https://img.icons8.com/color/48/lock-2.png',
-    'microsoft 365 copilot app': 'https://img.icons8.com/color/48/microsoft-365.png',
-    'microsoft copilot': 'https://img.icons8.com/color/48/microsoft-365.png',
-    'microsoft edge': 'https://img.icons8.com/color/48/ms-edge-new.png',
-    'mongodbcompass': 'https://img.icons8.com/color/48/mongodb.png',
-    'notepad': 'https://img.icons8.com/color/48/notepad.png',
-    'photos.exe': 'https://img.icons8.com/color/48/windows-photos.png',
-    'postman': 'https://img.icons8.com/color/48/postman-api.png',
-    'python 3.13.3 (64-bit)': 'https://img.icons8.com/color/48/python.png',
-    'screenclippinghost.exe': 'https://img.icons8.com/color/48/screenshot.png',
-    'search application': 'https://img.icons8.com/color/48/search--v1.png',
-    'settings': 'https://img.icons8.com/color/48/settings--v1.png',
-    'setup/uninstall': 'https://img.icons8.com/color/48/uninstalling-updates.png',
-    'ssh, telnet, rlogin, and supdup client': 'https://img.icons8.com/color/48/console.png',
-    'task manager': 'https://img.icons8.com/color/48/task-manager.png',
-    'tcp/ip ping command': 'https://img.icons8.com/color/48/console.png',
-    'visual studio code': 'https://img.icons8.com/color/48/visual-studio-code-2019.png',
-    'whatsapp.exe': 'https://img.icons8.com/color/48/whatsapp--v1.png',
-    'windows command processor': 'https://img.icons8.com/color/48/command-line.png',
-    'windows explorer': 'https://img.icons8.com/color/48/windows-explorer.png',
-    'windows shell experience host': 'https://img.icons8.com/color/48/windows-10.png',
-    'windows® installer': 'https://img.icons8.com/color/48/windows-installer.png',
-    'winscp: sftp, ftp, webdav, s3 and scp client': 'https://img.icons8.com/color/48/ftp.png',
-    'wps office': 'https://img.icons8.com/color/48/wps-office.png',
-    'wps spreadsheets': 'https://img.icons8.com/color/48/wps-office.png',
-    'x-lite.exe': 'https://img.icons8.com/color/48/phone-office.png',
-    'a desktop app for humanmaximizer': 'https://img.icons8.com/color/48/monitor--v1.png',
+    "google chrome": "https://img.icons8.com/color/48/chrome--v1.png",
+    slack: "https://img.icons8.com/color/48/slack-new-logo.png",
+    excel: "https://img.icons8.com/color/48/microsoft-excel-2019--v1.png",
+    word: "https://img.icons8.com/color/48/ms-word.png",
+    anydesk: "https://img.icons8.com/color/48/anydesk.png",
+    calculator: "https://img.icons8.com/color/48/calculator.png",
+    "docker desktop": "https://img.icons8.com/color/48/docker.png",
+    electron: "https://img.icons8.com/color/48/electron.png",
+    "lockapp.exe": "https://img.icons8.com/color/48/lock-2.png",
+    "microsoft 365 copilot app":
+      "https://img.icons8.com/color/48/microsoft-365.png",
+    "microsoft copilot": "https://img.icons8.com/color/48/microsoft-365.png",
+    "microsoft edge": "https://img.icons8.com/color/48/ms-edge-new.png",
+    mongodbcompass: "https://img.icons8.com/color/48/mongodb.png",
+    notepad: "https://img.icons8.com/color/48/notepad.png",
+    "photos.exe": "https://img.icons8.com/color/48/windows-photos.png",
+    postman: "https://img.icons8.com/color/48/postman-api.png",
+    "python 3.13.3 (64-bit)": "https://img.icons8.com/color/48/python.png",
+    "screenclippinghost.exe": "https://img.icons8.com/color/48/screenshot.png",
+    "search application": "https://img.icons8.com/color/48/search--v1.png",
+    settings: "https://img.icons8.com/color/48/settings--v1.png",
+    "setup/uninstall":
+      "https://img.icons8.com/color/48/uninstalling-updates.png",
+    "ssh, telnet, rlogin, and supdup client":
+      "https://img.icons8.com/color/48/console.png",
+    "task manager": "https://img.icons8.com/color/48/task-manager.png",
+    "tcp/ip ping command": "https://img.icons8.com/color/48/console.png",
+    "visual studio code":
+      "https://img.icons8.com/color/48/visual-studio-code-2019.png",
+    "whatsapp.exe": "https://img.icons8.com/color/48/whatsapp--v1.png",
+    "windows command processor":
+      "https://img.icons8.com/color/48/command-line.png",
+    "windows explorer": "https://img.icons8.com/color/48/windows-explorer.png",
+    "windows shell experience host":
+      "https://img.icons8.com/color/48/windows-10.png",
+    "windows® installer":
+      "https://img.icons8.com/color/48/windows-installer.png",
+    "winscp: sftp, ftp, webdav, s3 and scp client":
+      "https://img.icons8.com/color/48/ftp.png",
+    "wps office": "https://img.icons8.com/color/48/wps-office.png",
+    "wps spreadsheets": "https://img.icons8.com/color/48/wps-office.png",
+    "x-lite.exe": "https://img.icons8.com/color/48/phone-office.png",
+    "a desktop app for humanmaximizer":
+      "https://img.icons8.com/color/48/monitor--v1.png",
   };
-  
+
+  useEffect(() => {
+    if (mode === "daily") {
+      const dateStr = today.format("YYYY-MM-DD");
+      fetchActivityTrend(empID, dateStr);
+    }
+  }, [empID, mode]);
   const getAppIcon = (appName) => {
     const key = appName.toLowerCase();
-    return appIconMap[key] || 'https://img.icons8.com/fluency-systems-regular/48/application-window.png';
+    return (
+      appIconMap[key] ||
+      "https://img.icons8.com/fluency-systems-regular/48/application-window.png"
+    );
   };
-  
+
   useEffect(() => {
+    // This fetches usage data for the chosen mode (daily, weekly, etc.).
     fetchTopProductivityStats(empID, mode);
-  }, [empID, mode]);// for monthly & yearly
+  }, [empID, mode]);
+
+  // (B) In a useEffect, call the new API for “most-used”:
+  useEffect(() => {
+    // This fetches the top-used apps/websites for the chosen mode (daily, weekly, etc.).
+    fetchMostUsedStats(empID, mode);
+  }, [empID, mode]);
+
+  // (C) Create memoized top-3 arrays using `mostUsedStats`:
+  const top3Websites = useMemo(() => {
+    if (!mostUsedStats?.topWebsites) return [];
+    return [...mostUsedStats.topWebsites]
+      .sort((a, b) => b.minutesVisited - a.minutesVisited)
+      .slice(0, 3);
+  }, [mostUsedStats]);
+
+  const top3Apps = useMemo(() => {
+    if (!mostUsedStats?.topApps) return [];
+    return [...mostUsedStats.topApps]
+      .sort((a, b) => b.minutesUsed - a.minutesUsed)
+      .slice(0, 3);
+  }, [mostUsedStats]);
 
   /* --------------------------------------------------------------------- */
   /*  Derive time window                                                   */
   /* --------------------------------------------------------------------- */
   const period = useMemo(() => {
-    if (mode === 'yesterday') {
-      return { start: today.subtract(1, 'day').startOf('day'), end: today.subtract(1, 'day').endOf('day') };
+    if (mode === "yesterday") {
+      return {
+        start: today.subtract(1, "day").startOf("day"),
+        end: today.subtract(1, "day").endOf("day"),
+      };
     }
-    if (mode === 'daily') {
-      return { start: today.startOf('day'), end: today.endOf('day') };
+    if (mode === "daily") {
+      return { start: today.startOf("day"), end: today.endOf("day") };
     }
-    if (mode === 'weekly') {
-      const end   = today.endOf('day');
-      const start = today.subtract(6, 'day').startOf('day');
+    if (mode === "weekly") {
+      const end = today.endOf("day");
+      const start = today.subtract(6, "day").startOf("day");
       return { start, end };
     }
-    if (mode === 'monthly') {
-      const start = dayjs(`${year}-${String(month).padStart(2,'0')}-01`).startOf('month');
-      const end   = start.endOf('month');
+    if (mode === "monthly") {
+      const start = dayjs(
+        `${year}-${String(month).padStart(2, "0")}-01`
+      ).startOf("month");
+      const end = start.endOf("month");
       return { start, end };
     }
     // yearly
-    const start = dayjs(`${year}-01-01`).startOf('year');
-    const end   = start.endOf('year');
+    const start = dayjs(`${year}-01-01`).startOf("year");
+    const end = start.endOf("year");
     return { start, end };
   }, [mode, month, year]);
 
   useEffect(() => {
     // Fetch stats based on mode selected (daily, weekly, monthly, yearly, yesterday)
     const fetchStats = async () => {
-      if (mode === 'yesterday') {
-        const yesterday = today.subtract(1, 'day').format('YYYY-MM-DD');
-        await fetchDailyStats(empID, yesterday);  // Pass yesterday's date here
+      if (mode === "yesterday") {
+        const yesterday = today.subtract(1, "day").format("YYYY-MM-DD");
+        await fetchDailyStats(empID, yesterday); // Pass yesterday's date here
       } else {
-        fetchDailyStats(empID, today.format('YYYY-MM-DD')); // For daily or other modes
+        fetchDailyStats(empID, today.format("YYYY-MM-DD")); // For daily or other modes
       }
     };
     fetchStats();
@@ -490,40 +563,54 @@ export default function EmployeeStatistics() {
   /* --------------------------------------------------------------------- */
   /*  Filter helpers                                                        */
   /* --------------------------------------------------------------------- */
-  const inWindow = dateStr =>
-    isBetween(dateStr, period.start, period.end);
+  const inWindow = (dateStr) => isBetween(dateStr, period.start, period.end);
 
-  const filteredStats       = useMemo(() => stats.filter(s => inWindow(s.date)),        [stats, period]);
-  const filteredAttendance  = useMemo(() => attendanceData.filter(a => inWindow(a.date)),[attendanceData, period]);
+  const filteredStats = useMemo(() => {
+    return Array.isArray(stats) ? stats.filter((s) => inWindow(s.date)) : [];
+  }, [stats, period]);
+
+  const filteredAttendance = useMemo(() => {
+    return Array.isArray(attendanceData)
+      ? attendanceData.filter((a) => inWindow(a.date))
+      : [];
+  }, [attendanceData, period]);
 
   /* --------------------------------------------------------------------- */
   /*  Aggregate Usage totals                                                */
   /* --------------------------------------------------------------------- */
   const totalUsage = useMemo(() => {
-    return filteredStats.reduce((acc, cur) => ({
-      keyboardMinutes : acc.keyboardMinutes  + cur.keyboardMinutes,
-      mouseMinutes    : acc.mouseMinutes     + cur.mouseMinutes,
-      keyboardPresses : acc.keyboardPresses  + cur.keyboardPressCount,
-      mouseClicks     : acc.mouseClicks      + cur.mouseClickCount,
-    }), { keyboardMinutes:0, mouseMinutes:0, keyboardPresses:0, mouseClicks:0 });
+    return filteredStats.reduce(
+      (acc, cur) => ({
+        keyboardMinutes: acc.keyboardMinutes + cur.keyboardMinutes,
+        mouseMinutes: acc.mouseMinutes + cur.mouseMinutes,
+        keyboardPresses: acc.keyboardPresses + cur.keyboardPressCount,
+        mouseClicks: acc.mouseClicks + cur.mouseClickCount,
+      }),
+      {
+        keyboardMinutes: 0,
+        mouseMinutes: 0,
+        keyboardPresses: 0,
+        mouseClicks: 0,
+      }
+    );
   }, [filteredStats]);
 
   /* --------------------------------------------------------------------- */
   /*  Aggregate Attendance totals                                           */
   /* --------------------------------------------------------------------- */
 
-  //LOGIC FOR 
+  //LOGIC FOR
   // const attendanceTotals = useMemo(() => {
   //   let workMin = 0, breakMin = 0;
-  
+
   //   filteredAttendance.forEach(rec => {
   //     if (rec.login) {
   //       const loginTime = dayjs(`${rec.date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
   //       const shiftStart = dayjs(`${rec.date} 10:00:00`, 'YYYY-MM-DD HH:mm:ss');
   //       const shiftEnd = dayjs(`${rec.date} 19:00:00`, 'YYYY-MM-DD HH:mm:ss');
-  
+
   //       let effectiveEnd;
-  
+
   //       if (rec.logout && rec.logout !== rec.login) {
   //         effectiveEnd = dayjs(`${rec.date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
   //       } else if (dayjs(rec.date).isBefore(dayjs(), 'day')) {
@@ -533,13 +620,13 @@ export default function EmployeeStatistics() {
   //       } else {
   //         effectiveEnd = shiftEnd;
   //       }
-  
+
   //       const effectiveStart = loginTime.isAfter(shiftStart) ? loginTime : shiftStart;
-  
+
   //       if (effectiveEnd.isAfter(effectiveStart)) {
   //         workMin += effectiveEnd.diff(effectiveStart, 'minute');
   //       }
-  
+
   //       rec.breaks?.forEach(br => {
   //         if (br.start && br.end) {
   //           const breakStart = dayjs(br.start);
@@ -551,27 +638,26 @@ export default function EmployeeStatistics() {
   //       });
   //     }
   //   });
-  
+
   //   const netWorkMin = Math.max(workMin - breakMin, 0);  // prevent negative values
   //   const hours = Math.floor(netWorkMin / 60);
   //   const minutes = netWorkMin % 60;
-  
+
   //   return {
   //     totalWorkingHours: netWorkMin > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
   //     totalBreakTaken: breakMin
   //   };
   // }, [filteredAttendance]);
-  
-  
+
   // const attendanceTotals = useMemo(() => {
   //   let totalWorkMinutes = 0;
   //   let totalBreakMinutes = 0;
-  
+
   //   filteredAttendance.forEach(rec => {
   //     if (!rec.login) return;  // Skip if no login
-      
+
   //     const loginTime = dayjs(`${rec.date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
-  
+
   //     // Prioritize punch-out if available; otherwise, use current time if it's today
   //     let logoutTime;
   //     if (rec.logout && rec.logout !== rec.login) {
@@ -581,12 +667,12 @@ export default function EmployeeStatistics() {
   //     } else {
   //       logoutTime = dayjs(`${rec.date} 19:00:00`, 'YYYY-MM-DD HH:mm:ss'); // Default to shift end for past days
   //     }
-  
+
   //     // Compute total work minutes from punch-in to punch-out/current time
   //     if (logoutTime.isAfter(loginTime)) {
   //       totalWorkMinutes += logoutTime.diff(loginTime, 'minute');
   //     }
-  
+
   //     // Calculate total break minutes
   //     rec.breaks?.forEach(br => {
   //       if (br.start && br.end) {
@@ -598,43 +684,49 @@ export default function EmployeeStatistics() {
   //       }
   //     });
   //   });
-  
+
   //   // Subtract breaks from total work time
   //   const netWorkMinutes = Math.max(totalWorkMinutes - totalBreakMinutes, 0);
   //   const hours = Math.floor(netWorkMinutes / 60);
   //   const minutes = netWorkMinutes % 60;
-  
+
   //   return {
   //     totalWorkingHours: netWorkMinutes > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
   //     totalBreakTaken: totalBreakMinutes
   //   };
-  // }, [filteredAttendance]);  
+  // }, [filteredAttendance]);
 
   const attendanceTotals = useMemo(() => {
     const SHIFT_START = "10:00:00";
     const SHIFT_END = "19:00:00";
-  
+
     let totalWorkMinutes = 0;
     let totalBreakMinutes = 0;
-  
-    filteredAttendance.forEach(rec => {
+
+    filteredAttendance.forEach((rec) => {
       if (!rec.login) return;
-  
+
       const date = rec.date;
-      const shiftStart = dayjs(`${date} ${SHIFT_START}`, 'YYYY-MM-DD HH:mm:ss');
-      const shiftEnd = dayjs(`${date} ${SHIFT_END}`, 'YYYY-MM-DD HH:mm:ss');
-      const loginTime = dayjs(`${date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
-  
+      const shiftStart = dayjs(`${date} ${SHIFT_START}`, "YYYY-MM-DD HH:mm:ss");
+      const shiftEnd = dayjs(`${date} ${SHIFT_END}`, "YYYY-MM-DD HH:mm:ss");
+      const loginTime = dayjs(
+        `${date} ${convertTo24Hour(rec.login)}`,
+        "YYYY-MM-DD HH:mm:ss"
+      );
+
       let logoutTime = null;
       if (rec.logout && rec.logout !== rec.login) {
-        logoutTime = dayjs(`${date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
+        logoutTime = dayjs(
+          `${date} ${convertTo24Hour(rec.logout)}`,
+          "YYYY-MM-DD HH:mm:ss"
+        );
       }
-  
+
       const now = dayjs();
-  
+
       let effectiveEndTime;
-  
-      if (dayjs(date).isSame(now, 'day')) {
+
+      if (dayjs(date).isSame(now, "day")) {
         if (now.isBefore(shiftEnd)) {
           effectiveEndTime = now;
         } else if (logoutTime && logoutTime.isAfter(shiftEnd)) {
@@ -645,65 +737,91 @@ export default function EmployeeStatistics() {
       } else {
         effectiveEndTime = logoutTime ? logoutTime : shiftEnd;
       }
-  
+
       if (effectiveEndTime.isAfter(loginTime)) {
-        totalWorkMinutes += effectiveEndTime.diff(loginTime, 'minute');
+        totalWorkMinutes += effectiveEndTime.diff(loginTime, "minute");
       }
-  
-      rec.breaks?.forEach(br => {
+
+      rec.breaks?.forEach((br) => {
         if (br.start && br.end) {
           let breakStart = dayjs(br.start);
           let breakEnd = dayjs(br.end);
-  
-          if (breakEnd.isBefore(shiftStart) || breakStart.isAfter(shiftEnd)) return;
-  
-          breakStart = breakStart.isBefore(shiftStart) ? shiftStart : breakStart;
-  
+
+          if (breakEnd.isBefore(shiftStart) || breakStart.isAfter(shiftEnd))
+            return;
+
+          breakStart = breakStart.isBefore(shiftStart)
+            ? shiftStart
+            : breakStart;
+
           breakEnd = [breakEnd, effectiveEndTime, shiftEnd].reduce((min, cur) =>
             cur.isBefore(min) ? cur : min
           );
-  
+
           if (breakEnd.isAfter(breakStart)) {
-            totalBreakMinutes += breakEnd.diff(breakStart, 'minute');
+            totalBreakMinutes += breakEnd.diff(breakStart, "minute");
           }
         }
       });
     });
-  
+
     const netWorkMinutes = Math.max(totalWorkMinutes - totalBreakMinutes, 0);
     const hours = Math.floor(netWorkMinutes / 60);
     const minutes = netWorkMinutes % 60;
-  
+
     return {
-      totalWorkingHours: netWorkMinutes > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
-      totalBreakTaken: totalBreakMinutes
+      totalWorkingHours:
+        netWorkMinutes > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
+      totalBreakTaken: totalBreakMinutes,
     };
   }, [filteredAttendance]);
-  
-  
-  
-  
+
+  useEffect(() => {
+    const date =
+      mode === "daily"
+        ? today.format("YYYY-MM-DD")
+        : mode === "monthly"
+        ? `${year}-${String(month).padStart(2, "0")}`
+        : mode === "yearly"
+        ? String(year)
+        : today.format("YYYY-MM-DD");
+
+    fetchInsights(empID, mode, date);
+  }, [empID, mode, month, year]);
 
   //11
 
+  useEffect(() => {
+    // This fetches top-used apps/websites for the chosen mode (e.g. 'daily').
+    fetchTopProductivityStats(empID, mode);
+  }, [empID, mode]);
   /* --------------------------------------------------------------------- */
   /*  Productivity (Daily ONLY) – show doughnut                            */
   /* --------------------------------------------------------------------- */
-  const showProductivity = mode === 'daily';
+  const showProductivity = mode === "daily";
   const { productiveTime, unproductiveTime } = useMemo(() => {
     if (!showProductivity || !dailyStats || !deptCategories) {
-      return { productiveTime:0, unproductiveTime:0 };
+      return { productiveTime: 0, unproductiveTime: 0 };
     }
-    const prodSet   = new Set(deptCategories.productive.map(d => d.name.toLowerCase()));
-    const unprodSet = new Set(deptCategories.unproductive.map(d => d.name.toLowerCase()));
-    let p = 0, u = 0;
+    const prodSet = new Set(
+      deptCategories.productive.map((d) => d.name.toLowerCase())
+    );
+    const unprodSet = new Set(
+      deptCategories.unproductive.map((d) => d.name.toLowerCase())
+    );
+    let p = 0,
+      u = 0;
     dailyStats.appsUsed.forEach(({ appName, minutesUsed }) => {
       const n = appName.toLowerCase();
-      prodSet.has(n) ? p += minutesUsed : unprodSet.has(n) && (u += minutesUsed);
+      prodSet.has(n)
+        ? (p += minutesUsed)
+        : unprodSet.has(n) && (u += minutesUsed);
     });
     dailyStats.websitesVisited.forEach(({ url, minutesVisited }) => {
       const n = url.toLowerCase();
-      prodSet.has(n) ? p += minutesVisited : unprodSet.has(n) && (u += minutesVisited);
+      prodSet.has(n)
+        ? (p += minutesVisited)
+        : unprodSet.has(n) && (u += minutesVisited);
     });
     return { productiveTime: p, unproductiveTime: u };
   }, [dailyStats, deptCategories, showProductivity]);
@@ -712,38 +830,75 @@ export default function EmployeeStatistics() {
   /*  Chart Config                                                          */
   /* --------------------------------------------------------------------- */
   const doughnutData = {
-    labels: ['Productive', 'Unproductive'],
-    datasets: [{
-      data: [productiveTime, unproductiveTime],
-      backgroundColor     : ['#2563EB', '#F97316'],
-      hoverBackgroundColor: ['#1E40AF', '#EA580C'],
-      borderColor:'#FFF', borderWidth:4,
-    }]
+    labels: ["Productive", "Unproductive"],
+    datasets: [
+      {
+        data: [productiveTime, unproductiveTime],
+        backgroundColor: ["#2563EB", "#F97316"],
+        hoverBackgroundColor: ["#1E40AF", "#EA580C"],
+        borderColor: "#FFF",
+        borderWidth: 4,
+      },
+    ],
   };
   const doughnutOptions = {
     responsive: true,
     plugins: {
       legend: {
-        position: 'bottom',
+        position: "bottom",
         labels: {
           boxWidth: 10, // Adjust legend box size for better alignment
-          padding: 15,  // Adjust spacing around the legend
+          padding: 15, // Adjust spacing around the legend
           font: {
-            size: 14,  // Adjust font size of the legend
+            size: 14, // Adjust font size of the legend
           },
         },
       },
     },
   };
-  
 
   /* --------------------------------------------------------------------- */
   /*  Load / Error states                                                   */
   /* --------------------------------------------------------------------- */
   if (usageLoading || attendanceLoading)
-    return <p className="text-center py-6 text-gray-500 dark:text-gray-300">Loading…</p>;
+    return (
+      <p className="text-center py-6 text-gray-500 dark:text-gray-300">
+        Loading…
+      </p>
+    );
   if (usageError || attendanceError)
-    return <p className="text-center py-6 text-gray-500 dark:text-gray-300">{usageError || attendanceError}</p>;
+    return (
+      <p className="text-center py-6 text-gray-500 dark:text-gray-300">
+        {usageError || attendanceError}
+      </p>
+    );
+
+  const metrics = [
+    ...(insights
+      ? [
+          {
+            color: "indigo",
+            label: "Average Break per Day",
+            value: insights.averageBreakTime,
+          },
+          {
+            color: "teal",
+            label: "Longest Break",
+            value: insights.longestBreak,
+          },
+          {
+            color: "cyan",
+            label: "Most Frequent Break Times",
+            value: insights.data?.mostFrequentBreakTimes?.join(" | ") || "N/A",
+          },
+          {
+            color: "amber",
+            label: "Average Working Hours per Day",
+            value: insights.averageWorkingHours,
+          },
+        ]
+      : []),
+  ];
 
   /* --------------------------------------------------------------------- */
   /*  RENDER                                                                */
@@ -757,7 +912,7 @@ export default function EmployeeStatistics() {
   }) => {
     const BLUE = "#487FFF";
     const GRAY = "#e2e8f0";
-  
+
     const css = {
       card: {
         border: `1px solid ${GRAY}`,
@@ -805,31 +960,59 @@ export default function EmployeeStatistics() {
         verticalAlign: "middle",
       },
     };
-  
+
     const renderHeader = () => (
       <thead>
         <tr>
-          <th style={{ ...css.thBase, width: 60, textAlign: "center", borderRight: `1px solid ${BLUE}` }}>#</th>
+          <th
+            style={{
+              ...css.thBase,
+              width: 60,
+              textAlign: "center",
+              borderRight: `1px solid ${BLUE}`,
+            }}
+          >
+            #
+          </th>
           <th style={{ ...css.thBase, borderRight: `1px solid ${BLUE}` }}>
             {isWebsite ? "Website Name" : "App Name"}
           </th>
-          <th style={{ ...css.thBase, width: 160, textAlign: "center" }}>Time (Min)</th>
+          <th style={{ ...css.thBase, width: 160, textAlign: "center" }}>
+            Time (Min)
+          </th>
         </tr>
       </thead>
     );
-  
+
     const renderRows = () =>
       data.length ? (
         data.slice(0, 5).map((row, i) => {
           const name = isWebsite ? row.url : row.appName;
-          const icon = isWebsite ? getFavicon(row.url) : getAppIcon(row.appName);
-  
+          const icon = isWebsite
+            ? getFavicon(row.url)
+            : getAppIcon(row.appName);
+
           return (
-            <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#F9FBFF" }}>
-              <td style={{ ...css.tdBase, textAlign: "center", borderRight: `1px solid ${BLUE}` }}>
+            <tr
+              key={i}
+              style={{ background: i % 2 === 0 ? "#fff" : "#F9FBFF" }}
+            >
+              <td
+                style={{
+                  ...css.tdBase,
+                  textAlign: "center",
+                  borderRight: `1px solid ${BLUE}`,
+                }}
+              >
                 {String(i + 1).padStart(2, "0")}
               </td>
-              <td style={{ ...css.tdBase, textAlign: "left", borderRight: `1px solid ${BLUE}` }}>
+              <td
+                style={{
+                  ...css.tdBase,
+                  textAlign: "left",
+                  borderRight: `1px solid ${BLUE}`,
+                }}
+              >
                 <img src={icon} alt="" style={css.icon} />
                 {name}
               </td>
@@ -841,23 +1024,25 @@ export default function EmployeeStatistics() {
         })
       ) : (
         <tr>
-          <td colSpan={3} style={{ padding: 12, textAlign: "center", color: "#9ca3af" }}>No data available.</td>
+          <td
+            colSpan={3}
+            style={{ padding: 12, textAlign: "center", color: "#9ca3af" }}
+          >
+            No data available.
+          </td>
         </tr>
       );
-  
+
     return (
-      <div className="border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow"
->
-        <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700"
-        >
-          <span className="font-semibold text-gray-700 dark:text-gray-200 text-base"
-          >{title}</span>
+      <div className="border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow">
+        <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+          <span className="font-semibold text-gray-700 dark:text-gray-200 text-base">
+            {title}
+          </span>
         </div>
-  
-        <div className="overflow-x-auto p-0 border border-blue-500 dark:border-blue-400 rounded-lg m-4"
-        >
-          <table className="w-full table-auto text-sm text-gray-700 dark:text-gray-300"
-          >
+
+        <div className="overflow-x-auto p-0 border border-blue-500 dark:border-blue-400 rounded-lg m-4">
+          <table className="w-full table-auto text-sm text-gray-700 dark:text-gray-300">
             {renderHeader()}
             <tbody>{renderRows()}</tbody>
           </table>
@@ -865,64 +1050,74 @@ export default function EmployeeStatistics() {
       </div>
     );
   };
-  
-  
+
   const ProductivityBarGraph = ({ data }) => {
     const productivityMap = {
       less: 1,
       avg: 2,
       top: 3,
     };
-  
+
     const productivityColor = {
-      less: '#FF8A80',
-      avg: '#90CAF9',
-      top: '#B9F6CA',
+      less: "#FF8A80",
+      avg: "#90CAF9",
+      top: "#B9F6CA",
     };
-  
-    const formattedData = data.map(app => ({
+
+    const formattedData = data.map((app) => ({
       name: app.appName,
       productivityLevel: app.productivityLevel,
       productivityValue: productivityMap[app.productivityLevel] || 0,
     }));
-  
+
     // Function to post daily attendance
-const postDailyAttendance = async (employeeId, date, workingMinutes, status = "Present") => {
-  try {
-    const response = await fetch('/api/attendance/daily', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ employeeId, date, workingMinutes, status }),
-    });
+    const postDailyAttendance = async (
+      employeeId,
+      date,
+      workingMinutes,
+      status = "Present"
+    ) => {
+      try {
+        const response = await fetch("/api/attendance/daily", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ employeeId, date, workingMinutes, status }),
+        });
 
-    const result = await response.json();
-    if (result.success) {
-      console.log('Attendance posted:', result.data);
-    } else {
-      console.error('Failed to post attendance:', result.message);
-    }
-  } catch (error) {
-    console.error('Error posting attendance:', error);
-  }
-};
+        const result = await response.json();
+        if (result.success) {
+          console.log("Attendance posted:", result.data);
+        } else {
+          console.error("Failed to post attendance:", result.message);
+        }
+      } catch (error) {
+        console.error("Error posting attendance:", error);
+      }
+    };
 
-// Hook to automatically post attendance daily if attendance is present
-useEffect(() => {
-  if (attendanceTotals && attendanceTotals.totalWorkingHours !== "0 hrs 0 mins") {
-    const today = dayjs().format('YYYY-MM-DD');
-    const [hours, , mins] = attendanceTotals.totalWorkingHours.split(' ');
-    const workingMinutes = parseInt(hours) * 60 + parseInt(mins);
+    // Hook to automatically post attendance daily if attendance is present
+    useEffect(() => {
+      if (
+        attendanceTotals &&
+        attendanceTotals.totalWorkingHours !== "0 hrs 0 mins"
+      ) {
+        const today = dayjs().format("YYYY-MM-DD");
+        const [hours, , mins] = attendanceTotals.totalWorkingHours.split(" ");
+        const workingMinutes = parseInt(hours) * 60 + parseInt(mins);
 
-    postDailyAttendance(empID, today, workingMinutes, "Present");
-  }
-}, [attendanceTotals, empID]);
+        postDailyAttendance(empID, today, workingMinutes, "Present");
+      }
+    }, [attendanceTotals, empID]);
     return (
       <div className="p-6 bg-white rounded-xl shadow-xl mt-10">
         <h3 className="text-lg font-semibold text-gray-800 mb-4">
           Productive Websites & Apps
         </h3>
-  
-        <ResponsiveContainer width="100%" height={formattedData.length * 50 + 50}>
+
+        <ResponsiveContainer
+          width="100%"
+          height={formattedData.length * 50 + 50}
+        >
           <BarChart layout="vertical" data={formattedData}>
             <XAxis type="number" hide domain={[0, 3]} />
             <YAxis
@@ -935,48 +1130,53 @@ useEffect(() => {
               formatter={(value, name, props) =>
                 props?.payload?.productivityLevel
                   ? props.payload.productivityLevel.toUpperCase()
-                  : 'N/A'
+                  : "N/A"
               }
             />
-  
-            <Bar dataKey="productivityValue" barSize={25} radius={[0, 10, 10, 0]}>
+
+            <Bar
+              dataKey="productivityValue"
+              barSize={25}
+              radius={[0, 10, 10, 0]}
+            >
               {formattedData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={productivityColor[entry.productivityLevel]} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={productivityColor[entry.productivityLevel]}
+                />
               ))}
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-  
+
         <div className="flex justify-around mt-4 text-xs font-semibold">
           <span className="flex items-center">
-            <span className="block w-3 h-3 rounded-full mr-1 bg-[#B9F6CA]"></span>Top
+            <span className="block w-3 h-3 rounded-full mr-1 bg-[#B9F6CA]"></span>
+            Top
           </span>
           <span className="flex items-center">
-            <span className="block w-3 h-3 rounded-full mr-1 bg-[#90CAF9]"></span>Avg
+            <span className="block w-3 h-3 rounded-full mr-1 bg-[#90CAF9]"></span>
+            Avg
           </span>
           <span className="flex items-center">
-            <span className="block w-3 h-3 rounded-full mr-1 bg-[#FF8A80]"></span>Less
+            <span className="block w-3 h-3 rounded-full mr-1 bg-[#FF8A80]"></span>
+            Less
           </span>
         </div>
       </div>
     );
   };
-  
- 
-  
+
   return (
     <div className="p-6 sm:p-10 bg-gray-100 dark:bg-gray-900 min-h-screen space-y-10">
-
-
       {/* ─── Filter‑bar ─────────────────────────────────────── */}
       <div className="flex flex-wrap gap-4 items-end">
         {/* Time‑range selector */}
         <label className="flex flex-col">
           <select
             value={mode}
-            onChange={e => setMode(e.target.value)}
+            onChange={(e) => setMode(e.target.value)}
             className="mt-1 border rounded-lg px-3 py-1.5 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
-
           >
             <option value="daily">Today</option>
             <option value="yesterday">Yesterday</option>
@@ -987,18 +1187,20 @@ useEffect(() => {
         </label>
 
         {/* Month selector */}
-        {mode === 'monthly' && (
+        {mode === "monthly" && (
           <>
             <label className="flex flex-col">
               <span className="text-sm font-medium">Month</span>
               <select
                 value={month}
-                onChange={e => setMonth(Number(e.target.value))}
+                onChange={(e) => setMonth(Number(e.target.value))}
                 className="mt-1 border rounded-lg px-3 py-1.5 bg-white"
               >
-                {Array.from({length:12}).map((_,i)=>
-                  <option key={i+1} value={i+1}>{dayjs().month(i).format('MMMM')}</option>
-                )}
+                {Array.from({ length: 12 }).map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {dayjs().month(i).format("MMMM")}
+                  </option>
+                ))}
               </select>
             </label>
             <label className="flex flex-col">
@@ -1006,7 +1208,7 @@ useEffect(() => {
               <input
                 type="number"
                 value={year}
-                onChange={e => setYear(Number(e.target.value))}
+                onChange={(e) => setYear(Number(e.target.value))}
                 className="mt-1 border rounded-lg px-3 py-1.5 w-24 bg-white"
               />
             </label>
@@ -1014,13 +1216,13 @@ useEffect(() => {
         )}
 
         {/* Year selector for Yearly mode */}
-        {mode === 'yearly' && (
+        {mode === "yearly" && (
           <label className="flex flex-col">
             <span className="text-sm font-medium">Year</span>
             <input
               type="number"
               value={year}
-              onChange={e => setYear(Number(e.target.value))}
+              onChange={(e) => setYear(Number(e.target.value))}
               className="mt-1 border rounded-lg px-3 py-1.5 w-24 bg-white"
             />
           </label>
@@ -1028,94 +1230,182 @@ useEffect(() => {
       </div>
 
       {/* ─── Metric boxes + (optional) chart ───────────────── */}
+      {/* ─── Metric boxes + Doughnut chart ────────────────────────── */}
       <div className="grid lg:grid-cols-4 gap-4">
         {/* Metrics */}
-        <div className="lg:col-span-3 grid grid-cols-2 gap-4">
-  {[
-    { color: 'green', label: 'Total Working Hours', value: attendanceTotals.totalWorkingHours },
-    { color: 'yellow', label: 'Total Break Taken', value: `${attendanceTotals.totalBreakTaken} mins` },
-    { color: 'blue', label: 'Keyboard Minutes', value: totalUsage.keyboardMinutes },
-    { color: 'pink', label: 'Keyboard Presses', value: totalUsage.keyboardPresses },
-    { color: 'purple', label: 'Mouse Minutes', value: totalUsage.mouseMinutes },
-    { color: 'red', label: 'Mouse Clicks', value: totalUsage.mouseClicks },
-     ].map(({ color, label, value }) => (
-    <div
-      key={label}
-      className={`bg-${color}-100 dark:bg-${color}-800 dark:text-${color}-100 p-4 sm:p-6 rounded-xl shadow text-center`}
-      style={{
-        borderLeft: `8px solid ${color === 'green' ? '#10B981' : color === 'blue' ? '#2563EB' : color === 'pink' ? '#EC4899' : color === 'purple' ? '#8B5CF6' : color === 'red' ? '#F87171' : color === 'yellow' ? '#FBBF24' : '#FFFFFF'}`,
-      }}
-    >
-      <h3 className="text-sm sm:text-base font-semibold">{label}</h3>
-      <p className="text-2xl sm:text-3xl font-bold">{value}</p>
-    </div>
-  ))}
-</div>
+        <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-4">
+          {[
+            {
+              color: "green",
+              label: "Total Working Hours",
+              value: attendanceTotals.totalWorkingHours,
+            },
+            {
+              color: "yellow",
+              label: "Total Break Taken",
+              value: `${attendanceTotals.totalBreakTaken} mins`,
+            },
+            {
+              color: "blue",
+              label: "Keyboard Minutes",
+              value: totalUsage.keyboardMinutes,
+            },
+            {
+              color: "pink",
+              label: "Keyboard Presses",
+              value: totalUsage.keyboardPresses,
+            },
+            {
+              color: "purple",
+              label: "Mouse Minutes",
+              value: totalUsage.mouseMinutes,
+            },
+            {
+              color: "red",
+              label: "Mouse Clicks",
+              value: totalUsage.mouseClicks,
+            },
+            ...(insights
+              ? [
+                  {
+                    color: "indigo",
+                    label: "Average Break per Day",
+                    value: insights.averageBreakTime || "0 mins",
+                  },
+                  {
+                    color: "teal",
+                    label: "Longest Break",
+                    value: insights.longestBreak || "0 mins",
+                  },
+                  {
+                    color: "cyan",
+                    label: "Most Frequent Break Times",
+                    value:
+                      insights.mostFrequentBreakTimes?.join(" | ") || "N/A",
+                  },
+                  {
+                    color: "amber",
+                    label: "Average Working Hours per Day",
+                    value: insights.averageWorkingHours || "0 hrs",
+                  },
+                ]
+              : []),
+          ].map(({ color, label, value }) => (
+            <div
+              key={label}
+              className={`bg-${color}-100 dark:bg-${color}-800 dark:text-${color}-100 p-4 sm:p-6 rounded-xl shadow text-center`}
+              style={{
+                borderLeft: `8px solid ${
+                  {
+                    green: "#10B981",
+                    yellow: "#FBBF24",
+                    blue: "#2563EB",
+                    pink: "#EC4899",
+                    purple: "#8B5CF6",
+                    red: "#F87171",
+                    indigo: "#6366F1",
+                    teal: "#14B8A6",
+                    cyan: "#06B6D4",
+                    amber: "#F59E0B",
+                  }[color]
+                }`,
+              }}
+            >
+              <h3 className="text-sm sm:text-base font-semibold">{label}</h3>
+              <p className="text-2xl sm:text-3xl font-bold">{value}</p>
+            </div>
+          ))}
+        </div>
 
-
-        {/* Doughnut (only for daily) */}
-       {/* Doughnut (only for daily) */}
-{showProductivity && (
-  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-    <h3 className="text-lg font-semibold text-gray-800 mb-4">
-      Today’s Productivity
-    </h3>
-    <div className="flex justify-center items-center">
-      <Doughnut data={doughnutData} options={doughnutOptions}/>
-    </div>
-    {/* Optional: Show percentage change */}
-    <div className="mt-4 text-center text-lg text-gray-700">
-      <p className="font-semibold text-gray-800">+{((productiveTime / (productiveTime + unproductiveTime)) * 100).toFixed(0)}% Productivity</p>
-    </div>
-  </div>
-)}
-
+        {/* Doughnut (Today's Productivity, only shown daily) */}
+        {showProductivity && (
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+            <h3 className="text-lg font-semibold text-gray-800 mb-4">
+              Today’s Productivity
+            </h3>
+            <div className="flex justify-center items-center">
+              <Doughnut data={doughnutData} options={doughnutOptions} />
+            </div>
+            {/* Productivity percentage */}
+            <div className="mt-4 text-center text-lg text-gray-700">
+              <p className="font-semibold text-gray-800">
+                +
+                {(
+                  (productiveTime / (productiveTime + unproductiveTime)) *
+                  100
+                ).toFixed(0)}
+                % Productivity
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* ─── Usage table ───────────────────────────────────── */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
-
         <div className="px-6 py-4 bg-gradient-to-r from-indigo-500 to-purple-600">
           <h2 className="text-xl sm:text-2xl font-semibold text-white">
             Usage Statistics ({empID})&nbsp;
             <span className="opacity-80 text-sm font-normal">
-              {mode === 'daily' && dayjs().format('DD MMM YYYY')}
-              {mode === 'weekly' && `${period.start.format('DD MMM')} – ${period.end.format('DD MMM YYYY')}`}
-              {mode === 'monthly' && dayjs(`${year}-${month}-01`).format('MMMM YYYY')}
-              {mode === 'yearly' && year}
+              {mode === "daily" && dayjs().format("DD MMM YYYY")}
+              {mode === "weekly" &&
+                `${period.start.format("DD MMM")} – ${period.end.format(
+                  "DD MMM YYYY"
+                )}`}
+              {mode === "monthly" &&
+                dayjs(`${year}-${month}-01`).format("MMMM YYYY")}
+              {mode === "yearly" && year}
             </span>
           </h2>
         </div>
 
         <div className="overflow-x-auto p-4">
           <table className="w-full text-xs sm:text-sm text-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-700">
-
+            <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                {['Date','Keyboard Min.','Mouse Min.','Key Presses','Mouse Clicks','Details'].map(h=>(
-                  <th key={h} className="py-3 px-4 text-center font-semibold border-b bg-gray-50 dark:bg-gray-700 dark:text-gray-200"
->{h}</th>
+                {[
+                  "Date",
+                  "Keyboard Min.",
+                  "Mouse Min.",
+                  "Key Presses",
+                  "Mouse Clicks",
+                  "Details",
+                ].map((h) => (
+                  <th
+                    key={h}
+                    className="py-3 px-4 text-center font-semibold border-b bg-gray-50 dark:bg-gray-700 dark:text-gray-200"
+                  >
+                    {h}
+                  </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              {filteredStats.map(stat => (
-                <tr key={stat._id} className="hover:bg-gray-50 dark:hover:bg-gray-700"
->
-                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
->{stat.date}</td>
-                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
->{stat.keyboardMinutes}</td>
-                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
->{stat.mouseMinutes}</td>
-                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
->{stat.keyboardPressCount}</td>
-                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
->{stat.mouseClickCount}</td>
-                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
->
+              {filteredStats.map((stat) => (
+                <tr
+                  key={stat._id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300">
+                    {stat.date}
+                  </td>
+                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300">
+                    {stat.keyboardMinutes}
+                  </td>
+                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300">
+                    {stat.mouseMinutes}
+                  </td>
+                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300">
+                    {stat.keyboardPressCount}
+                  </td>
+                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300">
+                    {stat.mouseClickCount}
+                  </td>
+                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300">
                     <button
-                      onClick={()=>navigate(`/dashboard/statistics/${empID}/${stat.date}`)}
+                      onClick={() =>
+                        navigate(`/dashboard/statistics/${empID}/${stat.date}`)
+                      }
                       className="bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg px-3 py-1 text-xs sm:text-sm"
                     >
                       View
@@ -1124,60 +1414,85 @@ useEffect(() => {
                 </tr>
               ))}
               {!filteredStats.length && (
-                <tr><td colSpan={6} className="py-6 text-center text-gray-500 dark:text-gray-400">No data</td></tr>
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="py-6 text-center text-gray-500 dark:text-gray-400"
+                  >
+                    No data
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
         </div>
+        {mode === "daily" && (
+          <ActivityTrendChart
+            employeeId={empID}
+            date={today.format("YYYY-MM-DD")}
+          />
+        )}
         {/* Productivity Stats Section */}
-{/* Productivity Stats Section */}
-<div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden mt-10" style={{marginTop: "100px"}}>
-  
+        {/* Productivity Stats Section */}
+        <div
+          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden mt-10"
+          style={{ marginTop: "100px" }}
+        >
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden mt-10">
+            <div className="px-6 py-4 bg-gradient-to-r from-green-500 to-teal-500 dark:from-green-600 dark:to-teal-600">
+              <h2 className="text-xl sm:text-2xl font-semibold text-white">
+                Productivity Insights (
+                {mode.charAt(0).toUpperCase() + mode.slice(1)})
+              </h2>
+            </div>
 
-  <div className="bg-white rounded-2xl shadow-xl overflow-hidden mt-10">
-  <div className="px-6 py-4 bg-gradient-to-r from-green-500 to-teal-500 dark:from-green-600 dark:to-teal-600">
-    <h2 className="text-xl sm:text-2xl font-semibold text-white">
-      Productivity Insights ({mode.charAt(0).toUpperCase() + mode.slice(1)})
-    </h2>
-  </div>
+            {prodStatsLoading ? (
+              <p className="text-center py-6 text-gray-500 dark:text-gray-300">
+                Loading Productivity Stats...
+              </p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+                <StatsTableCard
+                  title="Top Productive Websites"
+                  data={topProductivityStats?.topWebsites || []}
+                  isWebsite
+                  onSeeAll={() => navigate("/full-list/productive-websites")}
+                />
+                <StatsTableCard
+                  title="Less Productive Websites"
+                  data={topProductivityStats?.leastWebsites || []}
+                  isWebsite
+                  onSeeAll={() => navigate("/full-list/unproductive-websites")}
+                />
+                <StatsTableCard
+                  title="Top Apps Used"
+                  data={topProductivityStats?.topApps || []}
+                  onSeeAll={() => navigate("/full-list/productive-apps")}
+                />
+                <StatsTableCard
+                  title="Less Productive Apps"
+                  data={topProductivityStats?.leastApps || []}
+                  onSeeAll={() => navigate("/full-list/unproductive-apps")}
+                />
 
-  {prodStatsLoading ? (
-    <p className="text-center py-6 text-gray-500 dark:text-gray-300">Loading Productivity Stats...</p>
-  ) : (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
-      <StatsTableCard
-        title="Top Productive Websites"
-        data={topProductivityStats?.topWebsites || []}
-        isWebsite
-        onSeeAll={() => navigate('/full-list/productive-websites')}
-      />
-      <StatsTableCard
-        title="Less Productive Websites"
-        data={topProductivityStats?.leastWebsites || []}
-        isWebsite
-        onSeeAll={() => navigate('/full-list/unproductive-websites')}
-      />
-      <StatsTableCard
-        title="Top Apps Used"
-        data={topProductivityStats?.topApps || []}
-        onSeeAll={() => navigate('/full-list/productive-apps')}
-      />
-      <StatsTableCard
-        title="Less Productive Apps"
-        data={topProductivityStats?.leastApps || []}
-        onSeeAll={() => navigate('/full-list/unproductive-apps')}
-      />
-    </div>
-  )}
-</div>
-
-</div>
-
+                <StatsTableCard
+                  title="Most Used Websites (Top 3)"
+                  data={top3Websites}
+                  isWebsite
+                />
+                <StatsTableCard
+                  title="Most Used Apps (Top 3)"
+                  data={top3Apps}
+                />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
       {/* {topProductivityStats && topProductivityStats.topApps && (
   <ProductivityBarGraph data={topProductivityStats.topApps} />
 )} */}
-
     </div>
   );
 }
+ 

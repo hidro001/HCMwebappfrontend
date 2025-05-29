@@ -295,41 +295,46 @@ export default function EmployeeDailyStats() {
   }, [dailyStats, deptCategories]);
 
   const combinedTimeline = useMemo(() => {
-    const baseTimeline = timeline || [];
-    const breaks = attendanceRecord?.breaks || [];
+    const baseTimeline = (timeline || []).map((item, idx) => ({
+      startTime: item.startTime,
+      endTime: item.endTime,
+      name: item.name,
+      type: item.type || "app",
+      duration:
+        item.duration ||
+        Math.round(
+          (new Date(`2000-01-01T${item.endTime}`) -
+            new Date(`2000-01-01T${item.startTime}`)) /
+            60000
+        ),
+      id: `activity-${idx}-${item.startTime}`,
+    }));
 
-    // Get current date in YYYY-MM-DD format for date comparison
-    const currentDate = new Date(date).toISOString().split("T")[0];
-
-    // Format breaks with proper time and filter for same-day breaks
-    const breaksTimeline = breaks
+    const breaksTimeline = (attendanceRecord?.breaks || [])
       .filter((br) => {
         const breakDate = new Date(br.start).toISOString().split("T")[0];
-        return breakDate === currentDate;
+        return breakDate === date;
       })
       .map((br, idx) => {
         const start = new Date(br.start);
-        const end = new Date(br.end);
+        let end = new Date(br.end);
+        if (end <= start) end.setDate(end.getDate() + 1);
 
+        const duration = Math.round((end - start) / 60000);
         return {
-          startTime: `${String(start.getHours()).padStart(2, "0")}:${String(
-            start.getMinutes()
-          ).padStart(2, "0")}`,
-          endTime: `${String(end.getHours()).padStart(2, "0")}:${String(
-            end.getMinutes()
-          ).padStart(2, "0")}`,
+          startTime: start.toTimeString().slice(0, 5),
+          endTime: end.toTimeString().slice(0, 5),
           name: "Break",
           type: "break",
-          id: `break-${idx}`,
-          duration: Math.round((end - start) / 60000), // duration in minutes
+          duration: duration > 0 ? duration : 0,
+          id: `break-${idx}-${start.getTime()}`,
         };
       });
 
-    // Combine and sort all timeline entries
+    // Combine apps/websites and breaks
     return [...baseTimeline, ...breaksTimeline].sort((a, b) => {
-      // Create date objects using the current date for proper time comparison
-      const aDate = new Date(`${currentDate}T${a.startTime}`);
-      const bDate = new Date(`${currentDate}T${b.startTime}`);
+      const aDate = new Date(`2000-01-01T${a.startTime}`);
+      const bDate = new Date(`2000-01-01T${b.startTime}`);
       return aDate - bDate;
     });
   }, [timeline, attendanceRecord, date]);
