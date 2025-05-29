@@ -1,180 +1,179 @@
-// src/components/Feed/Feed.js
-import { useEffect } from "react";
-import PostCard from "./PostCard";
-import PollCard from "./PollCard";
-import React from "react";
-import { toast } from "react-toastify";
-
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  Grid,
-} from "@mui/material";
-import { Skeleton } from "@mui/material";
-import PostCreateBox from "./PostCreateBox";
-import PollCreateBox from "./PollCreateBox";
-
+import { useState, useEffect, useRef } from "react";
+import PostCard from "./Card/PostCard";
+import PollCard from "./Card/PollCard";
+import useAuthStore from "../../store/store";
+import AutoSizer from "react-virtualized-auto-sizer";
+import { VariableSizeList as List } from "react-window";
 import useFeedStore from "../../store/feedStore";
 import useSocketStore from "../../store/socketStore";
+import PostCreateBox from "./CreateBox/PostCreateBox";
+import { FaPoll } from "react-icons/fa";
+import { BsFileText } from "react-icons/bs";
+import PollCreateBox from "./CreateBox/PollCreateBox";
 
-import InfiniteScroll from "react-infinite-scroll-component";
+const Feed = ({ curCategory, curDepartment, curSort }) => {
+  const { feed, isLoading, error, hasMore, fetchFeed, page } = useFeedStore();
+  const { connect } = useSocketStore();
 
-const Feed = () => {
-  const { feed, isLoading, error, hasMore, fetchFeed, page, refreshFeed } =
-    useFeedStore();
+  const [openPostModal, setOpenPostModal] = useState(false);
+  const [openPollModal, setOpenPollModal] = useState(false);
 
-  const { connect, socket } = useSocketStore();
+  const listRef = useRef();
+  const sizeMap = useRef({});
 
-  const [openPostModal, setOpenPostModal] = React.useState(false);
-  const [openPollModal, setOpenPollModal] = React.useState(false);
+  const authStore = useAuthStore();
+  const userAvatar = authStore.userAvatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png";
 
   useEffect(() => {
     fetchFeed(1);
     connect();
   }, [fetchFeed, connect]);
 
-  // Fetch more data when the user scrolls to the bottom
   const fetchMoreData = () => {
     if (hasMore && !isLoading) {
       fetchFeed(page + 1);
     }
   };
 
-  // Refresh Feed Function
-  const handleRefresh = () => {
-    refreshFeed();
+  const getItemSize = (index) => sizeMap.current[index] || 400;
+
+  const setSize = (index, size) => {
+    if (sizeMap.current[index] !== size) {
+      sizeMap.current = { ...sizeMap.current, [index]: size };
+      listRef.current?.resetAfterIndex(index);
+    }
+  };
+
+
+  useEffect(() => {
+    document.body.style.overflow = openPostModal ? "hidden" : "auto";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [openPostModal]);
+
+  const filteredSortedFeed = feed
+  .filter((item) => {
+    const matchesCategory =
+      curCategory === "All Announcement" || item.categories === curCategory;
+
+    const matchesDepartment =
+      curDepartment === "all" || item.department.includes(curDepartment);
+
+    return matchesCategory && matchesDepartment;
+  })
+  .sort((a, b) => {
+    const dateA = new Date(a.scheduleDate || a.createdAt);
+    const dateB = new Date(b.scheduleDate || b.createdAt);
+    return curSort === "newest" ? dateB - dateA : dateA - dateB;
+  });
+
+
+  const Row = ({ index, style }) => {
+    const item = filteredSortedFeed[index];
+    const ref = useRef();
+
+    useEffect(() => {
+      if (ref.current) {
+        setSize(index, ref.current.getBoundingClientRect().height);
+      }
+    }, [ref.current, filteredSortedFeed]);
+
+    return (
+      <div style={{ ...style, width: "100%" }}>
+        <div ref={ref} className="px-2 py-2 w-full">
+          {item.type === "post" ? (
+            <PostCard post={item}  />
+          ) : item.type === "poll" ? (
+            <PollCard poll={item} />
+          ) : null}
+        </div>
+      </div>
+    );
   };
 
   return (
-    <div className="max-w-lg mx-auto px-4 py-6 overflow-hidden ">
-      {/* Header with Create Buttons */}
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 space-y-4 sm:space-y-0">
-        <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
-          Feed
-        </h1>
-        <div className="flex space-x-4">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={() => setOpenPostModal(true)}
-            className="min-w-[120px]"
-          >
-            Create Post
-          </Button>
-          <Button
-            variant="outlined"
-            color="secondary"
-            onClick={() => setOpenPollModal(true)}
-            className="min-w-[120px]"
-          >
-            Create Poll
-          </Button>
-        </div>
+    <div className="w-full flex flex-col h-full overflow-hidden pr-2">
+      {/* Post & Poll Create Buttons */}
+      <div className="flex justify-between border bg-white p-1 rounded-lg py-2 items-center mb-2">
+        <img
+          src={userAvatar}
+          alt="User"
+          className="h-9 w-9 mx-1 rounded-full object-cover border border-gray-300"
+        />
+        <button
+          onClick={() => setOpenPostModal(true)}
+          className="px-4 py-2 mx-1 w-full border border-gray-500 text-black flex items-center justify-center hover:bg-gray-300 rounded shadow"
+        >
+          <BsFileText size={28} />
+          Create Post
+        </button>
+        <button
+          onClick={() => setOpenPollModal(true)}
+          className="px-4 py-2 w-full mx-1 border border-gray-400 text-gray-800 flex items-center bg-[#FFFDD0] justify-center hover:bg-gray-200 dark:text-gray-200 dark:border-gray-500 dark:hover:bg-gray-700 rounded shadow"
+        >
+          <FaPoll size={28} /> Create Poll
+        </button>
       </div>
 
-      {/* Error Message */}
-      {error && (
-        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">{error}</div>
+      {/* Post Modal */}
+      {openPostModal && (
+        <PostCreateBox
+          isOpen={openPostModal}
+          onSuccess={() => {
+            setOpenPostModal(false)
+            useFeedStore.getState().refreshFeed();
+          }}
+          onClose={() => setOpenPostModal(false)}
+        />
       )}
 
-      {/* Infinite Scroll Component */}
-      <InfiniteScroll
-        dataLength={feed.length} // Important for performance
-        next={fetchMoreData}
-        hasMore={hasMore}
-        loader={
-          <div className="flex flex-col space-y-4 my-4">
-            {[...Array(3)].map((_, index) => (
-              <Skeleton
-                key={index}
-                variant="rectangular"
-                height={300}
-                className="rounded-2xl"
-              />
-            ))}
-          </div>
-        }
-        endMessage={
-          feed.length > 0 && (
-            <p className="text-center text-gray-500 dark:text-gray-400 mt-4">
-              No more items to display.
-            </p>
-          )
-        }
-        scrollableTarget="scrollableDiv" // Specify the scrollable div's ID
-        // Optional: Adjust the scroll threshold if needed
-        // scrollThreshold={0.9}
-      >
-        {/* Feed Items */}
-        {feed.length === 0 && !isLoading && !error ? (
-          <p className="text-center text-gray-500 dark:text-gray-400 mt-4">
+      {/* Poll Modal */}
+      {openPollModal && (
+        <PollCreateBox
+          isOpen={openPollModal}
+          onSuccess={() => {
+            setOpenPollModal(false)
+            useFeedStore.getState().refreshFeed();
+          }}
+          onClose={() => setOpenPollModal(false)}
+        />
+      )}
+
+      {/* Error message */}
+      {error && <div className="p-4 bg-red-100 text-red-700 mb-4">{error}</div>}
+
+      {/* Feed */}
+      <div className="h-full w-full border border-gray-300 dark:border-gray-600 rounded">
+        {filteredSortedFeed.length === 0 && !isLoading ? (
+          <p className="text-center py-10 text-gray-500 dark:text-gray-400">
             No items to display.
           </p>
         ) : (
-          <Grid container spacing={0.1}>
-            {feed.map((item) =>
-              item.type === "post" ? (
-                <Grid item xs={12} key={item._id}>
-                  <PostCard post={item} />
-                </Grid>
-              ) : item.type === "poll" ? (
-                <Grid item xs={12} key={item._id}>
-                  <PollCard poll={item} />
-                </Grid>
-              ) : null
+          <AutoSizer>
+            {({ height, width }) => (
+              <div
+                className="sidebar-scrollbar"
+                style={{ height, width, overflowY: "auto" }}
+              >
+                <List
+                  ref={listRef}
+                  height={height}
+                  width={width}
+                  itemCount={filteredSortedFeed.length}
+                  itemSize={getItemSize}
+                  style={{ overflow: "visible" }}
+                  onItemsRendered={({ visibleStopIndex }) => {
+                    if (visibleStopIndex >= feed.length - 2) fetchMoreData();
+                  }}
+                >
+                  {Row}
+                </List>
+              </div>
             )}
-          </Grid>
+          </AutoSizer>
         )}
-      </InfiniteScroll>
-
-      {/* Post Creation Modal */}
-      <Dialog
-        open={openPostModal}
-        onClose={() => setOpenPostModal(false)}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>Create a New Post</DialogTitle>
-        <DialogContent>
-          <PostCreateBox
-            onSuccess={() => {
-              refreshFeed();
-              setOpenPostModal(false);
-            }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenPostModal(false)} color="secondary">
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Poll Creation Modal */}
-      <Dialog
-        open={openPollModal}
-        onClose={() => setOpenPollModal(false)}
-        fullWidth
-        maxWidth="sm"
-      >
-        <DialogTitle>Create a New Poll</DialogTitle>
-        <DialogContent>
-          <PollCreateBox
-            onSuccess={() => {
-              refreshFeed();
-              setOpenPollModal(false);
-            }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenPollModal(false)} color="secondary">
-            Cancel
-          </Button>
-        </DialogActions>
-      </Dialog>
+      </div>
     </div>
   );
 };

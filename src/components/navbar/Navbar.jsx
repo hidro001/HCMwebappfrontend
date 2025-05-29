@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useContext } from "react";
-import { FaBell, FaSignOutAlt, FaComments, FaUserCircle, FaBusinessTime} from "react-icons/fa";
+import { FaBell } from "react-icons/fa";
 import { MdChat } from "react-icons/md";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
@@ -163,17 +163,17 @@ const Navbar = ({ collapsed, setCollapsed }) => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 flex justify-between items-center pr-4 bg-white shadow-sm shadow-gray-100 w-full  navbar-shadow ">
+    <nav className="sticky top-0 left-0 right-0 z-50 bg-white py-1 dark:bg-gray-800 border-gray-200 dark:border-gray-700 flex justify-between items-center pr-4 bg-white shadow-sm shadow-gray-100 w-full  navbar-shadow ">
       
       <div className="flex gap-4">
         <button
             onClick={() => setCollapsed(!collapsed)}
-            className="text-black dark:text-white rounded-full ml-2 p-3 hover:text-gray-500 hover:bg-gray-200"
+            className="text-black dark:text-white rounded-full ml-2 p-2 hover:text-gray-500 hover:bg-gray-200"
           >
-            <GoSidebarCollapse size={25} />
+            <GoSidebarCollapse className="text-gray-700 w-5 h-5" />
         </button>
         <Link to={getDashboardPath()}>
-          <img className="h-10 object-contain" src={logo} alt="Company Logo" />
+          <img className="h-9 object-contain" src={logo} alt="Company Logo" />
         </Link>
       </div>
 
@@ -186,7 +186,7 @@ const Navbar = ({ collapsed, setCollapsed }) => {
             onClick={handleClick}
             className="p-2 rounded-xl bg-green-50 hover:bg-green-100 border border-green-100"
           >
-            <MdChat className="text-gray-700 w-5 h-5" />
+            <MdChat className="text-gray-700 w-4 h-4" />
           </button>
           {personsWithUnread > 0 && (
             <span className="absolute -top-1 -right-1 text-[10px] font-bold bg-red-500 text-white w-4 h-4 rounded-full flex items-center justify-center">
@@ -197,37 +197,6 @@ const Navbar = ({ collapsed, setCollapsed }) => {
 
          {/* Theme Toggle */}
         <ThemeToggleButton />
-         
-          
-        {/* <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{currentDate}</span> */}
-
-        {/* {onBreak && (
-          <span className="text-sm font-semibold text-green-600">Break: {navbarTimer}</span>
-        )} */}
-
-        {/* Break Button */}
-        {/* <div className="relative">
-          <button
-            onClick={() => setShowBreakCard((prev) => !prev)}
-            className="p-2 rounded-xl bg-green-50 hover:bg-green-100 border border-green-100"
-          >
-            <FaBusinessTime className="text-green-500 w-5 h-5" />
-          </button>
-          <AnimatePresence>
-            {showBreakCard && (
-              <motion.div
-                ref={breakCardRef}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="absolute right-0 mt-2 w-[350px] z-10"
-              >
-                <BreakCard />
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div> */}
-
 
         {/* Notifications */}
        <div className="relative" ref={notificationDropdownRef}>
@@ -235,7 +204,7 @@ const Navbar = ({ collapsed, setCollapsed }) => {
             onClick={() => setShowNotificationDropdown((prev) => !prev)}
             className="p-2 rounded-xl bg-green-50 hover:bg-green-100 border border-green-100"
           >
-            <FaBell className="text-gray-700 w-5 h-5" />
+            <FaBell className="text-gray-700 w-4 h-4" />
           </button>
 
           {unreadCount > 0 && (
