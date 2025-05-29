@@ -91,8 +91,8 @@ importers:
         specifier: ^4.0.8
         version: 4.0.8
       mediasoup-client:
-        specifier: ^3.10.1
-        version: 3.10.1
+        specifier: ^3.11.0
+        version: 3.11.0
       prop-types:
         specifier: ^15.8.1
         version: 15.8.1
@@ -1658,6 +1658,15 @@ packages:
       supports-color:
         optional: true
 
+  debug@4.4.1:
+    resolution: {integrity: sha512-KcKCqiftBJcZr++7ykoDIEwSa3XWowTfNPo92BYxjXiyYEVrUQh2aLyhxBCwww+heortUFxEJYcRzosstTEBYQ==}
+    engines: {node: '>=6.0'}
+    peerDependencies:
+      supports-color: '*'
+    peerDependenciesMeta:
+      supports-color:
+        optional: true
+
   decimal.js-light@2.5.1:
     resolution: {integrity: sha512-qIMFpTMZmny+MMIitAB6D7iVPEorVw6YQRWkvarTkT4tBeSLLiHzcwj6q0MmYSFCiVpiqPJTJEYIrpcPzVEIvg==}
 
@@ -2331,8 +2340,8 @@ packages:
     resolution: {integrity: sha512-4MqMiKP90ybymYvsut0CH2g4XWbfLtmlCkXmtmdcDCxNB+mQcu1w/1+L/VD7vi/PSv7X2JYV7SCcR+jiPXnQtA==}
     engines: {node: '>= 0.4'}
 
-  mediasoup-client@3.10.1:
-    resolution: {integrity: sha512-elPurMLPOK31z8QQm3rxAnlN1a37o9Pr0bXE4KnVhdIwqQQb2/uIMMGCB2LelV3N6qtDgYjpTaOkBGGqc44LNg==}
+  mediasoup-client@3.11.0:
+    resolution: {integrity: sha512-MVKngePWhZ6AjHbHGvIf67XSJa3fEP5cvz2bCflfbY+6cGaM51oJIuYj73C4S3y+QRsrHJhPHYRz8swnovTH5g==}
     engines: {node: '>=18'}
 
   mem@8.1.1:
@@ -3402,7 +3411,7 @@ snapshots:
       '@babel/traverse': 7.26.4
       '@babel/types': 7.26.3
       convert-source-map: 2.0.0
-      debug: 4.4.0(supports-color@10.0.0)
+      debug: 4.4.0
       gensync: 1.0.0-beta.2
       json5: 2.2.3
       semver: 6.3.1
@@ -3485,7 +3494,7 @@ snapshots:
       '@babel/parser': 7.26.3
       '@babel/template': 7.25.9
       '@babel/types': 7.26.3
-      debug: 4.4.0(supports-color@10.0.0)
+      debug: 4.4.0
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
@@ -3678,7 +3687,7 @@ snapshots:
   '@eslint/config-array@0.19.1':
     dependencies:
       '@eslint/object-schema': 2.1.5
-      debug: 4.4.0(supports-color@10.0.0)
+      debug: 4.4.0
       minimatch: 3.1.2
     transitivePeerDependencies:
       - supports-color
@@ -3690,7 +3699,7 @@ snapshots:
   '@eslint/eslintrc@3.2.0':
     dependencies:
       ajv: 6.12.6
-      debug: 4.4.0(supports-color@10.0.0)
+      debug: 4.4.0
       espree: 10.3.0
       globals: 14.0.0
       ignore: 5.3.2
@@ -4562,7 +4571,7 @@ snapshots:
 
   awaitqueue@3.2.0(supports-color@10.0.0):
     dependencies:
-      debug: 4.4.0(supports-color@10.0.0)
+      debug: 4.4.1(supports-color@10.0.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -4845,7 +4854,11 @@ snapshots:
     dependencies:
       ms: 2.1.3
 
-  debug@4.4.0(supports-color@10.0.0):
+  debug@4.4.0:
+    dependencies:
+      ms: 2.1.3
+
+  debug@4.4.1(supports-color@10.0.0):
     dependencies:
       ms: 2.1.3
     optionalDependencies:
@@ -5119,7 +5132,7 @@ snapshots:
       ajv: 6.12.6
       chalk: 4.1.2
       cross-spawn: 7.0.6
-      debug: 4.4.0(supports-color@10.0.0)
+      debug: 4.4.0
       escape-string-regexp: 4.0.0
       eslint-scope: 8.2.0
       eslint-visitor-keys: 4.2.0
@@ -5359,7 +5372,7 @@ snapshots:
 
   h264-profile-level-id@2.2.0(supports-color@10.0.0):
     dependencies:
-      debug: 4.4.0(supports-color@10.0.0)
+      debug: 4.4.1(supports-color@10.0.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -5639,12 +5652,12 @@ snapshots:
 
   math-intrinsics@1.0.0: {}
 
-  mediasoup-client@3.10.1:
+  mediasoup-client@3.11.0:
     dependencies:
       '@types/debug': 4.1.12
       '@types/npm-events-package': '@types/events@3.0.3'
       awaitqueue: 3.2.0(supports-color@10.0.0)
-      debug: 4.4.0(supports-color@10.0.0)
+      debug: 4.4.1(supports-color@10.0.0)
       fake-mediastreamtrack: 2.1.0
       h264-profile-level-id: 2.2.0(supports-color@10.0.0)
       npm-events-package: events@3.3.0
