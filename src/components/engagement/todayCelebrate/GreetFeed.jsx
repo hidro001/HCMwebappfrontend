@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { VariableSizeList as List } from 'react-window';
 import useGreetStore from "../../../store/greetStore";
+import {  FiGift } from 'react-icons/fi';
 import GreetCard from '../Card/GreetCard.jsx';
 
 const GreetFeed = () => {
@@ -39,8 +40,8 @@ const GreetFeed = () => {
     const item = combinedList[index];
 
     return (
-      <div style={style}>
-        <div ref={rowRef} style={{ padding: '10px' }}>
+      <div style={style} className=' ml-3'>
+        <div ref={rowRef} style={{ padding: '10px' }} className=''>
           <GreetCard post={item} type={item.type} />
         </div>
       </div>

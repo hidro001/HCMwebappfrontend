@@ -11,14 +11,14 @@ const FeedPage = () => {
   const [sort, setSort] = useState('');
 
   return (
-    <div className='flex justify-content overflow-hidden w-full h-full'>
-     <div className='sticky w-[20%]'>
+    <div className='flex justify-content overflow-hidden w-full h-full '>
+     <div className='sticky w-[30%]'>
        <CategoriesListCompact onCategoryChange={setCategory}  />
      </div>
-     <div className='w-[50%] h-screen' >
+     <div className='w-[40%] h-screen' >
       <Feed curCategory={category} curDepartment={department} curSort={sort}/>
      </div>
-     <div className=' w-[30%]'>
+     <div className=' w-[40%]'>
       <FilterFeed onDepartmentChange={setDepartment} onSort={setSort} />
       <GreetFeed />
      </div>
