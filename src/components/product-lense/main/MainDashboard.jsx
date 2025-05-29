@@ -13,7 +13,7 @@ import {
   Title,
 } from "chart.js";
 import { Doughnut, Bar } from "react-chartjs-2";
-
+import MostFrequentBreakTimes from "./MostFrequentBreakTimes";
 // Import your API helpers
 import {
   fetchTopSubordinates,
@@ -21,6 +21,7 @@ import {
 } from "../../../service/productLenseService"; // <-- Adjust path accordingly
 import OrgUsageSection from "./OrgUsageSection";
 import TopLeastProductivitySection from "./TopLeastProductivitySection";
+import BreakAndWorkGraphs from "./BreakandWorkGraphs";
 
 // Register Chart.js components
 ChartJS.register(
@@ -240,7 +241,10 @@ const MainDashboard = () => {
       <div className="mt-6 flex flex-col md:flex-row gap-6">
          <OrgUsageSection />
          <TopLeastProductivitySection />
+       
       </div>
+        <BreakAndWorkGraphs />
+        <MostFrequentBreakTimes />
     </div>
   );
 };

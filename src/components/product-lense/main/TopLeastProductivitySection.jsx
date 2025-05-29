@@ -8,6 +8,14 @@ const TopLeastProductivitySection = () => {
   const [departments, setDepartments] = useState([]);
   const [designations, setDesignations] = useState([]);
 
+  const { averageBreakWorkStats, fetchAverageBreakAndWorkHours} = useUsageStatsStore();
+
+
+
+useEffect(() => {
+  fetchAverageBreakAndWorkHours(department, designation);
+}, [department, designation, fetchAverageBreakAndWorkHours]);
+
   const { topLeastProductivity, fetchTopLeastProductiveEmployees, loading } = useUsageStatsStore();
 
   useEffect(() => {
@@ -84,6 +92,14 @@ const TopLeastProductivitySection = () => {
           </table>
         </>
       )}
+
+      {averageBreakWorkStats && (
+  <div>
+    <p>Average Break Time: {(averageBreakWorkStats.averageBreakMinutes / 60).toFixed(2)} hrs</p>
+    <p>Average Working Time: {(averageBreakWorkStats.averageWorkingMinutes / 60).toFixed(2)} hrs</p>
+  </div>
+)}
+
     </div>
   );
 };

@@ -129,6 +129,23 @@ fetchOrgMostUsedStats: async (department, designation, limit = 5) => {
 },
 orgMostUsedStats: { topApps: [], topWebsites: [] },
 
+fetchAverageBreakAndWorkHours: async (department, designation) => {
+  set({ loading: true, error: null });
+  try {
+    const res = await axiosInstance.get("/usage-stats/average-break-work", {
+      params: { department, designation },
+    });
+    set({ averageBreakWorkStats: res.data });
+  } catch (err) {
+    set({ error: err.message });
+    toast.error(err.message);
+  } finally {
+    set({ loading: false });
+  }
+},
+averageBreakWorkStats: null,
+
+
 // useUsageStatsStore.js (Zustand)
 fetchTopLeastProductiveEmployees: async (department, designation) => {
   set({ loading: true, error: null });
