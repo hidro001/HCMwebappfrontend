@@ -1,6 +1,12 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
-import io from 'socket.io-client';
-import { Device } from 'mediasoup-client';
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import io from "socket.io-client";
+import { Device } from "mediasoup-client";
 
 const CallContext = createContext();
 
@@ -16,18 +22,18 @@ export function CallProvider({ children, currentUserId }) {
   const [call, setCall] = useState(null);
 
   useEffect(() => {
-    socket.current = io('http://localhost:6060/chat', {
-      query: { userId: currentUserId }
+    socket.current = io("http://localhost:6030/chat", {
+      query: { userId: currentUserId },
     });
 
-    socket.current.on('incoming-call', setIncomingCall);
+    socket.current.on("incoming-call", setIncomingCall);
 
-    socket.current.on('new-producer', ({ producerId, userId }) => {
+    socket.current.on("new-producer", ({ producerId, userId }) => {
       createRecvTransport(producerId, userId);
     });
 
-    socket.current.on('call-ended', () => {
-      localStream?.getTracks().forEach(t => t.stop());
+    socket.current.on("call-ended", () => {
+      localStream?.getTracks().forEach((t) => t.stop());
       setLocalStream(null);
       setRemoteStreams([]);
       setCall(null);
@@ -38,30 +44,38 @@ export function CallProvider({ children, currentUserId }) {
 
   const getLocalStream = async () => {
     if (localStream) return localStream;
-    const s = await navigator.mediaDevices.getUserMedia({ audio: true, video: true });
+    const s = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: true,
+    });
     setLocalStream(s);
     return s;
   };
 
-  const joinRoom = roomId => new Promise((res, rej) => {
-    socket.current.emit('join-call-room', { roomId }, async ({ rtpCapabilities }) => {
-      try {
-        const d = new Device();
-        console.log('[join] creating device');
-        await d.load({ routerRtpCapabilities: rtpCapabilities });
-        console.log('[join] device loaded');
-        device.current = d;
-        console.log('[join] device loaded', device.current);
+  const joinRoom = (roomId) =>
+    new Promise((res, rej) => {
+      socket.current.emit(
+        "join-call-room",
+        { roomId },
+        async ({ rtpCapabilities }) => {
+          try {
+            const d = new Device();
+            console.log("[join] creating device");
+            await d.load({ routerRtpCapabilities: rtpCapabilities });
+            console.log("[join] device loaded");
+            device.current = d;
+            console.log("[join] device loaded", device.current);
 
-        socket.current.emit('get-producers', { roomId }, list => {
-          list.forEach(p => createRecvTransport(p.producerId, p.userId));
-        });
-        res();
-      } catch (err) {
-        rej(err);
-      }
+            socket.current.emit("get-producers", { roomId }, (list) => {
+              list.forEach((p) => createRecvTransport(p.producerId, p.userId));
+            });
+            res();
+          } catch (err) {
+            rej(err);
+          }
+        }
+      );
     });
-  });
 
   const createSendTransport = async () => {
     const roomId = roomIdRef.current;
@@ -70,48 +84,45 @@ export function CallProvider({ children, currentUserId }) {
     const stream = await getLocalStream();
 
     socket.current.emit(
-      'create-transport',
-      { roomId, direction: 'send' },
-      async params => {
+      "create-transport",
+      { roomId, direction: "send" },
+      async (params) => {
         const transport = device.current.createSendTransport({
           id: params.id,
           iceParameters: params.iceParameters,
           iceCandidates: params.iceCandidates,
           dtlsParameters: params.dtlsParameters,
-          iceServers: params.iceServers
+          iceServers: params.iceServers,
         });
         sendTransport.current = transport;
 
-
-
-        transport.on('connect', ({ dtlsParameters }, cb, eb) => {
-
+        transport.on("connect", ({ dtlsParameters }, cb, eb) => {
           socket.current.emit(
-            'connect-transport',
+            "connect-transport",
             { roomId, transportId: transport.id, dtlsParameters },
-            res => {
+            (res) => {
               if (res.error) {
-                console.error('[send] connect errored', res.error);
+                console.error("[send] connect errored", res.error);
                 eb(res.error);
               } else {
-                console.log('[send] DTLS connected');
+                console.log("[send] DTLS connected");
                 cb();
               }
             }
           );
         });
 
-        transport.on('produce', ({ kind, rtpParameters }, cb, eb) => {
-          console.log('[send] PRODUCE', kind);
+        transport.on("produce", ({ kind, rtpParameters }, cb, eb) => {
+          console.log("[send] PRODUCE", kind);
           socket.current.emit(
-            'produce',
+            "produce",
             { roomId, transportId: transport.id, kind, rtpParameters },
-            res => {
+            (res) => {
               if (res.error) {
-                console.error('[send] produce errored', res.error);
+                console.error("[send] produce errored", res.error);
                 eb(res.error);
               } else {
-                console.log('[send] produced id', res.producerId);
+                console.log("[send] produced id", res.producerId);
                 cb({ id: res.producerId });
               }
             }
@@ -119,7 +130,7 @@ export function CallProvider({ children, currentUserId }) {
         });
 
         for (const track of stream.getTracks()) {
-          console.log('[send] calling transport.produce for', track.kind);
+          console.log("[send] calling transport.produce for", track.kind);
           await transport.produce({ track });
         }
       }
@@ -128,19 +139,26 @@ export function CallProvider({ children, currentUserId }) {
 
   const createRecvTransport = (producerId, userId) => {
     const roomId = roomIdRef.current;
-    console.log('[recv] creating transport for', producerId, userId, 'in room', roomId);
+    console.log(
+      "[recv] creating transport for",
+      producerId,
+      userId,
+      "in room",
+      roomId
+    );
 
     if (!roomId || !device.current || recvTransports.current.has(producerId)) {
-      console.warn('[recv] skipping recv-transport; already have one or missing room/device');
+      console.warn(
+        "[recv] skipping recv-transport; already have one or missing room/device"
+      );
       return;
     }
 
     // 1) Ask server to create a recv transport
     socket.current.emit(
-      'create-transport',
-      { roomId, direction: 'recv' },
+      "create-transport",
+      { roomId, direction: "recv" },
       async (params) => {
-
         // 2) Create the recv Transport
         const transport = device.current.createRecvTransport({
           id: params.id,
@@ -153,14 +171,17 @@ export function CallProvider({ children, currentUserId }) {
         console.log(`[recv ${producerId}] transport created`, transport.id);
 
         // 3) Handle the DTLS connect event
-        transport.on('connect', ({ dtlsParameters }, callback, errback) => {
+        transport.on("connect", ({ dtlsParameters }, callback, errback) => {
           console.log(`[recv ${producerId}] DTLS connect`, dtlsParameters);
           socket.current.emit(
-            'connect-transport',
+            "connect-transport",
             { roomId, transportId: transport.id, dtlsParameters },
             (res) => {
               if (res.error) {
-                console.error(`[recv ${producerId}] dtls connect error`, res.error);
+                console.error(
+                  `[recv ${producerId}] dtls connect error`,
+                  res.error
+                );
                 return errback(res.error);
               }
               console.log(`[recv ${producerId}] DTLS connected`);
@@ -172,7 +193,7 @@ export function CallProvider({ children, currentUserId }) {
         // 4) Ask server to consume the producer
         console.log(`[recv ${producerId}] sending consume request`);
         socket.current.emit(
-          'consume',
+          "consume",
           {
             roomId,
             transportId: transport.id,
@@ -198,51 +219,51 @@ export function CallProvider({ children, currentUserId }) {
 
               // 6) Tell server to resume sending us RTP
               socket.current.emit(
-                'resume',
+                "resume",
                 { roomId, consumerId: data.consumerId },
                 (res) => {
                   if (res.error) {
-                    console.error(`[recv ${producerId}] resume error`, res.error);
+                    console.error(
+                      `[recv ${producerId}] resume error`,
+                      res.error
+                    );
                   } else {
                     console.log(`[recv ${producerId}] resume OK`);
                   }
                 }
               );
 
-              
-              setRemoteStreams(old => [
+              setRemoteStreams((old) => [
                 ...old,
                 {
                   consumerId: consumer.id,
                   kind: data.kind,
-                  stream: new MediaStream([consumer.track])
-                }
+                  stream: new MediaStream([consumer.track]),
+                },
               ]);
               console.log(`[recv ${producerId}] added remote stream`);
             } catch (err) {
               console.error(`[recv ${producerId}] consume failed`, err);
-              socket.current.emit('consume-error', { roomId, producerId, error: err.message });
-        
+              socket.current.emit("consume-error", {
+                roomId,
+                producerId,
+                error: err.message,
+              });
             }
-      })
+          }
+        );
       }
     );
   };
-  console.log('remoteStreams', remoteStreams);
-
-
-
-
-
+  console.log("remoteStreams", remoteStreams);
 
   // 5) high-level call controls
   // somewhere in your CallProvider:
 
-
   const initiateCall = async ({ callType, participants }) => {
     const roomId = `room-${Date.now()}`;
     roomIdRef.current = roomId;
-    socket.current.emit('initiate-call', { roomId, callType, participants });
+    socket.current.emit("initiate-call", { roomId, callType, participants });
     await joinRoom(roomId);
     await createSendTransport();
     setCall({ roomId, callType, participants });
@@ -252,7 +273,7 @@ export function CallProvider({ children, currentUserId }) {
     if (!incomingCall) return;
     const { roomId } = incomingCall;
     roomIdRef.current = roomId;
-    socket.current.emit('answer-call', { roomId });
+    socket.current.emit("answer-call", { roomId });
     await joinRoom(roomId);
     await createSendTransport();
     setCall(incomingCall);
@@ -261,20 +282,22 @@ export function CallProvider({ children, currentUserId }) {
 
   const leaveCall = () => {
     if (!call) return;
-    socket.current.emit('leave-call', { roomId: call.roomId });
+    socket.current.emit("leave-call", { roomId: call.roomId });
     setCall(null);
   };
 
   return (
-    <CallContext.Provider value={{
-      localStream,
-      remoteStreams,
-      incomingCall,
-      call,
-      initiateCall,
-      answerCall,
-      leaveCall
-    }}>
+    <CallContext.Provider
+      value={{
+        localStream,
+        remoteStreams,
+        incomingCall,
+        call,
+        initiateCall,
+        answerCall,
+        leaveCall,
+      }}
+    >
       {children}
     </CallContext.Provider>
   );
