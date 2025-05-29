@@ -169,7 +169,6 @@ export function CallProvider({ children, currentUserId }) {
           );
         });
 
-        // 4) Ask server to consume the producer
         console.log(`[recv ${producerId}] sending consume request`);
         socket.current.emit(
           'consume',
