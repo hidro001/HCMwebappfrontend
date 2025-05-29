@@ -1,10 +1,13 @@
-
-
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { FiPrinter, FiDownload, FiSearch } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import ConfirmationDialog from "../common/ConfirmationDialog";
+import 'react-clock/dist/Clock.css';      // React Clock's default styles
+import 'react-time-picker/dist/TimePicker.css'; 
+import TimePicker from 'react-time-picker';
+import axiosInstance from "../../service/axiosInstance";
+
 // If your store has a PDF method, import that from your Zustand store
 import { useOwnFullAttendanceStore } from "../../store/useOwnFullAttendanceStore";
 import {
@@ -535,6 +538,11 @@ function monthName(m) {
   --------------------------------------------------------------------------------------
 */
 export default function OwmFullAttendance() {
+const [punchReason, setPunchReason] = useState("");
+  const [missedPunchModalOpen, setMissedPunchModalOpen] = useState(false);
+const [selectedDateForPunch, setSelectedDateForPunch] = useState(null);
+const [punchInTime, setPunchInTime] = useState("");
+const [punchOutTime, setPunchOutTime] = useState("");
   const fetchAttendanceData = useOwnFullAttendanceStore(
     (s) => s.fetchAttendanceData
   );
@@ -556,6 +564,12 @@ export default function OwmFullAttendance() {
   );
 
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+
+  function openMissedPunchModal(dateRow) {
+  // 'dateRow' is the object containing date info, etc.
+  setSelectedDateForPunch(dateRow);
+  setMissedPunchModalOpen(true);
+}
 
   // Date controls
   const today = new Date();
@@ -658,7 +672,16 @@ export default function OwmFullAttendance() {
       return row;
     }
 
+    // Calculate total hours worked
     const hoursWorked = getHoursWorked(record.login, record.logout);
+
+    // Convert decimal hours to “h m” format
+    const wholeHours = Math.floor(hoursWorked); //total hours worked
+    const remainingMinutes = Math.round((hoursWorked - wholeHours) * 60); //total hours worked
+
+    // Now store a string like "7h 21m"
+    row.hoursWorked = `${wholeHours}h ${remainingMinutes}m`; //total hours worked
+
     if (hoursWorked >= 9) {
       row.status = "Present";
     } else if (hoursWorked >= 4.5 && hoursWorked < 9) {
@@ -721,7 +744,8 @@ export default function OwmFullAttendance() {
 
   // final salary
   // Parse the userProfileData?.salary as a number to avoid the toFixed() crash:
-  const numericBaseSalary = parseFloat(userProfileData?.current_Base_Salary) || 0;
+  const numericBaseSalary =
+    parseFloat(userProfileData?.current_Base_Salary) || 0;
 
   const {
     finalSalary,
@@ -963,6 +987,7 @@ export default function OwmFullAttendance() {
                   <th className="py-3 px-4">Day</th>
                   <th className="py-3 px-4">Log In Time</th>
                   <th className="py-3 px-4">Log Out Time</th>
+                  <th className="py-3 px-4">Hours Worked</th>
                   <th className="py-3 px-4">Total Break</th>
                   <th className="py-3 px-4">Status</th>
                 </tr>
@@ -980,10 +1005,22 @@ export default function OwmFullAttendance() {
                     <td className="py-3 px-4">{item.day}</td>
                     <td className="py-3 px-4">{item.logInTime}</td>
                     <td className="py-3 px-4">{item.logOutTime}</td>
+                    <td className="py-3 px-4">{item.hoursWorked}</td>
                     <td className="py-3 px-4">{item.totalBreak}</td>
+                    
                     <td className="py-3 px-4">
-                      {renderStatusBadge(item.status)}
-                    </td>
+  {renderStatusBadge(item.status)}
+
+  {/* If there's no login or it's a holiday, show "Request Punch" button */}
+  {((item.status === "Absent") || (item.status === "Holiday")) && (
+    <button
+      className="ml-2 text-blue-500 hover:underline"
+      onClick={() => openMissedPunchModal(item)}
+    >
+      Request Punch
+    </button>
+  )}
+</td>
                   </tr>
                 ))}
                 {displayedData.length === 0 && (
@@ -1178,6 +1215,91 @@ export default function OwmFullAttendance() {
             </div>
           </div>
         )}
+        {missedPunchModalOpen && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div className="bg-white dark:bg-gray-800 p-4 rounded shadow w-full max-w-md">
+      <h2 className="text-lg font-semibold mb-4">
+        Request Missed Punch for: {selectedDateForPunch?.date}
+      </h2>
+
+      {/* Punch In Time (Fancy TimePicker) */}
+      <label className="block mb-2 text-sm font-medium">Punch In Time</label>
+      <TimePicker
+        onChange={(timeVal) => setPunchInTime(timeVal)}
+        value={punchInTime}
+        disableClock
+        clearIcon={null}
+        format="hh:mm a"  // 12-hour format with AM/PM
+        className="w-full mb-4 border border-gray-300 dark:border-gray-600 
+             rounded p-2 bg-white dark:bg-gray-800 text-gray-800 
+             dark:text-gray-100"
+      />
+
+      {/* Punch Out Time (Fancy TimePicker) */}
+      <label className="block mb-2 text-sm font-medium">Punch Out Time</label>
+      <TimePicker
+        onChange={(timeVal) => setPunchOutTime(timeVal)}
+        value={punchOutTime}
+        disableClock
+        clearIcon={null}
+        format="hh:mm a"
+        className="w-full mb-4 border border-gray-300 dark:border-gray-600 
+             rounded p-2 bg-white dark:bg-gray-800 text-gray-800 
+             dark:text-gray-100"
+      />
+
+      {/* Reason Textarea */}
+      <label className="block mb-2 text-sm font-medium">Reason/Message</label>
+      <textarea
+        className="w-full h-20 mb-4 border border-gray-300 dark:border-gray-600 rounded p-2"
+        placeholder="Brief reason for missed punch..." onChange={(e) => setPunchReason(e.target.value)}
+      />
+
+      <div className="flex justify-end space-x-3">
+        <button
+          onClick={() => {
+            // Reset or keep times as you wish
+            setPunchInTime("");
+            setPunchOutTime("");
+            setMissedPunchModalOpen(false);
+          }}
+          className="px-3 py-1 bg-gray-300 dark:bg-gray-700 rounded"
+        >
+          Cancel
+        </button>
+        <button
+  onClick={async () => {
+    try {
+      // Call your missed-punch request API
+      await axiosInstance.post("/attendance-user/missed-punch-request", {
+        date: selectedDateForPunch?.date,      // e.g. "2023-08-15"
+        punchIn: punchInTime,                  // e.g. "09:00 AM"
+        punchOut: punchOutTime,               // e.g. "05:30 PM"
+        reason: punchReason,
+      });
+      toast.success("Missed Punch request submitted!");
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to submit missed punch request.");
+    } finally {
+      // Clean up and close modal
+      setPunchInTime("");
+      setPunchOutTime("");
+     setPunchReason("");
+      setMissedPunchModalOpen(false);
+    }
+  }}
+  className="px-3 py-1 bg-blue-600 text-white rounded"
+>
+  Submit
+</button>
+
+      </div>
+    </div>
+  </div>
+)}
+
+
 
         {/* SHIFT TIMING TABLE */}
         <div className="mt-6">

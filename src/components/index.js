@@ -10,6 +10,7 @@ import ThemeToggleButton from "./theme toggle button/ThemeToggleButton";
 import MakeAnnouncement from "./announcement/MakeAnnouncement";
 import ViewAnnouncements from "./announcement/ViewAnnouncements";
 import NotificationsPage from "./Notification/NotificationsPage";
+import SubMenuTabs from "./sidebar/SubMenuTabs";
 
 
 
@@ -33,6 +34,7 @@ export {
   ViewAnnouncements,
   NotificationsPage,
   ThemeToggleButton,
+  SubMenuTabs,
 
   
  

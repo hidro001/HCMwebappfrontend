@@ -91,7 +91,7 @@
 //         </motion.button>
 
 //         <h1 className="text-xl font-bold text-gray-800 dark:text-white">
-//           Employee Details of{" "}
+//           Employee Details of
 //           <span className="text-blue-600 dark:text-blue-400">{fullName}</span>
 //         </h1>
 //       </div>
@@ -139,55 +139,55 @@
 //               <li>
 //                 <strong className="text-blue-600 dark:text-blue-400">
 //                   Full Name:
-//                 </strong>{" "}
+//                 </strong>
 //                 {fullName}
 //               </li>
 //               <li>
 //                 <strong className="text-blue-600 dark:text-blue-400">
 //                   Email:
-//                 </strong>{" "}
+//                 </strong>
 //                 {orNA(employee.personal_Email_Id)}
 //               </li>
 //               <li>
 //                 <strong className="text-blue-600 dark:text-blue-400">
 //                   Phone Number:
-//                 </strong>{" "}
+//                 </strong>
 //                 {orNA(employee.mobile_No)}
 //               </li>
 //               <li>
 //                 <strong className="text-blue-600 dark:text-blue-400">
 //                   Department:
-//                 </strong>{" "}
+//                 </strong>
 //                 {orNA(employee.department)}
 //               </li>
 //               <li>
 //                 <strong className="text-blue-600 dark:text-blue-400">
 //                   Designation:
-//                 </strong>{" "}
+//                 </strong>
 //                 {orNA(employee.designation)}
 //               </li>
 //               <li>
 //                 <strong className="text-blue-600 dark:text-blue-400">
 //                   Date of Joining:
-//                 </strong>{" "}
+//                 </strong>
 //                 {formatDate(employee.date_of_Joining)}
 //               </li>
 //               <li>
 //                 <strong className="text-blue-600 dark:text-blue-400">
 //                   Employee ID:
-//                 </strong>{" "}
+//                 </strong>
 //                 {orNA(employee.employee_Id)}
 //               </li>
 //               <li>
 //                 <strong className="text-blue-600 dark:text-blue-400">
 //                   Salary:
-//                 </strong>{" "}
+//                 </strong>
 //                 ₹{employee.salary ?? 0}
 //               </li>
 //               <li>
 //                 <strong className="text-blue-600 dark:text-blue-400">
 //                   Personal Address:
-//                 </strong>{" "}
+//                 </strong>
 //                 {orNA(employee.user_Address)}
 //               </li>
 //             </ul>
@@ -290,97 +290,97 @@
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Full Name
-//                 </span>{" "}
+//                 </span>
 //                 : {fullName}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Personal Email
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.personal_Email_Id)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Personal Contact Number
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.mobile_No)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Date of Birth
-//                 </span>{" "}
+//                 </span>
 //                 : {formatDate(employee.dob)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Gender
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.gender)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Marital Status
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.marital_Status)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Nationality
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.nationality)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Permanent Residential Address
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.user_Address)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Current Residential Address
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.current_Address)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Disability Status
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.disability_Status)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Emergency Contact Person
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.emergency_Contact_Person)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Emergency Contact Number
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.emergency_Contact_Number)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Emergency Contact Blood Group
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.emergency_Contact_Blood_Group)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   PAN Number
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.pan_No)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Aadhaar Number
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.adhaar_Number)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Passport Number
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.passport_Number)}
 //               </p>
 //             </div>
@@ -392,177 +392,177 @@
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Employee ID
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.employee_Id)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Employment Type
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.employee_Type)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   User Role
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.user_Role)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Permission Role
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.permission_role)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Date of Joining
-//                 </span>{" "}
+//                 </span>
 //                 : {formatDate(employee.date_of_Joining)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Date of Confirmation
-//                 </span>{" "}
+//                 </span>
 //                 : {formatDate(employee.date_of_Conformation)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Employment Status
-//                 </span>{" "}
+//                 </span>
 //                 : {boolToYesNo(employee.isActive)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Designation / Role
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.designation)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Department
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.department)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Department Allocated
-//                 </span>{" "}
+//                 </span>
 //                 : {arrayToCommaList(employee.departmentAlocated)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Assigned To (IDs)
-//                 </span>{" "}
+//                 </span>
 //                 : {arrayToCommaList(employee.assigned_to)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Office Address
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.office_address)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Work Shift (ID)
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.shift_Timing)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Work Shift Array
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.shift_Timing_Array)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Total Work Experience (Years)
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.total_Experience)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Current Salary
-//                 </span>{" "}
+//                 </span>
 //                 : ₹{employee.salary ?? 0}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Paid Leaves
-//                 </span>{" "}
+//                 </span>
 //                 : {employee.no_of_Paid_Leave ?? 0}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Latitude & Longitude
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.latitude)}, {orNA(employee.longitude)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   OTP Required
-//                 </span>{" "}
+//                 </span>
 //                 : {employee.otp === "no" ? "NO" : "YES"}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Working Email
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.working_Email_Id)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Months Already Credited
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.monthsAlreadyCredited)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Overtime Allowed
-//                 </span>{" "}
+//                 </span>
 //                 : {boolToYesNo(employee.overtime_allowed)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Overtime Hours
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.overtime_hours)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Police Verification
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.police_Verification)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Background Verification Status
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.background_Verification_Status)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Compliance Training Status
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.complianceTrainingStatus)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Training Status
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.trainingStatus)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Allowances Provided
-//                 </span>{" "}
+//                 </span>
 //                 : {arrayToCommaList(employee.allowances_Provided)}
 //               </p>
 //               {/* Permissions link */}
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Permissions
-//                 </span>{" "}
-//                 :{" "}
+//                 </span>
+//                 :
 //                 <button
 //                   onClick={() => setShowPermissionsModal(true)}
 //                   className="text-blue-600 dark:text-blue-400 underline ml-1"
@@ -582,25 +582,25 @@
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Bank Holder Name
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.bank_Holder_Name)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Bank Name
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.bank_Name)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Bank Account No
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.bank_Account_No)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   IFSC Code
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.ifsc_Code)}
 //               </p>
 //               <hr className="my-4 border-gray-200 dark:border-gray-700" />
@@ -610,13 +610,13 @@
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   PF Details
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.pf_Details)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   ESI Details
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.esi_Details)}
 //               </p>
 //             </div>
@@ -639,37 +639,37 @@
 //                       <p>
 //                         <strong className="text-blue-600 dark:text-blue-400">
 //                           Company Name:
-//                         </strong>{" "}
+//                         </strong>
 //                         {orNA(exp.companyName)}
 //                       </p>
 //                       <p>
 //                         <strong className="text-blue-600 dark:text-blue-400">
 //                           Start Date:
-//                         </strong>{" "}
+//                         </strong>
 //                         {formatDate(exp.startDate)}
 //                       </p>
 //                       <p>
 //                         <strong className="text-blue-600 dark:text-blue-400">
 //                           End Date:
-//                         </strong>{" "}
+//                         </strong>
 //                         {formatDate(exp.endDate)}
 //                       </p>
 //                       <p>
 //                         <strong className="text-blue-600 dark:text-blue-400">
 //                           Designation:
-//                         </strong>{" "}
+//                         </strong>
 //                         {orNA(exp.designation)}
 //                       </p>
 //                       <p>
 //                         <strong className="text-blue-600 dark:text-blue-400">
 //                           Grade/Band/Level:
-//                         </strong>{" "}
+//                         </strong>
 //                         {orNA(exp.grade_Band_Level)}
 //                       </p>
 //                       <p>
 //                         <strong className="text-blue-600 dark:text-blue-400">
 //                           Previous Positions:
-//                         </strong>{" "}
+//                         </strong>
 //                         {orNA(exp.previous_Positions)}
 //                       </p>
 //                     </div>
@@ -693,43 +693,43 @@
 //                       <p>
 //                         <strong className="text-blue-600 dark:text-blue-400">
 //                           Qualification Name:
-//                         </strong>{" "}
+//                         </strong>
 //                         {orNA(qual.qualificationName)}
 //                       </p>
 //                       <p>
 //                         <strong className="text-blue-600 dark:text-blue-400">
 //                           University/Board:
-//                         </strong>{" "}
+//                         </strong>
 //                         {orNA(qual.universityBoard)}
 //                       </p>
 //                       <p>
 //                         <strong className="text-blue-600 dark:text-blue-400">
 //                           Specialization:
-//                         </strong>{" "}
+//                         </strong>
 //                         {orNA(qual.specialization)}
 //                       </p>
 //                       <p>
 //                         <strong className="text-blue-600 dark:text-blue-400">
 //                           Certifications:
-//                         </strong>{" "}
+//                         </strong>
 //                         {orNA(qual.certifications)}
 //                       </p>
 //                       <p>
 //                         <strong className="text-blue-600 dark:text-blue-400">
 //                           Total Marks:
-//                         </strong>{" "}
+//                         </strong>
 //                         {orNA(qual.totalMarks)}
 //                       </p>
 //                       <p>
 //                         <strong className="text-blue-600 dark:text-blue-400">
 //                           Year:
-//                         </strong>{" "}
+//                         </strong>
 //                         {orNA(qual.year)}
 //                       </p>
 //                       <p>
 //                         <strong className="text-blue-600 dark:text-blue-400">
 //                           Percentage/CGPA:
-//                         </strong>{" "}
+//                         </strong>
 //                         {orNA(qual.percentageCgpa)}
 //                       </p>
 //                     </div>
@@ -785,26 +785,26 @@
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Health Benefits
-//                 </span>{" "}
+//                 </span>
 //                 : {boolToYesNo(employee.health_benefits)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Languages Known
-//                 </span>{" "}
+//                 </span>
 //                 : {arrayToCommaList(employee.languages_Known)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Role ID
-//                 </span>{" "}
+//                 </span>
 //                 : {orNA(employee.roleId)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Break Type
-//                 </span>{" "}
-//                 :{" "}
+//                 </span>
+//                 :
 //                 {employee.break_Type
 //                   ? `${employee.break_Type.breakType} (${employee.break_Type.breakHours} hr)`
 //                   : "N/A"}
@@ -812,14 +812,14 @@
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Engagement Permission (ID)
-//                 </span>{" "}
+//                 </span>
 //                 : {employee.engagement_permission?._id || "N/A"}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   LinkedIn Profile
-//                 </span>{" "}
-//                 :{" "}
+//                 </span>
+//                 :
 //                 <a
 //                   href={orNA(employee.linkedin_Profile_URL)}
 //                   target="_blank"
@@ -832,8 +832,8 @@
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   GitHub Portfolio
-//                 </span>{" "}
-//                 :{" "}
+//                 </span>
+//                 :
 //                 <a
 //                   href={orNA(employee.github_Portfolio_URL)}
 //                   target="_blank"
@@ -846,13 +846,13 @@
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Created At
-//                 </span>{" "}
+//                 </span>
 //                 : {formatDate(employee.createdAt)}
 //               </p>
 //               <p>
 //                 <span className="font-semibold text-blue-600 dark:text-blue-400">
 //                   Updated At
-//                 </span>{" "}
+//                 </span>
 //                 : {formatDate(employee.updatedAt)}
 //               </p>
 //             </div>
@@ -875,13 +875,13 @@
 //                         <p>
 //                           <strong className="text-blue-600 dark:text-blue-400">
 //                             Notification ID:
-//                           </strong>{" "}
+//                           </strong>
 //                           {orNA(noti.notification)}
 //                         </p>
 //                         <p>
 //                           <strong className="text-blue-600 dark:text-blue-400">
 //                             Received At:
-//                           </strong>{" "}
+//                           </strong>
 //                           {formatDate(noti.receivedAt)}
 //                         </p>
 //                       </div>
@@ -914,7 +914,7 @@
 //                   <p>
 //                     <strong className="text-blue-600 dark:text-blue-400">
 //                       ID:
-//                     </strong>{" "}
+//                     </strong>
 //                     {employee.engagement_permission._id}
 //                   </p>
 //                   <p>
@@ -986,13 +986,14 @@
 
 
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams} from "react-router-dom";
 import { motion } from "framer-motion";
 import { Toaster } from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
 import useEmployeeDetailsStore from "../../store/useAllEmployeesStore";
-
+import { useNavigate, Link } from "react-router-dom";
 function ViewEmployee() {
+  
   const { id } = useParams();
   const navigate = useNavigate();
   const { employee, loading, error, fetchEmployeeById } = useEmployeeDetailsStore();
@@ -1112,7 +1113,7 @@ function ViewEmployee() {
         </motion.button>
 
         <h1 className="text-xl font-bold text-gray-800 dark:text-white">
-          Employee Details of{" "}
+          Employee Details of
           <span className="text-blue-600 dark:text-blue-400">{fullName}</span>
         </h1>
       </div>
@@ -1160,59 +1161,107 @@ function ViewEmployee() {
               <li>
                 <strong className="text-blue-600 dark:text-blue-400">
                   Full Name:
-                </strong>{" "}
+                </strong>
                 {fullName}
               </li>
               <li>
                 <strong className="text-blue-600 dark:text-blue-400">
                   Email:
-                </strong>{" "}
+                </strong>
                 {orNA(employee.personal_Email_Id)}
               </li>
               <li>
                 <strong className="text-blue-600 dark:text-blue-400">
                   Phone Number:
-                </strong>{" "}
+                </strong>
                 {orNA(employee.mobile_No)}
               </li>
               <li>
                 <strong className="text-blue-600 dark:text-blue-400">
                   Department:
-                </strong>{" "}
+                </strong>
                 {orNA(employee.department)}
               </li>
               <li>
                 <strong className="text-blue-600 dark:text-blue-400">
                   Designation:
-                </strong>{" "}
+                </strong>
                 {orNA(employee.designation)}
               </li>
               <li>
                 <strong className="text-blue-600 dark:text-blue-400">
                   Date of Joining:
-                </strong>{" "}
+                </strong>
                 {formatDate(employee.date_of_Joining)}
               </li>
               <li>
                 <strong className="text-blue-600 dark:text-blue-400">
                   Employee ID:
-                </strong>{" "}
+                </strong>
                 {orNA(employee.employee_Id)}
               </li>
               <li>
                 <strong className="text-blue-600 dark:text-blue-400">
                   Salary:
-                </strong>{" "}
+                </strong>
                 ₹{employee.salary ?? 0}
               </li>
               <li>
                 <strong className="text-blue-600 dark:text-blue-400">
                   Personal Address:
-                </strong>{" "}
+                </strong>
                 {orNA(employee.user_Address)}
               </li>
             </ul>
+            <div className="flex flex-col space-y-2 mt-4 px-4">
+  {/* View Payroll (using Link) */}
+  <Link
+    to={`/dashboard/payroll/employee/${employee.employee_Id}`}
+    className="text-center px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition"
+  >
+    View Payroll
+  </Link>
+
+  {/* View Daily Task */}
+  <button
+    onClick={() => navigate(`/dashboard/employee-particular-tasks/${employee.employee_Id}`)}
+    className="text-center px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700 transition"
+  >
+    View Daily Task
+  </button>
+
+  {/* View Assigned Task */}
+  <button
+    onClick={() => navigate(`/dashboard/employee-tasks/${employee.employee_Id}`)}
+    className="text-center px-4 py-2 rounded bg-yellow-600 text-white hover:bg-yellow-700 transition"
+  >
+    View Assigned Task
+  </button>
+   <button
+          onClick={() => navigate(`/dashboard/employee/${employee._id}/ratings`)}
+          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition"
+        >
+          View Performance
+        </button>
+   <button
+          onClick={() => navigate(`/dashboard/attendance/${employee.employee_Id}`)}
+          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition"
+        >
+          View Attendance
+        </button>
+
+  {/* View Tickets Raised */}
+  <button
+    onClick={() => navigate(`/dashboard/employee-tickets/${employee.employee_Id}`)}
+    className="text-center px-4 py-2 rounded bg-purple-600 text-white hover:bg-purple-700 transition"
+  >
+    View Tickets Raised
+  </button>
+</div>
           </div>
+
+          
+
         </div>
 
         {/* Right Side - Tabbed Content */}
@@ -1298,97 +1347,97 @@ function ViewEmployee() {
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Full Name
-                </span>{" "}
+                </span>
                 : {fullName}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Personal Email
-                </span>{" "}
+                </span>
                 : {orNA(employee.personal_Email_Id)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Personal Contact Number
-                </span>{" "}
+                </span>
                 : {orNA(employee.mobile_No)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Date of Birth
-                </span>{" "}
+                </span>
                 : {formatDate(employee.dob)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Gender
-                </span>{" "}
+                </span>
                 : {orNA(employee.gender)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Marital Status
-                </span>{" "}
+                </span>
                 : {orNA(employee.marital_Status)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Nationality
-                </span>{" "}
+                </span>
                 : {orNA(employee.nationality)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Permanent Residential Address
-                </span>{" "}
+                </span>
                 : {orNA(employee.user_Address)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Current Residential Address
-                </span>{" "}
+                </span>
                 : {orNA(employee.current_Address)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Disability Status
-                </span>{" "}
+                </span>
                 : {orNA(employee.disability_Status)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Emergency Contact Person
-                </span>{" "}
+                </span>
                 : {orNA(employee.emergency_Contact_Person)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Emergency Contact Number
-                </span>{" "}
+                </span>
                 : {orNA(employee.emergency_Contact_Number)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Emergency Contact Blood Group
-                </span>{" "}
+                </span>
                 : {orNA(employee.emergency_Contact_Blood_Group)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   PAN Number
-                </span>{" "}
+                </span>
                 : {orNA(employee.pan_No)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Aadhaar Number
-                </span>{" "}
+                </span>
                 : {orNA(employee.adhaar_Number)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Passport Number
-                </span>{" "}
+                </span>
                 : {orNA(employee.passport_Number)}
               </p>
             </div>
@@ -1400,55 +1449,55 @@ function ViewEmployee() {
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Employee ID
-                </span>{" "}
+                </span>
                 : {orNA(employee.employee_Id)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Employment Type
-                </span>{" "}
+                </span>
                 : {orNA(employee.employee_Type)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   User Role
-                </span>{" "}
+                </span>
                 : {orNA(employee.user_Role)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Permission Role
-                </span>{" "}
+                </span>
                 : {orNA(employee.permission_role)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Date of Joining
-                </span>{" "}
+                </span>
                 : {formatDate(employee.date_of_Joining)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Date of Confirmation
-                </span>{" "}
+                </span>
                 : {formatDate(employee.date_of_Conformation)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Employment Status
-                </span>{" "}
+                </span>
                 : {boolToYesNo(employee.isActive)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Designation / Role
-                </span>{" "}
+                </span>
                 : {orNA(employee.designation)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Department
-                </span>{" "}
+                </span>
                 : {orNA(employee.department)}
               </p>
              
@@ -1457,7 +1506,7 @@ function ViewEmployee() {
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Assigned Manager
-                </span>{" "}
+                </span>
                 : {renderAssignedTo(employee.assigned_to)}
               </p>
 
@@ -1468,89 +1517,89 @@ function ViewEmployee() {
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Total Work Experience (Years)
-                </span>{" "}
+                </span>
                 : {orNA(employee.total_Experience)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Salary at Joining
-                </span>{" "}
+                </span>
                 : ₹{employee.salary ?? 0}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Current Salary
-                </span>{" "}
+                </span>
                 : ₹{employee.current_Base_Salary ?? 0}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Paid Leaves
-                </span>{" "}
+                </span>
                 : {employee.no_of_Paid_Leave ?? 0}
               </p>
           
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   OTP Required
-                </span>{" "}
+                </span>
                 : {employee.otp === "no" ? "NO" : "YES"}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Working Email
-                </span>{" "}
+                </span>
                 : {orNA(employee.working_Email_Id)}
               </p>
         
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Overtime Allowed
-                </span>{" "}
+                </span>
                 : {boolToYesNo(employee.overtime_allowed)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Overtime Hours
-                </span>{" "}
+                </span>
                 : {orNA(employee.overtime_hours)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Police Verification
-                </span>{" "}
+                </span>
                 : {orNA(employee.police_Verification)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Background Verification Status
-                </span>{" "}
+                </span>
                 : {orNA(employee.background_Verification_Status)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Compliance Training Status
-                </span>{" "}
+                </span>
                 : {orNA(employee.complianceTrainingStatus)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Training Status
-                </span>{" "}
+                </span>
                 : {orNA(employee.trainingStatus)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Allowances Provided
-                </span>{" "}
+                </span>
                 : {arrayToCommaList(employee.allowances_Provided)}
               </p>
               {/* Permissions link */}
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Permissions
-                </span>{" "}
-                :{" "}
+                </span>
+                :
                 <button
                   onClick={() => setShowPermissionsModal(true)}
                   className="text-blue-600 dark:text-blue-400 underline ml-1"
@@ -1570,25 +1619,25 @@ function ViewEmployee() {
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Bank Holder Name
-                </span>{" "}
+                </span>
                 : {orNA(employee.bank_Holder_Name)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Bank Name
-                </span>{" "}
+                </span>
                 : {orNA(employee.bank_Name)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Bank Account No
-                </span>{" "}
+                </span>
                 : {orNA(employee.bank_Account_No)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   IFSC Code
-                </span>{" "}
+                </span>
                 : {orNA(employee.ifsc_Code)}
               </p>
               <hr className="my-4 border-gray-200 dark:border-gray-700" />
@@ -1598,13 +1647,13 @@ function ViewEmployee() {
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   PF Details
-                </span>{" "}
+                </span>
                 : {orNA(employee.pf_Details)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   ESI Details
-                </span>{" "}
+                </span>
                 : {orNA(employee.esi_Details)}
               </p>
             </div>
@@ -1627,37 +1676,37 @@ function ViewEmployee() {
                       <p>
                         <strong className="text-blue-600 dark:text-blue-400">
                           Company Name:
-                        </strong>{" "}
+                        </strong>
                         {orNA(exp.companyName)}
                       </p>
                       <p>
                         <strong className="text-blue-600 dark:text-blue-400">
                           Start Date:
-                        </strong>{" "}
+                        </strong>
                         {formatDate(exp.startDate)}
                       </p>
                       <p>
                         <strong className="text-blue-600 dark:text-blue-400">
                           End Date:
-                        </strong>{" "}
+                        </strong>
                         {formatDate(exp.endDate)}
                       </p>
                       <p>
                         <strong className="text-blue-600 dark:text-blue-400">
                           Designation:
-                        </strong>{" "}
+                        </strong>
                         {orNA(exp.designation)}
                       </p>
                       <p>
                         <strong className="text-blue-600 dark:text-blue-400">
                           Grade/Band/Level:
-                        </strong>{" "}
+                        </strong>
                         {orNA(exp.grade_Band_Level)}
                       </p>
                       <p>
                         <strong className="text-blue-600 dark:text-blue-400">
                           Previous Positions:
-                        </strong>{" "}
+                        </strong>
                         {orNA(exp.previous_Positions)}
                       </p>
                     </div>
@@ -1681,43 +1730,43 @@ function ViewEmployee() {
                       <p>
                         <strong className="text-blue-600 dark:text-blue-400">
                           Qualification Name:
-                        </strong>{" "}
+                        </strong>
                         {orNA(qual.qualificationName)}
                       </p>
                       <p>
                         <strong className="text-blue-600 dark:text-blue-400">
                           University/Board:
-                        </strong>{" "}
+                        </strong>
                         {orNA(qual.universityBoard)}
                       </p>
                       <p>
                         <strong className="text-blue-600 dark:text-blue-400">
                           Specialization:
-                        </strong>{" "}
+                        </strong>
                         {orNA(qual.specialization)}
                       </p>
                       <p>
                         <strong className="text-blue-600 dark:text-blue-400">
                           Certifications:
-                        </strong>{" "}
+                        </strong>
                         {orNA(qual.certifications)}
                       </p>
                       <p>
                         <strong className="text-blue-600 dark:text-blue-400">
                           Total Marks:
-                        </strong>{" "}
+                        </strong>
                         {orNA(qual.totalMarks)}
                       </p>
                       <p>
                         <strong className="text-blue-600 dark:text-blue-400">
                           Year:
-                        </strong>{" "}
+                        </strong>
                         {orNA(qual.year)}
                       </p>
                       <p>
                         <strong className="text-blue-600 dark:text-blue-400">
                           Percentage/CGPA:
-                        </strong>{" "}
+                        </strong>
                         {orNA(qual.percentageCgpa)}
                       </p>
                     </div>
@@ -1772,21 +1821,21 @@ function ViewEmployee() {
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Health Benefits
-                </span>{" "}
+                </span>
                 : {boolToYesNo(employee.health_benefits)}
               </p>
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Languages Known
-                </span>{" "}
+                </span>
                 : {arrayToCommaList(employee.languages_Known)}
               </p>
              
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Break Type
-                </span>{" "}
-                :{" "}
+                </span>
+                :
                 {employee.break_Type
                   ? `${employee.break_Type.breakType} (${employee.break_Type.breakHours} hr)`
                   : "N/A"}
@@ -1795,8 +1844,8 @@ function ViewEmployee() {
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   LinkedIn Profile
-                </span>{" "}
-                :{" "}
+                </span>
+                :
                 <a
                   href={orNA(employee.linkedin_Profile_URL)}
                   target="_blank"
@@ -1809,8 +1858,8 @@ function ViewEmployee() {
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   GitHub Portfolio
-                </span>{" "}
-                :{" "}
+                </span>
+                :
                 <a
                   href={orNA(employee.github_Portfolio_URL)}
                   target="_blank"

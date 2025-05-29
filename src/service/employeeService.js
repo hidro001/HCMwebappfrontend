@@ -63,7 +63,7 @@ export async function fetchDesignations() {
  */
 export async function createEmployee(formData) {
   // This is the final POST as in your old code (superadmin/register)
-  const response = await axiosInstance.post("/superadmin/register", formData, {
+  const response = await axiosInstance.post("/user-management/register", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -86,7 +86,7 @@ export async function fetchEmployeeById(employeeId) {
  */
 export async function updateEmployee(employeeId, formData) {
   // Example: PUT /superadmin/employees/:id
-  const response = await axiosInstance.put(`/superadmin/employees/${employeeId}`, formData, {
+  const response = await axiosInstance.put(`/user-management/update/${employeeId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

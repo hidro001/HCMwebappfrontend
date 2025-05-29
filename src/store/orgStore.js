@@ -11,7 +11,7 @@ const useEmployeeStore = create((set) => ({
     set({ loading: true });
 
     try {
-      const response = await axiosInstance.get('/superadmin/employees');
+      const response = await axiosInstance.get('/user/get-all');
       const result = response.data;
 
       if (result?.success && Array.isArray(result.data)) {

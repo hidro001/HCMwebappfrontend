@@ -101,6 +101,11 @@ import GeolocationPage from "../pages/geolocation/GeolocationPage";
 import FiledworkerPage from "../pages/geolocation/FiledworkerPage";
 import ProductivityLensAll from "../components/product-lense/ProductivityLensAll";
 import SubordinateProductivityLens from "../components/product-lense/SubordinateProductivityLens";
+import EmployeeTicketsPage from "../components/tickets Management/EmployeeTicketsPage";
+import IndividualAssignedTasks from "../components/task/assigned-task/IndividualAssignedTasks";
+import EmployeeDailyTaskDetail from "../components/task/daily-task/EmployeeDailyTaskDetail";
+import EmployeeDetails from "../components/payroll/manage-payroll/EmployeePayrollDetails";
+import EmployeeIndividualRatings from "../components/performance management new/EmployeeIndividualRating";
 
 const router = createBrowserRouter([
   {
@@ -115,7 +120,7 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: (
       <MainLayout>
-        <PrivateRoute />
+        <PrivateRoute  requiredPermissions={[]}  />
       </MainLayout>
     ),
     children: [
@@ -139,6 +144,10 @@ const router = createBrowserRouter([
         path: "view-announcement",
         element: <ViewAnnouncements />,
       },
+      {
+        path: "employee-particular-tasks/:employeeId",
+        element: <EmployeeDailyTaskDetail />,
+      },
 
       {
         path: "engagement-feed",
@@ -147,6 +156,10 @@ const router = createBrowserRouter([
       {
         path: "engagement-permission-dashboard",
         element: <EngPermissionDashboardPage />,
+      },
+      {
+        path: "payroll/employee/:employeeId",
+        element: <EmployeeDetails />,
       },
 
       {
@@ -273,6 +286,11 @@ const router = createBrowserRouter([
         element: <ReferralListPage />,
       },
       {
+        path: "employee-tickets/:employeeId",
+        element: <EmployeeTicketsPage />,
+      },
+
+      {
         path: "vancancies-list",
         element: <VacanciesListPage />,
       },
@@ -315,9 +333,18 @@ const router = createBrowserRouter([
         element: <AssignedTaskPage />,
       },
       {
+        path: "employee-tasks/:employeeId",
+        element: <IndividualAssignedTasks />,
+      },
+      {
         path: "assigned-task/employee",
         element: <AssignedTaskEmployeePage />,
       },
+      {
+        path: "employee/:employeeId/ratings",
+        element: <EmployeeIndividualRatings />,
+      },
+
       {
         path: "daily-task",
         element: <DailyTaskPage />,

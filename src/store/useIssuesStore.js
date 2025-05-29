@@ -12,6 +12,8 @@ const useIssuesStore = create((set, get) => ({
   selectedIssue: null, // For storing the currently selected issue (if needed)
   comments: [], // Comments for the selected issue
   isCommentLoading: false, // Loading flag for comment-related operations
+  employeeDetails: null,
+
 
   // ----- Actions -----
 
@@ -225,6 +227,25 @@ const useIssuesStore = create((set, get) => ({
       set({ isCommentLoading: false });
     }
   },
+
+  fetchEmployeeTickets: async (employeeId) => {
+    set({ loading: true, error: null });
+    try {
+      const { data } = await axiosInstance.get(`/issues/issue/${employeeId}`);
+      if (data.success) {
+        set({ issues: data.data, employeeDetails: data.employee });
+      } else {
+        throw new Error(data.message);
+      }
+    } catch (err) {
+      set({ error: err.message });
+      toast.error(err.message);
+    } finally {
+      set({ loading: false });
+    }
+  },
+  
+  
 }));
 
 export default useIssuesStore;

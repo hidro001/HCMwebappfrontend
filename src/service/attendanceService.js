@@ -85,6 +85,20 @@ export async function fetchPunchStatusToday() {
     throw error;
   }
 }
+export const fetchAttendanceByEmployeeId = async (employeeId) => {
+  try {
+    const response = await axiosInstance.get(`/attendance/employee-overview?employeeId=${employeeId}`);
+    return { success: true, data: response.data.data };
+  } catch (error) {
+    console.error("Error fetching attendance:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to fetch attendance.',
+      data: [],
+    };
+  }
+};
+
 
 
 export async function fetchDepartmentAttendanceSummary() {
@@ -97,4 +111,7 @@ export async function fetchDepartmentAttendanceSummary() {
     console.error("Error in fetchDepartmentAttendanceSummary:", error);
     throw error;
   }
+  
+  
 }
+

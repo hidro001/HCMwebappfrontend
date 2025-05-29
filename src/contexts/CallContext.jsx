@@ -97,9 +97,9 @@ export const CallProvider = ({ children }) => {
     socketRef.current.on("endCall", handleEndCall);
 
     // WebRTC signaling events
-    socketRef.current.on("offer", handleOffer);
-    socketRef.current.on("answer", handleAnswer);
-    socketRef.current.on("candidate", handleCandidate);
+    // socketRef.current.on("offer", handleOffer);
+    // socketRef.current.on("answer", handleAnswer);
+    // socketRef.current.on("candidate", handleCandidate);
 
     return () => {
       socketRef.current.disconnect();
@@ -155,158 +155,158 @@ export const CallProvider = ({ children }) => {
   // ----------------------------
   // WebRTC Signaling Handlers
   // ----------------------------
-  const handleOffer = async (data) => {
-    console.log("Offer received from:", data.userId);
-    if (!peersRef.current[data.userId]) {
-      await createPeerConnection(data.callId, data.userId);
-    }
-    const { peer } = peersRef.current[data.userId];
+  // const handleOffer = async (data) => {
+  //   console.log("Offer received from:", data.userId);
+  //   if (!peersRef.current[data.userId]) {
+  //     await createPeerConnection(data.callId, data.userId);
+  //   }
+  //   const { peer } = peersRef.current[data.userId];
 
-    try {
-      await peer.setRemoteDescription({ type: "offer", sdp: data.sdp });
-      const answer = await peer.createAnswer();
-      await peer.setLocalDescription(answer);
-      socketRef.current.emit("answer", {
-        callId: data.callId,
-        userId: currentUser,
-        sdp: answer.sdp,
-      });
-    } catch (err) {
-      console.error("Error handling offer:", err);
-    }
-  };
+  //   try {
+  //     await peer.setRemoteDescription({ type: "offer", sdp: data.sdp });
+  //     const answer = await peer.createAnswer();
+  //     await peer.setLocalDescription(answer);
+  //     socketRef.current.emit("answer", {
+  //       callId: data.callId,
+  //       userId: currentUser,
+  //       sdp: answer.sdp,
+  //     });
+  //   } catch (err) {
+  //     console.error("Error handling offer:", err);
+  //   }
+  // };
 
-  const handleAnswer = async (data) => {
-    console.log("Answer received from:", data.userId);
-    const pcObject = peersRef.current[data.userId];
-    if (!pcObject) return;
+  // const handleAnswer = async (data) => {
+  //   console.log("Answer received from:", data.userId);
+  //   const pcObject = peersRef.current[data.userId];
+  //   if (!pcObject) return;
 
-    try {
-      await pcObject.peer.setRemoteDescription({
-        type: "answer",
-        sdp: data.sdp,
-      });
-    } catch (err) {
-      console.error("Error setting remote description:", err);
-    }
-  };
+  //   try {
+  //     await pcObject.peer.setRemoteDescription({
+  //       type: "answer",
+  //       sdp: data.sdp,
+  //     });
+  //   } catch (err) {
+  //     console.error("Error setting remote description:", err);
+  //   }
+  // };
 
-  const handleCandidate = async (data) => {
-    console.log("Candidate received from:", data.userId);
-    const pcObject = peersRef.current[data.userId];
-    if (!pcObject) return;
+  // const handleCandidate = async (data) => {
+  //   console.log("Candidate received from:", data.userId);
+  //   const pcObject = peersRef.current[data.userId];
+  //   if (!pcObject) return;
 
-    try {
-      await pcObject.peer.addIceCandidate(new RTCIceCandidate(data.candidate));
-    } catch (err) {
-      console.error("Error adding ICE candidate:", err);
-    }
-  };
+  //   try {
+  //     await pcObject.peer.addIceCandidate(new RTCIceCandidate(data.candidate));
+  //   } catch (err) {
+  //     console.error("Error adding ICE candidate:", err);
+  //   }
+  // };
 
   // ----------------------------
   // Create PeerConnection
   // ----------------------------
-  const createPeerConnection = async (callId, remoteUserId) => {
-    console.log("Creating PeerConnection for:", remoteUserId);
-    const peer = new RTCPeerConnection({ iceServers: ICE_SERVERS });
+  // const createPeerConnection = async (callId, remoteUserId) => {
+  //   console.log("Creating PeerConnection for:", remoteUserId);
+  //   const peer = new RTCPeerConnection({ iceServers: ICE_SERVERS });
 
-    // If we have local camera/mic stream, add them
-    if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach((track) => {
-        peer.addTrack(track, localStreamRef.current);
-      });
-    }
+  //   // If we have local camera/mic stream, add them
+  //   if (localStreamRef.current) {
+  //     localStreamRef.current.getTracks().forEach((track) => {
+  //       peer.addTrack(track, localStreamRef.current);
+  //     });
+  //   }
 
-    // ICE candidate => emit to server
-    peer.onicecandidate = (evt) => {
-      if (evt.candidate) {
-        socketRef.current.emit("candidate", {
-          callId,
-          userId: currentUser,
-          candidate: evt.candidate,
-        });
-      }
-    };
+  //   // ICE candidate => emit to server
+  //   peer.onicecandidate = (evt) => {
+  //     if (evt.candidate) {
+  //       socketRef.current.emit("candidate", {
+  //         callId,
+  //         userId: currentUser,
+  //         candidate: evt.candidate,
+  //       });
+  //     }
+  //   };
 
-    // Negotiation
-    peer.onnegotiationneeded = async () => {
-      if (peer.signalingState !== "stable") return;
-      try {
-        const offer = await peer.createOffer();
-        await peer.setLocalDescription(offer);
-        socketRef.current.emit("offer", {
-          callId,
-          userId: currentUser,
-          sdp: offer.sdp,
-        });
-      } catch (err) {
-        console.error("Error in renegotiation:", err);
-      }
-    };
+  //   // Negotiation
+  //   peer.onnegotiationneeded = async () => {
+  //     if (peer.signalingState !== "stable") return;
+  //     try {
+  //       const offer = await peer.createOffer();
+  //       await peer.setLocalDescription(offer);
+  //       socketRef.current.emit("offer", {
+  //         callId,
+  //         userId: currentUser,
+  //         sdp: offer.sdp,
+  //       });
+  //     } catch (err) {
+  //       console.error("Error in renegotiation:", err);
+  //     }
+  //   };
 
-    // Optional: track ICE state changes
-    peer.oniceconnectionstatechange = () => {
-      console.log(`ICE state for ${remoteUserId}:`, peer.iceConnectionState);
-      if (
-        peer.iceConnectionState === "failed" ||
-        peer.iceConnectionState === "disconnected"
-      ) {
-        console.warn(
-          `Peer connection to ${remoteUserId} is ${peer.iceConnectionState}`
-        );
-      }
-    };
+  //   // Optional: track ICE state changes
+  //   peer.oniceconnectionstatechange = () => {
+  //     console.log(`ICE state for ${remoteUserId}:`, peer.iceConnectionState);
+  //     if (
+  //       peer.iceConnectionState === "failed" ||
+  //       peer.iceConnectionState === "disconnected"
+  //     ) {
+  //       console.warn(
+  //         `Peer connection to ${remoteUserId} is ${peer.iceConnectionState}`
+  //       );
+  //     }
+  //   };
 
-    // ontrack: handle multiple streams (camera + screen)
-    peer.ontrack = (event) => {
-      const [remoteStream] = event.streams;
-      const track = event.track;
-      console.log(
-        "Received remote track from:",
-        remoteUserId,
-        "label:",
-        track.label
-      );
+  //   // ontrack: handle multiple streams (camera + screen)
+  //   peer.ontrack = (event) => {
+  //     const [remoteStream] = event.streams;
+  //     const track = event.track;
+  //     console.log(
+  //       "Received remote track from:",
+  //       remoteUserId,
+  //       "label:",
+  //       track.label
+  //     );
 
-      // Distinguish "camera" vs "screen"
-      let trackType = "camera";
-      const label = track.label.toLowerCase();
-      if (
-        label.includes("screen") ||
-        label.includes("display") ||
-        label.includes("window")
-      ) {
-        trackType = "screen";
-      }
+  //     // Distinguish "camera" vs "screen"
+  //     let trackType = "camera";
+  //     const label = track.label.toLowerCase();
+  //     if (
+  //       label.includes("screen") ||
+  //       label.includes("display") ||
+  //       label.includes("window")
+  //     ) {
+  //       trackType = "screen";
+  //     }
 
-      // Update or add the remote stream in state
-      setRemoteStreams((prev) => {
-        // See if we already have an entry for (remoteUserId, trackType)
-        const existingIndex = prev.findIndex(
-          (item) => item.userId === remoteUserId && item.type === trackType
-        );
-        if (existingIndex >= 0) {
-          // Update existing
-          const updated = [...prev];
-          updated[existingIndex] = {
-            userId: remoteUserId,
-            stream: remoteStream,
-            type: trackType,
-          };
-          return updated;
-        } else {
-          // Add new entry
-          return [
-            ...prev,
-            { userId: remoteUserId, stream: remoteStream, type: trackType },
-          ];
-        }
-      });
-    };
+  //     // Update or add the remote stream in state
+  //     setRemoteStreams((prev) => {
+  //       // See if we already have an entry for (remoteUserId, trackType)
+  //       const existingIndex = prev.findIndex(
+  //         (item) => item.userId === remoteUserId && item.type === trackType
+  //       );
+  //       if (existingIndex >= 0) {
+  //         // Update existing
+  //         const updated = [...prev];
+  //         updated[existingIndex] = {
+  //           userId: remoteUserId,
+  //           stream: remoteStream,
+  //           type: trackType,
+  //         };
+  //         return updated;
+  //       } else {
+  //         // Add new entry
+  //         return [
+  //           ...prev,
+  //           { userId: remoteUserId, stream: remoteStream, type: trackType },
+  //         ];
+  //       }
+  //     });
+  //   };
 
-    peersRef.current[remoteUserId] = { peer };
-    return peersRef.current[remoteUserId];
-  };
+  //   peersRef.current[remoteUserId] = { peer };
+  //   return peersRef.current[remoteUserId];
+  // };
 
   // ----------------------------
   // Get Local Camera/Mic
@@ -372,10 +372,17 @@ const consumeStream = async (socket, device, recvTransport, producerId) => {
     }, resolve);
   });
 
-  const consumer = await recvTransport.consume(consumerOptions);
+  const consumer = await recvTransport.consume({
+    id: consumerOptions.id,
+    producerId: consumerOptions.producerId,
+    kind: consumerOptions.kind,
+    rtpParameters: consumerOptions.rtpParameters,
+  });
+
   const remoteStream = new MediaStream([consumer.track]);
   return remoteStream;
 };
+
 
 
   // ----------------------------
@@ -453,25 +460,26 @@ const consumeStream = async (socket, device, recvTransport, producerId) => {
       console.error('Mediasoup setup incomplete');
       return;
     }
-
+  
     const { device, recvTransports } = peersRef.current.mediasoup;
-
+  
     if (!recvTransports[remoteUserId]) {
       recvTransports[remoteUserId] = await createTransport(socketRef.current, device, 'recv');
     }
-
+  
     const remoteStream = await consumeStream(
       socketRef.current,
       device,
       recvTransports[remoteUserId],
       producerId
     );
-
+  
     setRemoteStreams(prev => [
       ...prev,
       { userId: remoteUserId, stream: remoteStream, type: 'camera' }
     ]);
-  }, [setRemoteStreams]);
+  }, []);
+  
 
   useEffect(() => {
     if (!socketRef.current) return;
@@ -537,17 +545,7 @@ const consumeStream = async (socket, device, recvTransport, producerId) => {
     cleanupCall();
   };
 
-  useEffect(() => {
-    if (!socketRef.current) return;
   
-    socketRef.current.on('newProducer', ({ producerId, userId }) => {
-      handleNewProducer(producerId, userId);
-    });
-  
-    return () => {
-      socketRef.current.off('newProducer');
-    };
-  }, [handleNewProducer]);
   
 
   // ----------------------------

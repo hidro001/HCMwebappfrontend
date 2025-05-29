@@ -15,7 +15,7 @@ export default function LoginContent() {
           flexDirection: "column",
           alignSelf: "center",
           gap: 4,
-          maxWidth: 450,
+          maxWidth: 100,
         }}
       >
         <div className="rzrems-logo-container">
@@ -24,7 +24,7 @@ export default function LoginContent() {
             alt="Fallback Logo"
             className="hm-logo-img"
           />
-          <h6 className="text-center">Product Of Razor Infotech</h6>
+          {/* <h6 className="text-center">Product Of Razor Infotech</h6> */}
         </div>
       </Stack>
     );

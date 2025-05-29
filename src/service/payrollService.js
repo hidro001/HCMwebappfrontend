@@ -239,3 +239,18 @@ export async function updateAdvanceRequest(id, data) {
     throw new Error("Failed to update the Advance request.");
   }
 }
+
+export const fetchAllPayrollByEmployeeId = async (employeeId) => {
+  try {
+    const response = await axiosInstance.get(`/payroll/employee/${employeeId}`);
+    return { success: true, data: response.data.data };
+  } catch (error) {
+    console.error("Error fetching payroll by employee:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to fetch payroll data.',
+      data: [],
+    };
+  }
+};
+

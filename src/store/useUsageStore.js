@@ -7,6 +7,8 @@ const useUsageStatsStore = create((set) => ({
   dailyStats: null,
   loading: false,
   error: null,
+  timeline: [],
+  activityTrend: [],
 
   fetchStats: async (employeeId) => {
     set({ loading: true, error: null });
@@ -66,6 +68,69 @@ const useUsageStatsStore = create((set) => ({
     }
   },
   deptCategories: { productive: [], unproductive: [], unrated: [] },
+
+  fetchTimeline: async (employeeId, date) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await axiosInstance.get(`/usage-stats/timeline/${employeeId}/${date}`);
+      set({ timeline: res.data.data });
+    } catch (err) {
+      set({ error: err.message });
+      toast.error("Failed to fetch timeline");
+    } finally {
+      set({ loading: false });
+    }
+  },
+  fetchActivityTrend: async (employeeId, date) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await axiosInstance.get(
+        `/usage-stats/trend/${employeeId}`
+      );
+      set({ activityTrend: res.data.data || [] });
+    } catch (err) {
+      set({ error: err.message });
+      toast.error(err.message);
+    } finally {
+      set({ loading: false });
+    }
+  },
+  fetchSubordinateProductivity: async (filters = {}) => {
+    set({ loading: true, error: null });
+    try {
+      const res = await axiosInstance.get('/usage-stats/subordinate-productivity', { params: filters });
+      set({ subordinateProductivity: res.data });
+      return res.data;
+    } catch (err) {
+      set({ error: err.message });
+      toast.error(err.message);
+      return { topProductive: [], leastProductive: [] };
+    } finally {
+      set({ loading: false });
+    }
+  },
+  subordinateProductivity: { topProductive: [], leastProductive: [] },
+  
+  
+
+  // Add these lines in the store:
+fetchMostUsedStats: async (employeeId, filterType) => {
+  set({ loading: true, error: null });
+  try {
+    const res = await axiosInstance.get(
+      `/usage-stats/most-used/${employeeId}?filter=${filterType}`
+    );
+    set({ mostUsedStats: res.data.data });
+  } catch (err) {
+    set({ error: err.message });
+    toast.error(err.message);
+  } finally {
+    set({ loading: false });
+  }
+},
+mostUsedStats: null,
+
+
   
 }));
 

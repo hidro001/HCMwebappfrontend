@@ -3,9 +3,10 @@ import React, { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { FiSearch } from "react-icons/fi";
 import { useParams } from "react-router-dom";
-
+import axiosInstance from "../../service/axiosInstance";
 import useAttendanceStore from "../../store/useFullAttendanceStore";
 import ExportButtons from "../../components/common/PdfExcel";
+import toast from "react-hot-toast";
 
 // Renders a small colored badge
 function renderStatusBadge(status) {
@@ -48,6 +49,7 @@ function renderStatusBadge(status) {
 }
 
 export default function EmployeeFullAttendance() {
+  const [managerApprovalLoading, setManagerApprovalLoading] = useState(false);
   // If you have empID in route param
   const { empID } = useParams();
 
@@ -158,6 +160,36 @@ export default function EmployeeFullAttendance() {
   const holidayCount = displayedData.filter((item) =>
     item.status.toLowerCase().includes("holiday")
   ).length;
+
+  async function handleApprovePunch(item) {
+   try {
+     setManagerApprovalLoading(true);
+     // Suppose item holds a requestId, or some identifier for the request
+     await axiosInstance.patch(`/attendance-user/missed-punch-request/${item.requestId}`, {
+       action: "approve"
+     });
+     toast.success("Punch request approved.");
+     // e.g. re-fetch attendance or missed-punch requests
+   } catch (err) {
+     toast.error("Failed to approve: " + (err?.message || "Error"));
+   } finally {
+     setManagerApprovalLoading(false);
+   }
+ }
+ async function handleRejectPunch(item) {
+   try {
+     setManagerApprovalLoading(true);
+     await axiosInstance.patch(`/attendance-user/missed-punch-request/${item.requestId}`, {
+       action: "reject"
+     });
+     toast.success("Punch request rejected.");
+     // e.g. re-fetch attendance or missed-punch requests
+   } catch (err) {
+     toast.error("Failed to reject: " + (err?.message || "Error"));
+   } finally {
+     setManagerApprovalLoading(false);
+   }
+ }
 
   // Example placeholders
   const totalPaidLeaves = 3;
@@ -425,6 +457,25 @@ export default function EmployeeFullAttendance() {
                     <td className="py-3 px-4">{item.logOutTime}</td>
                     <td className="py-3 px-4">{item.totalBreak}</td>
                     <td className="py-3 px-4">{renderStatusBadge(item.status)}</td>
+                     {/* If user has "attendance-view-subordinate" permission, show Approve/Reject */}
+ {userProfileData?.permission?.includes("attendance-view-subordinate") && item.requestId && (
+   <div className="inline-flex ml-3 space-x-2">
+     <button
+       className="text-green-600 hover:underline"
+       onClick={() => handleApprovePunch(item)}
+       disabled={managerApprovalLoading}
+     >
+       Approve
+     </button>
+     <button
+       className="text-red-600 hover:underline"
+       onClick={() => handleRejectPunch(item)}
+       disabled={managerApprovalLoading}
+     >
+       Reject
+     </button>
+   </div>
+ )}
                   </tr>
                 ))}
 
