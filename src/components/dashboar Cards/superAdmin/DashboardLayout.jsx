@@ -90,11 +90,16 @@
 
 // export default SuperAdminDashboard;
 
-
-
 import React from "react";
 import { motion } from "framer-motion";
-import { FiGrid, FiTrendingUp, FiUsers, FiBarChart2, FiCalendar, FiBell } from "react-icons/fi";
+import {
+  FiGrid,
+  FiTrendingUp,
+  FiUsers,
+  FiBarChart2,
+  FiCalendar,
+  FiBell,
+} from "react-icons/fi";
 import { HiOutlineSparkles } from "react-icons/hi2";
 
 // Import all your individual components
@@ -120,44 +125,44 @@ const containerVariants = {
     opacity: 1,
     transition: {
       staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
+      delayChildren: 0.2,
+    },
+  },
 };
 
 const cardVariants = {
-  hidden: { 
-    opacity: 0, 
+  hidden: {
+    opacity: 0,
     y: 30,
-    scale: 0.95
+    scale: 0.95,
   },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     scale: 1,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
-    }
-  }
+      ease: "easeOut",
+    },
+  },
 };
 
 const sidebarVariants = {
-  hidden: { 
-    opacity: 0, 
+  hidden: {
+    opacity: 0,
     x: 50,
-    scale: 0.95
+    scale: 0.95,
   },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     x: 0,
     scale: 1,
     transition: {
       duration: 0.6,
       ease: "easeOut",
-      delay: 0.3
-    }
-  }
+      delay: 0.3,
+    },
+  },
 };
 
 function SuperAdminDashboard() {
@@ -172,22 +177,17 @@ function SuperAdminDashboard() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
     >
-   
-
-
       {/* Main Dashboard Content */}
       <main className="px-4 sm:px-6 lg:px-8 py-8">
         <div className="max-w-8xl mx-auto">
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
-            
             {/* Main Content Area - 3 columns on XL screens */}
-            <motion.div 
+            <motion.div
               className="xl:col-span-3 space-y-8"
               variants={containerVariants}
               initial="hidden"
               animate="visible"
             >
-              
               {/* Stats Cards Section */}
               <motion.section variants={cardVariants} className="relative">
                 <div className="flex items-center gap-3 mb-6">
@@ -203,7 +203,10 @@ function SuperAdminDashboard() {
               </motion.section>
 
               {/* Product Lens Section */}
-              <motion.section variants={cardVariants}>
+              <motion.section
+                variants={cardVariants}
+                className="hidden lg:block"
+              >
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
                     <FiGrid className="h-5 w-5 text-purple-600 dark:text-purple-400" />
@@ -225,16 +228,16 @@ function SuperAdminDashboard() {
                     Analytics & Insights
                   </h2>
                 </div>
-                
+
                 {/* Responsive Grid for Charts */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-                  <motion.div 
+                  <motion.div
                     className="transform transition-all duration-300 hover:scale-[1.02]"
                     whileHover={{ y: -5 }}
                   >
                     <EmployeeStatusChart />
                   </motion.div>
-                  <motion.div 
+                  <motion.div
                     className="transform transition-all duration-300 hover:scale-[1.02]"
                     whileHover={{ y: -5 }}
                   >
@@ -244,7 +247,7 @@ function SuperAdminDashboard() {
 
                 {/* Who's In Section */}
                 <div className="grid grid-cols-1 gap-6 mb-8">
-                  <motion.div 
+                  <motion.div
                     className="transform transition-all duration-300 hover:scale-[1.01]"
                     whileHover={{ y: -3 }}
                   >
@@ -253,18 +256,17 @@ function SuperAdminDashboard() {
                 </div>
 
                 {/* Monthly Hiring Chart */}
-                <motion.div 
+                <motion.div
                   className="transform transition-all duration-300 hover:scale-[1.01]"
                   whileHover={{ y: -3 }}
                 >
                   <MonthlyHiringChart />
                 </motion.div>
               </motion.section>
-
             </motion.div>
 
             {/* Sidebar - 1 column on XL screens */}
-            <motion.aside 
+            <motion.aside
               className="xl:col-span-1 space-y-6"
               variants={sidebarVariants}
               initial="hidden"
@@ -282,7 +284,7 @@ function SuperAdminDashboard() {
 
               {/* Sidebar Cards with stagger animation */}
               <motion.div className="space-y-6">
-                <motion.div 
+                <motion.div
                   className="transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -291,7 +293,7 @@ function SuperAdminDashboard() {
                   <DemographicCard />
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                   className="transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -300,7 +302,7 @@ function SuperAdminDashboard() {
                   <AttendanceCard />
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                   className="transform transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -317,7 +319,7 @@ function SuperAdminDashboard() {
               </motion.div>
 
               {/* Quick Actions Panel */}
-              <motion.div 
+              <motion.div
                 className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-blue-200/50 dark:border-blue-700/50"
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -342,26 +344,9 @@ function SuperAdminDashboard() {
                 </div>
               </motion.div>
             </motion.aside>
-
           </div>
         </div>
       </main>
-
-      {/* Footer spacing */}
-      <div className="h-16" />
-      
-      {/* Floating scroll indicator */}
-      <motion.div
-        className="fixed bottom-8 right-8 p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg cursor-pointer z-20"
-        whileHover={{ scale: 1.1, rotate: 360 }}
-        whileTap={{ scale: 0.9 }}
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1, duration: 0.5 }}
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-      >
-        <HiOutlineSparkles className="h-5 w-5" />
-      </motion.div>
     </motion.div>
   );
 }
