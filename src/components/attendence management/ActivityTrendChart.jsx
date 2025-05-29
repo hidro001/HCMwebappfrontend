@@ -32,7 +32,7 @@ export default function ActivityTrendChart({ employeeId, date }) {
 
   return (
     <div className="bg-white dark:bg-gray-800 p-4 rounded-xl shadow">
-      <h2 className="text-lg font-bold mb-2">Activity Trend (Shift-based)</h2>
+      <h2 className="text-lg font-bold mb-2">Activity Trend Throughout the day</h2>
       <ResponsiveContainer width="100%" height={300}>
         <AreaChart data={chartData}>
           <defs>
@@ -57,17 +57,10 @@ export default function ActivityTrendChart({ employeeId, date }) {
             dataKey="keyboardPresses"
             stroke="#3B82F6"
             fill="url(#colorKP)"
-            name="Keyboard Presses"
+            name="Average Productivity Rating"
           />
 
-          {/* Mouse Clicks Area */}
-          <Area
-            type="monotone"
-            dataKey="mouseClicks"
-            stroke="#F97316"
-            fill="url(#colorMC)"
-            name="Mouse Clicks"
-          />
+         
         </AreaChart>
       </ResponsiveContainer>
     </div>

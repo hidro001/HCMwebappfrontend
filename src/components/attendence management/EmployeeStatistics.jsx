@@ -1245,26 +1245,6 @@ export default function EmployeeStatistics() {
               label: "Total Break Taken",
               value: `${attendanceTotals.totalBreakTaken} mins`,
             },
-            {
-              color: "blue",
-              label: "Keyboard Minutes",
-              value: totalUsage.keyboardMinutes,
-            },
-            {
-              color: "pink",
-              label: "Keyboard Presses",
-              value: totalUsage.keyboardPresses,
-            },
-            {
-              color: "purple",
-              label: "Mouse Minutes",
-              value: totalUsage.mouseMinutes,
-            },
-            {
-              color: "red",
-              label: "Mouse Clicks",
-              value: totalUsage.mouseClicks,
-            },
             ...(insights
               ? [
                   {
@@ -1452,18 +1432,6 @@ export default function EmployeeStatistics() {
               </p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
-                <StatsTableCard
-                  title="Top Productive Websites"
-                  data={topProductivityStats?.topWebsites || []}
-                  isWebsite
-                  onSeeAll={() => navigate("/full-list/productive-websites")}
-                />
-                <StatsTableCard
-                  title="Less Productive Websites"
-                  data={topProductivityStats?.leastWebsites || []}
-                  isWebsite
-                  onSeeAll={() => navigate("/full-list/unproductive-websites")}
-                />
                 <StatsTableCard
                   title="Top Apps Used"
                   data={topProductivityStats?.topApps || []}

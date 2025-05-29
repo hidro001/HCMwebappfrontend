@@ -110,6 +110,25 @@ const useUsageStatsStore = create((set) => ({
     }
   },
   subordinateProductivity: { topProductive: [], leastProductive: [] },
+
+  // 1. Zustand Store (useUsageStatsStore.js)
+
+fetchOrgMostUsedStats: async (department, designation, limit = 5) => {
+  set({ loading: true, error: null });
+  try {
+    const res = await axiosInstance.get('/usage-stats/org-most-used', {
+      params: { department, designation, limit },
+    });
+    set({ orgMostUsedStats: res.data.data });
+  } catch (err) {
+    set({ error: err.message });
+    toast.error(err.message);
+  } finally {
+    set({ loading: false });
+  }
+},
+orgMostUsedStats: { topApps: [], topWebsites: [] },
+
   
   
 

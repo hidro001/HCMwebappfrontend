@@ -19,6 +19,7 @@ import {
   fetchTopSubordinates,
   fetchLessSubordinates,
 } from "../../../service/productLenseService"; // <-- Adjust path accordingly
+import OrgUsageSection from "./OrgUsageSection";
 
 // Register Chart.js components
 ChartJS.register(
@@ -312,6 +313,7 @@ const MainDashboard = () => {
               See All &gt;
             </button>
           </div>
+          <OrgUsageSection />
         </div>
       </div>
     </div>
