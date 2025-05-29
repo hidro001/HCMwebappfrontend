@@ -129,6 +129,21 @@ fetchOrgMostUsedStats: async (department, designation, limit = 5) => {
 },
 orgMostUsedStats: { topApps: [], topWebsites: [] },
 
+// useUsageStatsStore.js (Zustand)
+fetchTopLeastProductiveEmployees: async (department, designation) => {
+  set({ loading: true, error: null });
+  try {
+    const res = await axiosInstance.get('/usage-stats/top-least-productive', { params: { department, designation } });
+    set({ topLeastProductivity: res.data });
+  } catch (err) {
+    set({ error: err.message });
+    toast.error(err.message);
+  } finally {
+    set({ loading: false });
+  }
+},
+topLeastProductivity: { topProductive: [], leastProductive: [] },
+
   
   
 

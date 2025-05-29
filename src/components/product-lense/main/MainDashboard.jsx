@@ -20,6 +20,7 @@ import {
   fetchLessSubordinates,
 } from "../../../service/productLenseService"; // <-- Adjust path accordingly
 import OrgUsageSection from "./OrgUsageSection";
+import TopLeastProductivitySection from "./TopLeastProductivitySection";
 
 // Register Chart.js components
 ChartJS.register(
@@ -237,84 +238,8 @@ const MainDashboard = () => {
 
       {/* Bottom Row: 2 small tables */}
       <div className="mt-6 flex flex-col md:flex-row gap-6">
-        {/* Top Productive Employee Table */}
-        <div className="bg-white dark:bg-gray-800 rounded shadow p-4 flex-1">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-gray-800 dark:text-gray-100">
-              Top Productive Employee
-            </h3>
-          </div>
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-xs">
-              <tr>
-                <th className="px-3 py-2">SNO.</th>
-                <th className="px-3 py-2">Name</th>
-                <th className="px-3 py-2">Emp ID</th>
-                <th className="px-3 py-2">Unproductive Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {topSubs.slice(0, 3).map((row, idx) => (
-                <tr
-                  key={row.empID}
-                  className="border-b hover:bg-gray-50 dark:hover:bg-gray-600"
-                >
-                  <td className="px-3 py-2">
-                    {String(idx + 1).padStart(2, "0")}
-                  </td>
-                  <td className="px-3 py-2">{row.empName}</td>
-                  <td className="px-3 py-2">{row.empID}</td>
-                  <td className="px-3 py-2">{row.unproductiveTime}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="text-right mt-2">
-            <button className="text-blue-600 dark:text-blue-400 text-xs hover:underline">
-              See All &gt;
-            </button>
-          </div>
-        </div>
-
-        {/* Less Productive Employee Table */}
-        <div className="bg-white dark:bg-gray-800 rounded shadow p-4 flex-1">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-gray-800 dark:text-gray-100">
-              Less Productive Employee
-            </h3>
-          </div>
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-xs">
-              <tr>
-                <th className="px-3 py-2">SNO.</th>
-                <th className="px-3 py-2">Name</th>
-                <th className="px-3 py-2">Emp ID</th>
-                <th className="px-3 py-2">Unproductive Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lessSubs.slice(0, 3).map((row, idx) => (
-                <tr
-                  key={row.empID}
-                  className="border-b hover:bg-gray-50 dark:hover:bg-gray-600"
-                >
-                  <td className="px-3 py-2">
-                    {String(idx + 1).padStart(2, "0")}
-                  </td>
-                  <td className="px-3 py-2">{row.empName}</td>
-                  <td className="px-3 py-2">{row.empID}</td>
-                  <td className="px-3 py-2">{row.unproductiveTime}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="text-right mt-2">
-            <button className="text-blue-600 dark:text-blue-400 text-xs hover:underline">
-              See All &gt;
-            </button>
-          </div>
-          <OrgUsageSection />
-        </div>
+         <OrgUsageSection />
+         <TopLeastProductivitySection />
       </div>
     </div>
   );
