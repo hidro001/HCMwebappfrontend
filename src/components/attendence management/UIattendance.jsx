@@ -10,6 +10,9 @@ import {
   Tooltip
 } from 'chart.js';
 
+// Speedometer.jsx
+import { motion } from "framer-motion";
+
 ChartJS.register(BarElement, CategoryScale, LinearScale, Legend, Tooltip);
 
 
@@ -99,7 +102,8 @@ const Dashboard = () => {
       <div >
            {/* Percentages */}
           <div className="w-full grid grid-cols-2 gap-4 mb-6">
-            <Gauge title="Attendance Percentage" percentage={(stats.checkedIn / stats.totalEmployees) * 100} />
+            {/* <Gauge title="Attendance Percentage" percentage={(stats.checkedIn / stats.totalEmployees) * 100} /> */}
+            <Speedometer/>
             <Gauge title="Absent Percentage" percentage={(stats.absent / stats.totalEmployees) * 100} />
           </div>
 
@@ -156,6 +160,55 @@ const Gauge = ({ title, percentage }) => (
     </div>
   </div>
 );
+
+
+const Speedometer = ({ speed = 75 }) => {
+  const angle = (speed / 180) * 270; // 0-180 km/h to 0-270 degrees
+
+  return (
+    <div className="relative w-64 h-64 flex items-center justify-center">
+      {/* Background circle */}
+      <div className="absolute w-full h-full rounded-full border-8 border-gray-800" />
+
+      {/* Dynamic arc */}
+      <svg className="absolute w-full h-full rotate-[135deg]">
+        <circle
+          cx="50%"
+          cy="50%"
+          r="45%"
+          stroke="#333"
+          strokeWidth="10%"
+          fill="transparent"
+          strokeDasharray="565"
+          strokeDashoffset="0"
+        />
+        <motion.circle
+          cx="50%"
+          cy="50%"
+          r="45%"
+          stroke="#facc15"
+          strokeWidth="10%"
+          fill="transparent"
+          strokeDasharray="565"
+          strokeDashoffset={565 - (565 * angle) / 270}
+          strokeLinecap="round"
+          initial={{ strokeDashoffset: 565 }}
+          animate={{ strokeDashoffset: 565 - (565 * angle) / 270 }}
+          transition={{ duration: 1 }}
+        />
+      </svg>
+
+      {/* Speed Text */}
+      <div className="z-10 text-white text-5xl font-bold">
+        {speed}
+        <div className="text-sm text-gray-400">km/h</div>
+      </div>
+    </div>
+  );
+};
+
+
+
 
 const SourceCard = ({ title, count }) => (
   <div className="bg-white p-4 rounded shadow-md">

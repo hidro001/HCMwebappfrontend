@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import axiosInstance from "../../../service/axiosInstance";
 import useAuthStore from "../../../store/store";
 import useFeedStore from "../../../store/feedStore";
@@ -9,7 +9,8 @@ import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import DOMPurify from "dompurify";
-import CommentDrawer from "../Comment";
+import { FaArrowUp } from "react-icons/fa";
+
 
 const reactionEmojis = [
   { type: "good", emoji: "👍" },
@@ -24,7 +25,7 @@ const PostCard = ({ post }) => {
   const user = useAuthStore((state) => state);
   const userId = user._id;
   const permissions = user.permissionRole || [];
-
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedReaction, setSelectedReaction] = useState(() => {
   const userReaction = post.reactions?.find(r => {
     const reactionUserId = typeof r.user === "object" ? r.user._id : r.user;
@@ -32,18 +33,31 @@ const PostCard = ({ post }) => {
   });
   return userReaction?.type || null;
   });
-
+console.log(post.likes, 'df')
   const liked = (post.likes || []).some((likeItem) =>
     typeof likeItem === "string" ? likeItem === userId : likeItem._id === userId
   );
   const likeCount = (post.likes || []).length;
 
   const [showComments, setShowComments] = useState(false);
+  const [showLike, setShowLike] = useState(false);
+  const [showReact, setShowReact] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const [isAddingComment, setIsAddingComment] = useState(false);
   const [loadingLikes, setLoadingLikes] = useState(new Set());
+
+
+  useEffect(() => {
+  const handleClickOutside = (e) => {
+    if (!e.target.closest(".emoji-picker")) {
+      setShowEmojiPicker(false);
+    }
+  };
+  document.addEventListener("click", handleClickOutside);
+  return () => document.removeEventListener("click", handleClickOutside);
+}, []);
 
   const handleLike = async () => {
     setIsLiking(true);
@@ -82,21 +96,18 @@ const PostCard = ({ post }) => {
     let updatedReactions;
 
     if (userReaction && userReaction.type === reactionType) {
-      // Same reaction clicked again → remove
       updatedReactions = post.reactions.filter(r => {
         const reactionUserId = typeof r.user === "object" ? r.user._id : r.user;
         return reactionUserId !== userId;
       });
       setSelectedReaction(null);
     } else if (userReaction) {
-      // Update to new reaction
       updatedReactions = post.reactions.map(r => {
         const reactionUserId = typeof r.user === "object" ? r.user._id : r.user;
         return reactionUserId === userId ? { ...r, type: reactionType } : r;
       });
       setSelectedReaction(reactionType);
     } else {
-      // New reaction
       updatedReactions = [...(post.reactions || []), {
         user: userId,
         type: reactionType,
@@ -104,14 +115,9 @@ const PostCard = ({ post }) => {
       }];
       setSelectedReaction(reactionType);
     }
-
-    // Optimistic UI update
     useFeedStore.getState().updatePost({ ...post, reactions: updatedReactions });
 
-    // Sync with backend
     const { data: updatedPost } = await axiosInstance.post(`/posts/${post._id}/react`, { reactionType });
-
-    // Replace with fresh data from server
     useFeedStore.getState().updatePost(updatedPost);
   } catch (error) {
     toast.error("Failed to react to post.");
@@ -120,7 +126,6 @@ const PostCard = ({ post }) => {
     setIsLiking(false);
   }
 };
-
 
   const handleDeletePost = async () => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
@@ -163,24 +168,37 @@ const PostCard = ({ post }) => {
   };
 
   const handleToggleComments = () => {
+    setShowReact(false)
+    setShowLike(false);
     setShowComments(!showComments);
+    
   };
 
-  const getLikeSummary = (likes = [], maxDisplay = 2) => {
-  if (!likes.length) return "";
+  const handleToggleLikes = () => {
+    setShowComments(false);
+    setShowReact(false)
+    setShowLike(!showLike);
+  };
+  const handleToggleReacts = () => {
+      setShowComments(false);
+      setShowLike(false);
+      setShowReact(!showReact)
+  };
 
-  const displayNames = likes
-    .slice(0, maxDisplay)
-    .map((u) => `${u.first_Name} ${u.last_Name}`);
+  const getLikeSummary = (likes = []) => {
+    if (!likes.length) return "";
 
-  const remainingCount = likes.length - displayNames.length;
+    const firstUser = likes[0];
+    const remainingCount = likes.length - 1;
 
-  if (remainingCount === 0) {
-    return displayNames.join(" and ");
-  }
+    const firstName = firstUser ? `${firstUser.first_Name} ${firstUser.last_Name}` : "";
 
-  return `${displayNames.join(", ")} and ${remainingCount} other${remainingCount > 1 ? "s" : ""}`;
-};
+    if (remainingCount === 0) {
+      return firstName;
+    }
+
+    return `${firstName} and ${remainingCount} other${remainingCount > 1 ? "s" : ""}`;
+  };
 
   const handleLikeComment = async (commentId) => {
     if (loadingLikes.has(commentId)) return;
@@ -192,8 +210,10 @@ const PostCard = ({ post }) => {
       const comment = post.comments.find(c => c._id === commentId);
       if (!comment) return;
 
-      const isLiked = comment.reactions.some(r => r.user === userId);
-
+      const isLiked = comment.reactions.some((r) => {
+        const reactionUserId = typeof r.user === 'object' ? r.user._id : r.user;
+        return reactionUserId === userId;
+      });
       const updatedReactions = isLiked
         ? comment.reactions.filter(r => r.user !== userId)
         : [...comment.reactions, { user: userId, type: "like", _id: `temp-${Date.now()}` }];
@@ -308,53 +328,178 @@ const PostCard = ({ post }) => {
         )}
 
         {/* Likes & Reactions */}
-        <div className="flex justify-between items-center mt-3 text-sm text-gray-600 dark:text-gray-300">
-          <div className="flex items-center">
-          <button onClick={handleLike} disabled={isLiking} className="flex items-center space-x-1">
-            {liked ? <AiFillHeart className="text-red-500" /> : <AiOutlineHeart />}
-            <span>{likeCount}</span>
-            </button>
-            <span className="text-xs pl-1 truncate max-w-[150px]">{getLikeSummary(post.likes)}</span>
-          </div>
-          <div className="flex space-x-2">
-            {reactionEmojis.map(({ type, emoji }) => {
-              const count = (post.reactions || []).filter((r) => r.type === type).length;
-              const isActive = selectedReaction === type;
-              return (
+        <div>
+          <div className="flex justify-start items-center mt-3 text-sm text-gray-600 dark:text-gray-300">
+            <div className="flex items-center">
+            <button onClick={handleLike} disabled={isLiking} className="flex items-center space-x-1">
+              {liked ? <AiFillHeart className="text-red-500" /> : <AiOutlineHeart />}
+              <span>{likeCount}</span>
+              </button>
+            </div>
+            <div className="relative emoji-picker mx-3">
                 <button
-                  key={type}
                   type="button"
-                  onClick={() => handleReact(type)}
-                  disabled={isLiking}
-                  aria-pressed={isActive}
-                  className={`text-xl ${isActive ? "opacity-100" : "opacity-60"} hover:opacity-100 transition-opacity`}
-                  title={type}
+                  onClick={() => setShowEmojiPicker((prev) => !prev)}
+                  className=" hover:opacity-100 transition-opacity"
+                  title="React"
                 >
-                  {emoji} {count > 0 && <span className="text-xs ml-1">{count}</span>}
+                  😊
                 </button>
-              );
-            })}
-          </div>
+                <span onClick={handleToggleReacts} className="text-sm ml-1 text-gray-500 dark:text-gray-300 cursor-pointer">
+                  {post.reactions?.length || 0}
+                </span>
 
-          <button onClick={handleToggleComments} className="flex items-center space-x-1">
-            <FaRegComment />
-            <span>{post.comments.length}</span>
-          </button>
+                {showEmojiPicker && (
+                  <div className="absolute z-10 mt-2 left-0 bg-white dark:bg-gray-700 shadow-lg rounded-md p-2 flex space-x-2">
+                    {reactionEmojis.map(({ type, emoji }) => (
+                      <button
+                        key={type}
+                        onClick={() => {
+                          handleReact(type);
+                          setShowEmojiPicker(false);
+                        }}
+                        className="text-xl hover:scale-110 transition-transform"
+                        title={type}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+            <button onClick={handleToggleComments} className="flex items-center space-x-1 mx-1">
+              <FaRegComment />
+              <span>{post.comments.length}</span>
+            </button>
+          </div>
+           <span onClick={handleToggleLikes} className="text-xs pl-1 truncate max-w-[150px] cursor-pointer">Like by {getLikeSummary(post.likes)}...</span>
         </div>
       </motion.div>
 
       {/* Comments Drawer */}
-      {showComments && (
-        <CommentDrawer
-          post={post}
-          commentText={commentText}
-          setCommentText={setCommentText}
-          isAddingComment={isAddingComment}
-          onAddComment={handleAddComment}
-          onClose={() => setShowComments(false)}
-          onLikeComment={handleLikeComment}
-          loadingLikes={loadingLikes}
-        />
+     {showComments && (
+          <div className="mt-4 bg-gray-50 dark:bg-gray-900 p-3 rounded-lg border border-gray-200 dark:border-gray-700 space-y-4">
+            <p className="font-semibold text-gray-700 dark:text-gray-300">
+              Comments 
+            </p>
+
+        {/* Existing Comments */}
+        <div className="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
+          {(!post.comments || post.comments.length === 0) && (
+            <p className="text-sm text-gray-500 dark:text-gray-400">No comments yet.</p>
+          )}
+          {post.comments?.map((comment) => {
+            const isLiked = comment.reactions.some((r) => r.user === userId);
+            const likeCount = comment.reactions.filter((r) => r.type === "like").length;
+            const isLoading = loadingLikes.has(comment._id);
+
+            return (
+              <div
+                key={comment._id}
+                className="flex items-start justify-between text-sm text-gray-700 dark:text-gray-200"
+              >
+                <div className="flex items-start gap-2">
+                  <img
+                    src={comment.commenter?.user_Avatar}
+                    alt="User"
+                    className="h-8 w-8 rounded-full object-cover border"
+                  />
+                  <div>
+                    <p className="font-bold">
+                      {comment.commenter?.first_Name} {comment.commenter?.last_Name}
+                    </p>
+                    <p>{typeof comment.comment === "string" ? comment.comment : JSON.stringify(comment.comment)}</p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => handleLikeComment(comment._id)}
+                  disabled={isLoading}
+                  className={`flex items-center gap-1 text-xs ${
+                    isLiked ? "text-red-500" : "text-gray-500 dark:text-gray-400"
+                  } ${isLoading && "opacity-50 cursor-not-allowed"}`}
+                >
+                  {isLiked ? <AiFillHeart /> : <AiOutlineHeart />}
+                  {likeCount > 0 && <span>{likeCount}</span>}
+                </button>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Add Comment Form */}
+        <form onSubmit={handleAddComment} className="flex items-center gap-2 mt-2">
+          <img
+            src={user.userAvatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png"}
+            alt="Avatar"
+            className="h-8 w-8 rounded-full object-cover border"
+          />
+          <textarea
+            rows={1}
+            placeholder="Add a comment..."
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            className="flex-1 p-2 rounded dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm resize-none"
+            required
+          />
+          <button
+            type="submit"
+            disabled={isAddingComment}
+            className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
+          >
+            {isAddingComment ? (
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <FaArrowUp />
+            )}
+          </button>
+        </form>
+       </div>
+      )}
+      {showLike && (
+        <div className="mt-4 bg-gray-50 dark:bg-gray-900 p-3 rounded-lg border border-gray-200 dark:border-gray-700 space-y-4">
+          <p>Likes...</p>
+          {post.likes.length > 0 && post.likes.map((like) =>(
+            <div className="flex items-center">
+            <img
+                    src={like?.user_Avatar}
+                    alt="User"
+                    className="h-7 w-7 rounded-full object-cover mr-2 border"
+                  />
+                  <div>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              {like.first_Name} {like.last_Name}
+            </p> <p className="text-xs">{like.designation}</p></div>
+            </div>
+          ))}
+        </div>
+      )}
+      {showReact && (
+        <div className="mt-4 bg-gray-50 dark:bg-gray-900 p-3 rounded-lg border border-gray-200 dark:border-gray-700 space-y-4">
+          <p>Reaction...</p>
+          {post.reactions.length > 0 && post.reactions.map((reaction) =>(
+           <div className="flex justify-between">
+            <div className="flex items-center">
+            <img
+                src={reaction?.user.user_Avatar}
+                alt="User"
+                className="h-7 w-7 rounded-full object-cover mr-2 border"
+            />
+            <div>
+              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                {reaction.user.first_Name} {reaction.user.last_Name}
+              </p> 
+              <p className="text-xs">{reaction.user.designation}</p></div>
+              
+            </div>
+            <div className=" border rounded-full bg-slate-500  text-white text-sm flex items-center justify-center w-8 h-8">
+                {reactionEmojis.find((e) => e.type === reaction.type)?.emoji || "❓"}
+             </div>
+             </div>
+          ))}
+        </div>
       )}
     </>
   );
