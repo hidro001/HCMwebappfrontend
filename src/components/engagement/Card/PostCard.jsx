@@ -246,7 +246,7 @@ const PostCard = ({ post }) => {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 20, scale: 0.95 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="max-w-lg mx-auto p-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg transition-colors border border-green-300 dark:border-green-700"
+        className="max-w-md mx-auto p-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg transition-colors "
       >
         {/* Header */}
         <div className="flex items-center space-x-3 mb-2">
