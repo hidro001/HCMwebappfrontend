@@ -4,9 +4,7 @@ import { toast } from "react-toastify";
 import axiosInstance from "../../../service/axiosInstance";
 import BaseModal from "../../common/BaseModal";
 import useDepartmentStore from "../../../store/departmentStore";
-import "react-quill/dist/quill.snow.css";
 import { FaTimes } from "react-icons/fa";
-
 
 const PollCreateBox = ({ onSuccess, onClose }) => {
   const [question, setQuestion] = useState("");
@@ -106,27 +104,26 @@ const PollCreateBox = ({ onSuccess, onClose }) => {
     <AnimatePresence>
       <BaseModal isOpen={true} onClose={onClose}>
         <motion.div
-          className=" bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-3xl w-full max-h-[90vh] overflow-auto space-y-6"
+          className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg max-w-3xl w-full max-h-[90vh] overflow-auto space-y-6 text-black dark:text-white"
           initial={{ scale: 0.9 }}
           animate={{ scale: 1 }}
           exit={{ scale: 0.9 }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
         >
           <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-semibold">Create New Poll</h2>
-                        <button type="button" onClick={onClose}>
-                          <FaTimes />
-                        </button>
-                      </div>
-         
-          <form onSubmit={handleSubmit} className="space-y-6">
+            <h2 className="text-lg font-semibold">Create New Poll</h2>
+            <button type="button" onClick={onClose}>
+              <FaTimes />
+            </button>
+          </div>
 
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Question */}
             <div>
-              <label className="block text-sm font-medium mb-1">Poll Question</label>
+              <label className="block text-sm font-medium mb-1 dark:text-gray-300">Poll Question</label>
               <input
                 type="text"
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border px-3 py-2 rounded bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600"
                 value={question}
                 onChange={(e) => setQuestion(e.target.value)}
                 required
@@ -135,12 +132,12 @@ const PollCreateBox = ({ onSuccess, onClose }) => {
 
             {/* Options */}
             <div>
-              <label className="block text-sm font-medium mb-2">Options</label>
+              <label className="block text-sm font-medium mb-2 dark:text-gray-300">Options</label>
               {options.map((opt, idx) => (
                 <div key={idx} className="flex gap-2 mb-2">
                   <input
                     type="text"
-                    className="w-full border px-3 py-2 rounded"
+                    className="w-full border px-3 py-2 rounded bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600"
                     placeholder={`Option ${idx + 1}`}
                     value={opt}
                     onChange={(e) => handleOptionChange(idx, e.target.value)}
@@ -161,7 +158,7 @@ const PollCreateBox = ({ onSuccess, onClose }) => {
                 <button
                   type="button"
                   onClick={addOption}
-                  className="text-blue-600 text-sm hover:underline"
+                  className="text-blue-600 text-sm hover:underline dark:text-blue-400"
                 >
                   + Add Option
                 </button>
@@ -170,11 +167,11 @@ const PollCreateBox = ({ onSuccess, onClose }) => {
 
             {/* Duration */}
             <div>
-              <label className="block text-sm font-medium mb-1">Duration (hours)</label>
+              <label className="block text-sm font-medium mb-1 dark:text-gray-300">Duration (hours)</label>
               <input
                 type="number"
                 min="1"
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border px-3 py-2 rounded bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600"
                 value={duration}
                 onChange={(e) => setDuration(e.target.value)}
                 required
@@ -183,11 +180,11 @@ const PollCreateBox = ({ onSuccess, onClose }) => {
 
             {/* Category */}
             <div>
-              <label className="block text-sm font-medium mb-1">Category</label>
+              <label className="block text-sm font-medium mb-1 dark:text-gray-300">Category</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border px-3 py-2 rounded bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600"
               >
                 <option>All Announcement</option>
                 <option>General</option>
@@ -203,10 +200,10 @@ const PollCreateBox = ({ onSuccess, onClose }) => {
 
             {/* Departments */}
             <div>
-              <label className="block text-sm font-medium mb-1">Departments</label>
+              <label className="block text-sm font-medium mb-1 dark:text-gray-300">Departments</label>
               <div
                 onClick={() => setIsOpenDepartment(!isOpenDepartment)}
-                className="border px-3 py-2 rounded w-full cursor-pointer bg-white flex flex-wrap gap-2 min-h-[42px]"
+                className="border px-3 py-2 rounded w-full cursor-pointer bg-white dark:bg-gray-800 dark:border-gray-600 flex flex-wrap gap-2 min-h-[42px]"
               >
                 {department.length > 0 ? (
                   department.map((d) => (
@@ -236,17 +233,17 @@ const PollCreateBox = ({ onSuccess, onClose }) => {
                     type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
-                    className="border px-3 py-2 rounded w-full mb-1"
+                    className="border px-3 py-2 rounded w-full mb-1 bg-white dark:bg-gray-800 dark:text-white dark:border-gray-600"
                     placeholder="Search departments..."
                   />
-                  <ul className="max-h-40 overflow-auto border rounded shadow text-sm bg-white">
+                  <ul className="max-h-40 overflow-auto border rounded shadow text-sm bg-white dark:bg-gray-800 dark:border-gray-600">
                     {filteredOptions.map((opt) => (
                       <li
                         key={opt._id}
                         onClick={() => toggleOption(opt)}
-                        className={`px-4 py-2 cursor-pointer hover:bg-blue-100 ${
+                        className={`px-4 py-2 cursor-pointer hover:bg-blue-100 dark:hover:bg-gray-700 ${
                           department.find((d) => d._id === opt._id)
-                            ? "bg-blue-50"
+                            ? "bg-blue-50 dark:bg-gray-700"
                             : ""
                         }`}
                       >
@@ -262,7 +259,7 @@ const PollCreateBox = ({ onSuccess, onClose }) => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 transition disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white py-2 rounded hover:bg-green-700 dark:hover:bg-green-700 transition disabled:opacity-50"
             >
               {isSubmitting ? "Creating..." : "Create Poll"}
             </button>

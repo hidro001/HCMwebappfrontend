@@ -76,6 +76,7 @@ import useDepartmentStore from "../../../store/departmentStore";
 import { useEffect, useState } from "react";
 
 const FilterFeed = ({ onDepartmentChange, onSort }) => {
+
   const [selected, setSelected] = useState('all');
   const { departments } = useDepartmentStore();
   const [sortOrder, setSortOrder] = useState("newest");
@@ -94,23 +95,18 @@ const FilterFeed = ({ onDepartmentChange, onSort }) => {
   const selectedDepartment = departments.find(dept => dept._id === selected);
 
   return (
-    <div className="max-w-md mb-4  ml-5">
-      {/* Main Filter Container */}
       <div className="relative ">
-        <div className="relative backdrop-blur-sm bg-white/90 dark:bg-gray-800/90 border border-white/30 dark:border-gray-700/30 rounded-xl p-4 shadow-xl">
-          
-          {/* Header */}
-          <div className="flex items-center gap-2 mb-4">
+        <div className="relative  px-4 pb-4 ">
+
+          {/* <div className="flex items-center gap-2 mb-4">
             <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
               <HiOutlineAdjustmentsHorizontal className="w-4 h-4 text-white" />
             </div>
             <h3 className="font-semibold text-gray-800 dark:text-white">Filters & Sort</h3>
-          </div>
+          </div> */}
 
-          {/* Filter Controls */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-rows-1 md:grid-rows-2 gap-4">
             
-            {/* Department Filter */}
             <div 
               className="group"
               onMouseEnter={() => setIsHovered('department')}
@@ -136,7 +132,7 @@ const FilterFeed = ({ onDepartmentChange, onSort }) => {
                 </select>
                 <HiChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none transition-transform duration-300 group-hover:rotate-180" />
               </div>
-              {/* Selected Department Display */}
+
               {selected !== 'all' && selectedDepartment && (
                 <div className="mt-2 flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400 dark:bg-gray-700">
                   <RiFilterLine className="w-3 h-3" />
@@ -145,7 +141,6 @@ const FilterFeed = ({ onDepartmentChange, onSort }) => {
               )}
             </div>
 
-            {/* Sort Filter */}
             <div 
               className="group"
               onMouseEnter={() => setIsHovered('sort')}
@@ -170,7 +165,6 @@ const FilterFeed = ({ onDepartmentChange, onSort }) => {
             </div>
           </div>
 
-          {/* Active Filters Summary */}
           <div className="mt-4 pt-3 border-t border-gray-200 dark:border-gray-700">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
@@ -193,7 +187,7 @@ const FilterFeed = ({ onDepartmentChange, onSort }) => {
           </div>
         </div>
       </div>
-    </div>
+   
   );
 };
 
