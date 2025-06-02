@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import AttendanceChart from '../../pages/attendence management/BarChart';
 import { Bar } from 'react-chartjs-2';
 import {
@@ -11,7 +11,7 @@ import {
 } from 'chart.js';
 
 // Speedometer.jsx
-import { motion } from "framer-motion";
+import { motion, useAnimation } from "framer-motion";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Legend, Tooltip);
 
@@ -103,7 +103,8 @@ const Dashboard = () => {
            {/* Percentages */}
           <div className="w-full grid grid-cols-2 gap-4 mb-6">
             {/* <Gauge title="Attendance Percentage" percentage={(stats.checkedIn / stats.totalEmployees) * 100} /> */}
-            <Speedometer/>
+            {/* <Speedometer/> */}
+            <SemiCircularProgressBar />
             <Gauge title="Absent Percentage" percentage={(stats.absent / stats.totalEmployees) * 100} />
           </div>
 
@@ -208,7 +209,71 @@ const Speedometer = ({ speed = 75 }) => {
 };
 
 
+const SemiCircularProgressBar = ({ progress = 75, size = 200, strokeWidth = 15 }) => {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = Math.PI * radius;
 
+  const offset = circumference * ((100 - progress) / 100);
+
+  const controls = useAnimation();
+
+  useEffect(() => {
+    controls.start({ strokeDashoffset: offset });
+  }, [offset, controls]);
+
+  return (
+    <div className="flex justify-center items-center">
+      <svg
+        width={size}
+        height={size / 2}
+        viewBox={`0 0 ${size} ${size / 2}`}
+        className="rotate-180"
+      >
+        {/* Background arc */}
+        <path
+          d={describeArc(size / 2, size / 2, radius, 0, 180)}
+          fill="none"
+          stroke="#e5e7eb" // Tailwind gray-200
+          strokeWidth={strokeWidth}
+        />
+        {/* Animated progress arc */}
+        <motion.path
+          d={describeArc(size / 2, size / 2, radius, 0, 180)}
+          fill="none"
+          stroke="#3b82f6" // Tailwind blue-500
+          strokeWidth={strokeWidth}
+          strokeDasharray={circumference}
+          strokeDashoffset={circumference}
+          animate={controls}
+          transition={{ duration: 1 }}
+          strokeLinecap="round"
+        />
+      </svg>
+    </div>
+  );
+};
+
+// Helper function to generate SVG arc path
+function describeArc(x, y, radius, startAngle, endAngle) {
+  const start = polarToCartesian(x, y, radius, endAngle);
+  const end = polarToCartesian(x, y, radius, startAngle);
+
+  const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+
+  return [
+    "M", start.x, start.y,
+    "A", radius, radius, 0, largeArcFlag, 0, end.x, end.y
+  ].join(" ");
+}
+
+function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+  const angleInRadians = ((angleInDegrees - 90) * Math.PI) / 180.0;
+
+  return {
+    x: centerX + radius * Math.cos(angleInRadians),
+    y: centerY + radius * Math.sin(angleInRadians)
+  };
+}
 
 const SourceCard = ({ title, count }) => (
   <div className="bg-white p-4 rounded shadow-md">

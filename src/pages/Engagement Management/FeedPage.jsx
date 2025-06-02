@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';  
+import { useState } from 'react';  
 import Feed from '../../components/engagement/Feed';
 import FilterTab from '../../components/engagement/FilterFeed/FilterTab';
 import GreetFeed from '../../components/engagement/todayCelebrate/GreetFeed';
@@ -8,17 +8,35 @@ const FeedPage = () => {
   const [category, setCategory] = useState('All Announcement');
   const [department, setDepartment] = useState('all');
   const [sort, setSort] = useState('newest');
+  const [showFilters, setShowFilters] = useState(false); 
 
   return (
-    <div className='flex justify-content overflow-hidden w-full h-full'>
-      <div className='sticky w-[30%] mx-3'>
+    <div className="flex flex-col lg:flex-row w-full h-full overflow-hidden">
+
+      <div className="lg:hidden px-4 py-2">
+        <button
+          onClick={() => setShowFilters(prev => !prev)}
+          className="bg-blue-500 text-white px-4 py-2 rounded-md"
+        >
+          {showFilters ? 'Hide Filters' : 'Show Filters'}
+        </button>
+      </div>
+
+      <div
+        className={`
+          w-full lg:w-[30%] px-3 
+          ${showFilters ? 'block' : 'hidden'} 
+          lg:block
+        `}
+      >
         <FilterTab 
           onCategoryChange={setCategory} 
           onDepartmentChange={setDepartment} 
           onSort={setSort} 
         />
       </div>
-      <div className='flex-flex-col w-[50%] h-screen'>
+
+      <div className="w-full lg:w-[50%] h-full mb-4 lg:mb-0">
         <CreateCard />
         <Feed 
           curCategory={category} 
@@ -26,7 +44,8 @@ const FeedPage = () => {
           curSort={sort} 
         />
       </div>
-      <div className='w-[35%]'>
+
+      <div className="w-full lg:w-[35%]">
         <GreetFeed />
       </div>
     </div>
