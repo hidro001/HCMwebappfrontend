@@ -1,22 +1,43 @@
-
-
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { FaFilePdf, FaFileCsv, FaPrint, FaSearch } from "react-icons/fa";
-import { MdOutlineFileDownload } from "react-icons/md";
-import { useNavigate } from "react-router-dom";
-import useAuthStore from "../../store/store";  // ⬅️ Import Zustand Auth Store
-// Icons for the new cards
-import { FaUserFriends } from "react-icons/fa";
-import { GiSandsOfTime } from "react-icons/gi";
-import { MdOutlinePersonOff } from "react-icons/md"; // etc.
+import {
+  FaFilePdf,
+  FaFileCsv,
+  FaPrint,
+  FaSearch,
+  FaUserFriends,
+  FaUserCheck,
+  FaUserClock,
+  FaUserTimes,
+  FaFilter,
+  FaChevronUp,
+  FaChevronDown,
+} from "react-icons/fa";
 
-// Zustand store
+import { MdOutlineFileDownload, MdOutlineDashboard } from "react-icons/md";
+import { GiSandsOfTime } from "react-icons/gi";
+import { useNavigate } from "react-router-dom";
+import useAuthStore from "../../store/store";
 import useAttendanceStore from "../../store/useAttendanceStore";
 
 // Loading skeleton
 function SkeletonTableRows({ rows = 5 }) {
-  // ...unchanged...
+  return (
+    <>
+      {Array.from({ length: rows }).map((_, i) => (
+        <tr
+          key={i}
+          className="border-b last:border-0 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+        >
+          {Array.from({ length: 6 }).map((__, cellIdx) => (
+            <td key={cellIdx} className="py-4 px-6">
+              <div className="w-full h-3 bg-gray-200 dark:bg-gray-700 rounded-full animate-pulse" />
+            </td>
+          ))}
+        </tr>
+      ))}
+    </>
+  );
 }
 
 const tableContainerVariants = {
@@ -36,7 +57,6 @@ const tableRowVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
-// Helper to format "YYYY-MM" -> "Month Year"
 function formatMonthYear(monthValue) {
   if (!monthValue) return "";
   const [year, month] = monthValue.split("-");
@@ -60,54 +80,40 @@ function formatMonthYear(monthValue) {
 
 export default function SubordinateProductivityLens() {
   const navigate = useNavigate();
+  const { _id: userId } = useAuthStore();
 
   const {
     subordinates,
     fetchSubordinates,
     departments,
     fetchDepartments,
-    // old stats usage (remove or keep if you want them)
-    // stats,
-    // fetchStats,
-
-    // NEW subordinate stats
     subordinateStats,
     fetchSubordinateStats,
-
     loading,
     error,
   } = useAttendanceStore();
 
-  // We'll fetch your subordinate stats + subordinates + departments
-  const { _id: userId } = useAuthStore(); // ⬅️ use Zustand's _id directly
-  useEffect(() => {
-    // If you had a userId
-    
-    // const userId = localStorage.getItem("_id");
-    if (userId) {
-      fetchSubordinates(userId);
-    }
-    fetchDepartments();
-
-    // 1) fetch subordinate stats from your new endpoint
-    fetchSubordinateStats();
-
-    // If you still want old stats: fetchStats();
-  }, [fetchSubordinates, fetchDepartments, fetchSubordinateStats]);
-  // If you want to handle errors, you can do so here
-  // The rest is your existing code...
   const currentDate = new Date();
   const defaultMonth = `${currentDate.getFullYear()}-${String(
     currentDate.getMonth() + 1
   ).padStart(2, "0")}`;
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedDepartment, setSelectedDepartment] = useState("Department");
+  const [selectedDepartment, setSelectedDepartment] =
+    useState("All Departments");
   const [selectedMonth, setSelectedMonth] = useState(defaultMonth);
   const [showCount, setShowCount] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedFilters, setExpandedFilters] = useState(false);
 
-  // Transform subordinates data into shape for the table
+  useEffect(() => {
+    if (userId) {
+      fetchSubordinates(userId);
+    }
+    fetchDepartments();
+    fetchSubordinateStats();
+  }, [fetchSubordinates, fetchDepartments, fetchSubordinateStats]);
+
   const employeesData = subordinates
     ? subordinates.map((sub, i) => ({
         id: sub._id ?? i,
@@ -120,16 +126,13 @@ export default function SubordinateProductivityLens() {
       }))
     : [];
 
-  // Filtering logic...
   const filteredEmployees = employeesData.filter((emp) => {
-    // Department filter
     if (
-      selectedDepartment !== "Department" &&
+      selectedDepartment !== "All Departments" &&
       emp.department !== selectedDepartment
     ) {
       return false;
     }
-    // Month filter
     if (selectedMonth && emp.attendanceDate) {
       const [filterYear, filterMonth] = selectedMonth.split("-");
       const empYear = emp.attendanceDate.slice(0, 4);
@@ -138,252 +141,307 @@ export default function SubordinateProductivityLens() {
         return false;
       }
     }
-    // Search filter
     const lowerSearch = searchTerm.toLowerCase();
-    if (
-      !emp.name.toLowerCase().includes(lowerSearch) &&
-      !emp.email.toLowerCase().includes(lowerSearch) &&
-      !String(emp.empID).toLowerCase().includes(lowerSearch)
-    ) {
-      return false;
-    }
-    return true;
+    return (
+      emp.name.toLowerCase().includes(lowerSearch) ||
+      emp.email.toLowerCase().includes(lowerSearch) ||
+      String(emp.empID).toLowerCase().includes(lowerSearch)
+    );
   });
 
-  // Pagination
   const totalEntries = filteredEmployees.length;
   const totalPages = Math.ceil(totalEntries / showCount) || 1;
   const validPage = Math.min(currentPage, totalPages);
   const startIndex = (validPage - 1) * showCount;
   const endIndex = startIndex + showCount;
   const currentPageData = filteredEmployees.slice(startIndex, endIndex);
-
   const fromIndex = startIndex + 1;
   const toIndex = startIndex + currentPageData.length;
+  const pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
 
-  const pageNumbers = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
-
-  // Handlers
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
     setCurrentPage(1);
   };
+
   const handleDepartmentChange = (e) => {
     setSelectedDepartment(e.target.value);
     setCurrentPage(1);
   };
+
   const handleMonthChange = (e) => {
     setSelectedMonth(e.target.value);
     setCurrentPage(1);
   };
+
   const handleShowCountChange = (e) => {
     setShowCount(Number(e.target.value));
     setCurrentPage(1);
   };
+
   const handlePageChange = (pageNum) => {
     setCurrentPage(pageNum);
   };
 
-  // Dynamic heading
   const headingText = `Attendance view for ${formatMonthYear(selectedMonth)}`;
 
+  // Get status color
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "Present":
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300";
+      case "Absent":
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300";
+      case "Late":
+        return "bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300";
+      case "Half Day":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300";
+    }
+  };
+
   return (
-    <div className="bg-gray-50 dark:bg-gray-900 dark:text-gray-100 p-6">
-      {/* TOP CARDS: show subordinate stats */}
-      {/* If subordinateStats is null or undefined, handle gracefully */}
-      <motion.div
-        className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
-        {/* 1) TOTAL SUBORDINATES */}
-        <div className="rounded-md p-4 flex items-center justify-between bg-white dark:bg-gray-800 shadow">
+    <div className="bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 dark:text-gray-100 p-4 sm:p-6 min-h-screen">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
           <div>
-            <h2 className="text-sm font-medium mb-1">Total Subordinates</h2>
-            <p className="text-2xl font-semibold">
-              {subordinateStats?.totalSubordinates ?? 0}
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white flex items-center">
+              <MdOutlineDashboard className="mr-3 text-indigo-500" />
+              Subordinate Productivity Dashboard
+            </h1>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              Monitor and analyze your team's attendance and productivity
             </p>
           </div>
-          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-blue-500 text-white text-xl">
-            <FaUserFriends />
+          <div className="flex space-x-2">
+            <button className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 hover:opacity-90 text-white px-4 py-2.5 rounded-xl text-sm font-medium transition-all shadow-lg">
+              <FaFilePdf className="text-lg" />
+              Export PDF
+            </button>
           </div>
         </div>
 
-        {/* 2) PRESENT */}
-        <div className="rounded-md p-4 flex items-center justify-between bg-white dark:bg-gray-800 shadow">
-          <div>
-            <h2 className="text-sm font-medium mb-1">Present</h2>
-            <p className="text-2xl font-semibold">
-              {subordinateStats?.presentCount ?? 0}
-            </p>
-          </div>
-          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-green-500 text-white text-xl">
-            ✅
-          </div>
-        </div>
-
-        {/* 3) LATE */}
-        <div className="rounded-md p-4 flex items-center justify-between bg-white dark:bg-gray-800 shadow">
-          <div>
-            <h2 className="text-sm font-medium mb-1">Late</h2>
-            <p className="text-2xl font-semibold">
-              {subordinateStats?.lateCount ?? 0}
-            </p>
-          </div>
-          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-yellow-500 text-white text-xl">
-            <GiSandsOfTime />
-          </div>
-        </div>
-
-        {/* 4) ON LEAVE */}
-        <div className="rounded-md p-4 flex items-center justify-between bg-white dark:bg-gray-800 shadow">
-          <div>
-            <h2 className="text-sm font-medium mb-1">On Leave</h2>
-            <p className="text-2xl font-semibold">
-              {subordinateStats?.onLeaveCount ?? 0}
-            </p>
-          </div>
-          <div className="h-10 w-10 flex items-center justify-center rounded-full bg-pink-500 text-white text-xl">
-            <MdOutlinePersonOff />
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Title (month/year) */}
-      <h1 className="text-xl md:text-2xl font-bold mb-4">{headingText}</h1>
-
-      {/* Filters + Export Icons */}
-      <div className="bg-white dark:bg-gray-800 rounded-md shadow px-4 py-3 mb-6 transition-colors">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex flex-wrap items-center gap-4">
-            {/* Show X */}
-            <div className="flex items-center space-x-2">
-              <label className="text-sm font-medium">Show</label>
-              <select
-                value={showCount}
-                onChange={handleShowCountChange}
-                className="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 text-sm focus:outline-none bg-white dark:bg-gray-900"
-              >
-                <option value={10}>10</option>
-                <option value={20}>20</option>
-                <option value={50}>50</option>
-              </select>
+        {/* Stats Cards */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4 border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-indigo-100 dark:bg-indigo-900/30 w-12 h-12 rounded-lg flex items-center justify-center mr-3">
+                <FaUserFriends className="text-indigo-500 text-xl" />
+              </div>
+              <div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">
+                  Total Subordinates
+                </div>
+                <div className="text-xl font-bold text-indigo-600 dark:text-indigo-300">
+                  {subordinateStats?.totalSubordinates ?? 0}
+                </div>
+              </div>
             </div>
+          </div>
 
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4 border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-green-100 dark:bg-green-900/30 w-12 h-12 rounded-lg flex items-center justify-center mr-3">
+                <FaUserCheck className="text-green-500 text-xl" />
+              </div>
+              <div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">
+                  Present Today
+                </div>
+                <div className="text-xl font-bold text-green-600 dark:text-green-300">
+                  {subordinateStats?.presentCount ?? 0}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4 border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-amber-100 dark:bg-amber-900/30 w-12 h-12 rounded-lg flex items-center justify-center mr-3">
+                <GiSandsOfTime className="text-amber-500 text-xl" />
+              </div>
+              <div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">
+                  Late Arrivals
+                </div>
+                <div className="text-xl font-bold text-amber-600 dark:text-amber-300">
+                  {subordinateStats?.lateCount ?? 0}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow p-4 border border-gray-100 dark:border-gray-700">
+            <div className="flex items-center">
+              <div className="bg-rose-100 dark:bg-rose-900/30 w-12 h-12 rounded-lg flex items-center justify-center mr-3">
+                <FaUserTimes className="text-rose-500 text-xl" />
+              </div>
+              <div>
+                <div className="text-sm text-gray-600 dark:text-gray-300">
+                  On Leave
+                </div>
+                <div className="text-xl font-bold text-rose-600 dark:text-rose-300">
+                  {subordinateStats?.onLeaveCount ?? 0}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters Card */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-4 mb-6 border border-gray-100 dark:border-gray-700">
+        <div
+          className="flex items-center justify-between cursor-pointer mb-2"
+          onClick={() => setExpandedFilters(!expandedFilters)}
+        >
+          <div className="flex items-center">
+            <FaFilter className="mr-2 text-indigo-500" />
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
+              Filters
+            </h2>
+          </div>
+          <div className="text-gray-500">
+            {expandedFilters ? <FaChevronUp /> : <FaChevronDown />}
+          </div>
+        </div>
+
+        {expandedFilters && (
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-4 gap-4">
             {/* Search */}
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-gray-500">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
                 <FaSearch />
               </span>
               <input
                 type="text"
-                placeholder="Search"
+                placeholder="Search (Name/ID/Email)"
                 value={searchTerm}
                 onChange={handleSearchChange}
-                className="border border-gray-300 dark:border-gray-700 rounded pl-8 pr-3 py-1 text-sm focus:outline-none bg-white dark:bg-gray-900 w-36 sm:w-48"
+                className="w-full border border-gray-300 dark:border-gray-700 rounded-lg pl-10 pr-3 py-2.5 text-sm bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
-            {/* Month */}
+            {/* Department Filter */}
+            <div>
+              <select
+                value={selectedDepartment}
+                onChange={handleDepartmentChange}
+                className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2.5 text-sm bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              >
+                <option>All Departments</option>
+                {departments.map((dept) => (
+                  <option key={dept._id}>{dept.department}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Month Filter */}
             <div>
               <input
                 type="month"
                 value={selectedMonth}
                 onChange={handleMonthChange}
-                className="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 text-sm focus:outline-none bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-100"
+                className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2.5 text-sm bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
-            {/* Department */}
+            {/* Show count */}
             <div>
               <select
-                value={selectedDepartment}
-                onChange={handleDepartmentChange}
-                className="border border-gray-300 dark:border-gray-700 rounded px-2 py-1 text-sm focus:outline-none bg-white dark:bg-gray-900"
+                value={showCount}
+                onChange={handleShowCountChange}
+                className="w-full border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2.5 text-sm bg-white dark:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option>Department</option>
-                {departments && departments.length > 0 ? (
-                  departments.map((dept) => (
-                    <option key={dept._id} value={dept.department}>
-                      {dept.department}
-                    </option>
-                  ))
-                ) : (
-                  <option disabled>No Departments Found</option>
-                )}
+                <option value={10}>Show 10 entries</option>
+                <option value={20}>Show 20 entries</option>
+                <option value={50}>Show 50 entries</option>
               </select>
             </div>
           </div>
+        )}
+      </div>
 
-          {/* Right side: Export Icons */}
+      {/* Table Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4">
+        <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-2 md:mb-0">
+          {headingText}
+        </h2>
+        <div className="text-sm text-gray-600 dark:text-gray-400">
+          Showing {fromIndex} to {toIndex} of {totalEntries} entries
         </div>
       </div>
 
-      {/* TABLE */}
+      {/* Attendance Table */}
       <motion.div
-        className="bg-white dark:bg-gray-800 rounded-md shadow overflow-x-auto transition-colors"
+        className="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transition-colors"
         variants={tableContainerVariants}
         initial="hidden"
         animate="visible"
       >
-        <table className="w-full text-left min-w-max">
-          <thead className="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-700">
-            <tr className="text-sm font-medium text-gray-600 dark:text-gray-200">
-              <th className="py-3 px-4">S.L</th>
-              <th className="py-3 px-4">Emp ID</th>
-              <th className="py-3 px-4">Name</th>
-              <th className="py-3 px-4">Department</th>
-              <th className="py-3 px-4">Email Account</th>
-              <th className="py-3 px-4">Status</th>
-            </tr>
-          </thead>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead className="bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 text-white">
+              <tr className="text-sm font-medium">
+                <th className="py-4 px-6">S.L</th>
+                <th className="py-4 px-6">Employee</th>
+                <th className="py-4 px-6">Department</th>
+                <th className="py-4 px-6">Email</th>
+                <th className="py-4 px-6">Actions</th>
+              </tr>
+            </thead>
 
-          {loading ? (
             <tbody>
-              <SkeletonTableRows rows={10} />
-            </tbody>
-          ) : (
-            <tbody>
-              {currentPageData.map((emp, index) => {
-                const serialNumber = startIndex + index + 1;
-                return (
+              {loading ? (
+                <SkeletonTableRows rows={showCount} />
+              ) : currentPageData.length > 0 ? (
+                currentPageData.map((emp, idx) => (
                   <motion.tr
                     key={emp.id}
                     variants={tableRowVariants}
-                    className="border-b last:border-0 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors text-sm"
+                    className="border-b last:border-0 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors text-sm"
                   >
-                    <td className="py-3 px-4">
-                      {String(serialNumber).padStart(2, "0")}
+                    <td className="py-4 px-6 font-medium">
+                      {startIndex + idx + 1}
                     </td>
-                    <td className="py-3 px-4 text-blue-600 dark:text-blue-400 cursor-pointer hover:underline">
-                      {emp.empID}
-                    </td>
-                    <td className="py-3 px-4">
+                    <td className="py-4 px-6">
                       <div className="flex items-center">
-                        {emp.userAvatar ? (
-                          <img
-                            src={emp.userAvatar}
-                            alt="Profile"
-                            className="w-8 h-8 rounded-full mr-2 object-cover"
-                          />
-                        ) : (
-                          <div className="w-8 h-8 rounded-full mr-2 flex items-center justify-center bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
-                            👤
+                        <div className="bg-indigo-100 dark:bg-indigo-900/30 w-10 h-10 rounded-full flex items-center justify-center mr-3">
+                          {emp.userAvatar ? (
+                            <img
+                              src={emp.userAvatar}
+                              alt="Profile"
+                              className="w-8 h-8 rounded-full object-cover"
+                            />
+                          ) : (
+                            <FaUserFriends className="text-indigo-500" />
+                          )}
+                        </div>
+                        <div>
+                          <div className="font-medium text-gray-800 dark:text-gray-200">
+                            {emp.name}
                           </div>
-                        )}
-                        <span>{emp.name}</span>
+                          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                            ID: {emp.empID}
+                          </div>
+                        </div>
                       </div>
                     </td>
-                    <td className="py-3 px-4">{emp.department}</td>
-                    <td className="py-3 px-4">{emp.email}</td>
-                    <td className="py-3 px-4">
-                      
+                    <td className="py-4 px-6">
+                      <span className="px-2 py-1 bg-indigo-100 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-300 rounded-full text-xs">
+                        {emp.department}
+                      </span>
+                    </td>
+                    <td className="py-4 px-6">
+                      <div className="text-gray-600 dark:text-gray-300 truncate max-w-[200px]">
+                        {emp.email}
+                      </div>
+                    </td>
+                    <td className="py-4 px-6">
                       <button
-                        className="inline-flex items-center bg-blue-500 hover:bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded transition-colors"
+                        className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:opacity-90 text-white text-xs font-semibold px-4 py-2 rounded-lg transition-opacity"
                         onClick={() =>
                           navigate(`/dashboard/statistics/${emp.empID}`)
                         }
@@ -392,48 +450,83 @@ export default function SubordinateProductivityLens() {
                       </button>
                     </td>
                   </motion.tr>
-                );
-              })}
-              {currentPageData.length === 0 && (
+                ))
+              ) : (
                 <tr>
-                  <td
-                    colSpan={6}
-                    className="text-center py-4 text-sm text-gray-500"
-                  >
-                    No matching records found
+                  <td colSpan={5} className="text-center py-12">
+                    <div className="flex flex-col items-center justify-center">
+                      <div className="bg-gray-200 dark:bg-gray-700 w-16 h-16 rounded-full flex items-center justify-center mb-4">
+                        <FaSearch className="text-gray-500 text-xl" />
+                      </div>
+                      <h3 className="text-lg font-medium text-gray-800 dark:text-gray-200 mb-2">
+                        No matching records found
+                      </h3>
+                      <p className="text-gray-500 dark:text-gray-400 max-w-md">
+                        Try adjusting your search or filter criteria to find
+                        what you're looking for.
+                      </p>
+                    </div>
                   </td>
                 </tr>
               )}
             </tbody>
-          )}
-        </table>
+          </table>
+        </div>
 
         {/* Pagination */}
-        {!loading && (
-          <div className="flex flex-col md:flex-row items-center justify-between p-4 text-sm text-gray-600 dark:text-gray-300">
-            <div>
-              {totalEntries > 0
-                ? `Showing ${fromIndex} to ${toIndex} of ${totalEntries} entries`
-                : `Showing 0 to 0 of 0 entries`}
+        {!loading && filteredEmployees.length > 0 && (
+          <div className="flex flex-col md:flex-row items-center justify-between p-6 text-sm text-gray-600 dark:text-gray-300 border-t border-gray-200 dark:border-gray-700">
+            <div className="mb-4 md:mb-0">
+              Page <span className="font-medium">{validPage}</span> of{" "}
+              <span className="font-medium">{totalPages}</span>
             </div>
-            <div className="flex items-center space-x-1 mt-2 md:mt-0">
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => handlePageChange(validPage - 1)}
+                disabled={validPage === 1}
+                className={`px-4 py-2 rounded-lg border ${
+                  validPage === 1
+                    ? "text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                    : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                }`}
+              >
+                Previous
+              </button>
+
               {pageNumbers.map((num) => (
                 <button
                   key={num}
                   onClick={() => handlePageChange(num)}
-                  className={`px-3 py-1 rounded border transition-colors ${
+                  className={`px-3 py-1.5 rounded-lg border min-w-[40px] ${
                     num === validPage
-                      ? "bg-blue-600 text-white border-blue-600"
+                      ? "bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-transparent"
                       : "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700"
                   }`}
                 >
                   {num}
                 </button>
               ))}
+
+              <button
+                onClick={() => handlePageChange(validPage + 1)}
+                disabled={validPage === totalPages}
+                className={`px-4 py-2 rounded-lg border ${
+                  validPage === totalPages
+                    ? "text-gray-400 dark:text-gray-500 cursor-not-allowed"
+                    : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+                }`}
+              >
+                Next
+              </button>
             </div>
           </div>
         )}
       </motion.div>
+
+      {/* Summary Footer */}
+      <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+        <p>Showing productivity data for {formatMonthYear(selectedMonth)}</p>
+      </div>
     </div>
   );
 }

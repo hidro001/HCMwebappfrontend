@@ -160,7 +160,28 @@ fetchTopLeastProductiveEmployees: async (department, designation) => {
   }
 },
 topLeastProductivity: { topProductive: [], leastProductive: [] },
-
+// src/store/useUsageStatsStore.js
+fetchSubordinateMostUsedStats: async (department, designation, limit) => {
+  set(() => ({ loading: true }));
+  try {
+    const response = await axiosInstance.get("/usage-stats/subordinate-most-used", {
+      params: { department, designation, limit },
+    });
+    
+    set({
+      subordinateMostUsedStats: response.data.data || { topApps: [], topWebsites: [] },
+      loading: false,
+    });
+  } catch (error) {
+    set({
+      subordinateMostUsedStats: { topApps: [], topWebsites: [] },
+      loading: false,
+      error: error.message,
+    });
+    console.error("Fetch subordinate stats error:", error);
+    toast.error("Failed to fetch subordinate usage stats");
+  }
+},
   
   
 
