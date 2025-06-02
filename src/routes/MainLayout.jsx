@@ -207,7 +207,7 @@ const MainLayout = () => {
           />
 
           <div className="flex-1 h-screen flex flex-col w-full overflow-x-scroll hide-horizontal-scrollbar">
-            {/* <Breadcrumb /> */}
+            <Breadcrumb />
 
             <SubMenuTabs
               activeSection={activeSection}

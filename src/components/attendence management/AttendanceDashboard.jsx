@@ -11,7 +11,6 @@ import {
   fetchAttendanceToday,
   fetchEmployeeOverview,
   fetchPunchStatusToday,
- 
   fetchDepartmentAttendanceSummary, // <-- new function
 } from "../../service/attendanceService";
 
