@@ -6,7 +6,7 @@ import axiosInstance from "./axiosInstance";
 export async function fetchOverview() {
   try {
    
-    const response = await axiosInstance.get(`/admin/recruit-dashboard/overview`, );
+    const response = await axiosInstance.get(`/recruitment/overview`, );
     return response.data; 
   } catch (error) {
     console.error("Error in fetchOverview:", error);
@@ -18,7 +18,7 @@ export async function fetchOverview() {
 export async function fetchHiringSources() {
   try {
    
-    const response = await axiosInstance.get(`/admin/recruit-dashboard/hiring-sources`, );
+    const response = await axiosInstance.get(`/recruitment/top-sources`, );
     return response.data; 
   } catch (error) {
     console.error("Error in fetchHiringSources:", error);
@@ -30,7 +30,7 @@ export async function fetchHiringSources() {
 export async function fetchVacancies() {
   try {
    
-    const response = await axiosInstance.get(`/admin/recruit-dashboard/vacancies`, );
+    const response = await axiosInstance.get(`/recruitment/recent-vacancies`, );
     return response.data; 
   } catch (error) {
     console.error("Error in fetchVacancies:", error);
@@ -42,7 +42,7 @@ export async function fetchVacancies() {
 export async function fetchDepartments() {
   try {
    
-    const response = await axiosInstance.get(`/admin/recruit-dashboard/departments`, );
+    const response = await axiosInstance.get(`/recruitment/departments`, );
     return response.data; 
   } catch (error) {
     console.error("Error in fetchDepartments:", error);

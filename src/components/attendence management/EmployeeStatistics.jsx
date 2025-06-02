@@ -1,640 +1,272 @@
-// import React, { useEffect } from 'react';
-// import { useParams, useNavigate } from 'react-router-dom';
-// import useUsageStatsStore from '../../store/useUsageStore';
-// import useFullAttendanceStore from '../../store/useFullAttendanceStore';
-
-// export default function EmployeeStatistics() {
-//   const { empID } = useParams();
-//   const navigate = useNavigate();
-//   const { stats, fetchStats, loading, error } = useUsageStatsStore();
-
-//   const fetchAllData = useFullAttendanceStore((state) => state.fetchAllData);
-//   const getMonthlyAttendanceView = useFullAttendanceStore(
-//     (state) => state.getMonthlyAttendanceView
-//   );
-//   const attendanceLoading = useFullAttendanceStore((state) => state.isLoading);
-
-//   useEffect(() => {
-//     fetchStats(empID);
-//     fetchAllData(empID);
-//   }, [empID, fetchStats, fetchAllData]);
-
-//   if (loading || attendanceLoading)
-//     return <p className="text-center py-6 text-gray-500">Loading...</p>;
-//   if (error)
-//     return <p className="text-center py-6 text-red-500">{error}</p>;
-
-//   const monthlyAttendance = getMonthlyAttendanceView(2025, 4);
-
-//   return (
-//     <div className="p-10 bg-gray-100 min-h-screen space-y-10">
-//       <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-//         <div className="px-6 py-4 bg-gradient-to-r from-indigo-500 to-purple-600">
-//           <h2 className="text-2xl font-semibold text-white">Employee Usage Statistics ({empID})</h2>
-//         </div>
-//         <div className="overflow-x-auto p-4">
-//           <table className="w-full text-sm text-gray-700">
-//             <thead className="bg-gray-50">
-//               <tr>
-//                 {['Date', 'Keyboard Minutes', 'Mouse Minutes', 'Keyboard Presses', 'Mouse Clicks', 'Details'].map((head) => (
-//                   <th key={head} className="py-3 px-4 text-center font-semibold border-b">
-//                     {head}
-//                   </th>
-//                 ))}
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {stats.map((stat) => (
-//                 <tr key={stat._id} className="hover:bg-gray-50">
-//                   <td className="py-3 px-4 text-center border-b">{stat.date}</td>
-//                   <td className="py-3 px-4 text-center border-b">{stat.keyboardMinutes}</td>
-//                   <td className="py-3 px-4 text-center border-b">{stat.mouseMinutes}</td>
-//                   <td className="py-3 px-4 text-center border-b">{stat.keyboardPressCount}</td>
-//                   <td className="py-3 px-4 text-center border-b">{stat.mouseClickCount}</td>
-//                   <td className="py-3 px-4 text-center border-b">
-//                     <button
-//                       className="bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg px-3 py-1 text-sm"
-//                       onClick={() => navigate(`/dashboard/statistics/${empID}/${stat.date}`)}
-//                     >
-//                       View
-//                     </button>
-//                   </td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-//       </div>
-
-//       <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-//         <div className="px-6 py-4 bg-gradient-to-r from-teal-500 to-green-500">
-//           <h2 className="text-2xl font-semibold text-white">Monthly Attendance (Break Minutes)</h2>
-//         </div>
-//         <div className="overflow-x-auto p-4">
-//           <table className="w-full text-sm text-gray-700">
-//             <thead className="bg-gray-50">
-//               <tr>
-//                 {['SL', 'Date', 'Day', 'Total Break', 'Status'].map((head) => (
-//                   <th key={head} className="py-3 px-4 text-center font-semibold border-b">
-//                     {head}
-//                   </th>
-//                 ))}
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {monthlyAttendance.map((row) => (
-//                 <tr key={row.date} className="hover:bg-gray-50">
-//                   <td className="py-3 px-4 text-center border-b">{row.sl}</td>
-//                   <td className="py-3 px-4 text-center border-b">{row.date}</td>
-//                   <td className="py-3 px-4 text-center border-b">{row.day}</td>
-//                   <td className="py-3 px-4 text-center border-b">{row.totalBreak}</td>
-//                   <td className="py-3 px-4 text-center border-b">{row.status}</td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// // }
-// import React, { useEffect, useMemo } from 'react';
-// import { useParams, useNavigate } from 'react-router-dom';
-// import { Doughnut } from 'react-chartjs-2';
-// import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-
-// import useUsageStatsStore from '../../store/useUsageStore';
-// import useFullAttendanceStore from '../../store/useFullAttendanceStore';
-
-// ChartJS.register(ArcElement, Tooltip, Legend);
-
-// export default function EmployeeStatistics() {
-//   const { empID } = useParams();
-//   const navigate = useNavigate();
-
-//   // ——— USAGE STATS (overview) —————————————————————
-//   const {
-//     stats,
-//     fetchStats,
-//     dailyStats,
-//     fetchDailyStats,
-//     fetchDeptCategories,
-//     deptCategories,
-//     loading: usageLoading,
-//     error: usageError,
-//   } = useUsageStatsStore();
-
-//   // ——— ATTENDANCE STATS —————————————————————————
-//   const {
-//     attendanceData,
-//     fetchAllData,
-//     isLoading: attendanceLoading,
-//     error: attendanceError,
-//   } = useFullAttendanceStore();
-
-//   // Today's date for daily stats
-//   const todayDate = new Date().toISOString().split('T')[0];
-
-//   // Fetch overall usage & attendance on mount
-//   useEffect(() => {
-//     fetchStats(empID);
-//     fetchAllData(empID);
-//   }, [empID, fetchStats, fetchAllData]);
-
-//   // Fetch today's daily usage + department categories
-//   useEffect(() => {
-//     fetchDailyStats(empID, todayDate).then((data) => {
-//       if (data?.department) {
-//         fetchDeptCategories(data.department);
-//       }
-//     });
-//   }, [empID, todayDate, fetchDailyStats, fetchDeptCategories]);
-
-//   // ——— AGGREGATE TOTALS —————————————————————————
-//   const totalUsageStats = useMemo(() => {
-//     return stats.reduce(
-//       (acc, curr) => {
-//         acc.keyboardMinutes += curr.keyboardMinutes;
-//         acc.mouseMinutes    += curr.mouseMinutes;
-//         acc.keyboardPresses += curr.keyboardPressCount;
-//         acc.mouseClicks     += curr.mouseClickCount;
-//         return acc;
-//       },
-//       { keyboardMinutes: 0, mouseMinutes: 0, keyboardPresses: 0, mouseClicks: 0 }
-//     );
-//   }, [stats]);
-
-//   const attendanceTotals = useMemo(() => {
-//     let totalWorkingMinutes = 0;
-//     let totalBreakMinutes   = 0;
-
-//     attendanceData.forEach((rec) => {
-//       if (rec.login && rec.logout) {
-//         const inT  = new Date(`1970-01-01T${convertTo24Hour(rec.login)}`);
-//         const outT = new Date(`1970-01-01T${convertTo24Hour(rec.logout)}`);
-//         totalWorkingMinutes += (outT - inT) / 60000;
-//       }
-//       rec.breaks?.forEach((br) => {
-//         if (br.start && br.end) {
-//           const s = new Date(br.start), e = new Date(br.end);
-//           totalBreakMinutes += Math.floor((e - s) / 60000);
-//         }
-//       });
-//     });
-
-//     return {
-//       totalWorkingHours: (totalWorkingMinutes / 60).toFixed(2),
-//       totalBreakTaken: totalBreakMinutes,
-//     };
-//   }, [attendanceData]);
-
-//   // ——— DAILY PRODUCTIVITY ————————————————————————
-//   const { productiveTime, unproductiveTime } = useMemo(() => {
-//     if (!dailyStats || !deptCategories) return { productiveTime: 0, unproductiveTime: 0 };
-
-//     const prodSet   = new Set(deptCategories.productive.map((d) => d.name.toLowerCase()));
-//     const unprodSet = new Set(deptCategories.unproductive.map((d) => d.name.toLowerCase()));
-//     let p = 0, u = 0;
-
-//     dailyStats.appsUsed.forEach(({ appName, minutesUsed }) => {
-//       const name = appName.toLowerCase();
-//       prodSet.has(name)   ? (p += minutesUsed)
-//       : unprodSet.has(name) && (u += minutesUsed);
-//     });
-//     dailyStats.websitesVisited.forEach(({ url, minutesVisited }) => {
-//       const uName = url.toLowerCase();
-//       prodSet.has(uName)   ? (p += minutesVisited)
-//       : unprodSet.has(uName) && (u += minutesVisited);
-//     });
-
-//     return { productiveTime: p, unproductiveTime: u };
-//   }, [dailyStats, deptCategories]);
-
-//   // ——— DOUGHNUT CONFIG —————————————————————————
-//   const doughnutData = {
-//     labels: ['Productive Time', 'Unproductive Time'],
-//     datasets: [{
-//       data: [productiveTime, unproductiveTime],
-//       backgroundColor: ['#2563EB', '#F97316'],
-//       hoverBackgroundColor: ['#1E40AF', '#EA580C'],
-//       borderColor: '#FFF', borderWidth: 4,
-//     }],
-//   };
-//   const doughnutOptions = {
-//     responsive: true,
-//     plugins: {
-//       legend: { position: 'bottom', labels: { font: { size: 14 } } },
-//     },
-//   };
-
-//   // ——— LOADING & ERROR ————————————————————————
-//   if (usageLoading || attendanceLoading)
-//     return <p className="text-center py-6 text-gray-500">Loading...</p>;
-//   if (usageError || attendanceError)
-//     return <p className="text-center py-6 text-red-500">{usageError || attendanceError}</p>;
-
-//   return (
-//     <div className="p-10 bg-gray-100 min-h-screen space-y-10">
-      
-//       {/* top metrics + chart */}
-//       <div className="grid md:grid-cols-4 gap-4">
-//         {/* 6 Boxes */}
-//         <div className="md:col-span-3 grid grid-cols-3 gap-4">
-//         {[
-//   { bg: 'green',  label: 'Total Working Hours', value: attendanceTotals.totalWorkingHours },
-//   { bg: 'yellow', label: 'Total Break Taken',   value: `${attendanceTotals.totalBreakTaken} mins` },
-//   { bg: 'blue',   label: 'Keyboard Minutes',    value: totalUsageStats.keyboardMinutes },
-//   { bg: 'purple', label: 'Mouse Minutes',       value: totalUsageStats.mouseMinutes },
-//   { bg: 'pink',   label: 'Keyboard Presses',    value: totalUsageStats.keyboardPresses },
-//   { bg: 'red',    label: 'Mouse Clicks',        value: totalUsageStats.mouseClicks },
-// ].map(({ bg, label, value }) => (
-//   <div key={label} className={`bg-${bg}-100 p-6 rounded-xl shadow text-center`}>
-//     <h3 className="text-lg font-semibold">{label}</h3>
-//     <p className="text-3xl font-bold">{value}</p>
-//   </div>
-// ))}
-
-//         </div>
-
-//         {/* chart */}
-//         <div className="bg-white p-6 rounded-xl shadow-lg">
-//           <h3 className="text-lg font-semibold text-gray-800 mb-4">Today's Productivity Insights</h3>
-//           <Doughnut data={doughnutData} options={doughnutOptions} />
-//         </div>
-//       </div>
-
-//       {/* usage stats table */}
-//       <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-//         <div className="px-6 py-4 bg-gradient-to-r from-indigo-500 to-purple-600">
-//           <h2 className="text-2xl font-semibold text-white">
-//             Employee Usage Statistics ({empID})
-//           </h2>
-//         </div>
-//         <div className="overflow-x-auto p-4">
-//           <table className="w-full text-sm text-gray-700">
-//             <thead className="bg-gray-50">
-//               <tr>
-//                 {['Date','Keyboard Minutes','Mouse Minutes','Keyboard Presses','Mouse Clicks','Details'].map((h) => (
-//                   <th
-//                     key={h}
-//                     className="py-3 px-4 text-center font-semibold border-b"
-//                   >
-//                     {h}
-//                   </th>
-//                 ))}
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {stats.map((stat) => (
-//                 <tr key={stat._id} className="hover:bg-gray-50">
-//                   <td className="py-3 px-4 text-center border-b">{stat.date}</td>
-//                   <td className="py-3 px-4 text-center border-b">{stat.keyboardMinutes}</td>
-//                   <td className="py-3 px-4 text-center border-b">{stat.mouseMinutes}</td>
-//                   <td className="py-3 px-4 text-center border-b">{stat.keyboardPressCount}</td>
-//                   <td className="py-3 px-4 text-center border-b">{stat.mouseClickCount}</td>
-//                   <td className="py-3 px-4 text-center border-b">
-//                     <button
-//                       className="bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg px-3 py-1 text-sm"
-//                       onClick={() => navigate(`/dashboard/statistics/${empID}/${stat.date}`)}
-//                     >
-//                       View
-//                     </button>
-//                   </td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// // utility parser
-// function convertTo24Hour(timeStr) {
-//   if (!timeStr) return timeStr;
-//   const [time, ampm] = timeStr.split(' ');
-//   if (!ampm) return timeStr;
-//   let [h, m, s] = time.split(':').map(Number);
-//   if (ampm === 'PM' && h !== 12) h += 12;
-//   if (ampm === 'AM' && h === 12) h = 0;
-//   return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-// }
-
-
-/* --------------------------------------------------
- * EmployeeStatistics.jsx
- * -------------------------------------------------- */
-import React, { useEffect, useMemo, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Doughnut } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
-import dayjs from 'dayjs';
-import { BarChart, Bar, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer, Cell } from 'recharts';
-import useUsageStatsStore     from '../../store/useUsageStore';
-import useFullAttendanceStore from '../../store/useFullAttendanceStore';
+import React, { useEffect, useMemo, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { Doughnut } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import dayjs from "dayjs";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip as RechartsTooltip,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
+import useUsageStatsStore from "../../store/useUsageStore";
+import useFullAttendanceStore from "../../store/useFullAttendanceStore";
+import ActivityTrendChart from "./ActivityTrendChart";
+import {
+  FiClock,
+  FiCoffee,
+  FiCalendar,
+  FiTrendingUp,
+  FiActivity,
+  FiMonitor,
+  FiGlobe,
+  FiMousePointer,
+  FiType,
+  FiInfo,
+  FiBarChart2,
+  FiUser,
+} from "react-icons/fi"; // Added missing icons
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 // ────────────────────────────────────────────────────────────────────────────
 //  Utilities
 // ────────────────────────────────────────────────────────────────────────────
-const isSameISO = (d1, d2) => dayjs(d1).format('YYYY-MM-DD') === dayjs(d2).format('YYYY-MM-DD');
+const isSameISO = (d1, d2) =>
+  dayjs(d1).format("YYYY-MM-DD") === dayjs(d2).format("YYYY-MM-DD");
 
-/** Returns true if date lies between (inclusive) start .. end. */
 const isBetween = (date, start, end) =>
-  dayjs(date).isAfter(dayjs(start).subtract(1, 'day')) &&
-  dayjs(date).isBefore(dayjs(end).add(1, 'day'));
+  dayjs(date).isAfter(dayjs(start).subtract(1, "day")) &&
+  dayjs(date).isBefore(dayjs(end).add(1, "day"));
 
-/** Parse “hh:mm:ss AM/PM” → “HH:mm:ss” */
 function convertTo24Hour(timeStr) {
   if (!timeStr) return timeStr;
-  const [time, ampm] = timeStr.split(' ');
+  const [time, ampm] = timeStr.split(" ");
   if (!ampm) return timeStr;
-  let [h, m, s] = time.split(':').map(Number);
-  if (ampm === 'PM' && h !== 12) h += 12;
-  if (ampm === 'AM' && h === 12) h = 0;
-  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  let [h, m, s] = time.split(":").map(Number);
+  if (ampm === "PM" && h !== 12) h += 12;
+  if (ampm === "AM" && h === 12) h = 0;
+  return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(
+    s
+  ).padStart(2, "0")}`;
 }
+
+// App icon mapping
+const appIconMap = {
+  "google chrome": "https://img.icons8.com/color/48/chrome--v1.png",
+  slack: "https://img.icons8.com/color/48/slack-new-logo.png",
+  excel: "https://img.icons8.com/color/48/microsoft-excel-2019--v1.png",
+  word: "https://img.icons8.com/color/48/ms-word.png",
+  anydesk: "https://img.icons8.com/color/48/anydesk.png",
+  calculator: "https://img.icons8.com/color/48/calculator.png",
+  "docker desktop": "https://img.icons8.com/color/48/docker.png",
+  electron: "https://img.icons8.com/color/48/electron.png",
+  "lockapp.exe": "https://img.icons8.com/color/48/lock-2.png",
+  "microsoft 365 copilot app":
+    "https://img.icons8.com/color/48/microsoft-365.png",
+  "microsoft copilot": "https://img.icons8.com/color/48/microsoft-365.png",
+  "microsoft edge": "https://img.icons8.com/color/48/ms-edge-new.png",
+  mongodbcompass: "https://img.icons8.com/color/48/mongodb.png",
+  notepad: "https://img.icons8.com/color/48/notepad.png",
+  "photos.exe": "https://img.icons8.com/color/48/windows-photos.png",
+  postman: "https://img.icons8.com/color/48/postman-api.png",
+  "python 3.13.3 (64-bit)": "https://img.icons8.com/color/48/python.png",
+  "screenclippinghost.exe": "https://img.icons8.com/color/48/screenshot.png",
+  "search application": "https://img.icons8.com/color/48/search--v1.png",
+  settings: "https://img.icons8.com/color/48/settings--v1.png",
+  "setup/uninstall": "https://img.icons8.com/color/48/uninstalling-updates.png",
+  "ssh, telnet, rlogin, and supdup client":
+    "https://img.icons8.com/color/48/console.png",
+  "task manager": "https://img.icons8.com/color/48/task-manager.png",
+  "tcp/ip ping command": "https://img.icons8.com/color/48/console.png",
+  "visual studio code":
+    "https://img.icons8.com/color/48/visual-studio-code-2019.png",
+  "whatsapp.exe": "https://img.icons8.com/color/48/whatsapp--v1.png",
+  "windows command processor":
+    "https://img.icons8.com/color/48/command-line.png",
+  "windows explorer": "https://img.icons8.com/color/48/windows-explorer.png",
+  "windows shell experience host":
+    "https://img.icons8.com/color/48/windows-10.png",
+  "windows® installer": "https://img.icons8.com/color/48/windows-installer.png",
+  "winscp: sftp, ftp, webdav, s3 and scp client":
+    "https://img.icons8.com/color/48/ftp.png",
+  "wps office": "https://img.icons8.com/color/48/wps-office.png",
+  "wps spreadsheets": "https://img.icons8.com/color/48/wps-office.png",
+  "x-lite.exe": "https://img.icons8.com/color/48/phone-office.png",
+  "a desktop app for humanmaximizer":
+    "https://img.icons8.com/color/48/monitor--v1.png",
+};
+
+const getFavicon = (url) =>
+  `https://www.google.com/s2/favicons?domain=${url}&sz=64`;
+
+const getAppIcon = (appName) => {
+  const key = appName.toLowerCase();
+  return (
+    appIconMap[key] ||
+    "https://img.icons8.com/fluency-systems-regular/48/application-window.png"
+  );
+};
 
 // ────────────────────────────────────────────────────────────────────────────
 //  Main component
 // ────────────────────────────────────────────────────────────────────────────
 export default function EmployeeStatistics() {
   const { empID } = useParams();
-  const navigate  = useNavigate();
+  const navigate = useNavigate();
+  const today = dayjs();
 
-  /* --------------------------------------------------------------------- */
-  /*  Stores – pull data + loaders/errors                                   */
-  /* --------------------------------------------------------------------- */
+  // Stores
   const {
-    stats, dailyStats, deptCategories,
-    fetchStats, fetchDailyStats, fetchDeptCategories,
+    stats,
+    dailyStats,
+    deptCategories,
+    fetchStats,
+    fetchDailyStats,
+    fetchDeptCategories,
     fetchTopProductivityStats,
-  topProductivityStats,
-  loading: prodStatsLoading,
-    loading: usageLoading, error: usageError
+    topProductivityStats,
+    loading: prodStatsLoading,
+    fetchMostUsedStats,
+    mostUsedStats,
+    loading: usageLoading,
+    error: usageError,
+    fetchActivityTrend,
   } = useUsageStatsStore();
 
-  const {
-    attendanceData, fetchAllData,
-    isLoading: attendanceLoading, error: attendanceError
-  } = useFullAttendanceStore();
+  const attendanceData = useFullAttendanceStore(
+    (state) => state.attendanceData
+  );
+  const fetchAllData = useFullAttendanceStore((state) => state.fetchAllData);
+  const fetchInsights = useFullAttendanceStore((state) => state.fetchInsights);
+  const insights = useFullAttendanceStore((state) => state.insights);
+  const attendanceLoading = useFullAttendanceStore((state) => state.isLoading);
+  const attendanceError = useFullAttendanceStore((state) => state.error);
 
-  /* --------------------------------------------------------------------- */
-  /*  Initial data fetch                                                    */
-  /* --------------------------------------------------------------------- */
-  useEffect(() => { fetchStats(empID); fetchAllData(empID); }, [empID]);
+  // State
+  const [mode, setMode] = useState("daily");
+  const [month, setMonth] = useState(today.month() + 1);
+  const [year, setYear] = useState(today.year());
+
+  // Initial data fetch
   useEffect(() => {
-    fetchDailyStats(empID, dayjs().format('YYYY-MM-DD')).then(d => {
+    fetchStats(empID);
+    fetchAllData(empID);
+  }, [empID]);
+
+  useEffect(() => {
+    fetchDailyStats(empID, today.format("YYYY-MM-DD")).then((d) => {
       if (d?.department) fetchDeptCategories(d.department);
     });
   }, [empID]);
 
+  useEffect(() => {
+    if (mode === "daily") {
+      const dateStr = today.format("YYYY-MM-DD");
+      fetchActivityTrend(empID, dateStr);
+    }
+  }, [empID, mode]);
 
-
-  /* --------------------------------------------------------------------- */
-  /*  FILTER STATE                                                          */
-  /* --------------------------------------------------------------------- */
-  const today         = dayjs();
-  const [mode, setMode] = useState('daily');               // daily | weekly | monthly | yearly
-  const [month, setMonth] = useState(today.month()+1);     // 1…12  (only for monthly)
-  const [year,  setYear]  = useState(today.year());  
-  const getFavicon = (url) => `https://www.google.com/s2/favicons?domain=${url}&sz=64`;
-  const appIconMap = {
-    'google chrome': 'https://img.icons8.com/color/48/chrome--v1.png',
-    'slack': 'https://img.icons8.com/color/48/slack-new-logo.png',
-    'excel': 'https://img.icons8.com/color/48/microsoft-excel-2019--v1.png',
-    'word': 'https://img.icons8.com/color/48/ms-word.png',
-    'anydesk': 'https://img.icons8.com/color/48/anydesk.png',
-    'calculator': 'https://img.icons8.com/color/48/calculator.png',
-    'docker desktop': 'https://img.icons8.com/color/48/docker.png',
-    'electron': 'https://img.icons8.com/color/48/electron.png',
-    'lockapp.exe': 'https://img.icons8.com/color/48/lock-2.png',
-    'microsoft 365 copilot app': 'https://img.icons8.com/color/48/microsoft-365.png',
-    'microsoft copilot': 'https://img.icons8.com/color/48/microsoft-365.png',
-    'microsoft edge': 'https://img.icons8.com/color/48/ms-edge-new.png',
-    'mongodbcompass': 'https://img.icons8.com/color/48/mongodb.png',
-    'notepad': 'https://img.icons8.com/color/48/notepad.png',
-    'photos.exe': 'https://img.icons8.com/color/48/windows-photos.png',
-    'postman': 'https://img.icons8.com/color/48/postman-api.png',
-    'python 3.13.3 (64-bit)': 'https://img.icons8.com/color/48/python.png',
-    'screenclippinghost.exe': 'https://img.icons8.com/color/48/screenshot.png',
-    'search application': 'https://img.icons8.com/color/48/search--v1.png',
-    'settings': 'https://img.icons8.com/color/48/settings--v1.png',
-    'setup/uninstall': 'https://img.icons8.com/color/48/uninstalling-updates.png',
-    'ssh, telnet, rlogin, and supdup client': 'https://img.icons8.com/color/48/console.png',
-    'task manager': 'https://img.icons8.com/color/48/task-manager.png',
-    'tcp/ip ping command': 'https://img.icons8.com/color/48/console.png',
-    'visual studio code': 'https://img.icons8.com/color/48/visual-studio-code-2019.png',
-    'whatsapp.exe': 'https://img.icons8.com/color/48/whatsapp--v1.png',
-    'windows command processor': 'https://img.icons8.com/color/48/command-line.png',
-    'windows explorer': 'https://img.icons8.com/color/48/windows-explorer.png',
-    'windows shell experience host': 'https://img.icons8.com/color/48/windows-10.png',
-    'windows® installer': 'https://img.icons8.com/color/48/windows-installer.png',
-    'winscp: sftp, ftp, webdav, s3 and scp client': 'https://img.icons8.com/color/48/ftp.png',
-    'wps office': 'https://img.icons8.com/color/48/wps-office.png',
-    'wps spreadsheets': 'https://img.icons8.com/color/48/wps-office.png',
-    'x-lite.exe': 'https://img.icons8.com/color/48/phone-office.png',
-    'a desktop app for humanmaximizer': 'https://img.icons8.com/color/48/monitor--v1.png',
-  };
-  
-  const getAppIcon = (appName) => {
-    const key = appName.toLowerCase();
-    return appIconMap[key] || 'https://img.icons8.com/fluency-systems-regular/48/application-window.png';
-  };
-  
   useEffect(() => {
     fetchTopProductivityStats(empID, mode);
-  }, [empID, mode]);// for monthly & yearly
+  }, [empID, mode]);
 
-  /* --------------------------------------------------------------------- */
-  /*  Derive time window                                                   */
-  /* --------------------------------------------------------------------- */
+  useEffect(() => {
+    fetchMostUsedStats(empID, mode);
+  }, [empID, mode]);
+
+  // Time period calculation
   const period = useMemo(() => {
-    if (mode === 'yesterday') {
-      return { start: today.subtract(1, 'day').startOf('day'), end: today.subtract(1, 'day').endOf('day') };
+    if (mode === "yesterday") {
+      return {
+        start: today.subtract(1, "day").startOf("day"),
+        end: today.subtract(1, "day").endOf("day"),
+      };
     }
-    if (mode === 'daily') {
-      return { start: today.startOf('day'), end: today.endOf('day') };
+    if (mode === "daily") {
+      return { start: today.startOf("day"), end: today.endOf("day") };
     }
-    if (mode === 'weekly') {
-      const end   = today.endOf('day');
-      const start = today.subtract(6, 'day').startOf('day');
+    if (mode === "weekly") {
+      const end = today.endOf("day");
+      const start = today.subtract(6, "day").startOf("day");
       return { start, end };
     }
-    if (mode === 'monthly') {
-      const start = dayjs(`${year}-${String(month).padStart(2,'0')}-01`).startOf('month');
-      const end   = start.endOf('month');
+    if (mode === "monthly") {
+      const start = dayjs(
+        `${year}-${String(month).padStart(2, "0")}-01`
+      ).startOf("month");
+      const end = start.endOf("month");
       return { start, end };
     }
-    // yearly
-    const start = dayjs(`${year}-01-01`).startOf('year');
-    const end   = start.endOf('year');
+    const start = dayjs(`${year}-01-01`).startOf("year");
+    const end = start.endOf("year");
     return { start, end };
   }, [mode, month, year]);
 
-  useEffect(() => {
-    // Fetch stats based on mode selected (daily, weekly, monthly, yearly, yesterday)
-    const fetchStats = async () => {
-      if (mode === 'yesterday') {
-        const yesterday = today.subtract(1, 'day').format('YYYY-MM-DD');
-        await fetchDailyStats(empID, yesterday);  // Pass yesterday's date here
-      } else {
-        fetchDailyStats(empID, today.format('YYYY-MM-DD')); // For daily or other modes
-      }
-    };
-    fetchStats();
-  }, [empID, mode, month, year]);
+  const inWindow = (dateStr) => isBetween(dateStr, period.start, period.end);
 
-  /* --------------------------------------------------------------------- */
-  /*  Filter helpers                                                        */
-  /* --------------------------------------------------------------------- */
-  const inWindow = dateStr =>
-    isBetween(dateStr, period.start, period.end);
+  const filteredStats = useMemo(() => {
+    return Array.isArray(stats) ? stats.filter((s) => inWindow(s.date)) : [];
+  }, [stats, period]);
 
-  const filteredStats       = useMemo(() => stats.filter(s => inWindow(s.date)),        [stats, period]);
-  const filteredAttendance  = useMemo(() => attendanceData.filter(a => inWindow(a.date)),[attendanceData, period]);
+  const filteredAttendance = useMemo(() => {
+    return Array.isArray(attendanceData)
+      ? attendanceData.filter((a) => inWindow(a.date))
+      : [];
+  }, [attendanceData, period]);
 
-  /* --------------------------------------------------------------------- */
-  /*  Aggregate Usage totals                                                */
-  /* --------------------------------------------------------------------- */
+  // Usage totals
   const totalUsage = useMemo(() => {
-    return filteredStats.reduce((acc, cur) => ({
-      keyboardMinutes : acc.keyboardMinutes  + cur.keyboardMinutes,
-      mouseMinutes    : acc.mouseMinutes     + cur.mouseMinutes,
-      keyboardPresses : acc.keyboardPresses  + cur.keyboardPressCount,
-      mouseClicks     : acc.mouseClicks      + cur.mouseClickCount,
-    }), { keyboardMinutes:0, mouseMinutes:0, keyboardPresses:0, mouseClicks:0 });
+    return filteredStats.reduce(
+      (acc, cur) => ({
+        keyboardMinutes: acc.keyboardMinutes + cur.keyboardMinutes,
+        mouseMinutes: acc.mouseMinutes + cur.mouseMinutes,
+        keyboardPresses: acc.keyboardPresses + cur.keyboardPressCount,
+        mouseClicks: acc.mouseClicks + cur.mouseClickCount,
+      }),
+      {
+        keyboardMinutes: 0,
+        mouseMinutes: 0,
+        keyboardPresses: 0,
+        mouseClicks: 0,
+      }
+    );
   }, [filteredStats]);
 
-  /* --------------------------------------------------------------------- */
-  /*  Aggregate Attendance totals                                           */
-  /* --------------------------------------------------------------------- */
-
-  //LOGIC FOR 
-  // const attendanceTotals = useMemo(() => {
-  //   let workMin = 0, breakMin = 0;
-  
-  //   filteredAttendance.forEach(rec => {
-  //     if (rec.login) {
-  //       const loginTime = dayjs(`${rec.date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
-  //       const shiftStart = dayjs(`${rec.date} 10:00:00`, 'YYYY-MM-DD HH:mm:ss');
-  //       const shiftEnd = dayjs(`${rec.date} 19:00:00`, 'YYYY-MM-DD HH:mm:ss');
-  
-  //       let effectiveEnd;
-  
-  //       if (rec.logout && rec.logout !== rec.login) {
-  //         effectiveEnd = dayjs(`${rec.date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
-  //       } else if (dayjs(rec.date).isBefore(dayjs(), 'day')) {
-  //         effectiveEnd = shiftEnd;
-  //       } else if (dayjs(rec.date).isSame(dayjs(), 'day')) {
-  //         effectiveEnd = dayjs().isBefore(shiftEnd) ? dayjs() : shiftEnd;
-  //       } else {
-  //         effectiveEnd = shiftEnd;
-  //       }
-  
-  //       const effectiveStart = loginTime.isAfter(shiftStart) ? loginTime : shiftStart;
-  
-  //       if (effectiveEnd.isAfter(effectiveStart)) {
-  //         workMin += effectiveEnd.diff(effectiveStart, 'minute');
-  //       }
-  
-  //       rec.breaks?.forEach(br => {
-  //         if (br.start && br.end) {
-  //           const breakStart = dayjs(br.start);
-  //           const breakEnd = dayjs(br.end);
-  //           if (breakEnd.isAfter(breakStart)) {
-  //             breakMin += breakEnd.diff(breakStart, 'minute');
-  //           }
-  //         }
-  //       });
-  //     }
-  //   });
-  
-  //   const netWorkMin = Math.max(workMin - breakMin, 0);  // prevent negative values
-  //   const hours = Math.floor(netWorkMin / 60);
-  //   const minutes = netWorkMin % 60;
-  
-  //   return {
-  //     totalWorkingHours: netWorkMin > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
-  //     totalBreakTaken: breakMin
-  //   };
-  // }, [filteredAttendance]);
-  
-  
-  // const attendanceTotals = useMemo(() => {
-  //   let totalWorkMinutes = 0;
-  //   let totalBreakMinutes = 0;
-  
-  //   filteredAttendance.forEach(rec => {
-  //     if (!rec.login) return;  // Skip if no login
-      
-  //     const loginTime = dayjs(`${rec.date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
-  
-  //     // Prioritize punch-out if available; otherwise, use current time if it's today
-  //     let logoutTime;
-  //     if (rec.logout && rec.logout !== rec.login) {
-  //       logoutTime = dayjs(`${rec.date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
-  //     } else if (dayjs(rec.date).isSame(dayjs(), 'day')) {
-  //       logoutTime = dayjs(); // Use current time if logout isn't available today
-  //     } else {
-  //       logoutTime = dayjs(`${rec.date} 19:00:00`, 'YYYY-MM-DD HH:mm:ss'); // Default to shift end for past days
-  //     }
-  
-  //     // Compute total work minutes from punch-in to punch-out/current time
-  //     if (logoutTime.isAfter(loginTime)) {
-  //       totalWorkMinutes += logoutTime.diff(loginTime, 'minute');
-  //     }
-  
-  //     // Calculate total break minutes
-  //     rec.breaks?.forEach(br => {
-  //       if (br.start && br.end) {
-  //         const breakStart = dayjs(br.start);
-  //         const breakEnd = dayjs(br.end);
-  //         if (breakEnd.isAfter(breakStart)) {
-  //           totalBreakMinutes += breakEnd.diff(breakStart, 'minute');
-  //         }
-  //       }
-  //     });
-  //   });
-  
-  //   // Subtract breaks from total work time
-  //   const netWorkMinutes = Math.max(totalWorkMinutes - totalBreakMinutes, 0);
-  //   const hours = Math.floor(netWorkMinutes / 60);
-  //   const minutes = netWorkMinutes % 60;
-  
-  //   return {
-  //     totalWorkingHours: netWorkMinutes > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
-  //     totalBreakTaken: totalBreakMinutes
-  //   };
-  // }, [filteredAttendance]);  
-
+  // Attendance totals
   const attendanceTotals = useMemo(() => {
     const SHIFT_START = "10:00:00";
     const SHIFT_END = "19:00:00";
-  
+
     let totalWorkMinutes = 0;
     let totalBreakMinutes = 0;
-  
-    filteredAttendance.forEach(rec => {
+
+    filteredAttendance.forEach((rec) => {
       if (!rec.login) return;
-  
+
       const date = rec.date;
-      const shiftStart = dayjs(`${date} ${SHIFT_START}`, 'YYYY-MM-DD HH:mm:ss');
-      const shiftEnd = dayjs(`${date} ${SHIFT_END}`, 'YYYY-MM-DD HH:mm:ss');
-      const loginTime = dayjs(`${date} ${convertTo24Hour(rec.login)}`, 'YYYY-MM-DD HH:mm:ss');
-  
+      const shiftStart = dayjs(`${date} ${SHIFT_START}`, "YYYY-MM-DD HH:mm:ss");
+      const shiftEnd = dayjs(`${date} ${SHIFT_END}`, "YYYY-MM-DD HH:mm:ss");
+      const loginTime = dayjs(
+        `${date} ${convertTo24Hour(rec.login)}`,
+        "YYYY-MM-DD HH:mm:ss"
+      );
+
       let logoutTime = null;
       if (rec.logout && rec.logout !== rec.login) {
-        logoutTime = dayjs(`${date} ${convertTo24Hour(rec.logout)}`, 'YYYY-MM-DD HH:mm:ss');
+        logoutTime = dayjs(
+          `${date} ${convertTo24Hour(rec.logout)}`,
+          "YYYY-MM-DD HH:mm:ss"
+        );
       }
-  
+
       const now = dayjs();
-  
       let effectiveEndTime;
-  
-      if (dayjs(date).isSame(now, 'day')) {
+
+      if (dayjs(date).isSame(now, "day")) {
         if (now.isBefore(shiftEnd)) {
           effectiveEndTime = now;
         } else if (logoutTime && logoutTime.isAfter(shiftEnd)) {
@@ -645,284 +277,278 @@ export default function EmployeeStatistics() {
       } else {
         effectiveEndTime = logoutTime ? logoutTime : shiftEnd;
       }
-  
+
       if (effectiveEndTime.isAfter(loginTime)) {
-        totalWorkMinutes += effectiveEndTime.diff(loginTime, 'minute');
+        totalWorkMinutes += effectiveEndTime.diff(loginTime, "minute");
       }
-  
-      rec.breaks?.forEach(br => {
+
+      rec.breaks?.forEach((br) => {
         if (br.start && br.end) {
           let breakStart = dayjs(br.start);
           let breakEnd = dayjs(br.end);
-  
-          if (breakEnd.isBefore(shiftStart) || breakStart.isAfter(shiftEnd)) return;
-  
-          breakStart = breakStart.isBefore(shiftStart) ? shiftStart : breakStart;
-  
+
+          if (breakEnd.isBefore(shiftStart) || breakStart.isAfter(shiftEnd))
+            return;
+
+          breakStart = breakStart.isBefore(shiftStart)
+            ? shiftStart
+            : breakStart;
+
           breakEnd = [breakEnd, effectiveEndTime, shiftEnd].reduce((min, cur) =>
             cur.isBefore(min) ? cur : min
           );
-  
+
           if (breakEnd.isAfter(breakStart)) {
-            totalBreakMinutes += breakEnd.diff(breakStart, 'minute');
+            totalBreakMinutes += breakEnd.diff(breakStart, "minute");
           }
         }
       });
     });
-  
+
     const netWorkMinutes = Math.max(totalWorkMinutes - totalBreakMinutes, 0);
     const hours = Math.floor(netWorkMinutes / 60);
     const minutes = netWorkMinutes % 60;
-  
+
     return {
-      totalWorkingHours: netWorkMinutes > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
-      totalBreakTaken: totalBreakMinutes
+      totalWorkingHours:
+        netWorkMinutes > 0 ? `${hours} hrs ${minutes} mins` : "0 hrs 0 mins",
+      totalBreakTaken: totalBreakMinutes,
     };
   }, [filteredAttendance]);
-  
-  
-  
-  
 
-  //11
+  useEffect(() => {
+    const date =
+      mode === "daily"
+        ? today.format("YYYY-MM-DD")
+        : mode === "monthly"
+        ? `${year}-${String(month).padStart(2, "0")}`
+        : mode === "yearly"
+        ? String(year)
+        : today.format("YYYY-MM-DD");
 
-  /* --------------------------------------------------------------------- */
-  /*  Productivity (Daily ONLY) – show doughnut                            */
-  /* --------------------------------------------------------------------- */
-  const showProductivity = mode === 'daily';
+    fetchInsights(empID, mode, date);
+  }, [empID, mode, month, year]);
+
+  // Productivity calculations (daily only)
+  const showProductivity = mode === "daily";
   const { productiveTime, unproductiveTime } = useMemo(() => {
     if (!showProductivity || !dailyStats || !deptCategories) {
-      return { productiveTime:0, unproductiveTime:0 };
+      return { productiveTime: 0, unproductiveTime: 0 };
     }
-    const prodSet   = new Set(deptCategories.productive.map(d => d.name.toLowerCase()));
-    const unprodSet = new Set(deptCategories.unproductive.map(d => d.name.toLowerCase()));
-    let p = 0, u = 0;
+    const prodSet = new Set(
+      deptCategories.productive.map((d) => d.name.toLowerCase())
+    );
+    const unprodSet = new Set(
+      deptCategories.unproductive.map((d) => d.name.toLowerCase())
+    );
+    let p = 0,
+      u = 0;
     dailyStats.appsUsed.forEach(({ appName, minutesUsed }) => {
       const n = appName.toLowerCase();
-      prodSet.has(n) ? p += minutesUsed : unprodSet.has(n) && (u += minutesUsed);
+      prodSet.has(n)
+        ? (p += minutesUsed)
+        : unprodSet.has(n) && (u += minutesUsed);
     });
     dailyStats.websitesVisited.forEach(({ url, minutesVisited }) => {
       const n = url.toLowerCase();
-      prodSet.has(n) ? p += minutesVisited : unprodSet.has(n) && (u += minutesVisited);
+      prodSet.has(n)
+        ? (p += minutesVisited)
+        : unprodSet.has(n) && (u += minutesVisited);
     });
     return { productiveTime: p, unproductiveTime: u };
   }, [dailyStats, deptCategories, showProductivity]);
 
-  /* --------------------------------------------------------------------- */
-  /*  Chart Config                                                          */
-  /* --------------------------------------------------------------------- */
+  // Doughnut chart config
   const doughnutData = {
-    labels: ['Productive', 'Unproductive'],
-    datasets: [{
-      data: [productiveTime, unproductiveTime],
-      backgroundColor     : ['#2563EB', '#F97316'],
-      hoverBackgroundColor: ['#1E40AF', '#EA580C'],
-      borderColor:'#FFF', borderWidth:4,
-    }]
+    labels: ["Productive", "Unproductive"],
+    datasets: [
+      {
+        data: [productiveTime, unproductiveTime],
+        backgroundColor: ["#2563EB", "#F97316"],
+        hoverBackgroundColor: ["#1E40AF", "#EA580C"],
+        borderColor: "#FFF",
+        borderWidth: 4,
+      },
+    ],
   };
   const doughnutOptions = {
     responsive: true,
     plugins: {
       legend: {
-        position: 'bottom',
+        position: "bottom",
         labels: {
-          boxWidth: 10, // Adjust legend box size for better alignment
-          padding: 15,  // Adjust spacing around the legend
+          boxWidth: 10,
+          padding: 15,
           font: {
-            size: 14,  // Adjust font size of the legend
+            size: 14,
           },
+          color: "#6B7280",
         },
       },
     },
   };
-  
 
-  /* --------------------------------------------------------------------- */
-  /*  Load / Error states                                                   */
-  /* --------------------------------------------------------------------- */
+  // Top used apps/websites
+  const top3Websites = useMemo(() => {
+    if (!mostUsedStats?.topWebsites) return [];
+    return [...mostUsedStats.topWebsites]
+      .sort((a, b) => b.minutesVisited - a.minutesVisited)
+      .slice(0, 3);
+  }, [mostUsedStats]);
+
+  const top3Apps = useMemo(() => {
+    if (!mostUsedStats?.topApps) return [];
+    return [...mostUsedStats.topApps]
+      .sort((a, b) => b.minutesUsed - a.minutesUsed)
+      .slice(0, 3);
+  }, [mostUsedStats]);
+
+  // Loading and error states
   if (usageLoading || attendanceLoading)
-    return <p className="text-center py-6 text-gray-500 dark:text-gray-300">Loading…</p>;
-  if (usageError || attendanceError)
-    return <p className="text-center py-6 text-gray-500 dark:text-gray-300">{usageError || attendanceError}</p>;
-
-  /* --------------------------------------------------------------------- */
-  /*  RENDER                                                                */
-  /* --------------------------------------------------------------------- */
-
-  const StatsTableCard = ({
-    title,
-    data = [],
-    isWebsite = false,
-    onSeeAll = () => {},
-  }) => {
-    const BLUE = "#487FFF";
-    const GRAY = "#e2e8f0";
-  
-    const css = {
-      card: {
-        border: `1px solid ${GRAY}`,
-        borderRadius: 12,
-        background: "#fff",
-        boxShadow: "0 2px 6px rgba(0,0,0,.05)",
-      },
-      header: {
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: 16,
-        borderBottom: `1px solid ${GRAY}`,
-      },
-      title: { fontWeight: 600, color: "#374151", fontSize: 16 },
-      tableWrapper: {
-        overflowX: "auto",
-        padding: "0",
-        border: `1px solid ${BLUE}`,
-        borderRadius: 8,
-        margin: "16px",
-      },
-      table: {
-        width: "100%",
-        borderCollapse: "collapse",
-        fontSize: 14,
-        color: "#374151",
-      },
-      thBase: {
-        background: "#F0F7FF",
-        padding: 10,
-        color: "#1f2937",
-        fontWeight: 500,
-        textAlign: "left",
-      },
-      tdBase: {
-        padding: 10,
-        borderBottom: `1px solid ${BLUE}`,
-        color: "#374151",
-      },
-      icon: {
-        width: 24,
-        height: 24,
-        marginRight: 8,
-        verticalAlign: "middle",
-      },
-    };
-  
-    const renderHeader = () => (
-      <thead>
-        <tr>
-          <th style={{ ...css.thBase, width: 60, textAlign: "center", borderRight: `1px solid ${BLUE}` }}>#</th>
-          <th style={{ ...css.thBase, borderRight: `1px solid ${BLUE}` }}>
-            {isWebsite ? "Website Name" : "App Name"}
-          </th>
-          <th style={{ ...css.thBase, width: 160, textAlign: "center" }}>Time (Min)</th>
-        </tr>
-      </thead>
-    );
-  
-    const renderRows = () =>
-      data.length ? (
-        data.slice(0, 5).map((row, i) => {
-          const name = isWebsite ? row.url : row.appName;
-          const icon = isWebsite ? getFavicon(row.url) : getAppIcon(row.appName);
-  
-          return (
-            <tr key={i} style={{ background: i % 2 === 0 ? "#fff" : "#F9FBFF" }}>
-              <td style={{ ...css.tdBase, textAlign: "center", borderRight: `1px solid ${BLUE}` }}>
-                {String(i + 1).padStart(2, "0")}
-              </td>
-              <td style={{ ...css.tdBase, textAlign: "left", borderRight: `1px solid ${BLUE}` }}>
-                <img src={icon} alt="" style={css.icon} />
-                {name}
-              </td>
-              <td style={{ ...css.tdBase, textAlign: "center" }}>
-                {(row.minutesVisited ?? row.minutesUsed) || 0}
-              </td>
-            </tr>
-          );
-        })
-      ) : (
-        <tr>
-          <td colSpan={3} style={{ padding: 12, textAlign: "center", color: "#9ca3af" }}>No data available.</td>
-        </tr>
-      );
-  
     return (
-      <div className="border border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 shadow"
->
-        <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700"
-        >
-          <span className="font-semibold text-gray-700 dark:text-gray-200 text-base"
-          >{title}</span>
+      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
+        <div className="flex flex-col items-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-500"></div>
+          <p className="mt-4 text-gray-600 dark:text-gray-400 font-medium">
+            Loading employee statistics...
+          </p>
         </div>
-  
-        <div className="overflow-x-auto p-0 border border-blue-500 dark:border-blue-400 rounded-lg m-4"
+      </div>
+    );
+
+  if (usageError || attendanceError)
+    return (
+      <div className="max-w-4xl mx-auto py-12 px-4 text-center">
+        <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-red-100 text-red-500 mb-6">
+          <FiInfo className="w-10 h-10" />
+        </div>
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+          Unable to load data
+        </h3>
+        <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+          {usageError || attendanceError}
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-6 py-3 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors"
         >
-          <table className="w-full table-auto text-sm text-gray-700 dark:text-gray-300"
-          >
-            {renderHeader()}
-            <tbody>{renderRows()}</tbody>
+          Try Again
+        </button>
+      </div>
+    );
+
+  // Sub-components
+  const StatsTableCard = ({ title, icon, data = [], isWebsite = false }) => {
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden border border-gray-100 dark:border-gray-700">
+        <div className="flex items-center bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 px-5 py-4">
+          <div className="mr-3 text-white bg-indigo-400/20 p-2 rounded-lg">
+            {icon}
+          </div>
+          <h3 className="text-white text-lg font-semibold">{title}</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-gray-50 dark:bg-gray-700/50">
+                <th className="py-3 px-4 text-center font-medium text-gray-700 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">
+                  #
+                </th>
+                <th className="py-3 px-4 text-left font-medium text-gray-700 dark:text-gray-300 border-r border-gray-200 dark:border-gray-600">
+                  {isWebsite ? "Website" : "App"}
+                </th>
+                <th className="py-3 px-4 text-center font-medium text-gray-700 dark:text-gray-300">
+                  Time (Min)
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.length ? (
+                data.slice(0, 5).map((row, i) => (
+                  <tr
+                    key={i}
+                    className="border-b border-gray-100 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"
+                  >
+                    <td className="py-3 px-4 text-center text-gray-700 dark:text-gray-300 border-r border-gray-100 dark:border-gray-700">
+                      <div className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 font-medium">
+                        {i + 1}
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-gray-900 dark:text-white border-r border-gray-100 dark:border-gray-700">
+                      <div className="flex items-center">
+                        <img
+                          src={
+                            isWebsite
+                              ? getFavicon(row.url)
+                              : getAppIcon(row.appName)
+                          }
+                          alt=""
+                          className="w-8 h-8 mr-3 rounded-lg bg-gray-100 dark:bg-gray-700 p-1"
+                        />
+                        <span className="truncate max-w-[160px] font-medium">
+                          {isWebsite ? row.url : row.appName}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white font-medium">
+                        {row.minutesVisited || row.minutesUsed || 0}
+                        <span className="ml-1 text-xs text-gray-500 dark:text-gray-400">
+                          min
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan="3"
+                    className="py-8 text-center text-gray-500 dark:text-gray-400"
+                  >
+                    <div className="flex flex-col items-center">
+                      <FiInfo className="w-8 h-8 text-gray-400 mb-2" />
+                      No data available
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
           </table>
         </div>
       </div>
     );
   };
-  
-  
+
   const ProductivityBarGraph = ({ data }) => {
     const productivityMap = {
       less: 1,
       avg: 2,
       top: 3,
     };
-  
+
     const productivityColor = {
-      less: '#FF8A80',
-      avg: '#90CAF9',
-      top: '#B9F6CA',
+      less: "#FF8A80",
+      avg: "#90CAF9",
+      top: "#B9F6CA",
     };
-  
-    const formattedData = data.map(app => ({
+
+    const formattedData = data.map((app) => ({
       name: app.appName,
       productivityLevel: app.productivityLevel,
       productivityValue: productivityMap[app.productivityLevel] || 0,
     }));
-  
-    // Function to post daily attendance
-const postDailyAttendance = async (employeeId, date, workingMinutes, status = "Present") => {
-  try {
-    const response = await fetch('/api/attendance/daily', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ employeeId, date, workingMinutes, status }),
-    });
 
-    const result = await response.json();
-    if (result.success) {
-      console.log('Attendance posted:', result.data);
-    } else {
-      console.error('Failed to post attendance:', result.message);
-    }
-  } catch (error) {
-    console.error('Error posting attendance:', error);
-  }
-};
-
-// Hook to automatically post attendance daily if attendance is present
-useEffect(() => {
-  if (attendanceTotals && attendanceTotals.totalWorkingHours !== "0 hrs 0 mins") {
-    const today = dayjs().format('YYYY-MM-DD');
-    const [hours, , mins] = attendanceTotals.totalWorkingHours.split(' ');
-    const workingMinutes = parseInt(hours) * 60 + parseInt(mins);
-
-    postDailyAttendance(empID, today, workingMinutes, "Present");
-  }
-}, [attendanceTotals, empID]);
     return (
-      <div className="p-6 bg-white rounded-xl shadow-xl mt-10">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
           Productive Websites & Apps
         </h3>
-  
-        <ResponsiveContainer width="100%" height={formattedData.length * 50 + 50}>
+
+        <ResponsiveContainer
+          width="100%"
+          height={formattedData.length * 50 + 50}
+        >
           <BarChart layout="vertical" data={formattedData}>
             <XAxis type="number" hide domain={[0, 3]} />
             <YAxis
@@ -935,188 +561,389 @@ useEffect(() => {
               formatter={(value, name, props) =>
                 props?.payload?.productivityLevel
                   ? props.payload.productivityLevel.toUpperCase()
-                  : 'N/A'
+                  : "N/A"
               }
             />
-  
-            <Bar dataKey="productivityValue" barSize={25} radius={[0, 10, 10, 0]}>
+
+            <Bar
+              dataKey="productivityValue"
+              barSize={25}
+              radius={[0, 10, 10, 0]}
+            >
               {formattedData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={productivityColor[entry.productivityLevel]} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={productivityColor[entry.productivityLevel]}
+                />
               ))}
             </Bar>
           </BarChart>
         </ResponsiveContainer>
-  
-        <div className="flex justify-around mt-4 text-xs font-semibold">
+
+        <div className="flex justify-around mt-4 text-sm font-medium text-gray-700 dark:text-gray-300">
           <span className="flex items-center">
-            <span className="block w-3 h-3 rounded-full mr-1 bg-[#B9F6CA]"></span>Top
+            <span className="block w-3 h-3 rounded-full mr-2 bg-[#B9F6CA]"></span>
+            Top
           </span>
           <span className="flex items-center">
-            <span className="block w-3 h-3 rounded-full mr-1 bg-[#90CAF9]"></span>Avg
+            <span className="block w-3 h-3 rounded-full mr-2 bg-[#90CAF9]"></span>
+            Avg
           </span>
           <span className="flex items-center">
-            <span className="block w-3 h-3 rounded-full mr-1 bg-[#FF8A80]"></span>Less
+            <span className="block w-3 h-3 rounded-full mr-2 bg-[#FF8A80]"></span>
+            Less
           </span>
         </div>
       </div>
     );
   };
-  
- 
-  
-  return (
-    <div className="p-6 sm:p-10 bg-gray-100 dark:bg-gray-900 min-h-screen space-y-10">
 
+  const MetricCard = ({ color, icon, label, value }) => {
+    const colorClasses = {
+      green: {
+        bg: "bg-green-50 dark:bg-green-900/20",
+        border: "border-l-green-500",
+        iconBg:
+          "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-300",
+      },
+      yellow: {
+        bg: "bg-yellow-50 dark:bg-yellow-900/20",
+        border: "border-l-yellow-500",
+        iconBg:
+          "bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-300",
+      },
+      indigo: {
+        bg: "bg-indigo-50 dark:bg-indigo-900/20",
+        border: "border-l-indigo-500",
+        iconBg:
+          "bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300",
+      },
+      teal: {
+        bg: "bg-teal-50 dark:bg-teal-900/20",
+        border: "border-l-teal-500",
+        iconBg:
+          "bg-teal-100 dark:bg-teal-900/30 text-teal-600 dark:text-teal-300",
+      },
+      cyan: {
+        bg: "bg-cyan-50 dark:bg-cyan-900/20",
+        border: "border-l-cyan-500",
+        iconBg:
+          "bg-cyan-100 dark:bg-cyan-900/30 text-cyan-600 dark:text-cyan-300",
+      },
+      amber: {
+        bg: "bg-amber-50 dark:bg-amber-900/20",
+        border: "border-l-amber-500",
+        iconBg:
+          "bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-300",
+      },
+    };
 
-      {/* ─── Filter‑bar ─────────────────────────────────────── */}
-      <div className="flex flex-wrap gap-4 items-end">
-        {/* Time‑range selector */}
-        <label className="flex flex-col">
-          <select
-            value={mode}
-            onChange={e => setMode(e.target.value)}
-            className="mt-1 border rounded-lg px-3 py-1.5 bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
-
+    return (
+      <div
+        className={`p-5 rounded-2xl shadow-sm ${colorClasses[color].bg} ${colorClasses[color].border} border-l-4 flex items-start`}
+      >
+        <div className={`mr-4 p-3 rounded-xl ${colorClasses[color].iconBg}`}>
+          {icon}
+        </div>
+        <div>
+          <h3 className="text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
+            {label}
+          </h3>
+          <p
+            className={`text-xl font-bold text-gray-900 dark:text-white truncate`}
           >
-            <option value="daily">Today</option>
-            <option value="yesterday">Yesterday</option>
-            <option value="weekly">Weekly (last 7 days)</option>
-            <option value="monthly">Monthly</option>
-            <option value="yearly">Yearly</option>
-          </select>
-        </label>
+            {value}
+          </p>
+        </div>
+      </div>
+    );
+  };
 
-        {/* Month selector */}
-        {mode === 'monthly' && (
-          <>
-            <label className="flex flex-col">
-              <span className="text-sm font-medium">Month</span>
-              <select
-                value={month}
-                onChange={e => setMonth(Number(e.target.value))}
-                className="mt-1 border rounded-lg px-3 py-1.5 bg-white"
-              >
-                {Array.from({length:12}).map((_,i)=>
-                  <option key={i+1} value={i+1}>{dayjs().month(i).format('MMMM')}</option>
-                )}
-              </select>
+  return (
+    <div className="p-4 sm:p-6 bg-gray-50 dark:bg-gray-900 min-h-screen space-y-6">
+      {/* Header */}
+      <div className="mb-6">
+        <div className="flex items-center mb-3">
+          <div className="bg-indigo-500/10 p-2 rounded-lg mr-3">
+            <FiBarChart2 className="w-6 h-6 text-indigo-500" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
+            Employee Statistics
+          </h1>
+        </div>
+        <div className="flex items-center">
+          <div className="bg-gray-200 dark:bg-gray-700 w-8 h-8 rounded-full mr-3 flex items-center justify-center text-sm font-medium text-gray-700 dark:text-gray-200">
+            {empID.slice(0, 2)}
+          </div>
+          <p className="text-gray-600 dark:text-gray-400">
+            Detailed analytics for employee #{empID}
+          </p>
+        </div>
+      </div>
+
+      {/* Filter controls */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-5 mb-6">
+        <div className="flex flex-wrap gap-4 items-center">
+          <div className="flex-1 min-w-[200px]">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
+              <FiCalendar className="mr-2 w-4 h-4" />
+              Time Range
             </label>
-            <label className="flex flex-col">
-              <span className="text-sm font-medium">Year</span>
+            <select
+              value={mode}
+              onChange={(e) => setMode(e.target.value)}
+              className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            >
+              <option value="daily">Today</option>
+              <option value="yesterday">Yesterday</option>
+              <option value="weekly">Weekly (last 7 days)</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+          </div>
+
+          {mode === "monthly" && (
+            <>
+              <div className="flex-1 min-w-[160px]">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Month
+                </label>
+                <select
+                  value={month}
+                  onChange={(e) => setMonth(Number(e.target.value))}
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                >
+                  {Array.from({ length: 12 }).map((_, i) => (
+                    <option key={i + 1} value={i + 1}>
+                      {dayjs().month(i).format("MMMM")}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex-1 min-w-[120px]">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Year
+                </label>
+                <input
+                  type="number"
+                  value={year}
+                  onChange={(e) => setYear(Number(e.target.value))}
+                  className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                />
+              </div>
+            </>
+          )}
+
+          {mode === "yearly" && (
+            <div className="flex-1 min-w-[160px]">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Year
+              </label>
               <input
                 type="number"
                 value={year}
-                onChange={e => setYear(Number(e.target.value))}
-                className="mt-1 border rounded-lg px-3 py-1.5 w-24 bg-white"
+                onChange={(e) => setYear(Number(e.target.value))}
+                className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-white px-4 py-3 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
-            </label>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Metrics grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <MetricCard
+          color="green"
+          icon={<FiClock className="w-5 h-5" />}
+          label="Total Working Hours"
+          value={attendanceTotals.totalWorkingHours}
+        />
+        <MetricCard
+          color="yellow"
+          icon={<FiCoffee className="w-5 h-5" />}
+          label="Total Break Taken"
+          value={`${attendanceTotals.totalBreakTaken} mins`}
+        />
+        {insights && (
+          <>
+            <MetricCard
+              color="indigo"
+              icon={<FiClock className="w-5 h-5" />}
+              label="Avg Break/Day"
+              value={insights.averageBreakTime || "0 mins"}
+            />
+            <MetricCard
+              color="teal"
+              icon={<FiClock className="w-5 h-5" />}
+              label="Longest Break"
+              value={insights.longestBreak || "0 mins"}
+            />
+            <MetricCard
+              color="cyan"
+              icon={<FiCalendar className="w-5 h-5" />}
+              label="Frequent Break Times"
+              value={insights.mostFrequentBreakTimes?.join(", ") || "N/A"}
+            />
+            <MetricCard
+              color="amber"
+              icon={<FiTrendingUp className="w-5 h-5" />}
+              label="Avg Working Hours"
+              value={insights.averageWorkingHours || "0 hrs"}
+            />
           </>
         )}
+      </div>
 
-        {/* Year selector for Yearly mode */}
-        {mode === 'yearly' && (
-          <label className="flex flex-col">
-            <span className="text-sm font-medium">Year</span>
-            <input
-              type="number"
-              value={year}
-              onChange={e => setYear(Number(e.target.value))}
-              className="mt-1 border rounded-lg px-3 py-1.5 w-24 bg-white"
+      {/* Charts section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        {/* Productivity chart */}
+        {showProductivity && (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+            <div className="flex items-center mb-6">
+              <div className="bg-indigo-500/10 p-2 rounded-lg mr-3">
+                <FiActivity className="w-5 h-5 text-indigo-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                Today's Productivity
+              </h3>
+            </div>
+            <div className="flex flex-col items-center">
+              <div className="w-full max-w-xs">
+                <Doughnut data={doughnutData} options={doughnutOptions} />
+              </div>
+              <div className="mt-4 text-center">
+                <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-300 mb-2">
+                  <span className="text-xl font-bold text-indigo-600 dark:text-indigo-300">
+                    +
+                    {(
+                      (productiveTime / (productiveTime + unproductiveTime)) *
+                      100
+                    ).toFixed(0)}
+                    %
+                  </span>
+                  <span className="ml-2">Productivity</span>
+                </div>
+                <div className="flex justify-center gap-4 mt-3">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 rounded-full bg-blue-500 mr-2"></div>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {productiveTime} min productive
+                    </span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 rounded-full bg-orange-500 mr-2"></div>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      {unproductiveTime} min unproductive
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Activity chart */}
+        {mode === "daily" && (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+            <div className="flex items-center mb-6">
+              <div className="bg-indigo-500/10 p-2 rounded-lg mr-3">
+                <FiTrendingUp className="w-5 h-5 text-indigo-500" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+                Activity Timeline
+              </h3>
+            </div>
+            <ActivityTrendChart
+              employeeId={empID}
+              date={today.format("YYYY-MM-DD")}
             />
-          </label>
+          </div>
         )}
       </div>
 
-      {/* ─── Metric boxes + (optional) chart ───────────────── */}
-      <div className="grid lg:grid-cols-4 gap-4">
-        {/* Metrics */}
-        <div className="lg:col-span-3 grid grid-cols-2 gap-4">
-  {[
-    { color: 'green', label: 'Total Working Hours', value: attendanceTotals.totalWorkingHours },
-    { color: 'yellow', label: 'Total Break Taken', value: `${attendanceTotals.totalBreakTaken} mins` },
-    { color: 'blue', label: 'Keyboard Minutes', value: totalUsage.keyboardMinutes },
-    { color: 'pink', label: 'Keyboard Presses', value: totalUsage.keyboardPresses },
-    { color: 'purple', label: 'Mouse Minutes', value: totalUsage.mouseMinutes },
-    { color: 'red', label: 'Mouse Clicks', value: totalUsage.mouseClicks },
-     ].map(({ color, label, value }) => (
-    <div
-      key={label}
-      className={`bg-${color}-100 dark:bg-${color}-800 dark:text-${color}-100 p-4 sm:p-6 rounded-xl shadow text-center`}
-      style={{
-        borderLeft: `8px solid ${color === 'green' ? '#10B981' : color === 'blue' ? '#2563EB' : color === 'pink' ? '#EC4899' : color === 'purple' ? '#8B5CF6' : color === 'red' ? '#F87171' : color === 'yellow' ? '#FBBF24' : '#FFFFFF'}`,
-      }}
-    >
-      <h3 className="text-sm sm:text-base font-semibold">{label}</h3>
-      <p className="text-2xl sm:text-3xl font-bold">{value}</p>
-    </div>
-  ))}
-</div>
-
-
-        {/* Doughnut (only for daily) */}
-       {/* Doughnut (only for daily) */}
-{showProductivity && (
-  <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
-    <h3 className="text-lg font-semibold text-gray-800 mb-4">
-      Today’s Productivity
-    </h3>
-    <div className="flex justify-center items-center">
-      <Doughnut data={doughnutData} options={doughnutOptions}/>
-    </div>
-    {/* Optional: Show percentage change */}
-    <div className="mt-4 text-center text-lg text-gray-700">
-      <p className="font-semibold text-gray-800">+{((productiveTime / (productiveTime + unproductiveTime)) * 100).toFixed(0)}% Productivity</p>
-    </div>
-  </div>
-)}
-
-      </div>
-
-      {/* ─── Usage table ───────────────────────────────────── */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden">
-
-        <div className="px-6 py-4 bg-gradient-to-r from-indigo-500 to-purple-600">
-          <h2 className="text-xl sm:text-2xl font-semibold text-white">
-            Usage Statistics ({empID})&nbsp;
-            <span className="opacity-80 text-sm font-normal">
-              {mode === 'daily' && dayjs().format('DD MMM YYYY')}
-              {mode === 'weekly' && `${period.start.format('DD MMM')} – ${period.end.format('DD MMM YYYY')}`}
-              {mode === 'monthly' && dayjs(`${year}-${month}-01`).format('MMMM YYYY')}
-              {mode === 'yearly' && year}
-            </span>
-          </h2>
+      {/* Usage table */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg overflow-hidden mt-6">
+        <div className="px-6 py-5 bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 flex items-center">
+          <div className="bg-white/20 p-2 rounded-lg mr-3">
+            <FiMousePointer className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h2 className="text-xl font-semibold text-white">
+              Usage Statistics
+            </h2>
+            <p className="text-indigo-100 text-sm mt-1">
+              {mode === "daily" && dayjs().format("DD MMM YYYY")}
+              {mode === "weekly" &&
+                `${period.start.format("DD MMM")} - ${period.end.format(
+                  "DD MMM YYYY"
+                )}`}
+              {mode === "monthly" &&
+                dayjs(`${year}-${month}-01`).format("MMMM YYYY")}
+              {mode === "yearly" && year}
+            </p>
+          </div>
         </div>
-
-        <div className="overflow-x-auto p-4">
-          <table className="w-full text-xs sm:text-sm text-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-700">
-
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                {['Date','Keyboard Min.','Mouse Min.','Key Presses','Mouse Clicks','Details'].map(h=>(
-                  <th key={h} className="py-3 px-4 text-center font-semibold border-b bg-gray-50 dark:bg-gray-700 dark:text-gray-200"
->{h}</th>
-                ))}
+                <th className="py-3 px-4 text-left font-medium text-gray-700 dark:text-gray-300">
+                  Date
+                </th>
+                <th className="py-3 px-4 text-center font-medium text-gray-700 dark:text-gray-300">
+                  <div className="flex items-center justify-center">
+                    <FiType className="mr-1" /> Keys
+                  </div>
+                </th>
+                <th className="py-3 px-4 text-center font-medium text-gray-700 dark:text-gray-300">
+                  <div className="flex items-center justify-center">
+                    <FiMousePointer className="mr-1" /> Mouse
+                  </div>
+                </th>
+                <th className="py-3 px-4 text-center font-medium text-gray-700 dark:text-gray-300">
+                  Key Presses
+                </th>
+                <th className="py-3 px-4 text-center font-medium text-gray-700 dark:text-gray-300">
+                  Mouse Clicks
+                </th>
+                <th className="py-3 px-4 text-center font-medium text-gray-700 dark:text-gray-300">
+                  Details
+                </th>
               </tr>
             </thead>
-            <tbody>
-              {filteredStats.map(stat => (
-                <tr key={stat._id} className="hover:bg-gray-50 dark:hover:bg-gray-700"
->
-                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
->{stat.date}</td>
-                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
->{stat.keyboardMinutes}</td>
-                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
->{stat.mouseMinutes}</td>
-                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
->{stat.keyboardPressCount}</td>
-                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
->{stat.mouseClickCount}</td>
-                  <td className="py-3 px-4 text-center border-b dark:border-gray-700 dark:text-gray-300"
->
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+              {filteredStats.map((stat) => (
+                <tr
+                  key={stat._id}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700/20"
+                >
+                  <td className="py-3 px-4 text-gray-900 dark:text-white font-medium">
+                    {dayjs(stat.date).format("DD MMM YYYY")}
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-300">
+                      {stat.keyboardMinutes}
+                      <span className="ml-1 text-xs">min</span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-300">
+                      {stat.mouseMinutes}
+                      <span className="ml-1 text-xs">min</span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4 text-center text-gray-700 dark:text-gray-300 font-medium">
+                    {stat.keyboardPressCount.toLocaleString()}
+                  </td>
+                  <td className="py-3 px-4 text-center text-gray-700 dark:text-gray-300 font-medium">
+                    {stat.mouseClickCount.toLocaleString()}
+                  </td>
+                  <td className="py-3 px-4 text-center">
                     <button
-                      onClick={()=>navigate(`/dashboard/statistics/${empID}/${stat.date}`)}
-                      className="bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg px-3 py-1 text-xs sm:text-sm"
+                      onClick={() =>
+                        navigate(`/dashboard/statistics/${empID}/${stat.date}`)
+                      }
+                      className="px-3 py-1.5 text-sm bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-300 font-medium rounded-lg hover:bg-indigo-100 dark:hover:bg-indigo-900/30 transition-colors"
                     >
                       View
                     </button>
@@ -1124,60 +951,74 @@ useEffect(() => {
                 </tr>
               ))}
               {!filteredStats.length && (
-                <tr><td colSpan={6} className="py-6 text-center text-gray-500 dark:text-gray-400">No data</td></tr>
+                <tr>
+                  <td
+                    colSpan={6}
+                    className="py-8 text-center text-gray-500 dark:text-gray-400"
+                  >
+                    <div className="flex flex-col items-center">
+                      <FiInfo className="w-8 h-8 text-gray-400 mb-2" />
+                      No usage data available
+                    </div>
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>
         </div>
-        {/* Productivity Stats Section */}
-{/* Productivity Stats Section */}
-<div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden mt-10" style={{marginTop: "100px"}}>
-  
-
-  <div className="bg-white rounded-2xl shadow-xl overflow-hidden mt-10">
-  <div className="px-6 py-4 bg-gradient-to-r from-green-500 to-teal-500 dark:from-green-600 dark:to-teal-600">
-    <h2 className="text-xl sm:text-2xl font-semibold text-white">
-      Productivity Insights ({mode.charAt(0).toUpperCase() + mode.slice(1)})
-    </h2>
-  </div>
-
-  {prodStatsLoading ? (
-    <p className="text-center py-6 text-gray-500 dark:text-gray-300">Loading Productivity Stats...</p>
-  ) : (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
-      <StatsTableCard
-        title="Top Productive Websites"
-        data={topProductivityStats?.topWebsites || []}
-        isWebsite
-        onSeeAll={() => navigate('/full-list/productive-websites')}
-      />
-      <StatsTableCard
-        title="Less Productive Websites"
-        data={topProductivityStats?.leastWebsites || []}
-        isWebsite
-        onSeeAll={() => navigate('/full-list/unproductive-websites')}
-      />
-      <StatsTableCard
-        title="Top Apps Used"
-        data={topProductivityStats?.topApps || []}
-        onSeeAll={() => navigate('/full-list/productive-apps')}
-      />
-      <StatsTableCard
-        title="Less Productive Apps"
-        data={topProductivityStats?.leastApps || []}
-        onSeeAll={() => navigate('/full-list/unproductive-apps')}
-      />
-    </div>
-  )}
-</div>
-
-</div>
-
       </div>
-      {/* {topProductivityStats && topProductivityStats.topApps && (
-  <ProductivityBarGraph data={topProductivityStats.topApps} />
-)} */}
 
+      {/* Productivity insights */}
+      <div className="mt-8">
+        <div className="bg-gradient-to-r from-green-500 to-teal-500 dark:from-green-600 dark:to-teal-600 rounded-t-2xl px-6 py-5 flex items-center">
+          <div className="bg-white/20 p-2 rounded-lg mr-3">
+            <FiMonitor className="w-5 h-5 text-white" />
+          </div>
+          <h2 className="text-xl font-semibold text-white">
+            Productivity Insights (
+            {mode.charAt(0).toUpperCase() + mode.slice(1)})
+          </h2>
+        </div>
+
+        <div className="bg-white dark:bg-gray-800 rounded-b-2xl shadow-lg overflow-hidden">
+          {prodStatsLoading ? (
+            <div className="flex justify-center py-10">
+              <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-green-500"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
+              <StatsTableCard
+                title="Top Apps Used"
+                icon={<FiMonitor className="w-5 h-5" />}
+                data={topProductivityStats?.topApps || []}
+              />
+              <StatsTableCard
+                title="Less Productive Apps"
+                icon={<FiMonitor className="w-5 h-5" />}
+                data={topProductivityStats?.leastApps || []}
+              />
+              <StatsTableCard
+                title="Most Used Websites"
+                icon={<FiGlobe className="w-5 h-5" />}
+                data={top3Websites}
+                isWebsite
+              />
+              <StatsTableCard
+                title="Most Used Apps"
+                icon={<FiMonitor className="w-5 h-5" />}
+                data={top3Apps}
+              />
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Productivity bar graph */}
+      {topProductivityStats && topProductivityStats.topApps && (
+        <div className="mt-8">
+          <ProductivityBarGraph data={topProductivityStats.topApps} />
+        </div>
+      )}
     </div>
   );
 }

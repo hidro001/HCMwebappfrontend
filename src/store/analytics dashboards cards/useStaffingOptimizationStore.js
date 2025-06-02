@@ -1,8 +1,8 @@
-import { create } from 'zustand';
-import axiosInstance from '../../service/axiosInstance'; // or your axios setup
+import { create } from "zustand";
+import axiosInstance from "../../service/axiosInstance"; // or your axios setup
 
 const useStaffingOptimizationStore = create((set) => ({
-  data: null,     // { categories, series }
+  data: null, // { categories, series }
   loading: false,
   error: null,
 
@@ -10,7 +10,9 @@ const useStaffingOptimizationStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       // GET /staffing-optimization
-      const response = await axiosInstance.get('/dashboard-card/staffing-optimization');
+      const response = await axiosInstance.get(
+        "/analytics-dashboards-cards/staffing-optimization"
+      );
       set({
         data: response.data.data, // => { categories, series }
         loading: false,

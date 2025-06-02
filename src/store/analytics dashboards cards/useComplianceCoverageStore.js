@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import axiosInstance from '../../service/axiosInstance'; // Adjust path if needed
+import { create } from "zustand";
+import axiosInstance from "../../service/axiosInstance"; // Adjust path if needed
 
 const useComplianceCoverageStore = create((set) => ({
   data: null,
@@ -10,7 +10,9 @@ const useComplianceCoverageStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       // This calls /api/v1/compliance-coverage
-      const response = await axiosInstance.get('/dashboard-card/compliance-coverage');
+      const response = await axiosInstance.get(
+        "/analytics-dashboards-cards/compliance-coverage"
+      );
       set({ data: response.data.data, loading: false });
     } catch (err) {
       set({

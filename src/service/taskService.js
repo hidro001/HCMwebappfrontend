@@ -2,7 +2,7 @@ import axiosInstance from "./axiosInstance";
 
 export const fetchSubordinates = async () => {
   try {
-    const response = await axiosInstance.get("/admin/subordinates");
+    const response = await axiosInstance.get("/task/subordinates");
     if (response.data.success) {
       return response.data.data; 
     }
@@ -14,7 +14,7 @@ export const fetchSubordinates = async () => {
 
 export const fetchTasks = async () => {
   try {
-    const response = await axiosInstance.get("/admin/assign");
+    const response = await axiosInstance.get("/task/assign");
     if (response.data.success) {
       return response.data.data; 
     }
@@ -23,9 +23,10 @@ export const fetchTasks = async () => {
     return [];
   }
 };
+
 export const deleteTasks = async (id) => {
   try {
-    const response = await axiosInstance.delete(`/admin/assign/${id}`); 
+    const response = await axiosInstance.delete(`/task/assign/${id}`); 
     if (response.data.success) {
       return response.data.data; 
     }
@@ -35,14 +36,10 @@ export const deleteTasks = async (id) => {
   }
 };
 
-
-
-
 export const submitTask = async (taskData) => {
   try {
-    // const response = await axiosInstance.post("/admin/assign", taskData);
 
-    const response = await axiosInstance.post("/admin/assignv2", taskData);
+    const response = await axiosInstance.post("/task/assignv2", taskData);
 
     
     console.log("Task Submitted Successfully:", response.data);
@@ -53,17 +50,9 @@ export const submitTask = async (taskData) => {
   }
 };
 
-
-
-
-
-
-
-
-
 export const updateTask = async (id, taskData) => {
   try {
-    const response = await axiosInstance.put(`/admin/assign/${id}`, taskData);
+    const response = await axiosInstance.put(`/task/assign/${id}`, taskData);
     if (response.data.success) {
       return response.data.data;
     }
@@ -73,11 +62,10 @@ export const updateTask = async (id, taskData) => {
     return null;
   }
 };
-
 
 export const updateTaskEmp = async (id, taskData) => {
   try {
-    const response = await axiosInstance.put(`/admin/assign/emp/${id}`, taskData);
+    const response = await axiosInstance.put(`/task/assign/emp/${id}`, taskData);
     if (response.data.success) {
       return response.data.data;
     }
@@ -87,9 +75,6 @@ export const updateTaskEmp = async (id, taskData) => {
     return null;
   }
 };
-
-
-
 
 export const fetchManagerTasks = async (taskDate) => {
   try {
@@ -104,10 +89,6 @@ export const fetchManagerTasks = async (taskDate) => {
     return [];
   }
 };
-
-
-
-
 
 export const addTask = async (taskData) => {
   try {
@@ -133,14 +114,9 @@ export const fetchAllTasks = async () => {
 };
 
 
-
-// EMPLOYEE TASKS
-
-
-
 export const fetchTasksEmp = async () => {
   try {
-    const response = await axiosInstance.get("/employee/assign");
+    const response = await axiosInstance.get("/task/assign");
     if (response.data.success) {
       return response.data.data; 
     }
@@ -149,10 +125,6 @@ export const fetchTasksEmp = async () => {
     return [];
   }
 };
-
-//  task count main
-
-
 
 export const getTaskStatusSummary = async (employeeId) => {
   try {
@@ -166,14 +138,6 @@ export const getTaskStatusSummary = async (employeeId) => {
   }
 };
 
-
-
-
-
-
-
-
-
 export const getSubordinateDepartments = async () => {
   try {
     const response = await axiosInstance.get("/task/subordinate/department");
@@ -186,26 +150,10 @@ export const getSubordinateDepartments = async () => {
   }
 };
 
-
-
-
-
-
-
-
-
-// comment for task
-
-
-
-
-
-
-
 export const getComments = async (taskId) => {
   try {
     // Adjust the base URL if needed, e.g., axios.create({ baseURL: 'http://localhost:4000' })
-    const response = await axiosInstance.get(`/admin/comment/${taskId}`, {
+    const response = await axiosInstance.get(`/task/comment/${taskId}`, {
     
     });
     return response.data; // data.success, data.data, data.message, etc.
@@ -214,11 +162,10 @@ export const getComments = async (taskId) => {
   }
 };
 
-
 export const addComment = async (taskId, comment) => {
   try {
     const response = await axiosInstance.post(
-      `/admin/comment/${taskId}`,
+      `/task/comment/${taskId}`,
       { comment },
      
     );
@@ -228,12 +175,10 @@ export const addComment = async (taskId, comment) => {
   }
 };
 
-
-
 export const updateAcknowledgeStatus = async (taskId, status) => {
   try {
     // status should be "Acknowledged" in your scenario
-    const response = await axiosInstance.patch(`/employee/assign/acknowledge/${taskId}`, {
+    const response = await axiosInstance.patch(`/task/assign/acknowledge/${taskId}`, {
       acknowledge: status,
     });
     return response.data; // e.g. { success, message }
@@ -242,9 +187,6 @@ export const updateAcknowledgeStatus = async (taskId, status) => {
     throw error.response;
   }
 };
-
-
-
 
 export const deleteTask = async (taskId) => {
   try {
@@ -256,6 +198,34 @@ export const deleteTask = async (taskId) => {
     throw error;
   }
 };
+
+export const fetchTasksByEmployeeId = async (employeeId) => {
+  try {
+    const response = await axiosInstance.get(`/task/assign/employee/${employeeId}`);
+    if (response.data.success) {
+      return response.data.data;
+    }
+  } catch (error) {
+    console.error("Error fetching tasks by employee:", error);
+    return [];
+  }
+};
+
+// e.g. "fetchDailyTasksByEmployeeId" calling the new route
+export const fetchDailyTasksByEmployeeId = async (employeeId) => {
+  try {
+    const response = await axiosInstance.get(`/task/daily/employee/${employeeId}`);
+    if (response.data.success) {
+      return response.data.data;
+    }
+    return [];
+  } catch (error) {
+    console.error("Error fetching daily tasks:", error);
+    return [];
+  }
+};
+
+
 
 export const updateTaskdaily = async (taskId, payload) => {
   try {

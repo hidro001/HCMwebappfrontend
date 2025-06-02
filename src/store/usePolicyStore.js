@@ -12,7 +12,7 @@ const usePolicyStore = create((set, get) => ({
   fetchPolicies: async () => {
     set({ loading: true });
     try {
-      const response = await axiosInstance.get("/policy-new");
+      const response = await axiosInstance.get("/policies");
       set({ policies: response.data, loading: false });
     } catch (error) {
       set({ error: error.message, loading: false });
@@ -32,7 +32,7 @@ const usePolicyStore = create((set, get) => ({
         }
       });
       
-      const response = await axiosInstance.post("/policy-new", formData, {
+      const response = await axiosInstance.post("/policies", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -53,7 +53,7 @@ const usePolicyStore = create((set, get) => ({
    deletePolicy: async (id) => {
     set({ loading: true });
     try {
-      const response = await axiosInstance.delete(`/policy-new/${id}`);
+      const response = await axiosInstance.delete(`/policies/${id}`);
       set((state) => ({
         policies: state.policies.filter((policy) => policy._id !== id),
         loading: false,
@@ -75,7 +75,7 @@ const usePolicyStore = create((set, get) => ({
           formData.append(key, updatedData[key]);
         }
       });
-      const response = await axiosInstance.put(`/policy-new/${id}`, formData, {
+      const response = await axiosInstance.put(`/policies/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import axiosInstance from '../../service/axiosInstance'; // Adjust path as needed
+import { create } from "zustand";
+import axiosInstance from "../../service/axiosInstance"; // Adjust path as needed
 
 const useNationalityMaritalStore = create((set) => ({
   data: null,
@@ -10,7 +10,9 @@ const useNationalityMaritalStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       // Make request to your Express route: /demographics/nationality-marital
-      const response = await axiosInstance.get('/dashboard-card/nationality-marital');
+      const response = await axiosInstance.get(
+        "/analytics-dashboards-cards/nationality-marital"
+      );
       set({ data: response.data.data, loading: false });
     } catch (err) {
       set({

@@ -14,7 +14,14 @@ function KPIDetailModal({ showModal, selectedRating, onClose, renderPeriod }) {
   return (
     <BaseModal isOpen={showModal} onClose={onClose}>
       <motion.div
-        className="relative overflow-hidden bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-xl mx-auto"
+        className="relative overflow-auto bg-white dark:bg-gray-900 rounded-xl shadow-2xl w-full max-w-xl mx-auto  h-[95%]
+         [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+                transition-colors duration-300
+        "
         variants={modalVariants}
         initial="hidden"
         animate="visible"
@@ -106,7 +113,7 @@ function KPIDetailModal({ showModal, selectedRating, onClose, renderPeriod }) {
                     Manager Feedback
                   </h4>
                   <p
-                    className="mt-2 max-h-24 overflow-y-auto text-gray-600 dark:text-gray-400 text-sm    [&::-webkit-scrollbar]:w-2
+                    className="mt-2 max-h-24 overflow-y-auto text-gray-600 dark:text-gray-400 text-sm p-1   [&::-webkit-scrollbar]:w-2
                 [&::-webkit-scrollbar-track]:rounded-full
                 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
                 [&::-webkit-scrollbar-thumb]:rounded-full

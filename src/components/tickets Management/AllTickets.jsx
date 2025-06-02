@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -33,13 +34,13 @@ export default function AllTickets() {
     issues,
     fetchAllIssues,
     createIssue,
-    editIssue,
+    changeIssueStatus,
     removeIssue,
     fetchComments,
     postComment,
     loading,
   } = useIssuesStore();
-
+  const navigate = useNavigate();
   const { departments, fetchDepartments } = useDepartmentStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -58,7 +59,7 @@ export default function AllTickets() {
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
 
-  // ** New sortOrder state ** 
+  // ** New sortOrder state **
   const [sortOrder, setSortOrder] = useState("desc"); // desc => Latest to Old (default)
 
   useEffect(() => {
@@ -101,7 +102,7 @@ export default function AllTickets() {
         attachment: formData.attachment,
       });
     } else if (selectedIssue) {
-      await editIssue(selectedIssue._id, {
+      await changeIssueStatus(selectedIssue._id, {
         issueTitle: formData.ticketTitle,
         issueDescription: formData.description,
         priority: formData.priority,
@@ -317,14 +318,23 @@ export default function AllTickets() {
           </select>
 
           {/* Export Buttons */}
-          <ExportButtons data={exportData} columns={columnsArray} filename="Tickets" />
+          <ExportButtons
+            data={exportData}
+            columns={columnsArray}
+            filename="Tickets"
+          />
         </div>
       </motion.div>
 
       {loading ? (
         <div className="bg-white dark:bg-gray-800 rounded-md shadow p-4 transition-colors">
           {Array.from({ length: 10 }).map((_, i) => (
-            <Skeleton key={i} variant="rectangular" height={40} className="mb-2" />
+            <Skeleton
+              key={i}
+              variant="rectangular"
+              height={40}
+              className="mb-2"
+            />
           ))}
         </div>
       ) : sortedIssues.length > 0 ? (
@@ -385,9 +395,17 @@ export default function AllTickets() {
                     <td className="p-3 text-sm">
                       {String(globalIndex).padStart(2, "0")}
                     </td>
-                    <td className="p-3 text-sm text-blue-600 dark:text-blue-400 cursor-pointer">
+                    <td
+                      className="p-3 text-sm text-blue-600 dark:text-blue-400 cursor-pointer"
+                      onClick={() =>
+                        navigate(
+                          `/dashboard/employee-tickets/${issue.createdBy.employee_Id}`
+                        )
+                      }
+                    >
                       {issue.createdBy?.employee_Id || "--"}
                     </td>
+
                     <td className="p-3 text-sm">
                       {issue.createdBy
                         ? `${issue.createdBy.first_Name} ${issue.createdBy.last_Name}`

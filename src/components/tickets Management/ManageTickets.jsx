@@ -32,7 +32,7 @@ export default function ManageTickets() {
     issues,
     fetchDeptIssues,
     createIssue,
-    editIssue,
+    changeIssueStatus,
     removeIssue,
     fetchComments,
     postComment,
@@ -94,7 +94,7 @@ export default function ManageTickets() {
         attachment: formData.attachment,
       });
     } else if (selectedIssue) {
-      await editIssue(selectedIssue._id, {
+      await changeIssueStatus(selectedIssue._id, {
         issueTitle: formData.ticketTitle,
         issueDescription: formData.description,
         priority: formData.priority,

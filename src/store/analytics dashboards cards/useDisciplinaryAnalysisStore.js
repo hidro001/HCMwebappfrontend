@@ -1,17 +1,17 @@
 // src/store/useDisciplinaryAnalysisStore.js
-import { create } from 'zustand';
-import axiosInstance from '../../service/axiosInstance'; // Adjust path to your custom axios
+import { create } from "zustand";
+import axiosInstance from "../../service/axiosInstance"; // Adjust path to your custom axios
 
 const useDisciplinaryAnalysisStore = create((set) => ({
-  data: null,         // Will hold { year, categories, series }
-  loading: false,     // Show loading states
-  error: null,        // Track errors
+  data: null, // Will hold { year, categories, series }
+  loading: false, // Show loading states
+  error: null, // Track errors
 
   // Action to fetch data from /disciplinary-analysis
   fetchDisciplinaryAnalysis: async (selectedYear) => {
     set({ loading: true, error: null });
     try {
-      let endpoint = '/dashboard-card/disciplinary-analysis'; 
+      let endpoint = "/analytics-dashboards-cards/disciplinary-analysis";
       // if user selected a year, append ?year=YYYY
       if (selectedYear) {
         endpoint += `?year=${selectedYear}`;

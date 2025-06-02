@@ -1,115 +1,8 @@
-
-
-
-// import React from "react";
-// import { useForm } from "react-hook-form";
-// import BaseModal from "../../../common/BaseModal"; // your custom modal wrapper
-
-// const DisciplinaryActionFormModal = ({
-//   open,
-//   onClose,
-//   defaultValues = {},
-//   onSubmit,
-//   isEdit = false,
-// }) => {
-//   const {
-//     register,
-//     handleSubmit,
-//     formState: { errors },
-//     reset,
-//   } = useForm({
-//     defaultValues,
-//   });
-
-//   React.useEffect(() => {
-//     reset(defaultValues);
-//   }, [defaultValues, reset]);
-
-//   const submitHandler = (data) => {
-//     onSubmit(data);
-//   };
-
-//   return (
-//     <BaseModal isOpen={open} onClose={onClose}>
-//       <div className="bg-white dark:bg-gray-800 p-6 rounded-md w-11/12 md:w-1/3">
-//         <h2 className="text-xl font-bold mb-4">
-//           {isEdit ? "Edit Disciplinary Action" : "Add Disciplinary Action"}
-//         </h2>
-//         <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
-//           {/* Action Type */}
-//           <div>
-//             <label className="block mb-1 font-semibold">Action Type</label>
-//             <select
-//               className={`w-full border rounded p-2 ${
-//                 errors.actionType ? "border-red-500" : "border-gray-300"
-//               }`}
-//               {...register("actionType", { required: true })}
-//             >
-//               <option value="">Select Action Type</option>
-//               <option value="verbalWarning">Verbal Warning</option>
-//               <option value="writtenWarning">Written Warning</option>
-//               <option value="suspension">Suspension</option>
-//             </select>
-//             {errors.actionType && (
-//               <p className="text-red-500 text-sm">Action type is required</p>
-//             )}
-//           </div>
-
-//           {/* Date */}
-//           <div>
-//             <label className="block mb-1 font-semibold">Date</label>
-//             <input
-//               type="date"
-//               className={`w-full border rounded p-2 ${
-//                 errors.date ? "border-red-500" : "border-gray-300"
-//               }`}
-//               {...register("date", { required: true })}
-//             />
-//             {errors.date && (
-//               <p className="text-red-500 text-sm">Date is required</p>
-//             )}
-//           </div>
-
-//           {/* Notes */}
-//           <div>
-//             <label className="block mb-1 font-semibold">Notes</label>
-//             <textarea
-//               rows={3}
-//               className="w-full border border-gray-300 rounded p-2"
-//               {...register("notes")}
-//             />
-//           </div>
-
-//           {/* Hidden userId field */}
-//           <input type="hidden" {...register("userId")} />
-
-//           <div className="flex items-center justify-end space-x-2 mt-4">
-//             <button
-//               type="button"
-//               onClick={onClose}
-//               className="py-2 px-4 border border-gray-300 rounded bg-white hover:bg-gray-100"
-//             >
-//               Cancel
-//             </button>
-//             <button
-//               type="submit"
-//               className="py-2 px-4 border border-transparent rounded bg-blue-600 text-white hover:bg-blue-700"
-//             >
-//               {isEdit ? "Update" : "Create"}
-//             </button>
-//           </div>
-//         </form>
-//       </div>
-//     </BaseModal>
-//   );
-// };
-
-// export default DisciplinaryActionFormModal;
-
-
 import React from "react";
 import { useForm } from "react-hook-form";
-import BaseModal from "../../../common/BaseModal"; // your custom modal wrapper
+import { motion } from "framer-motion";
+import { FaExclamationCircle } from "react-icons/fa";
+import BaseModal from "../../../common/BaseModal";
 
 const DisciplinaryActionFormModal = ({
   open,
@@ -135,31 +28,55 @@ const DisciplinaryActionFormModal = ({
     onSubmit(data);
   };
 
+  const modalVariants = {
+    hidden: { opacity: 0, y: 50 },
+    visible: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: 50 },
+  };
+
   return (
     <BaseModal isOpen={open} onClose={onClose}>
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-md w-11/12 md:w-1/3">
-        <h2 className="text-xl font-bold mb-4 dark:text-white">
-          {isEdit ? "Edit Disciplinary Action" : "Add Disciplinary Action"}
-        </h2>
+      <motion.div
+        variants={modalVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        transition={{ duration: 0.3 }}
+        className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg w-full max-w-md"
+      >
+        <div className="flex items-center mb-4">
+          <FaExclamationCircle className="text-indigo-500 mr-2" size={24} />
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">
+            {isEdit ? "Edit Disciplinary Action" : "Add Disciplinary Action"}
+          </h2>
+        </div>
         <form onSubmit={handleSubmit(submitHandler)} className="space-y-4">
           {/* Action Type */}
           <div>
-            <label className="block mb-1 font-semibold dark:text-gray-200">
+            <label
+              htmlFor="actionType"
+              className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Action Type
             </label>
             <select
-              className={`w-full border rounded p-2 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${
-                errors.actionType ? "border-red-500" : "border-gray-300"
-              }`}
+              id="actionType"
+              className={`w-full px-3 py-2 text-base border ${
+                errors.actionType
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
+              } rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500`}
               {...register("actionType", { required: true })}
             >
-              <option value="">Select Action Type</option>
+              <option value="" disabled selected>
+                Select Action Type
+              </option>
               <option value="verbalWarning">Verbal Warning</option>
               <option value="writtenWarning">Written Warning</option>
               <option value="suspension">Suspension</option>
             </select>
             {errors.actionType && (
-              <p className="text-red-500 dark:text-red-400 text-sm">
+              <p className="mt-1 text-sm text-red-500 dark:text-red-400">
                 Action type is required
               </p>
             )}
@@ -167,18 +84,24 @@ const DisciplinaryActionFormModal = ({
 
           {/* Date */}
           <div>
-            <label className="block mb-1 font-semibold dark:text-gray-200">
+            <label
+              htmlFor="date"
+              className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Date
             </label>
             <input
               type="date"
-              className={`w-full border rounded p-2 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 ${
-                errors.date ? "border-red-500" : "border-gray-300"
-              }`}
+              id="date"
+              className={`w-full px-3 py-2 text-base border ${
+                errors.date
+                  ? "border-red-500"
+                  : "border-gray-300 dark:border-gray-600"
+              } rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500`}
               {...register("date", { required: true })}
             />
             {errors.date && (
-              <p className="text-red-500 dark:text-red-400 text-sm">
+              <p className="mt-1 text-sm text-red-500 dark:text-red-400">
                 Date is required
               </p>
             )}
@@ -186,12 +109,17 @@ const DisciplinaryActionFormModal = ({
 
           {/* Notes */}
           <div>
-            <label className="block mb-1 font-semibold dark:text-gray-200">
+            <label
+              htmlFor="notes"
+              className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-300"
+            >
               Notes
             </label>
             <textarea
-              rows={3}
-              className="w-full border border-gray-300 rounded p-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200"
+              id="notes"
+              rows={4}
+              placeholder="Enter additional notes..."
+              className="w-full px-3 py-2 text-base border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
               {...register("notes")}
             />
           </div>
@@ -199,25 +127,24 @@ const DisciplinaryActionFormModal = ({
           {/* Hidden userId field */}
           <input type="hidden" {...register("userId")} />
 
-          <div className="flex items-center justify-end space-x-2 mt-4">
+          {/* Buttons */}
+          <div className="flex items-center justify-end space-x-2 mt-6">
             <button
               type="button"
               onClick={onClose}
-              className="py-2 px-4 border border-gray-300 rounded bg-white hover:bg-gray-100 
-                         dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600"
+              className="px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors font-medium"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="py-2 px-4 border border-transparent rounded bg-blue-600 text-white hover:bg-blue-700 
-                         dark:bg-blue-700 dark:hover:bg-blue-800"
+              className="px-4 py-2.5 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
             >
               {isEdit ? "Update" : "Create"}
             </button>
           </div>
         </form>
-      </div>
+      </motion.div>
     </BaseModal>
   );
 };

@@ -13,7 +13,7 @@ const useDisciplinaryStore = create((set, get) => ({
   fetchAllUsers: async () => {
     set({ loading: true, error: null });
     try {
-      const response = await axiosInstance.get("/disciplinary-actions/all-users");
+      const response = await axiosInstance.get("/user/get-all");
       set({ users: response.data.data || [], loading: false });
     } catch (error) {
       console.error("Error fetching users:", error);

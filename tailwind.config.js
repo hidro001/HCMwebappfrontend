@@ -21,6 +21,7 @@ export default {
         "bg-primary": "var(--bg-primary)",
         "bg-secondary": "var(--bg-secondary)",
         "text-primary": "var(--text-primary)",
+        "bg-sidebar" : "var(--bg-sidebar)",
         // ...
       },
     },

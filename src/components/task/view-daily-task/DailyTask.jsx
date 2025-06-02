@@ -7,9 +7,11 @@ import {
   FaCommentDots,
 } from "react-icons/fa";
 import CommentModal from "./CommentModal";
+import { useNavigate } from "react-router-dom";  // ADD THIS
 import DailyTaskModal from "./DailyTaskModal";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import { fetchManagerTasks, getSubordinateDepartments } from "../../../service/taskService";
+import { fetchDailyTasksByEmployeeId } from "../../../service/taskService";
 import { Toaster, toast } from "react-hot-toast";
 
 const DailyTask = () => {
@@ -18,7 +20,7 @@ const DailyTask = () => {
   const [selectedTask, setSelectedTask] = useState(null);
   const [commentTask, setCommentTask] = useState(null);
   const [deleteTask, setDeleteTask] = useState(null);
-  
+  const navigate = useNavigate();  // ADD THIS
   // Set default date to today's date in YYYY-MM-DD format.
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split("T")[0]);
   
@@ -189,9 +191,30 @@ const DailyTask = () => {
                     <td className="p-3">
                       {(currentPage - 1) * pageSize + index + 1}
                     </td>
-                    <td className="p-3 text-blue-500 cursor-pointer">
-                      {task.employee_Id}
-                    </td>
+                     <td 
+  className="p-3 text-blue-500 cursor-pointer"
+  onClick={async () => {
+    try {
+      const employeeId = task.employee_Id;
+      const dailyTasks = await fetchDailyTasksByEmployeeId(employeeId);
+
+      // Check if tasks were fetched successfully
+      if (dailyTasks.length > 0) {
+        // You can pass data via state or context. Here, a simple example using state:
+        navigate(`/dashboard/employee-particular-tasks/${employeeId}`, {
+          state: { dailyTasks, employeeName: task.full_Name },
+        });
+      } else {
+        toast.error("No daily tasks found for this employee.");
+      }
+    } catch (error) {
+      console.error("Error fetching employee daily tasks:", error);
+      toast.error("Failed to load daily tasks.");
+    }
+  }}
+>
+  {task.employee_Id}
+</td>
                     <td className="p-3">{task.full_Name}</td>
                     <td className="p-3">
                       {new Date(task.createdAt || "N/A").toLocaleDateString("en-IN", {

@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import axiosInstance from '../../service/axiosInstance'; // Update the path as needed
+import { create } from "zustand";
+import axiosInstance from "../../service/axiosInstance"; // Update the path as needed
 
 const useDemographicsStore = create((set) => ({
   demographicsData: null,
@@ -11,7 +11,9 @@ const useDemographicsStore = create((set) => ({
     set({ loading: true, error: null });
     try {
       // Make an API call using your custom axiosInstance
-      const response = await axiosInstance.get('/dashboard-card/demographics');
+      const response = await axiosInstance.get(
+        "/analytics-dashboards-cards/demographics"
+      );
       // The API response should have shape { success: true, data: {...} }
       set({
         demographicsData: response.data.data,

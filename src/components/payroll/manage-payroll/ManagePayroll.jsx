@@ -11,12 +11,12 @@ import {
   FaFileAlt,
   FaSpinner,
 } from "react-icons/fa";
-
+import {Link} from "react-router-dom"
 // Import your custom components
 import ManagePayrollView from "./ManagePayrollView";
 import ManagePayrollEdit from "./ManagePayrollEdit";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
-import ExportButtons from "../../common/PdfExcel"; // Adjust path if needed
+import ExportButtons from "../../common/PdfExcel"; 
 
 // Service calls
 import {
@@ -455,8 +455,10 @@ export default function ManagePayroll() {
              
                 <td className="px-4 py-2">{entry.firstName} {entry.lastName}</td>
                 <td className="px-4 py-2 text-blue-600 dark:text-blue-400 font-medium">
-                  {entry.employeeId}
-                </td>
+  <Link to={`/dashboard/payroll/employee/${entry.employeeId}`}>
+    {entry.employeeId}
+  </Link>
+</td>
                 <td className="px-4 py-2">{entry.department}</td>
 
                 <td className="px-4 py-2">{entry.month}</td>

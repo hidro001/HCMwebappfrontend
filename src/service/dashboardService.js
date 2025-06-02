@@ -1,7 +1,7 @@
 import axiosInstance from "./axiosInstance";
 
 export async function getAttendanceData(date) {
-  const baseUrl = "/superadmin/attendence-review";
+  const baseUrl = "/dashboard-stats/super-admin/attendence-review";
   const url = date ? `${baseUrl}?date=${encodeURIComponent(date)}` : baseUrl;
   const response = await axiosInstance.get(url);
   return response.data;
@@ -30,7 +30,7 @@ export async function getRaciScores(startDate, endDate) {
 
 export async function getDashboardStats() {
 
-  const response = await axiosInstance.get("/employee/dashboard/stats");
+  const response = await axiosInstance.get("/dashboard-stats-user");
   return response.data; 
 }
 
@@ -39,6 +39,6 @@ export async function getDashboardStats() {
 
 export async function getAttendanceStats() {
 
-  const res = await axiosInstance.get("/employee/attendance/summary");
+  const res = await axiosInstance.get("/dashboard-stats-user/attendance");
   return res.data; 
 }

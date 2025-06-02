@@ -5,7 +5,7 @@ import axiosInstance from "./axiosInstance";
 export const fetchLineChartData = async (year = 2025) => {
   try {
     const res = await axiosInstance.get(
-      `/payroll-dashboard/linechart?year=${year}`
+      `/payroll/linechart?year=${year}`
     );
     return res.data?.data;
   } catch (error) {
@@ -16,7 +16,7 @@ export const fetchLineChartData = async (year = 2025) => {
 
 export const fetchDoughnutChartData = async () => {
   try {
-    const res = await axiosInstance.get(`/payroll-dashboard/doughnut`);
+    const res = await axiosInstance.get(`/payroll/doughnut`);
     return res.data?.data;
   } catch (error) {
     console.error("Error fetching doughnut chart data:", error);
@@ -26,7 +26,7 @@ export const fetchDoughnutChartData = async () => {
 
 export const fetchPayrollList = async () => {
   try {
-    const res = await axiosInstance.get(`/payroll-dashboard/list`);
+    const res = await axiosInstance.get(`/payroll/list`);
     return res.data?.data;
   } catch (error) {
     console.error("Error fetching payroll list:", error);
@@ -38,21 +38,21 @@ export const fetchPayrollList = async () => {
 
 export async function fetchAllPayroll(month, year) {
   const response = await axiosInstance.get(
-    `/admin/payroll/getpayroll?month=${month}&year=${year}`
+    `/payroll/?month=${month}&year=${year}`
   );
   return response.data?.data || [];
 }
 
 export async function fetchAllocatedDepartments(employeeId) {
   const response = await axiosInstance.get(
-    `/superadmin/departmentAlocated/${employeeId}`
+    `/department-allocations/users/${employeeId}`
   );
   return response.data?.departmentAlocated || [];
 }
 
 export async function addPayroll(month, year) {
   const response = await axiosInstance.post(
-    `/admin/payroll/addpayroll?month=${month}&year=${year}`
+    `/payroll/?month=${month}&year=${year}`
   );
   return response.data;
 }
@@ -64,7 +64,7 @@ export async function getAdminStats() {
 
 export async function updatePayroll(payrollId, updates) {
   const response = await axiosInstance.put(
-    `/admin/payroll/update/${payrollId}`,
+    `/payroll/update/${payrollId}`,
     updates
   );
   return response.data;
@@ -73,7 +73,7 @@ export async function updatePayroll(payrollId, updates) {
 // ✅ Fetch Payroll Data by Employee ID, Month & Year
 export async function getPayrollById(employeeId, month, year) {
   try {
-    const response = await axiosInstance.get(`/admin/payroll/${employeeId}`, {
+    const response = await axiosInstance.get(`/payroll/${employeeId}`, {
       params: { month, year },
     });
     return { success: true, data: response.data.data };
@@ -95,7 +95,7 @@ export async function updatePayrollDeductionAndSalary(
 ) {
   try {
     const response = await axiosInstance.put(
-      `/admin/payroll/update/${employeeId}`,
+      `/payroll/update/${employeeId}`,
       {
         month,
         year,
@@ -117,7 +117,7 @@ export async function updatePayrollDeductionAndSalary(
 // ✅ Fetch Payroll Summary for a given month & year
 export async function getPayrollSummary(month, year) {
   try {
-    const response = await axiosInstance.get("/admin/payroll/count/payroll", {
+    const response = await axiosInstance.get("/payroll/summary", {
       params: { month, year },
     });
 
@@ -135,7 +135,7 @@ export async function getPayrollSummary(month, year) {
 
 export async function fetchAllRequests() {
   const response = await axiosInstance.get(
-    "/superadmin/companysettings/requests"
+    "/payroll/requests"
   );
   return response.data?.data || [];
 }
@@ -154,7 +154,7 @@ export async function deleteRequests(id) {
 
 export async function getDepartment() {
   try {
-    const response = await axiosInstance.get(`/superadmin/departments`);
+    const response = await axiosInstance.get(`/departments`);
     return response.data?.data || [];
   } catch (error) {
     console.error("Error deleting request:", error);
@@ -239,3 +239,18 @@ export async function updateAdvanceRequest(id, data) {
     throw new Error("Failed to update the Advance request.");
   }
 }
+
+export const fetchAllPayrollByEmployeeId = async (employeeId) => {
+  try {
+    const response = await axiosInstance.get(`/payroll/employee/${employeeId}`);
+    return { success: true, data: response.data.data };
+  } catch (error) {
+    console.error("Error fetching payroll by employee:", error);
+    return {
+      success: false,
+      message: error.response?.data?.message || 'Failed to fetch payroll data.',
+      data: [],
+    };
+  }
+};
+

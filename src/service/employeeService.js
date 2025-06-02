@@ -5,7 +5,7 @@ import axiosInstance from "./axiosInstance"; // your configured axios instance
  * Fetch Shift Timings from server
  */
 export async function fetchShiftTimings() {
-  const response = await axiosInstance.get("/superadmin/companysettings/shift-timings");
+  const response = await axiosInstance.get("/company-settings/shift-timings");
   return response.data?.data || [];
 }
 
@@ -13,7 +13,7 @@ export async function fetchShiftTimings() {
  * Fetch Employment Types
  */
 export async function fetchEmploymentTypes() {
-  const response = await axiosInstance.get("/superadmin/companysettings/employment-types");
+  const response = await axiosInstance.get("/company-settings/employment-types");
   return response.data?.data || [];
 }
 
@@ -21,7 +21,7 @@ export async function fetchEmploymentTypes() {
  * Fetch Departments
  */
 export async function fetchDepartments() {
-  const response = await axiosInstance.get("/superadmin/departments");
+  const response = await axiosInstance.get("/departments");
   return response.data?.data || [];
 }
 
@@ -29,7 +29,7 @@ export async function fetchDepartments() {
  * Fetch All Employees (for manager assignment)
  */
 export async function fetchAllEmployees() {
-  const response = await axiosInstance.get("/user/all-user");
+  const response = await axiosInstance.get("/user/get-all");
   return response.data?.data || [];
 }
 
@@ -37,7 +37,7 @@ export async function fetchAllEmployees() {
  * Fetch Permission Roles
  */
 export async function fetchPermissionRoles() {
-  const response = await axiosInstance.get("/PermissionRole/get");
+  const response = await axiosInstance.get("/permission-role/get");
   return response.data?.data || [];
 }
 
@@ -45,7 +45,7 @@ export async function fetchPermissionRoles() {
  * Fetch Company Info (Addresses)
  */
 export async function fetchCompanyInfo() {
-  const response = await axiosInstance.get("/superadmin/info/getCompanyInfo");
+  const response = await axiosInstance.get("/company-settings/info/getCompany");
   const companyArray = response.data?.data || [];
   return companyArray.length > 0 ? companyArray[0] : null;
 }
@@ -54,7 +54,7 @@ export async function fetchCompanyInfo() {
  * Fetch Designations
  */
 export async function fetchDesignations() {
-  const response = await axiosInstance.get("/designations/get");
+  const response = await axiosInstance.get("/designation/get");
   return response.data?.data || [];
 }
 
@@ -63,7 +63,7 @@ export async function fetchDesignations() {
  */
 export async function createEmployee(formData) {
   // This is the final POST as in your old code (superadmin/register)
-  const response = await axiosInstance.post("/superadmin/register", formData, {
+  const response = await axiosInstance.post("/user-management/register", formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -86,10 +86,20 @@ export async function fetchEmployeeById(employeeId) {
  */
 export async function updateEmployee(employeeId, formData) {
   // Example: PUT /superadmin/employees/:id
-  const response = await axiosInstance.put(`/superadmin/employees/${employeeId}`, formData, {
+  const response = await axiosInstance.put(`/user-management/update/${employeeId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
   });
   return response.data; // { success: boolean, message?: string, etc. }
 }
+
+export const fetchSubordinateFilters = async () => {
+  try {
+    const response = await axiosInstance.get("/usage-stats/subordinate-departments-designations");
+    return response.data.data; // { departments, designations }
+  } catch (error) {
+    console.error("Error fetching subordinate filters:", error);
+    throw error;
+  }
+};

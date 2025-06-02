@@ -1,6 +1,6 @@
 // src/store/useAadhaarCardStore.js
-import { create } from 'zustand';
-import axiosInstance from '../../service/axiosInstance'; // Adjust path if needed
+import { create } from "zustand";
+import axiosInstance from "../../service/axiosInstance"; // Adjust path if needed
 
 const useAadhaarCardStore = create((set) => ({
   data: null,
@@ -10,7 +10,9 @@ const useAadhaarCardStore = create((set) => ({
   fetchAadhaarStats: async () => {
     set({ loading: true, error: null });
     try {
-      const res = await axiosInstance.get('/dashboard-card/aadhaar-card-stats');
+      const res = await axiosInstance.get(
+        "/analytics-dashboards-cards/aadhaar-card-stats"
+      );
       set({ data: res.data.data, loading: false });
     } catch (err) {
       set({
