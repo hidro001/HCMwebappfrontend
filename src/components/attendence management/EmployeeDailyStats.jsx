@@ -237,6 +237,8 @@ import { useParams } from "react-router-dom";
 import { FiClock, FiCoffee, FiActivity, FiMonitor, FiGlobe, FiTrendingUp, FiInfo } from "react-icons/fi";
 import useUsageStatsStore from "../../store/useUsageStore";
 import useFullAttendanceStore from "../../store/useFullAttendanceStore";
+import CustomTooltip from "./CustomToolTip";
+import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from 'recharts';
 
 export default function EmployeeDailyStats() {
   const { attendanceData } = useFullAttendanceStore();
@@ -250,6 +252,8 @@ export default function EmployeeDailyStats() {
     error,
     timeline,
     fetchTimeline,
+    fetchGraphData,   // <-- Added
+    graphData,        // <-- Added
   } = useUsageStatsStore();
 
   const attendanceRecord = useMemo(() => {
@@ -257,13 +261,15 @@ export default function EmployeeDailyStats() {
   }, [attendanceData, date]);
 
   useEffect(() => {
-    fetchDailyStats(empID, date).then((data) => {
-      if (data?.department) {
-        fetchDeptCategories(data.department);
-      }
-    });
-    fetchTimeline(empID, date);
-  }, [empID, date, fetchDailyStats, fetchDeptCategories, fetchTimeline]);
+  fetchDailyStats(empID, date).then((data) => {
+    if (data?.department) {
+      fetchDeptCategories(data.department);
+    }
+  });
+  fetchTimeline(empID, date);
+  fetchGraphData(empID, date); // <-- Fetching graph data here
+}, [empID, date, fetchDailyStats, fetchDeptCategories, fetchTimeline, fetchGraphData]);
+
 
   const { productiveTime, unproductiveTime } = useMemo(() => {
     if (!dailyStats || !deptCategories)
@@ -738,6 +744,33 @@ export default function EmployeeDailyStats() {
           </div>
         </div>
       </div>
+      {/* Productivity Graph Section */}
+<div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 mb-8">
+  <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center">
+    <FiTrendingUp className="mr-2 text-indigo-500" />
+    Productivity Graph
+  </h2>
+
+  {graphData.length ? (
+    <ResponsiveContainer width="100%" height={300}>
+      <BarChart data={graphData}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="time" />
+        <YAxis />
+        <Tooltip content={<CustomTooltip />} />
+        <Legend />
+        <Bar dataKey="Productivity" stackId="a" fill="#3b82f6" />
+        <Bar dataKey="Unproductivity" stackId="a" fill="#ef4444" />
+        <Bar dataKey="BreakTime" stackId="a" fill="#a855f7" />
+      </BarChart>
+    </ResponsiveContainer>
+  ) : (
+    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+      No graph data available.
+    </div>
+  )}
+</div>
+
     </div>
   );
 }

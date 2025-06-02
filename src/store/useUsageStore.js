@@ -202,6 +202,19 @@ fetchMostUsedStats: async (employeeId, filterType) => {
 },
 mostUsedStats: null,
 
+fetchGraphData: async (employeeId, date) => {
+  set({ loading: true, error: null });
+  try {
+    const res = await axiosInstance.get(`/usage-stats/graph/${employeeId}/${date}`);
+    set({ graphData: res.data.data });
+  } catch (err) {
+    set({ error: err.message });
+    toast.error(err.message);
+  } finally {
+    set({ loading: false });
+  }
+},
+graphData: [],
 
   
 }));
