@@ -199,7 +199,7 @@ function DashboardStatCards() {
 
   if (error) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 p-2 sm:p-4 lg:p-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 p-2 sm:p-4 lg:p-6 ">
         <div className="col-span-full flex items-center justify-center p-8 bg-red-50 dark:bg-red-900/20 rounded-2xl border border-red-200 dark:border-red-800">
           <div className="text-center">
             <div className="text-red-500 mb-2">
@@ -307,7 +307,7 @@ function StatCard({
 
   if (loading) {
     return (
-      <div className="relative bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-xl border border-gray-200/50 dark:border-gray-700/50 h-full min-h-[200px] sm:min-h-[220px] lg:min-h-[240px]">
+      <div className="relative bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-xl border border-gray-200/50 dark:border-gray-700/50 h-full min-h-[200px] sm:min-h-[220px] lg:min-h-[240px] ">
         <div className="animate-pulse">
           <div className="flex items-start justify-between mb-4">
             <div className="w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-xl"></div>
@@ -325,7 +325,7 @@ function StatCard({
 
   return (
     <motion.div
-      className={`relative group cursor-pointer w-full ${interactive ? 'hover:cursor-pointer' : 'cursor-default'}`}
+      className={`relative group cursor-pointer w-full ${interactive ? 'hover:cursor-pointer' : 'cursor-default'} `}
       variants={cardVariants}
       initial="hidden"
       animate="visible"
@@ -343,7 +343,7 @@ function StatCard({
       />
       
       {/* Main Card */}
-      <div className="relative bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-xl border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden h-full min-h-[200px] sm:min-h-[220px] lg:min-h-[240px] flex flex-col justify-between transition-all duration-300">
+      <div className="relative bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-xl border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm overflow-hidden  min-h-[200px] sm:min-h-[220px] lg:min-h-[240px] flex flex-col justify-between transition-all duration-300">
         
         {/* Background Pattern */}
         <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 opacity-5">
