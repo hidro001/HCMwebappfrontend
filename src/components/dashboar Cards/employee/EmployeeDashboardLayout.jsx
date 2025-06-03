@@ -326,7 +326,7 @@ function EmployeeDashboardLayout() {
 
   return (
     <motion.div
-      className="min-h-screen w-full bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800"
+      className="min-h-screen w-full "
       variants={containerVariants}
       initial="hidden"
       animate="visible"
