@@ -1,12 +1,9 @@
-
-
-
 // import React, { useState, useEffect } from "react";
 // import { Link } from "react-router-dom";
-// import { 
-//   FaArrowRight, 
-//   FaUsers, 
-//   FaCoffee, 
+// import {
+//   FaArrowRight,
+//   FaUsers,
+//   FaCoffee,
 //   FaChartLine,
 //   FaSearch,
 //   FaFilter,
@@ -17,7 +14,7 @@
 //   FaAngleDoubleLeft,
 //   FaAngleDoubleRight
 // } from "react-icons/fa";
-// import { 
+// import {
 //   HiOutlineSparkles,
 //   HiOutlineLightningBolt,
 //   HiOutlineDatabase
@@ -117,22 +114,22 @@
 //   // Animation variants
 //   const containerVariants = {
 //     hidden: { opacity: 0, y: 30 },
-//     visible: { 
-//       opacity: 1, 
-//       y: 0, 
-//       transition: { 
+//     visible: {
+//       opacity: 1,
+//       y: 0,
+//       transition: {
 //         duration: 0.6,
 //         ease: "easeOut"
-//       } 
+//       }
 //     },
 //   };
 
 //   const headerVariants = {
 //     hidden: { opacity: 0, x: -50 },
-//     visible: { 
-//       opacity: 1, 
+//     visible: {
+//       opacity: 1,
 //       x: 0,
-//       transition: { 
+//       transition: {
 //         duration: 0.8,
 //         ease: "easeOut"
 //       }
@@ -148,9 +145,9 @@
 
 //   const rowVariant = {
 //     hidden: { opacity: 0, x: -20, scale: 0.95 },
-//     visible: { 
-//       opacity: 1, 
-//       x: 0, 
+//     visible: {
+//       opacity: 1,
+//       x: 0,
 //       scale: 1,
 //       transition: {
 //         duration: 0.4,
@@ -161,8 +158,8 @@
 
 //   const cardVariants = {
 //     hidden: { scale: 0.9, opacity: 0 },
-//     visible: { 
-//       scale: 1, 
+//     visible: {
+//       scale: 1,
 //       opacity: 1,
 //       transition: {
 //         duration: 0.5,
@@ -176,33 +173,33 @@
 //     const buttons = [];
 //     const totalPages = pagination.totalPages;
 //     const current = pagination.currentPage;
-    
+
 //     // Always show first page
 //     if (totalPages > 0) {
 //       buttons.push(1);
 //     }
-    
+
 //     // Add ellipsis and current page area
 //     if (current > 3) {
 //       buttons.push('...');
 //     }
-    
+
 //     // Add pages around current
 //     for (let i = Math.max(2, current - 1); i <= Math.min(totalPages - 1, current + 1); i++) {
 //       if (!buttons.includes(i)) {
 //         buttons.push(i);
 //       }
 //     }
-    
+
 //     // Add ellipsis and last page
 //     if (current < totalPages - 2) {
 //       buttons.push('...');
 //     }
-    
+
 //     if (totalPages > 1) {
 //       buttons.push(totalPages);
 //     }
-    
+
 //     return [...new Set(buttons)];
 //   };
 
@@ -230,7 +227,7 @@
 //               <div className="absolute top-8 -left-8 w-16 h-16 bg-white/5 rounded-full blur-lg animate-bounce"></div>
 //               <div className="absolute bottom-4 right-1/3 w-12 h-12 bg-white/10 rounded-full blur-md animate-ping"></div>
 //             </div>
-            
+
 //             <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
 //               <div className="flex items-center gap-4">
 //                 <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
@@ -246,7 +243,7 @@
 //                   </p>
 //                 </div>
 //               </div>
-              
+
 //               {/* Quick stats */}
 //               <div className="flex gap-4">
 //                 <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 text-center min-w-[80px]">
@@ -307,7 +304,7 @@
 //                   <FaFilter />
 //                   Filters
 //                 </motion.button>
-                
+
 //                 <motion.button
 //                   whileHover={{ scale: 1.05 }}
 //                   whileTap={{ scale: 0.95 }}
@@ -330,7 +327,7 @@
 //                     <Skeleton key={i} height={20} />
 //                   ))}
 //                 </div>
-                
+
 //                 {/* Skeleton Rows */}
 //                 {[...Array(5)].map((_, index) => (
 //                   <motion.div
@@ -390,25 +387,25 @@
 //                             {item.srn}
 //                           </div>
 //                         </div>
-                        
+
 //                         <div className="flex items-center">
 //                           <span className="font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1 rounded-full text-sm">
 //                             {item.empid}
 //                           </span>
 //                         </div>
-                        
+
 //                         <div className="flex items-center">
 //                           <div className="font-semibold text-gray-900 dark:text-gray-100">
 //                             {item.name}
 //                           </div>
 //                         </div>
-                        
+
 //                         <div className="flex items-center">
 //                           <span className="text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm">
 //                             {item.designation}
 //                           </span>
 //                         </div>
-                        
+
 //                         <div className="flex items-center justify-between">
 //                           <div className="flex items-center gap-2">
 //                             <FaCoffee className="text-amber-500" />
@@ -473,7 +470,7 @@
 //                   >
 //                     <FaAngleDoubleLeft className="text-indigo-600 dark:text-indigo-400" />
 //                   </motion.button>
-                  
+
 //                   <motion.button
 //                     whileHover={{ scale: 1.05 }}
 //                     whileTap={{ scale: 0.95 }}
@@ -516,7 +513,7 @@
 //                   >
 //                     <FaChevronRight className="text-indigo-600 dark:text-indigo-400" />
 //                   </motion.button>
-                  
+
 //                   <motion.button
 //                     whileHover={{ scale: 1.05 }}
 //                     whileTap={{ scale: 0.95 }}
@@ -559,13 +556,12 @@
 
 // export default EmployeeBreakStatsTable;
 
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { 
-  FaArrowRight, 
-  FaUsers, 
-  FaCoffee, 
+import {
+  FaArrowRight,
+  FaUsers,
+  FaCoffee,
   FaChartLine,
   FaSearch,
   FaFilter,
@@ -574,12 +570,12 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaAngleDoubleLeft,
-  FaAngleDoubleRight
+  FaAngleDoubleRight,
 } from "react-icons/fa";
-import { 
+import {
   HiOutlineSparkles,
   HiOutlineLightningBolt,
-  HiOutlineDatabase
+  HiOutlineDatabase,
 } from "react-icons/hi";
 import { motion, AnimatePresence } from "framer-motion";
 import Skeleton from "react-loading-skeleton";
@@ -676,19 +672,19 @@ const EmployeeBreakStatsTable = () => {
   // Animation variants (simplified for compactness)
   const containerVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { duration: 0.4, ease: "easeOut" } 
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.4, ease: "easeOut" },
     },
   };
 
   const headerVariants = {
     hidden: { opacity: 0, x: -30 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       x: 0,
-      transition: { duration: 0.5, ease: "easeOut" }
+      transition: { duration: 0.5, ease: "easeOut" },
     },
   };
 
@@ -699,19 +695,19 @@ const EmployeeBreakStatsTable = () => {
 
   const rowVariant = {
     hidden: { opacity: 0, x: -10 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       x: 0,
-      transition: { duration: 0.3, ease: "easeOut" }
+      transition: { duration: 0.3, ease: "easeOut" },
     },
   };
 
   const cardVariants = {
     hidden: { scale: 0.95, opacity: 0 },
-    visible: { 
-      scale: 1, 
+    visible: {
+      scale: 1,
       opacity: 1,
-      transition: { duration: 0.3, ease: "easeOut" }
+      transition: { duration: 0.3, ease: "easeOut" },
     },
   };
 
@@ -720,38 +716,42 @@ const EmployeeBreakStatsTable = () => {
     const buttons = [];
     const totalPages = pagination.totalPages;
     const current = pagination.currentPage;
-    
+
     // Always show first page
     if (totalPages > 0) {
       buttons.push(1);
     }
-    
+
     // Add ellipsis and current page area
     if (current > 3) {
-      buttons.push('...');
+      buttons.push("...");
     }
-    
+
     // Add pages around current
-    for (let i = Math.max(2, current - 1); i <= Math.min(totalPages - 1, current + 1); i++) {
+    for (
+      let i = Math.max(2, current - 1);
+      i <= Math.min(totalPages - 1, current + 1);
+      i++
+    ) {
       if (!buttons.includes(i)) {
         buttons.push(i);
       }
     }
-    
+
     // Add ellipsis and last page
     if (current < totalPages - 2) {
-      buttons.push('...');
+      buttons.push("...");
     }
-    
+
     if (totalPages > 1) {
       buttons.push(totalPages);
     }
-    
+
     return [...new Set(buttons)];
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950 p-3 md:p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950 p-3 md:p-4 rounded-2xl">
       <motion.div
         className="max-w-7xl mx-auto"
         initial="hidden"
@@ -773,7 +773,7 @@ const EmployeeBreakStatsTable = () => {
               <div className="absolute -top-2 -right-2 w-16 h-16 bg-white/10 rounded-full blur-xl animate-pulse"></div>
               <div className="absolute bottom-2 right-1/3 w-8 h-8 bg-white/10 rounded-full blur-md animate-ping"></div>
             </div>
-            
+
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
@@ -789,17 +789,21 @@ const EmployeeBreakStatsTable = () => {
                   </p>
                 </div>
               </div>
-              
+
               {/* Compact stats */}
               <div className="flex gap-2">
                 <div className="bg-white/20 backdrop-blur-sm rounded-xl p-2 text-center min-w-[60px]">
                   <FaUsers className="text-lg text-white mx-auto mb-1" />
-                  <div className="text-lg font-bold text-white">{pagination.totalResults}</div>
+                  <div className="text-lg font-bold text-white">
+                    {pagination.totalResults}
+                  </div>
                   <div className="text-xs text-white/80">Total</div>
                 </div>
                 <div className="bg-white/20 backdrop-blur-sm rounded-xl p-2 text-center min-w-[60px]">
                   <FaCoffee className="text-lg text-white mx-auto mb-1" />
-                  <div className="text-lg font-bold text-white">{currentPage}</div>
+                  <div className="text-lg font-bold text-white">
+                    {currentPage}
+                  </div>
                   <div className="text-xs text-white/80">Page</div>
                 </div>
               </div>
@@ -826,7 +830,9 @@ const EmployeeBreakStatsTable = () => {
                 {/* Compact Show count */}
                 <div className="flex items-center gap-2 bg-white dark:bg-gray-800 rounded-xl px-3 py-2 shadow-md border border-gray-200 dark:border-gray-700">
                   <HiOutlineDatabase className="text-indigo-500 text-sm" />
-                  <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">Show</label>
+                  <label className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                    Show
+                  </label>
                   <select
                     value={showCount}
                     onChange={handleShowCountChange}
@@ -850,7 +856,7 @@ const EmployeeBreakStatsTable = () => {
                   <FaFilter className="text-xs" />
                   Filters
                 </motion.button>
-                
+
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -873,7 +879,7 @@ const EmployeeBreakStatsTable = () => {
                     <Skeleton key={i} height={16} />
                   ))}
                 </div>
-                
+
                 {/* Skeleton Rows */}
                 {[...Array(5)].map((_, index) => (
                   <motion.div
@@ -898,18 +904,32 @@ const EmployeeBreakStatsTable = () => {
                 <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4">
                   <FaUsers className="text-3xl text-gray-400" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-600 dark:text-gray-400 mb-2">No Data Found</h3>
-                <p className="text-gray-500 dark:text-gray-500 text-sm">Try adjusting your filters or check back later.</p>
+                <h3 className="text-xl font-bold text-gray-600 dark:text-gray-400 mb-2">
+                  No Data Found
+                </h3>
+                <p className="text-gray-500 dark:text-gray-500 text-sm">
+                  Try adjusting your filters or check back later.
+                </p>
               </motion.div>
             ) : (
               <div className="space-y-2">
                 {/* Compact Table Header */}
                 <div className="grid grid-cols-5 gap-3 p-3 bg-gradient-to-r from-gray-100 to-gray-50 dark:from-gray-800 dark:to-gray-750 rounded-xl border border-gray-200 dark:border-gray-700">
-                  <div className="font-bold text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wider">Serial</div>
-                  <div className="font-bold text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wider">Employee ID</div>
-                  <div className="font-bold text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wider">Name</div>
-                  <div className="font-bold text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wider">Designation</div>
-                  <div className="font-bold text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wider">Break Taken</div>
+                  <div className="font-bold text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wider">
+                    Serial
+                  </div>
+                  <div className="font-bold text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wider">
+                    Employee ID
+                  </div>
+                  <div className="font-bold text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wider">
+                    Name
+                  </div>
+                  <div className="font-bold text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wider">
+                    Designation
+                  </div>
+                  <div className="font-bold text-gray-700 dark:text-gray-200 text-xs uppercase tracking-wider">
+                    Break Taken
+                  </div>
                 </div>
 
                 {/* Compact Table Rows */}
@@ -933,25 +953,25 @@ const EmployeeBreakStatsTable = () => {
                             {item.srn}
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center">
                           <span className="font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/30 px-2 py-1 rounded-lg text-xs">
                             {item.empid}
                           </span>
                         </div>
-                        
+
                         <div className="flex items-center">
                           <div className="font-semibold text-gray-900 dark:text-gray-100 text-sm">
                             {item.name}
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center">
                           <span className="text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-lg text-xs">
                             {item.designation}
                           </span>
                         </div>
-                        
+
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             <FaCoffee className="text-amber-500 text-sm" />
@@ -993,7 +1013,8 @@ const EmployeeBreakStatsTable = () => {
                       ? `Showing ${
                           pagination.currentPage === 1
                             ? 1
-                            : (pagination.currentPage - 1) * pagination.limit + 1
+                            : (pagination.currentPage - 1) * pagination.limit +
+                              1
                         } to ${
                           pagination.currentPage * pagination.limit >
                           pagination.totalResults
@@ -1016,7 +1037,7 @@ const EmployeeBreakStatsTable = () => {
                   >
                     <FaAngleDoubleLeft className="text-indigo-600 dark:text-indigo-400 text-sm" />
                   </motion.button>
-                  
+
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -1032,16 +1053,16 @@ const EmployeeBreakStatsTable = () => {
                     {generatePaginationButtons().map((page, index) => (
                       <motion.button
                         key={index}
-                        whileHover={{ scale: page !== '...' ? 1.1 : 1 }}
-                        whileTap={{ scale: page !== '...' ? 0.9 : 1 }}
-                        onClick={() => page !== '...' && handlePageChange(page)}
-                        disabled={page === '...'}
+                        whileHover={{ scale: page !== "..." ? 1.1 : 1 }}
+                        whileTap={{ scale: page !== "..." ? 0.9 : 1 }}
+                        onClick={() => page !== "..." && handlePageChange(page)}
+                        disabled={page === "..."}
                         className={`min-w-[32px] h-8 rounded-lg font-semibold transition-all duration-200 text-sm ${
                           page === pagination.currentPage
-                            ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md'
-                            : page === '...'
-                            ? 'text-gray-400 cursor-default'
-                            : 'bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900'
+                            ? "bg-gradient-to-r from-indigo-500 to-purple-500 text-white shadow-md"
+                            : page === "..."
+                            ? "text-gray-400 cursor-default"
+                            : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900"
                         }`}
                       >
                         {page}
@@ -1059,7 +1080,7 @@ const EmployeeBreakStatsTable = () => {
                   >
                     <FaChevronRight className="text-indigo-600 dark:text-indigo-400 text-sm" />
                   </motion.button>
-                  
+
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -1072,7 +1093,9 @@ const EmployeeBreakStatsTable = () => {
 
                   {/* Compact Go to page */}
                   <div className="flex items-center gap-1 ml-2 bg-white dark:bg-gray-800 rounded-lg p-1.5 border border-gray-200 dark:border-gray-700">
-                    <span className="text-xs font-medium text-gray-600 dark:text-gray-300">Go</span>
+                    <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                      Go
+                    </span>
                     <input
                       type="number"
                       value={pageInput}

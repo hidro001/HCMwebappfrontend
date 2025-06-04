@@ -274,6 +274,33 @@ const useRatingStore = create((set, get) => ({
     }
   },
 
+
+      // ============================================
+    // NEW: 9) Fetch Aggregated Ratings for one Employee
+    // ============================================
+   getEmployeeAggregatedRatings: async (employeeId, params) => {
+     try {
+       set({ loading: true, error: null });
+       // Build query string from params
+       // params must include: { periodType, (and the appropriate start/end fields) }
+       const queryParams = new URLSearchParams(params).toString();
+       // The new endpoint on back‐end is:
+       //   GET /ratings/employee/:employeeId/aggregate
+       const res = await axiosInstance.get(
+         `/ratings/employee/${employeeId}/aggregate?${queryParams}`
+       );
+
+       set({ loading: false, error: null });
+       return res.data; // { success: true, employee: {…}, aggregatedBy: "...", data: [ ... ] }
+     } catch (err) {
+       set({
+         loading: false,
+         error: err.response?.data?.message || err.message,
+       });
+       throw err;
+     }
+   },
+
 }));
 
 export default useRatingStore;
