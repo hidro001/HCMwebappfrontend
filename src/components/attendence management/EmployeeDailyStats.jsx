@@ -260,15 +260,17 @@ export default function EmployeeDailyStats() {
     return attendanceData.find((rec) => rec.date === date);
   }, [attendanceData, date]);
 
-  useEffect(() => {
+ useEffect(() => {
   fetchDailyStats(empID, date).then((data) => {
     if (data?.department) {
       fetchDeptCategories(data.department);
     }
   });
   fetchTimeline(empID, date);
-  fetchGraphData(empID, date); // <-- Fetching graph data here
-}, [empID, date, fetchDailyStats, fetchDeptCategories, fetchTimeline, fetchGraphData]);
+  fetchGraphData(empID, date);
+}, [empID, date]);
+
+
 
 
   const { productiveTime, unproductiveTime } = useMemo(() => {
@@ -299,6 +301,8 @@ export default function EmployeeDailyStats() {
 
     return { productiveTime, unproductiveTime };
   }, [dailyStats, deptCategories]);
+
+  
 
   const combinedTimeline = useMemo(() => {
     const baseTimeline = (timeline || []).map((item, idx) => ({
@@ -751,24 +755,25 @@ export default function EmployeeDailyStats() {
     Productivity Graph
   </h2>
 
-  {graphData.length ? (
-    <ResponsiveContainer width="100%" height={300}>
-      <BarChart data={graphData}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="time" />
-        <YAxis />
-        <Tooltip content={<CustomTooltip />} />
-        <Legend />
-        <Bar dataKey="Productivity" stackId="a" fill="#3b82f6" />
-        <Bar dataKey="Unproductivity" stackId="a" fill="#ef4444" />
-        <Bar dataKey="BreakTime" stackId="a" fill="#a855f7" />
-      </BarChart>
-    </ResponsiveContainer>
-  ) : (
-    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-      No graph data available.
-    </div>
-  )}
+  {graphData && graphData.length > 0 && graphData[0].Productivity > 0 ? (
+  <ResponsiveContainer width="100%" height={300}>
+    <BarChart data={graphData}>
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="time" />
+      <YAxis />
+      <Tooltip content={<CustomTooltip />} />
+      <Legend />
+      <Bar dataKey="Productivity" stackId="a" fill="#3b82f6" />
+      <Bar dataKey="Unproductivity" stackId="a" fill="#ef4444" />
+      <Bar dataKey="BreakTime" stackId="a" fill="#a855f7" />
+    </BarChart>
+  </ResponsiveContainer>
+) : (
+  <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+    No graph data available.
+  </div>
+)}
+
 </div>
 
     </div>

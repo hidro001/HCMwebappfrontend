@@ -193,6 +193,7 @@ const Feed = ({
   curCategory = "All Announcement",
   curDepartment = "all",
   curSort = "newest",
+  onRefresh =false
 }) => {
   const { feed, isLoading, error, hasMore, fetchFeed, page, refreshFeed } =
     useFeedStore();
@@ -202,6 +203,13 @@ const Feed = ({
     fetchFeed(1);
     connect();
   }, [fetchFeed, connect]);
+
+  useEffect(() => {
+    if(onRefresh){
+              useFeedStore.getState().refreshFeed();
+
+    }
+  }, [onRefresh])
 
   const fetchMoreData = () => {
     if (hasMore && !isLoading) {

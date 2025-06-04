@@ -6,15 +6,23 @@ import {
   HiOutlineChartBar,
 } from "react-icons/hi2";
 import useAuthStore from "../../../store/store";
+import { useEffect } from 'react';
 
-const CreateCard = () => {
+const CreateCard = ({refreshStatus}) => {
 
      const [openPostModal, setOpenPostModal] = useState(false);
       const [openPollModal, setOpenPollModal] = useState(false);
+      const [curRefresh, setCurRefresh] = useState(false);
       
   const [hoveredButton, setHoveredButton] = useState(null);
  const authStore = useAuthStore();
   const userAvatar = authStore.userAvatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png";
+
+  useEffect(() => {
+    if(curRefresh){
+      refreshStatus(true)
+    }
+  })
 
   return (
     <div className="w-full  pr-2 ">
@@ -82,6 +90,7 @@ const CreateCard = () => {
             isOpen={openPostModal}
             onSuccess={() => {
               setOpenPostModal(false)
+              setCurRefresh(true)
               useFeedStore.getState().refreshFeed();
             }}
             onClose={() => setOpenPostModal(false)}
@@ -96,7 +105,7 @@ const CreateCard = () => {
             isOpen={openPollModal}
             onSuccess={() => {
               setOpenPollModal(false)
-              useFeedStore.getState().refreshFeed();
+              setCurRefresh(true)
             }}
             onClose={() => setOpenPollModal(false)}
           />

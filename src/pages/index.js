@@ -87,12 +87,23 @@ import EmployeeTreemapPage from "./Org Chart/EmployeeTreemapPage";
 import RequestDashboardPage from "./attendence management/RequestDashboardPage";
 import PostPerformerPage from "./performance management/PostPerformerPage";
 import ViewPerformerPage from "./performance management/ViewPerformerPage";
+
+
 import SetKpisNewPage from "./performance management new/SetKpisNewPage";
 import RatingDashboardPage from "./performance management new/RatingDashboardPage";
 import EmployeeRatingAdvancedPage from "./performance management new/EmployeeRatingAdvancedPage";
 import MyPerformanceAdvancedPage from "./performance management new/MyPerformanceAdvancedPage";
 import TeamRatingsAdvancedPage from "./performance management new/TeamRatingsAdvancedPage";
 import AllEmployeeRatingsPage from "./performance management new/AllEmployeeRatingsPage";
+
+
+
+import SetKpisNewPageRazor from "./performance management razor/SetKpisNewPage";
+import RatingDashboardPageRazor from "./performance management razor/RatingDashboardPage";
+import EmployeeRatingAdvancedPageRazor from "./performance management razor/EmployeeRatingAdvancedPage";
+import MyPerformanceAdvancedPageRazor from "./performance management razor/MyPerformanceAdvancedPage";
+import TeamRatingsAdvancedPageRazor from "./performance management razor/TeamRatingsAdvancedPage";
+import AllEmployeeRatingsPageRazor from "./performance management razor/AllEmployeeRatingsPage";
 
 export {
   Login,
@@ -176,4 +187,10 @@ export {
   MyPerformanceAdvancedPage,
   TeamRatingsAdvancedPage,
   AllEmployeeRatingsPage,
+  SetKpisNewPageRazor,
+  RatingDashboardPageRazor,
+  EmployeeRatingAdvancedPageRazor,
+  MyPerformanceAdvancedPageRazor,
+  TeamRatingsAdvancedPageRazor,
+  AllEmployeeRatingsPageRazor
 };
