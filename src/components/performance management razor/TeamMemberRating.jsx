@@ -750,7 +750,7 @@ function TeamRatingsAdvanced() {
                           </td>
                           <td className="px-6 py-4 text-center">
                             <Link
-                              to={`/dashboard/employee-advanced/${employee._id}?${queryParams}`}
+                              to={`/dashboard/employee-advanced-aggregate/${employee._id}?${queryParams}`}
                               target="_blank"
                               rel="noreferrer"
                               className="inline-flex items-center px-3 py-2 text-sm bg-green-500 hover:bg-green-600 text-white rounded transition-colors duration-200"

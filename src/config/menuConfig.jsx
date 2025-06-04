@@ -448,7 +448,7 @@ export const menuItems = [
   // ------------------------------ Performance Management & KPI quantitative-qualitative Razor------------------------------
 
   {
-    name: "Performance Management & KPI quantitative-qualitative",
+    name: "razor Performance Management & KPI quantitative-qualitative ",
     tooltip:
       "Track, evaluate, and improve employee performance to drive team success",
     icon: <GrDocumentPerformance />,
