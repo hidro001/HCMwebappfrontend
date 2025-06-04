@@ -84,6 +84,12 @@ import {
   MyPerformanceAdvancedPage,
   TeamRatingsAdvancedPage,
   AllEmployeeRatingsPage,
+  SetKpisNewPageRazor,
+  RatingDashboardPageRazor,
+  EmployeeRatingAdvancedPageRazor,
+  MyPerformanceAdvancedPageRazor,
+  TeamRatingsAdvancedPageRazor,
+  AllEmployeeRatingsPageRazor
 } from "../pages";
 import EmployeeFullStatisticsPage from "../pages/attendence management/EmployeeFullStatisticsPage";
 import MainLayout from "./MainLayout";
@@ -511,6 +517,33 @@ const router = createBrowserRouter([
         path: "all-employess-ratings",
         element: <AllEmployeeRatingsPage />,
       },
+
+      {
+        path: "set-kpis-daily",
+        element: <SetKpisNewPageRazor />,
+      },
+      {
+        path: "rate-team-members-daily",
+        element: <RatingDashboardPageRazor />,
+      },
+      {
+        path: "employee-advanced-aggregate/:employeeId",
+        element: <EmployeeRatingAdvancedPageRazor />,
+      },
+      {
+        path: "my-performance-aggregate",
+        element: <MyPerformanceAdvancedPageRazor />,
+      },
+      {
+        path: "team-members-performance-aggregate",
+        element: <TeamRatingsAdvancedPageRazor />,
+      },
+      {
+        path: "all-employess-ratings-aggregate",
+        element: <AllEmployeeRatingsPageRazor />,
+      },
+
+
     ],
   },
   {
