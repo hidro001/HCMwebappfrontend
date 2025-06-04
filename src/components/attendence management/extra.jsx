@@ -36,20 +36,20 @@ const rawData = [
 // Gradient palettes
 const PALETTE = {
   "Checked In": {
-    solid: { start: "#4fc3f7", end: "#039be5" },
-    light: { start: "#d6e9ff", end: "#c0dcff" },
+    solid: { start: "#36D1DC", end: "#5B86E5" },
+    light: { start: "#DDEAFF", end: "#DDEAFF" },
   },
   "Late In": {
-    solid: { start: "#fbbf24", end: "#e09e00" },
-    light: { start: "#ffebc1", end: "#ffe3a1" },
+    solid: { start: "#F7971E", end: "#FFD200" },
+    light: { start: "#FFE6C5", end: "#FFE6C5" },
   },
   Absent: {
-    solid: { start: "#9ea3ad", end: "#6e747c" },
-    light: { start: "#e8eaed", end: "#d8dade" },
+    solid: { start: "#D0D0D0", end: "#A8A8A8" },
+    light: { start: "#E8E8E8", end: "#E8E8E8" },
   },
   "On Leave": {
-    solid: { start: "#fb7185", end: "#e53955" },
-    light: { start: "#ffd1d7", end: "#fec3cb" },
+    solid: { start: "#F86565", end: "#E19692" },
+    light: { start: "#FFDADA", end: "#FFDADA" },
   },
 };
 
@@ -108,12 +108,12 @@ const AttendanceChart = () => (
     </div>
 
     {/* Chart */}
-    <ResponsiveContainer width="100%" height={360}>
+    <ResponsiveContainer width="80%" height="80%">
       <BarChart
         data={data}
         margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
         barCategoryGap={60}
-        barSize={55}
+        barSize={45}
       >
         {/* Gradients, stripes, tinted shadows */}
         <defs>
@@ -202,7 +202,7 @@ const AttendanceChart = () => (
           dataKey="value"
           stackId="a"
           shape={StripedBar}
-          radius={[0, 0, 8, 8]}
+          radius={[8, 0, 8, 8]}
           isAnimationActive={false}
         />
 
