@@ -9,6 +9,7 @@ const FeedPage = () => {
   const [department, setDepartment] = useState('all');
   const [sort, setSort] = useState('newest');
   const [showFilters, setShowFilters] = useState(false); 
+  const [refresh, setRefresh] = useState(false)
 
   return (
     <div className="flex flex-col lg:flex-row w-full h-full overflow-hidden">
@@ -37,11 +38,12 @@ const FeedPage = () => {
       </div>
 
       <div className="w-full lg:w-[50%] h-full mb-4 lg:mb-0">
-        <CreateCard />
+        <CreateCard refreshStatus={setRefresh} />
         <Feed 
           curCategory={category} 
           curDepartment={department} 
           curSort={sort} 
+          onRefresh={refresh}
         />
       </div>
 

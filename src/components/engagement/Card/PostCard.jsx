@@ -254,6 +254,23 @@ console.log(post.likes, 'df')
     return "unknown";
   };
 
+useEffect(() => {
+  const scrollableDiv = document.getElementById("scrollableDiv");
+  const isModalOpen = showComments || showLike || showReact;
+
+  if (scrollableDiv) {
+    scrollableDiv.style.overflow = isModalOpen ? "hidden" : "auto";
+  }
+
+  return () => {
+    if (scrollableDiv) {
+      scrollableDiv.style.overflow = "auto";
+    }
+  };
+}, [showComments, showLike, showReact]);
+
+
+
   const canDeletePost =
     permissions.includes("deleteAnyPost") ||
     userId === post.author?._id ||
@@ -312,20 +329,46 @@ console.log(post.likes, 'df')
         />
 
         {/* Media */}
-        {Array.isArray(post.media) && post.media.length > 0 && (
-          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2">
-            {post.media.map((url, idx) => {
-              const mediaType = getMediaType(url);
-              if (mediaType === "image") {
-                return <img key={idx} src={url} className="rounded w-full max-h-40 object-cover" />;
-              } else if (mediaType === "video") {
-                return <video key={idx} src={url} controls className="rounded w-full max-h-32" />;
-              } else {
-                return <p key={idx} className="text-xs text-red-500">Unsupported media</p>;
-              }
-            })}
-          </div>
-        )}
+       {Array.isArray(post.media) && post.media.length > 0 && (
+  <div className="mt-3 grid w-max 
+                      grid-cols-1 sm:grid-cols-2
+                      gap-2
+                      mx-auto               
+                      place-items-center">    
+    {post.media.map((url, idx) => {
+      const mediaType = getMediaType(url);
+
+      if (mediaType === 'image') {
+        return (
+          <img
+            key={idx}
+            src={url}
+            className="rounded max-h-40 object-cover"
+            alt=""
+          />
+        );
+      }
+
+      if (mediaType === 'video') {
+        return (
+          <video
+            key={idx}
+            src={url}
+            controls
+            className="rounded max-h-32"
+          />
+        );
+      }
+
+      return (
+        <p key={idx} className="text-xs text-red-500">
+          Unsupported media
+        </p>
+      );
+    })}
+  </div>
+)}
+
 
         {/* Likes & Reactions */}
         <div>
@@ -377,15 +420,44 @@ console.log(post.likes, 'df')
         </div>
       </motion.div>
 
+
+{(showComments || showLike || showReact) && (
+   <motion.div
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ duration: 0.3 }}
+    className="fixed inset-0 z-50 flex items-start justify-center pt-[3vh]"
+  >
+    <motion.div
+      initial={{ y: "100%", opacity: 0, boxShadow: "0px 0px 0px rgba(0, 0, 0, 0)" }}
+      animate={{ y: 0, opacity: 1, boxShadow: "0px -10px 30px rgba(0, 0, 0, 0.3)" }}
+      exit={{ y: "100%", opacity: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+       className="w-full md:w-[400px] h-[58vh] flex flex-col bg-gray-50 dark:bg-gray-900 rounded-t-lg md:rounded-lg border-2 border-slate-200 dark:border-gray-400" >
+  
+      {/* Close Button */}
+      <div className="flex justify-between px-3 py-2 border-b-2 border-slate-300 drak:border-gray-400">
+         <p className="font-semibold  text-gray-700 dark:text-gray-300">
+              {showComments ? 'Comments...' : showLike ? 'Likes...' : 'Reacts...' }
+            </p>
+        <button
+          onClick={() => {
+            setShowComments(false);
+            setShowLike(false);
+            setShowReact(false);
+          }}
+          className="text-black dark:text-gray-400 font-semibold hover:text-gray-500 dark:hover:text-white"
+        >
+          ✕
+        </button>
+      </div>
       {/* Comments Drawer */}
      {showComments && (
-          <div className="mt-4 bg-gray-50 dark:bg-gray-900 p-3 rounded-lg border border-gray-200 dark:border-gray-700 space-y-4">
-            <p className="font-semibold text-gray-700 dark:text-gray-300">
-              Comments 
-            </p>
-
+        <div className="relative h-[50vh] flex flex-col justify-between px-3 py-2">
+           
         {/* Existing Comments */}
-        <div className="space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
+        <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-1">
           {(!post.comments || post.comments.length === 0) && (
             <p className="text-sm text-gray-500 dark:text-gray-400">No comments yet.</p>
           )}
@@ -417,7 +489,7 @@ console.log(post.likes, 'df')
                   type="button"
                   onClick={() => handleLikeComment(comment._id)}
                   disabled={isLoading}
-                  className={`flex items-center gap-1 text-xs ${
+                  className={`flex flex-col items-center  text-s ${
                     isLiked ? "text-red-500" : "text-gray-500 dark:text-gray-400"
                   } ${isLoading && "opacity-50 cursor-not-allowed"}`}
                 >
@@ -430,7 +502,7 @@ console.log(post.likes, 'df')
         </div>
 
         {/* Add Comment Form */}
-        <form onSubmit={handleAddComment} className="flex items-center gap-2 mt-2">
+        <form onSubmit={handleAddComment} className=" mt-2 flex items-center  bg-gray-50 dark:bg-gray-800 dark:border-gray-600 border border-slate-200 p-1 rounded-xl gap-2">
           <img
             src={user.userAvatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png"}
             alt="Avatar"
@@ -459,8 +531,8 @@ console.log(post.likes, 'df')
        </div>
       )}
       {showLike && (
-        <div className="mt-4 bg-gray-50 dark:bg-gray-900 p-3 rounded-lg border border-gray-200 dark:border-gray-700 space-y-4">
-          <p>Likes...</p>
+        <div className=" m-2 space-y-4">
+          
           {post.likes.length > 0 && post.likes.map((like) =>(
             <div className="flex items-center">
             <img
@@ -477,8 +549,8 @@ console.log(post.likes, 'df')
         </div>
       )}
       {showReact && (
-        <div className="mt-4 bg-gray-50 dark:bg-gray-900 p-3 rounded-lg border border-gray-200 dark:border-gray-700 space-y-4">
-          <p>Reaction...</p>
+        <div className="m-2 space-y-4">
+
           {post.reactions.length > 0 && post.reactions.map((reaction) =>(
            <div className="flex justify-between">
             <div className="flex items-center">
@@ -500,6 +572,8 @@ console.log(post.likes, 'df')
              </div>
           ))}
         </div>
+      )}
+      </motion.div></motion.div>
       )}
     </>
   );
