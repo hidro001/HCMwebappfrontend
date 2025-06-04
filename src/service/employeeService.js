@@ -93,3 +93,13 @@ export async function updateEmployee(employeeId, formData) {
   });
   return response.data; // { success: boolean, message?: string, etc. }
 }
+
+export const fetchSubordinateFilters = async () => {
+  try {
+    const response = await axiosInstance.get("/usage-stats/subordinate-departments-designations");
+    return response.data.data; // { departments, designations }
+  } catch (error) {
+    console.error("Error fetching subordinate filters:", error);
+    throw error;
+  }
+};

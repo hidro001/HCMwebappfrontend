@@ -110,6 +110,78 @@ const useUsageStatsStore = create((set) => ({
     }
   },
   subordinateProductivity: { topProductive: [], leastProductive: [] },
+
+  // 1. Zustand Store (useUsageStatsStore.js)
+
+fetchOrgMostUsedStats: async (department, designation, limit = 5) => {
+  set({ loading: true, error: null });
+  try {
+    const res = await axiosInstance.get('/usage-stats/org-most-used', {
+      params: { department, designation, limit },
+    });
+    set({ orgMostUsedStats: res.data.data });
+  } catch (err) {
+    set({ error: err.message });
+    toast.error(err.message);
+  } finally {
+    set({ loading: false });
+  }
+},
+orgMostUsedStats: { topApps: [], topWebsites: [] },
+
+fetchAverageBreakAndWorkHours: async (department, designation) => {
+  set({ loading: true, error: null });
+  try {
+    const res = await axiosInstance.get("/usage-stats/average-break-work", {
+      params: { department, designation },
+    });
+    set({ averageBreakWorkStats: res.data });
+  } catch (err) {
+    set({ error: err.message });
+    toast.error(err.message);
+  } finally {
+    set({ loading: false });
+  }
+},
+averageBreakWorkStats: null,
+
+
+// useUsageStatsStore.js (Zustand)
+fetchTopLeastProductiveEmployees: async (department, designation) => {
+  set({ loading: true, error: null });
+  try {
+    const res = await axiosInstance.get('/usage-stats/top-least-productive', { params: { department, designation } });
+    set({ topLeastProductivity: res.data });
+  } catch (err) {
+    set({ error: err.message });
+    toast.error(err.message);
+  } finally {
+    set({ loading: false });
+  }
+},
+topLeastProductivity: { topProductive: [], leastProductive: [] },
+// src/store/useUsageStatsStore.js
+fetchSubordinateMostUsedStats: async (department, designation, limit) => {
+  set(() => ({ loading: true }));
+  try {
+    const response = await axiosInstance.get("/usage-stats/subordinate-most-used", {
+      params: { department, designation, limit },
+    });
+    
+    set({
+      subordinateMostUsedStats: response.data.data || { topApps: [], topWebsites: [] },
+      loading: false,
+    });
+  } catch (error) {
+    set({
+      subordinateMostUsedStats: { topApps: [], topWebsites: [] },
+      loading: false,
+      error: error.message,
+    });
+    console.error("Fetch subordinate stats error:", error);
+    toast.error("Failed to fetch subordinate usage stats");
+  }
+},
   
   
 
@@ -130,6 +202,19 @@ fetchMostUsedStats: async (employeeId, filterType) => {
 },
 mostUsedStats: null,
 
+fetchGraphData: async (employeeId, date) => {
+  set({ loading: true, error: null });
+  try {
+    const res = await axiosInstance.get(`/usage-stats/graph/${employeeId}/${date}`);
+    set({ graphData: res.data.data });
+  } catch (err) {
+    set({ error: err.message });
+    toast.error(err.message);
+  } finally {
+    set({ loading: false });
+  }
+},
+graphData: [],
 
   
 }));

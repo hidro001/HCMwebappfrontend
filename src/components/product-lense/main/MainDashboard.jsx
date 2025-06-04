@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
-
-// Chart.js and react-chartjs-2
 import {
   Chart as ChartJS,
   ArcElement,
@@ -13,12 +11,23 @@ import {
   Title,
 } from "chart.js";
 import { Doughnut, Bar } from "react-chartjs-2";
-
-// Import your API helpers
+import MostFrequentBreakTimes from "./MostFrequentBreakTimes";
 import {
   fetchTopSubordinates,
   fetchLessSubordinates,
-} from "../../../service/productLenseService"; // <-- Adjust path accordingly
+} from "../../../service/productLenseService";
+import OrgUsageSection from "./OrgUsageSection";
+import TopLeastProductivitySection from "./TopLeastProductivitySection";
+import BreakAndWorkGraphs from "./BreakandWorkGraphs";
+import {
+  FiActivity,
+  FiBarChart2,
+  FiUsers,
+  FiPieChart,
+  FiFilter,
+  FiTrendingUp,
+  FiTrendingDown,
+} from "react-icons/fi";
 
 // Register Chart.js components
 ChartJS.register(
@@ -32,20 +41,16 @@ ChartJS.register(
 );
 
 const MainDashboard = () => {
-  // ---------------------------
-  // State
-  // ---------------------------
   const [intervalSelect, setIntervalSelect] = useState("monthly");
   const [topSubs, setTopSubs] = useState([]);
   const [lessSubs, setLessSubs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // ---------------------------
-  // Fetch subordinates on load + whenever interval changes
-  // ---------------------------
+  // Fetch subordinates data
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // example: daily, weekly, monthly, yearly
+        setLoading(true);
         const topData = await fetchTopSubordinates(intervalSelect);
         const lessData = await fetchLessSubordinates(intervalSelect);
 
@@ -53,16 +58,15 @@ const MainDashboard = () => {
         setLessSubs(lessData || []);
       } catch (err) {
         console.error("Error fetching subordinates data:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchData();
   }, [intervalSelect]);
 
-  // ---------------------------
   // Prepare Donut Chart
-  // ---------------------------
-  // Show how many are in top vs. less
   const topCount = topSubs.length;
   const lessCount = lessSubs.length;
 
@@ -71,49 +75,50 @@ const MainDashboard = () => {
     datasets: [
       {
         data: [topCount, lessCount],
-        backgroundColor: ["#3b82f6", "#f97316"], // Tailwind blue, orange
+        backgroundColor: ["#3b82f6", "#f97316"],
         hoverBackgroundColor: ["#2563eb", "#ea580c"],
+        borderWidth: 0,
       },
     ],
   };
 
   const donutOptions = {
     maintainAspectRatio: false,
+    cutout: "70%",
     plugins: {
       legend: {
-        display: true,
+        position: "bottom",
         labels: {
-          color: "#6b7280", // text-gray-500
+          color: "#6b7280",
+          font: {
+            size: 12,
+          },
+          padding: 20,
+          usePointStyle: true,
+          pointStyle: "circle",
         },
       },
     },
   };
 
-  // ---------------------------
   // Prepare Bar Chart
-  // ---------------------------
-  // We'll group subordinates by department and display how many "top" vs. "less"
-  // fall under each department. This is just an EXAMPLE approach.
   const departmentSet = new Set();
   const topCountByDept = {};
   const lessCountByDept = {};
 
-  // Tally top subordinates by department
   topSubs.forEach((sub) => {
     const dept = sub.department || "Unknown";
     departmentSet.add(dept);
     topCountByDept[dept] = (topCountByDept[dept] || 0) + 1;
   });
 
-  // Tally less subordinates by department
   lessSubs.forEach((sub) => {
     const dept = sub.department || "Unknown";
     departmentSet.add(dept);
     lessCountByDept[dept] = (lessCountByDept[dept] || 0) + 1;
   });
 
-  const allDepartments = Array.from(departmentSet); // unique list of departments
-
+  const allDepartments = Array.from(departmentSet);
   const topDeptData = allDepartments.map((dept) => topCountByDept[dept] || 0);
   const lessDeptData = allDepartments.map((dept) => lessCountByDept[dept] || 0);
 
@@ -125,12 +130,14 @@ const MainDashboard = () => {
         data: topDeptData,
         backgroundColor: "#3b82f6",
         hoverBackgroundColor: "#2563eb",
+        borderRadius: 6,
       },
       {
         label: "Less Productive",
         data: lessDeptData,
         backgroundColor: "#f97316",
         hoverBackgroundColor: "#ea580c",
+        borderRadius: 6,
       },
     ],
   };
@@ -141,16 +148,23 @@ const MainDashboard = () => {
     scales: {
       x: {
         ticks: {
-          color: "#6b7280", // text-gray-500
+          color: "#6b7280",
+          font: {
+            size: 12,
+          },
         },
         grid: {
-          color: "#e5e7eb", // border-gray-200
+          display: false,
         },
       },
       y: {
         beginAtZero: true,
         ticks: {
           color: "#6b7280",
+          precision: 0,
+          font: {
+            size: 12,
+          },
         },
         grid: {
           color: "#e5e7eb",
@@ -159,160 +173,105 @@ const MainDashboard = () => {
     },
     plugins: {
       legend: {
+        position: "top",
         labels: {
           color: "#6b7280",
+          usePointStyle: true,
+          font: {
+            size: 12,
+          },
+          padding: 20,
         },
       },
     },
   };
 
-  // ---------------------------
-  // Render
-  // ---------------------------
   return (
-    <div className="min-h-screen p-6 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100">
-      <h1 className="text-2xl font-bold mb-6">Main Dashboard</h1>
-
-      {/* Top Row: Donut Chart & Bar Chart */}
-      <div className="flex flex-col lg:flex-row gap-6">
-        {/* Donut Chart Card */}
-        <div className="bg-white dark:bg-gray-800 rounded shadow p-4 flex-1">
-          {/* Card Header */}
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-800 dark:text-gray-100">
-              Team Productivity
-            </h2>
-            {/* Dropdown for interval */}
-            <div className="relative">
-              <select
-                className="appearance-none pr-6 pl-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none"
-                value={intervalSelect}
-                onChange={(e) => setIntervalSelect(e.target.value)}
-              >
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
-              </select>
-              <FaChevronDown className="absolute right-2 top-2.5 text-gray-400 dark:text-gray-300 pointer-events-none" />
-            </div>
-          </div>
-
-          {/* Donut Chart */}
-          {/* <div className="relative w-full h-[300px]">
-            <Doughnut data={donutData} options={donutOptions} />
-          </div> */}
+    <div className="min-h-screen p-4 md:p-6 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 text-gray-800 dark:text-gray-100">
+      {/* Dashboard Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-2">
+            <FiActivity className="text-indigo-500" />
+            Productivity Dashboard
+          </h1>
+          <p className="text-gray-500 dark:text-gray-400 mt-2">
+            Insights into team performance and organizational trends
+          </p>
         </div>
-
-        {/* Bar Chart Card */}
-        <div className="bg-white dark:bg-gray-800 rounded shadow p-4 flex-1">
-          {/* Card Header */}
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold text-gray-800 dark:text-gray-100">
-              Team Productivity Graph
-            </h2>
-            {/* Dropdown (reuse same interval state for simplicity) */}
-            <div className="relative">
-              <select
-                className="appearance-none pr-6 pl-3 py-1 border border-gray-300 dark:border-gray-600 rounded text-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-100 focus:outline-none"
-                value={intervalSelect}
-                onChange={(e) => setIntervalSelect(e.target.value)}
-              >
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
-              </select>
-              <FaChevronDown className="absolute right-2 top-2.5 text-gray-400 dark:text-gray-300 pointer-events-none" />
-            </div>
-          </div>
-
-          {/* Bar Chart */}
-          <div className="relative w-full h-[300px]">
-            <Bar data={barData} options={barOptions} />
+        <div className="mt-4 md:mt-0">
+          <div className="relative inline-block">
+            <select
+              className="appearance-none pr-8 pl-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg text-sm bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm"
+              value={intervalSelect}
+              onChange={(e) => setIntervalSelect(e.target.value)}
+            >
+              <option value="daily">Daily</option>
+              <option value="weekly">Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="yearly">Yearly</option>
+            </select>
+            <FaChevronDown className="absolute right-3 top-3 text-gray-400 dark:text-gray-300 pointer-events-none" />
           </div>
         </div>
       </div>
 
-      {/* Bottom Row: 2 small tables */}
-      <div className="mt-6 flex flex-col md:flex-row gap-6">
-        {/* Top Productive Employee Table */}
-        <div className="bg-white dark:bg-gray-800 rounded shadow p-4 flex-1">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-gray-800 dark:text-gray-100">
-              Top Productive Employee
-            </h3>
+      {/* Charts Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        {/* Donut Chart Card */}
+        <div className="bg-white dark:bg-gray-800/80 rounded-xl border border-gray-200 dark:border-gray-700 shadow-md p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+              <FiPieChart className="text-indigo-500" />
+              Team Productivity Distribution
+            </h2>
+            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+              <FiFilter className="mr-1" /> {intervalSelect}
+            </div>
           </div>
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-xs">
-              <tr>
-                <th className="px-3 py-2">SNO.</th>
-                <th className="px-3 py-2">Name</th>
-                <th className="px-3 py-2">Emp ID</th>
-                <th className="px-3 py-2">Unproductive Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {topSubs.slice(0, 3).map((row, idx) => (
-                <tr
-                  key={row.empID}
-                  className="border-b hover:bg-gray-50 dark:hover:bg-gray-600"
-                >
-                  <td className="px-3 py-2">
-                    {String(idx + 1).padStart(2, "0")}
-                  </td>
-                  <td className="px-3 py-2">{row.empName}</td>
-                  <td className="px-3 py-2">{row.empID}</td>
-                  <td className="px-3 py-2">{row.unproductiveTime}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="text-right mt-2">
-            <button className="text-blue-600 dark:text-blue-400 text-xs hover:underline">
-              See All &gt;
-            </button>
-          </div>
+
+          {loading ? (
+            <div className="animate-pulse h-[300px] flex items-center justify-center">
+              <div className="w-64 h-64 rounded-full bg-gray-200 dark:bg-gray-700"></div>
+            </div>
+          ) : (
+            <div className="relative w-full h-[300px]">
+              <Doughnut data={donutData} options={donutOptions} />
+            </div>
+          )}
         </div>
 
-        {/* Less Productive Employee Table */}
-        <div className="bg-white dark:bg-gray-800 rounded shadow p-4 flex-1">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="font-semibold text-gray-800 dark:text-gray-100">
-              Less Productive Employee
-            </h3>
+        {/* Bar Chart Card */}
+        <div className="bg-white dark:bg-gray-800/80 rounded-xl border border-gray-200 dark:border-gray-700 shadow-md p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="font-semibold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+              <FiBarChart2 className="text-indigo-500" />
+              Department Performance
+            </h2>
+            <div className="flex items-center text-xs text-gray-500 dark:text-gray-400">
+              <FiFilter className="mr-1" /> {intervalSelect}
+            </div>
           </div>
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase text-xs">
-              <tr>
-                <th className="px-3 py-2">SNO.</th>
-                <th className="px-3 py-2">Name</th>
-                <th className="px-3 py-2">Emp ID</th>
-                <th className="px-3 py-2">Unproductive Time</th>
-              </tr>
-            </thead>
-            <tbody>
-              {lessSubs.slice(0, 3).map((row, idx) => (
-                <tr
-                  key={row.empID}
-                  className="border-b hover:bg-gray-50 dark:hover:bg-gray-600"
-                >
-                  <td className="px-3 py-2">
-                    {String(idx + 1).padStart(2, "0")}
-                  </td>
-                  <td className="px-3 py-2">{row.empName}</td>
-                  <td className="px-3 py-2">{row.empID}</td>
-                  <td className="px-3 py-2">{row.unproductiveTime}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <div className="text-right mt-2">
-            <button className="text-blue-600 dark:text-blue-400 text-xs hover:underline">
-              See All &gt;
-            </button>
-          </div>
+
+          {loading ? (
+            <div className="animate-pulse h-[300px] bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+          ) : (
+            <div className="relative w-full h-[300px]">
+              <Bar data={barData} options={barOptions} />
+            </div>
+          )}
         </div>
+      </div>
+
+      {/* Analytics Sections */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <OrgUsageSection />
+        <TopLeastProductivitySection />
+      </div>
+
+      <div className="grid grid-cols-1 gap-6">
+        <BreakAndWorkGraphs />
+        <MostFrequentBreakTimes />
       </div>
     </div>
   );

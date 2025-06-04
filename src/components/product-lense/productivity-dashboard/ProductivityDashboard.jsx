@@ -18,6 +18,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 
 // Framer Motion
 import { motion } from "framer-motion";
+import SubordinateUsageSection from "./SubordinateUsageStat";
 
 const ProductivityDashboard = () => {
   // --------------------------
@@ -463,6 +464,7 @@ const ProductivityDashboard = () => {
           </button>
         </div>
       </div>
+      <SubordinateUsageSection />
     </div>
   );
 };
