@@ -447,13 +447,12 @@
 
 
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/store";
 import useAttendanceStore from "../../store/useAttendanceStore";
-
-// Import React Icons
+import { FaLongArrowAltDown, FaLongArrowAltUp } from "react-icons/fa";
 import { 
   FiSearch, FiCalendar, FiUsers, FiCheckCircle, 
   FiClock, FiClipboard, FiDownload, FiPrinter, 
@@ -572,6 +571,7 @@ export default function SubordinatesAttendance() {
   const [currentPage, setCurrentPage] = useState(1);
   const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'table'
   const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
   // Fetch data on component mount
   useEffect(() => {
@@ -625,13 +625,30 @@ export default function SubordinatesAttendance() {
     return true;
   });
 
+
+  const sortedEmployees = useMemo(() => {
+  if (!sortConfig.key) return filteredEmployees;
+
+  const sorted = [...filteredEmployees].sort((a, b) => {
+    const aValue = a[sortConfig.key];
+    const bValue = b[sortConfig.key];
+
+    if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
+    if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  return sorted;
+}, [filteredEmployees, sortConfig]);
+
+
   // Pagination calculations
-  const totalEntries = filteredEmployees.length;
+  const totalEntries = sortedEmployees.length;
   const totalPages = Math.ceil(totalEntries / showCount) || 1;
   const validPage = Math.min(currentPage, totalPages);
   const startIndex = (validPage - 1) * showCount;
   const endIndex = startIndex + showCount;
-  const currentPageData = filteredEmployees.slice(startIndex, endIndex);
+  const currentPageData = sortedEmployees.slice(startIndex, endIndex);
 
   const fromIndex = startIndex + 1;
   const toIndex = startIndex + currentPageData.length;
@@ -706,6 +723,10 @@ export default function SubordinatesAttendance() {
     
     return pages;
   };
+
+  useEffect(() => {
+  setSortConfig({ key: 'empID', direction: 'desc' }); 
+}, []);
 
   return (
     <div className="bg-slate-50 dark:bg-slate-900 min-h-screen text-slate-800 dark:text-slate-200 p-6">
@@ -805,138 +826,89 @@ export default function SubordinatesAttendance() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.3 }}
-        className="mb-6"
+        className="mb-6 lg:mb-0"
       >
-        <div className="bg-white dark:bg-slate-800 rounded-xl shadow-md p-5">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4">
-            {/* Search Bar */}
-            <div className="relative w-full lg:w-96">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                <FiSearch size={18} />
+        <div className="bg-white dark:bg-slate-800 rounded-xl lg:rounded-t-lg lg:rounded-b-none shadow-md p-5">
+          <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between "> 
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+              {/* Department Filter */}
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                  <BiBuildings size={18} />
+                </div>
+                <select
+                   value={selectedDepartment}
+                   onChange={handleDepartmentChange}
+                   className="pl-10 pr-4 py-2.5 w-full rounded-md border-0 ring-1 ring-slate-200 dark:ring-slate-700 bg-[#F3F4F6D6] dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all appearance-none"
+                 >
+                   <option>Department</option>
+                   {departments && departments.length > 0 ? (
+                     departments.map((dept) => (
+                       <option key={dept._id} value={dept.department}>
+                         {dept.department}
+                      </option>
+                    ))
+                  ) : (
+                    <option disabled>No Departments Found</option>
+                  )}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                  <FiChevronDown size={18} />
+                </div>
               </div>
-              <input
-                type="text"
-                placeholder="Search by name, email or ID..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                className="pl-10 pr-4 py-3 w-full rounded-lg border-0 ring-1 ring-slate-200 dark:ring-slate-700 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-              />
+
+              {/* Month Filter */}
+               <div className="relative">
+                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                   <FiCalendar size={18} />
+                 </div>
+                <input
+                  type="month"
+                   value={selectedMonth}
+                   onChange={handleMonthChange}
+                   className="pl-10 pr-4 py-2.5 w-full rounded-md border-0 ring-1 ring-slate-200 dark:ring-slate-700 bg-[#F3F4F6D6] dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                 />
+              </div>
+
+               {/* Show Count */}
+               <div className="relative">
+                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                   <FiSliders size={18} />
+                 </div>
+                 <select
+                   value={showCount}
+                   onChange={handleShowCountChange}
+                   className="pl-10 pr-4 py-2.5 w-full rounded-md border-0 ring-1 ring-slate-200 dark:ring-slate-700 bg-[#F3F4F6D6] dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all appearance-none"
+                 >
+                   <option value={10}>Show 10 per page</option>
+                   <option value={20}>Show 20 per page</option>
+                   <option value={50}>Show 50 per page</option>
+                 </select>
+                 <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
+                  <FiChevronDown size={18} />
+                </div>
+              </div>
             </div>
 
-            {/* Controls */}
+            {/* Search */}
             <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-              {/* Filter Button */}
-              <button 
-                onClick={toggleFilterMenu}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors text-slate-700 dark:text-slate-200"
-              >
-                <FiFilter size={18} />
-                <span>Filters</span>
-                {filterMenuOpen ? (
-                  <FiChevronUp size={18} />
-                ) : (
-                  <FiChevronDown size={18} />
-                )}
-              </button>
-
-              {/* View Toggle */}
-              <button
-                onClick={toggleViewMode}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors text-slate-700 dark:text-slate-200"
-              >
-                {viewMode === "grid" ? (
-                  <>
-                    <FiList size={18} />
-                    <span>List View</span>
-                  </>
-                ) : (
-                  <>
-                    <FiGrid size={18} />
-                    <span>Grid View</span>
-                  </>
-                )}
-              </button>
-
-              {/* Export Button */}
-              <button className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-blue-500 hover:bg-blue-600 transition-colors text-white">
-                <FiDownload size={18} />
-                <span>Export</span>
-              </button>
+              
+               {/* Search Bar */}
+              <div className="relative w-full ">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <FiSearch size={18} />
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Search Employee"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    className="pl-10 pr-4 py-3 w-full rounded-lg border-0 ring-1 ring-slate-200 dark:ring-slate-700 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                  />
+                </div>
             </div>
           </div>
 
-          {/* Filter Panel - Expandable */}
-          <AnimatePresence>
-            {filterMenuOpen && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="overflow-hidden"
-              >
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 border-t border-slate-200 dark:border-slate-700 pt-4">
-                  {/* Department Filter */}
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                      <BiBuildings size={18} />
-                    </div>
-                    <select
-                      value={selectedDepartment}
-                      onChange={handleDepartmentChange}
-                      className="pl-10 pr-4 py-2.5 w-full rounded-lg border-0 ring-1 ring-slate-200 dark:ring-slate-700 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all appearance-none"
-                    >
-                      <option>Department</option>
-                      {departments && departments.length > 0 ? (
-                        departments.map((dept) => (
-                          <option key={dept._id} value={dept.department}>
-                            {dept.department}
-                          </option>
-                        ))
-                      ) : (
-                        <option disabled>No Departments Found</option>
-                      )}
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                      <FiChevronDown size={18} />
-                    </div>
-                  </div>
-
-                  {/* Month Filter */}
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                      <FiCalendar size={18} />
-                    </div>
-                    <input
-                      type="month"
-                      value={selectedMonth}
-                      onChange={handleMonthChange}
-                      className="pl-10 pr-4 py-2.5 w-full rounded-lg border-0 ring-1 ring-slate-200 dark:ring-slate-700 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
-                    />
-                  </div>
-
-                  {/* Show Count */}
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
-                      <FiSliders size={18} />
-                    </div>
-                    <select
-                      value={showCount}
-                      onChange={handleShowCountChange}
-                      className="pl-10 pr-4 py-2.5 w-full rounded-lg border-0 ring-1 ring-slate-200 dark:ring-slate-700 bg-white dark:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all appearance-none"
-                    >
-                      <option value={10}>Show 10 per page</option>
-                      <option value={20}>Show 20 per page</option>
-                      <option value={50}>Show 50 per page</option>
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-slate-400">
-                      <FiChevronDown size={18} />
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
         </div>
       </motion.div>
 
@@ -951,13 +923,14 @@ export default function SubordinatesAttendance() {
             />
           </div>
         </div>
-      ) : viewMode === "grid" ? (
+      ) :  (
         // Grid View
+        <>
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:hidden  gap-5"
         >
           {currentPageData.length > 0 ? (
             currentPageData.map((emp, index) => (
@@ -1030,27 +1003,35 @@ export default function SubordinatesAttendance() {
             </motion.div>
           )}
         </motion.div>
-      ) : (
-        // Table View
+   
+        {/* Table View */}
         <motion.div
           variants={tableContainerVariants}
           initial="hidden"
           animate="visible"
-          className="bg-white dark:bg-slate-800 rounded-xl shadow-md overflow-hidden"
+          className="bg-white dark:bg-slate-800 hidden lg:block rounded-b-lg shadow-md overflow-hidden"
         >
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-slate-50 dark:bg-slate-700/50">
+                <tr className="bg-[#F3F4F6] dark:bg-slate-700/50">
                   <th className="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">S.No</th>
-                  <th className="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Emp ID</th>
+                  <th onClick={() => setSortConfig(prev => prev.key === 'empID'
+                    ? { key: 'empID', direction: prev.direction === 'asc' ? 'desc' : 'asc' }
+                    : { key: 'empID', direction: 'asc' } )} 
+                    className="py-4 px-6 flex items-center text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                      Emp ID 
+                      {sortConfig.key === 'empID' && (
+                        <span className="text-slate-300 cursor-pointer ml-1">{sortConfig.direction === 'asc' ? <FaLongArrowAltUp /> : <FaLongArrowAltDown />}</span>
+                      )}           
+                   </th>
                   <th className="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Name</th>
                   <th className="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Department</th>
                   <th className="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Email</th>
                   <th className="py-4 px-6 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 dark:divide-slate-700">
+              <tbody className="divide-y  divide-slate-200 dark:divide-slate-700">
                 {currentPageData.length > 0 ? (
                   currentPageData.map((emp, index) => {
                     const serialNumber = startIndex + index + 1;
@@ -1060,13 +1041,13 @@ export default function SubordinatesAttendance() {
                         variants={tableRowVariants}
                         className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors"
                       >
-                        <td className="py-4 px-6 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                        <td className="py-4 px-6 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 border-r border-[#F1F1F1] dark:border-slate-600">
                           {String(serialNumber).padStart(2, "0")}
                         </td>
-                        <td className="py-4 px-6 whitespace-nowrap text-sm font-medium text-blue-500 dark:text-blue-400">
+                        <td className="py-4 px-6 whitespace-nowrap text-sm font-medium text-blue-500 dark:text-blue-400  border-r border-[#F1F1F1] dark:border-slate-600">
                           {emp.empID}
                         </td>
-                        <td className="py-4 px-6 whitespace-nowrap">
+                        <td className="py-4 px-6 whitespace-nowrap  border-r border-[#F1F1F1] dark:border-slate-600">
                           <div className="flex items-center">
                             {emp.userAvatar ? (
                               <img
@@ -1082,10 +1063,10 @@ export default function SubordinatesAttendance() {
                             <span className="text-sm font-medium text-slate-800 dark:text-white">{emp.name}</span>
                           </div>
                         </td>
-                        <td className="py-4 px-6 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300">
+                        <td className="py-4 px-6 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300  border-r border-[#F1F1F1] dark:border-slate-600">
                           {emp.department}
                         </td>
-                        <td className="py-4 px-6 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400">
+                        <td className="py-4 px-6 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400  border-r border-[#F1F1F1] dark:border-slate-600">
                           {emp.email}
                         </td>
                         <td className="py-4 px-6 whitespace-nowrap text-right">
@@ -1125,7 +1106,7 @@ export default function SubordinatesAttendance() {
           
           {/* Pagination */}
           {currentPageData.length > 0 && (
-            <div className="px-6 py-4 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
+            <div className="px-6 py-2 bg-[#F3F4F6] dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 <p className="text-sm text-slate-500 dark:text-slate-400">
                   Showing <span className="font-medium text-slate-700 dark:text-slate-200">{fromIndex}</span> to{" "}
@@ -1181,6 +1162,7 @@ export default function SubordinatesAttendance() {
             </div>
           )}
         </motion.div>
+          </>
       )}
       
       {/* Error Message Display */}
@@ -1201,6 +1183,7 @@ export default function SubordinatesAttendance() {
             {error}
           </div>
         </motion.div>
+      
       )}
     </div>
   );
