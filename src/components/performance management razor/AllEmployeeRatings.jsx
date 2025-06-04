@@ -40,7 +40,7 @@ function AllEmployeeRatings() {
 
   // ======== STORES & ACTIONS ========
   const { 
-    getOrgRatingsAdvanced, // your updated store method that calls /ratings/organization-advanced
+    getOrgRatingsAdvancedAggregated, // your updated store method that calls /ratings/organization-advanced
     loading, 
     error 
   } = useRatingStore();
@@ -250,7 +250,7 @@ function AllEmployeeRatings() {
         params.endYear   = endYear;
       }
 
-      const res = await getOrgRatingsAdvanced(params);
+      const res = await getOrgRatingsAdvancedAggregated(params);
       if (res.success) {
         setOrgData(res.data); // array of { employee, filteredRatings, averageRating, ratingCount, category? }
         toast.success(`Found ${res.data.length} employees`);
@@ -279,7 +279,7 @@ function AllEmployeeRatings() {
     });
     // open new tab:
     window.open(
-      `/dashboard/employee-advanced/${employeeId}?${queryParams.toString()}`,
+      `/dashboard/employee-advanced-aggregate/${employeeId}?${queryParams.toString()}`,
       "_blank"
     );
   };

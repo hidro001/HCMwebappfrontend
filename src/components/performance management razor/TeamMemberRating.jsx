@@ -37,7 +37,7 @@ const MONTHS = [
 ];
 
 function TeamRatingsAdvanced() {
-  const { getTeamRatingsAdvanced, loading, error } = useRatingStore();
+  const { getTeamRatingsAdvancedAggregated, loading, error } = useRatingStore();
 
   // If you have additional stores for departments/designations:
   const { departments, fetchDepartments, loading: deptLoading, error: deptError } = useDepartmentStore();
@@ -228,7 +228,7 @@ function TeamRatingsAdvanced() {
         params.endYear   = endYear;
       }
 
-      const res = await getTeamRatingsAdvanced(params);
+      const res = await getTeamRatingsAdvancedAggregated(params);
       if (res.success) {
         setTeamData(res.data);
       } else {
@@ -692,13 +692,13 @@ function TeamRatingsAdvanced() {
                       <th className="px-6 py-4 rounded-l-lg">Employee</th>
                       <th className="px-6 py-4">Designation</th>
                       <th className="px-6 py-4 text-center">Rating Count</th>
-                      <th className="px-6 py-4">Score</th>
+                      <th className="px-6 py-4"> Avrage Score</th>
                       <th className="px-6 py-4">Category</th>
                       <th className="px-6 py-4 rounded-r-lg text-center">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                    {teamData.map(({ employee, averageRating, ratingCount, category }) => {
+                    {teamData.map(({ employee, score, ratingCount, category }) => {
                       // Build query params for linking to their advanced page
                       const queryParams = new URLSearchParams({
                         frequency,
@@ -743,7 +743,7 @@ function TeamRatingsAdvanced() {
                             {ratingCount || 0}
                           </td>
                           <td className="px-6 py-4">
-                            {averageRating ? averageRating.toFixed(2) : "0.00"}
+                            {score ? score.toFixed(2) : "0.00"}
                           </td>
                           <td className="px-6 py-4">
                             {category || "—"}
