@@ -2,14 +2,12 @@
 
 import React, { useState, useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-
-// Store calls
+import { useNavigate, Link } from "react-router-dom";
 import useRatingStore from "../../store/useRatingNewStore";
 import useDepartmentStore from "../../store/departmentStore";
 import useDesignationStore from "../../store/designationStore";
-
 import { getWeeksInMonth } from "./calendarUtils";
+
 import { CiUser } from "react-icons/ci";
 import {
   FiFilter,
@@ -22,7 +20,6 @@ import { IoAnalyticsOutline } from "react-icons/io5";
 import { MdOutlineDateRange } from "react-icons/md";
 import { BsCalendar3Week, BsCalendar2Month, BsCalendar2Range } from "react-icons/bs";
 
-// Frequencies array with icons
 const FREQUENCIES = [
   { value: "daily",   label: "Daily",   icon: <MdOutlineDateRange className="text-lg" /> },
   { value: "weekly",  label: "Weekly",  icon: <BsCalendar3Week   className="text-lg" /> },
@@ -40,16 +37,18 @@ function AllEmployeeRatings() {
 
   // ======== STORES & ACTIONS ========
   const { 
-    getOrgRatingsAdvancedAggregated, // your updated store method that calls /ratings/organization-advanced
+    getOrgRatingsAdvancedAggregated, 
     loading, 
     error 
   } = useRatingStore();
+
   const {
     departments,
     fetchDepartments,
     loading: deptLoading,
     error: deptError
   } = useDepartmentStore();
+
   const {
     designations,
     fetchDesignations,
@@ -58,26 +57,25 @@ function AllEmployeeRatings() {
   } = useDesignationStore();
 
   // ======== FREQUENCY & FILTER STATES ========
-  const [frequency, setFrequency] = useState("daily");
-  const [startDate, setStartDate] = useState("");
-  const [endDate,   setEndDate]   = useState("");
+  const [frequency,   setFrequency]   = useState("daily");
+  const [startDate,   setStartDate]   = useState("");
+  const [endDate,     setEndDate]     = useState("");
 
-  const [startYear,  setStartYear]  = useState("");
-  const [endYear,    setEndYear]    = useState("");
-  const [startMonth, setStartMonth] = useState("");
-  const [endMonth,   setEndMonth]   = useState("");
-  const [startWeek,  setStartWeek]  = useState("");
-  const [endWeek,    setEndWeek]    = useState("");
+  const [startYear,   setStartYear]   = useState("");
+  const [endYear,     setEndYear]     = useState("");
+  const [startMonth,  setStartMonth]  = useState("");
+  const [endMonth,    setEndMonth]    = useState("");
+  const [startWeek,   setStartWeek]   = useState("");
+  const [endWeek,     setEndWeek]     = useState("");
 
-  // For populating start & end weeks in "weekly" frequency
   const [startAvailableWeeks, setStartAvailableWeeks] = useState([]);
   const [endAvailableWeeks,   setEndAvailableWeeks]   = useState([]);
 
   // ======== Additional filters ========
   const [department,   setDepartment]   = useState("");
   const [designation,  setDesignation]  = useState("");
-  const [sortBy,       setSortBy]       = useState("scoreDesc"); // e.g. "scoreAsc", "nameAsc", etc.
-  const [limit,        setLimit]        = useState("");          // optional numeric limit
+  const [sortBy,       setSortBy]       = useState("scoreDesc"); 
+  const [limit,        setLimit]        = useState("");
 
   // ======== RESULT STATE ========
   const [orgData, setOrgData] = useState([]);
@@ -206,8 +204,8 @@ function AllEmployeeRatings() {
       if (designation) params.designation = designation;
 
       // If you have sortBy & limit
-      if (sortBy) params.sortBy = sortBy;   // e.g. "scoreDesc"
-      if (limit)  params.limit  = limit;    // e.g. "5"
+      if (sortBy) params.sortBy = sortBy;  
+      if (limit)  params.limit  = limit;   
 
       // daily
       if (frequency === "daily" && startDate && endDate) {
@@ -252,7 +250,7 @@ function AllEmployeeRatings() {
 
       const res = await getOrgRatingsAdvancedAggregated(params);
       if (res.success) {
-        setOrgData(res.data); // array of { employee, filteredRatings, averageRating, ratingCount, category? }
+        setOrgData(res.data);
         toast.success(`Found ${res.data.length} employees`);
       } else {
         toast.error(res.message || "Could not fetch organization ratings");
@@ -260,28 +258,6 @@ function AllEmployeeRatings() {
     } catch (err) {
       toast.error(err?.message || "Error fetching org advanced ratings");
     }
-  };
-
-  // ======== View detail page (or open in new tab) ========
-  const handleViewFullRating = (employeeId) => {
-    // If you want to pass the current filters to that route:
-    const queryParams = new URLSearchParams({
-      frequency,
-      startDate,
-      endDate,
-      startYear,
-      endYear,
-      startMonth,
-      endMonth,
-      startWeek,
-      endWeek,
-      // optionally department, designation
-    });
-    // open new tab:
-    window.open(
-      `/dashboard/employee-advanced-aggregate/${employeeId}?${queryParams.toString()}`,
-      "_blank"
-    );
   };
 
   return (
@@ -348,7 +324,7 @@ function AllEmployeeRatings() {
                 {/* Department */}
                 <div>
                   <label className="block font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Department
+                    Department (optional)
                   </label>
                   <select
                     className="
@@ -362,7 +338,7 @@ function AllEmployeeRatings() {
                     value={department}
                     onChange={(e) => setDepartment(e.target.value)}
                   >
-                    <option value="">-- All Departments --</option>
+                    <option value="">-- All --</option>
                     {departments.map((dept) => (
                       <option key={dept._id} value={dept.department}>
                         {dept.department}
@@ -384,7 +360,7 @@ function AllEmployeeRatings() {
                 {/* Designation */}
                 <div>
                   <label className="block font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Designation
+                    Designation (optional)
                   </label>
                   <select
                     className="
@@ -398,7 +374,7 @@ function AllEmployeeRatings() {
                     value={designation}
                     onChange={(e) => setDesignation(e.target.value)}
                   >
-                    <option value="">-- All Designations --</option>
+                    <option value="">-- All --</option>
                     {designations.map((dsg) => (
                       <option key={dsg.id} value={dsg.designation}>
                         {dsg.designation}
@@ -900,58 +876,93 @@ function AllEmployeeRatings() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                    {orgData.map(({ employee, averageRating, ratingCount, category }) => (
-                      <tr
-                        key={employee._id}
-                        className="hover:bg-gray-50 dark:hover:bg-gray-700/20 transition-colors duration-150"
-                      >
-                        <td className="px-6 py-4">
-                          <div className="flex items-center space-x-3">
-                            <img
-                              src={employee.user_Avatar || "/placeholder-avatar.svg"}
-                              alt="avatar"
-                              className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-gray-800 shadow"
-                              onError={(e) => {
-                                e.currentTarget.onerror = null;
-                                // e.currentTarget.src = "fallback.jpg";
-                              }}
-                            />
-                            <div>
-                              <p className="font-semibold">
-                                {employee.first_Name} {employee.last_Name}
-                              </p>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">
-                                {employee.employee_Id}
-                              </p>
+                    {orgData.map(({ employee, averageRating, ratingCount, category }) => {
+                      // Build the correct query string based on `frequency`
+                      const params = new URLSearchParams();
+                      params.append("periodType", frequency);
+
+                      if (frequency === "daily") {
+                        params.append("startDate", startDate);
+                        params.append("endDate",   endDate);
+                      }
+
+                      if (frequency === "weekly") {
+                        params.append("startYear",  startYear);
+                        params.append("endYear",    endYear);
+                        // Convert "05" → "5" if needed (server might expect numeric)
+                        params.append("startMonth", String(parseInt(startMonth, 10)));
+                        params.append("endMonth",   String(parseInt(endMonth, 10)));
+                        params.append("startWeek",  startWeek);
+                        params.append("endWeek",    endWeek);
+                      }
+
+                      if (frequency === "monthly") {
+                        params.append("startYear",  startYear);
+                        params.append("endYear",    endYear);
+                        params.append("startMonth", String(parseInt(startMonth, 10)));
+                        params.append("endMonth",   String(parseInt(endMonth, 10)));
+                      }
+
+                      if (frequency === "yearly") {
+                        params.append("startYear", startYear);
+                        params.append("endYear",   endYear);
+                      }
+
+                      const queryParams = params.toString();
+
+                      return (
+                        <tr
+                          key={employee._id}
+                          className="hover:bg-gray-50 dark:hover:bg-gray-700/20 transition-colors duration-150"
+                        >
+                          <td className="px-6 py-4">
+                            <div className="flex items-center space-x-3">
+                              <img
+                                src={employee.user_Avatar || "/placeholder-avatar.svg"}
+                                alt="avatar"
+                                className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-gray-800 shadow"
+                                onError={(e) => {
+                                  e.currentTarget.onerror = null;
+                                  // fallback if needed
+                                }}
+                              />
+                              <div>
+                                <p className="font-semibold">
+                                  {employee.first_Name} {employee.last_Name}
+                                </p>
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                  {employee.employee_Id}
+                                </p>
+                              </div>
                             </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4">{employee.department || "—"}</td>
-                        <td className="px-6 py-4">{employee.designation || "—"}</td>
-                        <td className="px-6 py-4">{ratingCount || 0}</td>
-                        <td className="px-6 py-4">
-                          {averageRating ? averageRating.toFixed(2) : "0.00"}
-                        </td>
-                        <td className="px-6 py-4">
-                          {category || "—"} 
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <button
-                            onClick={() => handleViewFullRating(employee._id)}
-                            className="
-                              inline-flex items-center px-3 py-2 text-sm
-                              bg-green-500 hover:bg-green-600
-                              text-white rounded transition-colors duration-200
-                              focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2
-                              dark:focus:ring-offset-gray-800
-                            "
-                          >
-                            <FiEye className="mr-1" />
-                            Full Details
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                          <td className="px-6 py-4">{employee.department || "—"}</td>
+                          <td className="px-6 py-4">{employee.designation || "—"}</td>
+                          <td className="px-6 py-4">{ratingCount || 0}</td>
+                          <td className="px-6 py-4">
+                            {averageRating ? averageRating.toFixed(2) : "0.00"}
+                          </td>
+                          <td className="px-6 py-4">
+                            {category || "—"} 
+                          </td>
+                          <td className="px-6 py-4 text-center">
+                            <Link
+                              to={`/dashboard/employee-advanced-aggregate/${employee._id}?${queryParams}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="
+                                inline-flex items-center px-3 py-2 text-sm
+                                bg-green-500 hover:bg-green-600
+                                text-white rounded transition-colors duration-200
+                              "
+                            >
+                              <FiEye className="mr-1" />
+                              View
+                            </Link>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

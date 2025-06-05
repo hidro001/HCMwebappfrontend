@@ -1,4 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+
+
+import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import useRatingStore from "../../store/useRatingNewStore";
@@ -27,10 +29,10 @@ import {
 import KPIDetailModal from "./modal/KPIDetailModal";
 
 const FREQUENCIES = [
-  { value: "daily", label: "Daily", icon: <FiCalendar className="mr-2" /> },
-  { value: "weekly", label: "Weekly", icon: <BsCalendarWeek className="mr-2" /> },
+  { value: "daily",   label: "Daily",   icon: <FiCalendar className="mr-2" /> },
+  { value: "weekly",  label: "Weekly",  icon: <BsCalendarWeek className="mr-2" /> },
   { value: "monthly", label: "Monthly", icon: <BsCalendarMonth className="mr-2" /> },
-  { value: "yearly", label: "Yearly", icon: <BsCalendar2Range className="mr-2" /> },
+  { value: "yearly",  label: "Yearly",  icon: <BsCalendar2Range className="mr-2" /> },
 ];
 
 /**
@@ -61,18 +63,8 @@ function renderPeriod(rdoc) {
     return `${rdoc.year} • Month ${rdoc.month} • Week ${rdoc.week}`;
   } else if (rdoc.frequency === "monthly") {
     const monthNames = [
-      "January",
-      "February",
-      "March",
-      "April",
-      "May",
-      "June",
-      "July",
-      "August",
-      "September",
-      "October",
-      "November",
-      "December",
+      "January","February","March","April","May","June",
+      "July","August","September","October","November","December",
     ];
     const monthIndex = parseInt(rdoc.month, 10) - 1;
     const monthName = monthNames[monthIndex] || `Month ${rdoc.month}`;
@@ -85,7 +77,7 @@ function renderPeriod(rdoc) {
 
 function EmployeeRatingAdvanced() {
   const { employeeId } = useParams();
-  const [searchParams] = useSearchParams(); // to read query params
+  const [searchParams] = useSearchParams();
 
   // from Zustand (make sure your store exports this function)
   const { getEmployeeAggregatedRatings, loading, error } = useRatingStore();
@@ -94,7 +86,7 @@ function EmployeeRatingAdvanced() {
   const [isFilterExpanded, setIsFilterExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState("ratings"); // 'ratings' or 'charts'
 
-  // frequency state
+  // frequency state (we still call it “frequency” in the UI, but it maps to periodType)
   const [frequency, setFrequency] = useState("daily");
 
   // daily
@@ -134,85 +126,199 @@ function EmployeeRatingAdvanced() {
   const currentYear = today.getFullYear();
   const currentMonth = String(today.getMonth() + 1).padStart(2, "0");
 
-  // We only want to parse query params once on initial mount
-  const didLoadQueryParams = useRef(false);
-
-  // 1) On mount, parse query parameters and set local state accordingly
+  /**
+   * 1) On mount, read out all relevant query params directly from `searchParams`
+   *    and send the FIRST API call immediately, using those raw values.
+   */
   useEffect(() => {
-    if (didLoadQueryParams.current) return; // only run once
+    // If there's no employeeId, bail out.
+    if (!employeeId) return;
 
-    let autoFetchNeeded = false;
-    // read query params
-    const qFrequency = searchParams.get("frequency");
-    const qStartDate = searchParams.get("startDate");
-    const qEndDate = searchParams.get("endDate");
-    const qStartYear = searchParams.get("startYear");
-    const qEndYear = searchParams.get("endYear");
-    const qStartMonth = searchParams.get("startMonth");
-    const qEndMonth = searchParams.get("endMonth");
-    const qStartWeek = searchParams.get("startWeek");
-    const qEndWeek = searchParams.get("endWeek");
+    // Read out query params by name:
+    const qPeriodType = searchParams.get("periodType");   // daily|weekly|monthly|yearly
+    const qStartDate  = searchParams.get("startDate");    // only for daily
+    const qEndDate    = searchParams.get("endDate");
+    const qStartYear  = searchParams.get("startYear");    // weekly/monthly/yearly
+    const qEndYear    = searchParams.get("endYear");
+    const qStartMonth = searchParams.get("startMonth");   // weekly/monthly
+    const qEndMonth   = searchParams.get("endMonth");
+    const qStartWeek  = searchParams.get("startWeek");    // weekly
+    const qEndWeek    = searchParams.get("endWeek");
 
-    // if param present => set state
-    if (qFrequency) {
-      setFrequency(qFrequency);
-      autoFetchNeeded = true;
-    }
-    if (qStartDate) {
-      setStartDate(qStartDate);
-      autoFetchNeeded = true;
-    }
-    if (qEndDate) {
-      setEndDate(qEndDate);
-      autoFetchNeeded = true;
-    }
-    if (qStartYear) {
-      setStartYear(qStartYear);
-      autoFetchNeeded = true;
-    }
-    if (qEndYear) {
-      setEndYear(qEndYear);
-      autoFetchNeeded = true;
-    }
-    if (qStartMonth) {
-      setStartMonth(qStartMonth);
-      autoFetchNeeded = true;
-    }
-    if (qEndMonth) {
-      setEndMonth(qEndMonth);
-      autoFetchNeeded = true;
-    }
-    if (qStartWeek) {
-      setStartWeek(qStartWeek);
-      autoFetchNeeded = true;
-    }
-    if (qEndWeek) {
-      setEndWeek(qEndWeek);
-      autoFetchNeeded = true;
+    // If they gave us a `periodType`, override UI state immediately:
+    if (qPeriodType) {
+      setFrequency(qPeriodType);
     }
 
-    // Mark we have loaded from query
-    didLoadQueryParams.current = true;
+    // Fill in the other state variables so the UI “knows” what’s in the URL:
+    if (qStartDate)  setStartDate(qStartDate);
+    if (qEndDate)    setEndDate(qEndDate);
+    if (qStartYear)  setStartYear(qStartYear);
+    if (qEndYear)    setEndYear(qEndYear);
+    if (qStartMonth) setStartMonth(qStartMonth);
+    if (qEndMonth)   setEndMonth(qEndMonth);
+    if (qStartWeek)  setStartWeek(qStartWeek);
+    if (qEndWeek)    setEndWeek(qEndWeek);
 
-    // If any param was present, do an initial fetch
-    if (autoFetchNeeded && employeeId) {
-      // Wait a tick so states can update first
-      setTimeout(() => {
-        handleFetchRatings();
-      }, 0);
+    // Now, IMMEDIATELY build a single `params` object from those raw query values
+    // and send it to the API in one shot—so we never accidentally send an empty `startDate` for daily, etc.
+
+    const initialParams = { periodType: qPeriodType || "daily" };
+
+    if (qPeriodType === "daily" && qStartDate && qEndDate) {
+      initialParams.startDate = qStartDate;
+      initialParams.endDate   = qEndDate;
     }
-  }, [searchParams, employeeId]);
 
-  // 2) Whenever frequency changes (from the UI), set defaults if no query params
+    if (
+      qPeriodType === "weekly" &&
+      qStartYear && qEndYear &&
+      qStartMonth && qEndMonth &&
+      qStartWeek && qEndWeek
+    ) {
+      initialParams.startYear  = qStartYear;
+      initialParams.endYear    = qEndYear;
+      initialParams.startMonth = qStartMonth;
+      initialParams.endMonth   = qEndMonth;
+      initialParams.startWeek  = qStartWeek;
+      initialParams.endWeek    = qEndWeek;
+    }
+
+    if (
+      qPeriodType === "monthly" &&
+      qStartYear && qEndYear &&
+      qStartMonth && qEndMonth
+    ) {
+      initialParams.startYear  = qStartYear;
+      initialParams.endYear    = qEndYear;
+      initialParams.startMonth = qStartMonth;
+      initialParams.endMonth   = qEndMonth;
+    }
+
+    if (
+      qPeriodType === "yearly" &&
+      qStartYear && qEndYear
+    ) {
+      initialParams.startYear = qStartYear;
+      initialParams.endYear   = qEndYear;
+    }
+
+    // If we have exactly the parameters that the server expects, do a single API call:
+    getEmployeeAggregatedRatings(employeeId, initialParams)
+      .then((res) => {
+        if (res.success) {
+          const {
+            employee,
+            aggregatedBy,
+            aggregatedData: aggData,
+            filteredRatings,
+            averageRating,
+            ratingCount,
+          } = res.data;
+
+          setEmployeeData({
+            ...employee,
+            aggregatedBy,
+            ratingCount,
+            averageRating,
+          });
+          setAggregatedData(aggData);
+
+          // Keep raw daily‐ratings so the KPI modal can refer to them:
+          setRawRatings(filteredRatings);
+
+          toast.success(`Found ${aggData.length} periods`);
+        } else {
+          toast.error(res.message || "Could not fetch data");
+        }
+      })
+      .catch((err) => {
+        toast.error(err.message || "Error fetching employee aggregated ratings");
+      });
+  }, [searchParams, employeeId, getEmployeeAggregatedRatings]);
+
+  /**
+   * 2) If the user clicks “Apply Filters” (or changes frequency manually in the UI),
+   *    rebuild `params` from React state and call the same API again.
+   */
+  const handleFetchRatings = async () => {
+    if (!employeeId) {
+      toast.error("No employee selected.");
+      return;
+    }
+
+    try {
+      // Build params object from current state
+      const params = { periodType: frequency };
+
+      // daily
+      if (frequency === "daily" && startDate && endDate) {
+        params.startDate = startDate;
+        params.endDate   = endDate;
+      }
+      // weekly
+      if (
+        frequency === "weekly" &&
+        startYear && endYear &&
+        startMonth && endMonth &&
+        startWeek && endWeek
+      ) {
+        params.startYear  = startYear;
+        params.endYear    = endYear;
+        params.startMonth = startMonth;
+        params.endMonth   = endMonth;
+        params.startWeek  = startWeek;
+        params.endWeek    = endWeek;
+      }
+      // monthly
+      if (
+        frequency === "monthly" &&
+        startYear && endYear &&
+        startMonth && endMonth
+      ) {
+        params.startYear  = startYear;
+        params.endYear    = endYear;
+        params.startMonth = startMonth;
+        params.endMonth   = endMonth;
+      }
+      // yearly
+      if (frequency === "yearly" && startYear && endYear) {
+        params.startYear = startYear;
+        params.endYear   = endYear;
+      }
+
+      const res = await getEmployeeAggregatedRatings(employeeId, params);
+      if (res.success) {
+        const {
+          employee,
+          aggregatedBy,
+          aggregatedData: aggData,
+          filteredRatings,
+          averageRating,
+          ratingCount,
+        } = res.data;
+
+        setEmployeeData({
+          ...employee,
+          aggregatedBy,
+          ratingCount,
+          averageRating,
+        });
+        setAggregatedData(aggData);
+        setRawRatings(filteredRatings);
+
+        toast.success(`Found ${aggData.length} periods`);
+      } else {
+        toast.error(res.message || "Could not fetch data");
+      }
+    } catch (err) {
+      toast.error(err.message || "Error fetching employee aggregated ratings");
+    }
+  };
+
+  // Whenever frequency changes (from the UI), set sensible defaults if the user hasn't manually typed anything yet
   useEffect(() => {
-    if (!didLoadQueryParams.current) {
-      handleSetDefaults(frequency);
-    }
-  }, [frequency]);
-
-  // A small function to set default states for each frequency
-  const handleSetDefaults = (freq) => {
-    switch (freq) {
+    switch (frequency) {
       case "daily":
         setStartDate(isoToday);
         setEndDate(isoToday);
@@ -262,9 +368,9 @@ function EmployeeRatingAdvanced() {
       default:
         break;
     }
-  };
+  }, [frequency]);
 
-  // if weekly => recalc startWeek options
+  // If weekly → recalc startWeek options
   useEffect(() => {
     if (frequency !== "weekly") return;
     if (startYear && startMonth) {
@@ -284,7 +390,7 @@ function EmployeeRatingAdvanced() {
     }
   }, [frequency, startYear, startMonth, startWeek]);
 
-  // if weekly => recalc endWeek options
+  // If weekly → recalc endWeek options
   useEffect(() => {
     if (frequency !== "weekly") return;
     if (endYear && endMonth) {
@@ -304,130 +410,33 @@ function EmployeeRatingAdvanced() {
     }
   }, [frequency, endYear, endMonth, endWeek]);
 
-  // -----------------------------------------------------
-  // 3) handleFetchRatings: call getEmployeeAggregatedRatings
-  // -----------------------------------------------------
-  const handleFetchRatings = async () => {
-    if (!employeeId) {
-      toast.error("No employee selected.");
-      return;
-    }
-    try {
-      // Build params object
-      const params = {
-        periodType: frequency,
-        // periodType must be 'daily' | 'weekly' | 'monthly' | 'yearly'
-      };
-
-      // daily
-      if (frequency === "daily" && startDate && endDate) {
-        params.startDate = startDate;
-        params.endDate = endDate;
-      }
-      // weekly
-      if (
-        frequency === "weekly" &&
-        startYear &&
-        endYear &&
-        startMonth &&
-        endMonth &&
-        startWeek &&
-        endWeek
-      ) {
-        params.startYear = startYear;
-        params.endYear = endYear;
-        params.startMonth = startMonth;
-        params.endMonth = endMonth;
-        params.startWeek = startWeek;
-        params.endWeek = endWeek;
-      }
-      // monthly
-      if (
-        frequency === "monthly" &&
-        startYear &&
-        endYear &&
-        startMonth &&
-        endMonth
-      ) {
-        params.startYear = startYear;
-        params.endYear = endYear;
-        params.startMonth = startMonth;
-        params.endMonth = endMonth;
-      }
-      // yearly
-      if (frequency === "yearly" && startYear && endYear) {
-        params.startYear = startYear;
-        params.endYear = endYear;
-      }
-
-      // Call the new store action
-      const res = await getEmployeeAggregatedRatings(employeeId, params);
-
-      if (res.success) {
-        // The new API returns: 
-        // { success: true, data: { employee, aggregatedBy, aggregatedData, filteredRatings, averageRating, ratingCount } }
-        const {
-          employee,
-          aggregatedBy,
-          aggregatedData: aggData,
-          filteredRatings,
-          averageRating,
-          ratingCount,
-        } = res.data;
-
-        setEmployeeData({
-          ...employee,
-          aggregatedBy,
-          ratingCount,
-          averageRating,
-        });
-        setAggregatedData(aggData);
-
-        // STORE the raw daily‐rating docs so that the modal can find “kpis”, “comment”, etc.
-        setRawRatings(filteredRatings);
-
-        toast.success(`Found ${aggData.length} periods`);
-      } else {
-        toast.error(res.message || "Could not fetch data");
-      }
-    } catch (err) {
-      toast.error(err.message || "Error fetching employee aggregated ratings");
-    }
-  };
-
   // ↓↓↓ UPDATED handleOpenModal ↓↓↓
   const handleOpenModal = (periodObj) => {
     if (frequency !== "daily") {
       // AGGREGATED MODE (weekly / monthly / yearly)
-      // 1) Use summary.perKpi as before:
       const aggregatedPerKpi = periodObj.summary.perKpi || [];
 
-      // 2) Count how many raw daily‐ratings actually fall into this period
-      //    (so that “max possible” = daysCount * 100)
+      // Count how many raw daily‐ratings fall into this period
       const daysCount = rawRatings.filter((r) => {
         if (!r.date) return false;
         const d = new Date(r.date);
         const start = new Date(periodObj.periodStartDate);
         const end = new Date(periodObj.periodEndDate);
-        // periodStartDate is inclusive, periodEndDate is exclusive
         return d >= start && d < end;
       }).length;
 
-      // 3) Add a maxScore field onto the period object:
       const maxScore = daysCount * 100;
-
       setSelectedPeriod({ ...periodObj, maxScore });
       setSelectedRawRating(aggregatedPerKpi);
       setShowModal(true);
     } else {
-      // DAILY MODE: find the single raw daily‐rating doc whose date matches periodLabel
+      // DAILY MODE: find the single raw daily‐rating whose date matches periodLabel
       const matchingRaw = rawRatings.find((r) => {
         if (!r.date) return false;
         const yyyyMmDd = new Date(r.date).toISOString().slice(0, 10);
         return yyyyMmDd === periodObj.periodLabel;
       }) || null;
 
-      // For a single day, “maxScore” is always 100
       setSelectedPeriod({ ...periodObj, maxScore: 100 });
       setSelectedRawRating(matchingRaw);
       setShowModal(true);

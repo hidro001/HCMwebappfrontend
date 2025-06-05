@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "react-hot-toast";
@@ -310,14 +308,11 @@ function TeamRatingsAdvanced() {
                     onChange={(e) => setDepartment(e.target.value)}
                   >
                     <option value="">-- All --</option>
-                    {/* If you have a department array, map them here */}
                     {departments.map((d) => (
                       <option key={d._id} value={d.department}>
                         {d.department}
                       </option>
                     ))}
-                    {/* <option value="Sales">Sales</option>
-                    <option value="IT">IT</option> */}
                   </select>
                 </div>
 
@@ -332,14 +327,11 @@ function TeamRatingsAdvanced() {
                     onChange={(e) => setDesignation(e.target.value)}
                   >
                     <option value="">-- All --</option>
-                    {/* If you have a designation array, map them here */}
                     {designations.map((dg) => (
                       <option key={dg.id} value={dg.designation}>
                         {dg.designation}
                       </option>
                     ))}
-                    {/* <option value="Manager">Manager</option>
-                    <option value="Engineer">Engineer</option> */}
                   </select>
                 </div>
 
@@ -700,17 +692,37 @@ function TeamRatingsAdvanced() {
                   <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                     {teamData.map(({ employee, score, ratingCount, category }) => {
                       // Build query params for linking to their advanced page
-                      const queryParams = new URLSearchParams({
-                        frequency,
-                        startDate,
-                        endDate,
-                        startYear,
-                        endYear,
-                        startMonth,
-                        endMonth,
-                        startWeek,
-                        endWeek,
-                      }).toString();
+                      const params = new URLSearchParams();
+                      params.append("periodType", frequency);
+
+                      if (frequency === "daily") {
+                        params.append("startDate", startDate);
+                        params.append("endDate",   endDate);
+                      }
+
+                      if (frequency === "weekly") {
+                        params.append("startYear",  startYear);
+                        params.append("endYear",    endYear);
+                        // Convert "05" → "5" if needed; or you can leave "05" based on server expectations
+                        params.append("startMonth", String(parseInt(startMonth, 10)));
+                        params.append("endMonth",   String(parseInt(endMonth, 10)));
+                        params.append("startWeek",  startWeek);
+                        params.append("endWeek",    endWeek);
+                      }
+
+                      if (frequency === "monthly") {
+                        params.append("startYear",  startYear);
+                        params.append("endYear",    endYear);
+                        params.append("startMonth", String(parseInt(startMonth, 10)));
+                        params.append("endMonth",   String(parseInt(endMonth, 10)));
+                      }
+
+                      if (frequency === "yearly") {
+                        params.append("startYear", startYear);
+                        params.append("endYear",   endYear);
+                      }
+
+                      const queryParams = params.toString();
 
                       return (
                         <tr
@@ -774,3 +786,4 @@ function TeamRatingsAdvanced() {
 }
 
 export default TeamRatingsAdvanced;
+
