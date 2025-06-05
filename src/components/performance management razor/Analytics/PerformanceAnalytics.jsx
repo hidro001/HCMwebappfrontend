@@ -1551,7 +1551,7 @@ export default function PerformanceAnalytics({
                 <BarChart
                   layout="vertical"
                   data={kpiRadarData}
-                  margin={{ top: 20, right: 30, left: 60, bottom: 20 }}
+                  margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
@@ -1616,7 +1616,7 @@ export default function PerformanceAnalytics({
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={avgDailyKpiData}
-                  margin={{ top: 20, right: 30, left: 0, bottom: 60 }}
+                  margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
                 >
                   <CartesianGrid
                     strokeDasharray="3 3"
