@@ -141,6 +141,26 @@ const useRatingStore = create((set, get) => ({
     }
   },
 
+  getTeamRatingsAdvancedAggregated: async (params) => {
+    try {
+      set({ loading: true, error: null });
+      // Build query
+      const queryParams = new URLSearchParams(params).toString();
+      const res = await axiosInstance.get(
+        `/ratings/team-advanced/aggregated?${queryParams}`
+      );
+
+      set({ loading: false, error: null });
+      return res.data; // { success: true, data: [...] }
+    } catch (err) {
+      set({
+        loading: false,
+        error: err.response?.data?.message || err.message,
+      });
+      throw err;
+    }
+  },
+
   // Get advanced ratings for a SINGLE employee with date-range filters.
   getEmployeeRatingsAdvanced: async (employeeId, params) => {
     try {
@@ -193,6 +213,25 @@ const useRatingStore = create((set, get) => ({
       // e.g. GET /ratings/org-advanced?frequency=weekly&department=IT&startYear=2025&endYear=2025...
       const res = await axiosInstance.get(
         `/ratings/organization-advanced?${queryParams}`
+      );
+      set({ loading: false, error: null });
+      return res.data; // { success: true, data: [...] }
+    } catch (err) {
+      set({
+        loading: false,
+        error: err.response?.data?.message || err.message,
+      });
+      throw err;
+    }
+  },
+
+  getOrgRatingsAdvancedAggregated: async (params) => {
+    try {
+      set({ loading: true, error: null });
+      const queryParams = new URLSearchParams(params).toString();
+      // e.g. GET /ratings/org-advanced?frequency=weekly&department=IT&startYear=2025&endYear=2025...
+      const res = await axiosInstance.get(
+        `/ratings/organization-advanced/aggregated?${queryParams}`
       );
       set({ loading: false, error: null });
       return res.data; // { success: true, data: [...] }

@@ -1291,7 +1291,7 @@ function EmployeeDashboardLayout() {
               whileHover="hover"
               {...hoverVariants}
             >
-              <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 border-b border-gray-200/50 dark:border-gray-700/50">
+              {/* <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 border-b border-gray-200/50 dark:border-gray-700/50">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="p-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl shadow-lg">
@@ -1311,7 +1311,7 @@ function EmployeeDashboardLayout() {
                     <span className="text-sm font-medium text-green-700 dark:text-green-400">Active</span>
                   </div>
                 </div>
-              </div>
+              </div> */}
               <div className="p-6">
                 <AssignedTaskListCard />
               </div>

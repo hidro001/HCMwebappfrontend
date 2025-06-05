@@ -1474,7 +1474,7 @@ const AssignedTaskListCard = () => {
                 </motion.div>
                 <div>
                   <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-slate-900 via-violet-800 to-purple-800 dark:from-white dark:via-violet-200 dark:to-purple-200 bg-clip-text text-transparent">
-                    Task Command Center
+                    Todo Command Center
                   </h2>
                   <p className="text-sm text-slate-600 dark:text-slate-400">
                     Mission Control Dashboard

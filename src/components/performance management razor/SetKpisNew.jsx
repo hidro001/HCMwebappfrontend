@@ -394,9 +394,9 @@ function SetKpis() {
                 onChange={(e) => setFrequency(e.target.value)}
               >
                 <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
+                {/* <option value="weekly">Weekly</option>
                 <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
+                <option value="yearly">Yearly</option> */}
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
                 <ChevronDown className="h-4 w-4 text-gray-500 dark:text-gray-400" />
