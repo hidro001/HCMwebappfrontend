@@ -407,48 +407,48 @@ export const menuItems = [
 
   // ------------------------------ Performance Management & KPI quantitative-qualitative ------------------------------
 
-  {
-    name: "Performance Management & KPI quantitative-qualitative",
-    tooltip:
-      "Track, evaluate, and improve employee performance to drive team success",
-    icon: <GrDocumentPerformance />,
-    color: "text-blue-400",
-    iconAnimation: { rotate: 360 },
-    options: [
-      {
-        name: "Set KPIs",
-        link: "/dashboard/set-kpis-new",
-        permission: "set-kpis-quantitative-qualitative",
-      },
-      {
-        name: "Rate Team Members",
-        link: "/dashboard/rate-team-members",
-        permission: "rate-team-members-quantitative-qualitative",
-      },
-      {
-        name: "Team Members Performance",
-        link: "/dashboard/team-members-performance",
-        permission: "team-members-performance-quantitative-qualitative",
-      },
-      {
-        name: "My Performance",
-        link: "/dashboard/my-performance",
+  // {
+  //   name: "Performance Management & KPI quantitative-qualitative",
+  //   tooltip:
+  //     "Track, evaluate, and improve employee performance to drive team success",
+  //   icon: <GrDocumentPerformance />,
+  //   color: "text-blue-400",
+  //   iconAnimation: { rotate: 360 },
+  //   options: [
+  //     {
+  //       name: "Set KPIs",
+  //       link: "/dashboard/set-kpis-new",
+  //       permission: "set-kpis-quantitative-qualitative",
+  //     },
+  //     {
+  //       name: "Rate Team Members",
+  //       link: "/dashboard/rate-team-members",
+  //       permission: "rate-team-members-quantitative-qualitative",
+  //     },
+  //     {
+  //       name: "Team Members Performance",
+  //       link: "/dashboard/team-members-performance",
+  //       permission: "team-members-performance-quantitative-qualitative",
+  //     },
+  //     {
+  //       name: "My Performance",
+  //       link: "/dashboard/my-performance",
 
-        permission: "own-performance-quantitative-qualitative",
-      },
+  //       permission: "own-performance-quantitative-qualitative",
+  //     },
 
-      {
-        name: "All Employes Rating",
-        link: "/dashboard/all-employess-ratings",
-        permission: "view-all-employee-rating-quantitative-qualitative",
-      },
-    ],
-  },
+  //     {
+  //       name: "All Employes Rating",
+  //       link: "/dashboard/all-employess-ratings",
+  //       permission: "view-all-employee-rating-quantitative-qualitative",
+  //     },
+  //   ],
+  // },
 
   // ------------------------------ Performance Management & KPI quantitative-qualitative Razor------------------------------
 
   {
-    name: "razor Performance Management & KPI quantitative-qualitative ",
+    name: "Performance Management & KPI quantitative-qualitative ",
     tooltip:
       "Track, evaluate, and improve employee performance to drive team success",
     icon: <GrDocumentPerformance />,
