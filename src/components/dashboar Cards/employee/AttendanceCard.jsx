@@ -2,141 +2,6 @@
 // import { Doughnut } from 'react-chartjs-2';
 // import { motion } from 'framer-motion';
 // import 'chart.js/auto';
-// import { getAttendanceStats } from '../../../service/dashboardService';
-
-// const AttendanceCard = () => {
-//   const [present, setPresent] = useState(0);
-//   const [absent, setAbsent] = useState(0);
-//   const [leaves, setLeaves] = useState(0);
-//   const [attendancePercent, setAttendancePercent] = useState(0);
-//   const [changePercent, setChangePercent] = useState(0);
-//   const [isLoading, setIsLoading] = useState(false);
-
-//   useEffect(() => {
-//     fetchAttendanceData();
-//   }, []);
-
-//   const fetchAttendanceData = async () => {
-//     try {
-//       setIsLoading(true);
-//       const res = await getAttendanceStats();
-//       if (res.success) {
-//         const { present, absent, leaves, attendancePercent } = res.data;
-//         setPresent(present);
-//         setAbsent(absent);
-//         setLeaves(leaves);
-//         setAttendancePercent(attendancePercent);
-        
-//         // If you track daily/weekly changes, compute or fetch real data here:
-//         setChangePercent(-15); 
-//       } else {
-//         console.error('API responded with success=false:', res.message);
-//       }
-//     } catch (error) {
-//       console.error('Failed to fetch attendance stats:', error);
-//     } finally {
-//       setIsLoading(false);
-//     }
-//   };
-
-//   // Edge-case handling: clamp attendancePercent to [0, 100]
-//   const clampedPercent = Math.min(100, Math.max(0, attendancePercent));
-//   const doughnutData = [clampedPercent, 100 - clampedPercent];
-
-//   const data = {
-//     labels: ['Attendance', 'Remaining'],
-//     datasets: [
-//       {
-//         data: doughnutData,
-//         backgroundColor: ['#10B981', '#D1FAE5'], 
-//         hoverBackgroundColor: ['#10B981', '#D1FAE5'],
-//         borderWidth: 0,
-//         cutout: '80%',
-//       },
-//     ],
-//   };
-
-//   const options = {
-//     plugins: {
-//       legend: { display: false },
-//       tooltip: { enabled: false },
-//     },
-//     maintainAspectRatio: false,
-//   };
-
-//   // Conditionally show an "up arrow" if changePercent >= 0 or "down arrow" if < 0
-//   const isNegativeChange = changePercent < 0;
-//   const changeColor = isNegativeChange ? 'text-red-500' : 'text-green-500';
-//   const arrowPath = isNegativeChange
-//     ? 'M10 7.414l4.293 4.293 1.414-1.414L10 4.586l-5.707 5.707 1.414 1.414z'
-//     : 'M10 12.586l4.293-4.293 1.414 1.414L10 15.414l-5.707-5.707 1.414-1.414z';
-
-//   if (isLoading) {
-//     return (
-//       <motion.div
-//         initial={{ opacity: 0, y: 10 }}
-//         animate={{ opacity: 1, y: 0 }}
-//         transition={{ duration: 0.5 }}
-//         className="max-w-sm w-full p-4 rounded-lg shadow-lg bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100 flex items-center justify-center h-48"
-//       >
-//         <span className="text-sm text-gray-500 dark:text-gray-300">Loading...</span>
-//       </motion.div>
-//     );
-//   }
-
-//   return (
-//     <motion.div
-//       initial={{ opacity: 0, y: 10 }}
-//       animate={{ opacity: 1, y: 0 }}
-//       transition={{ duration: 0.5 }}
-//       className="max-w-sm w-full p-4 rounded-lg shadow-lg bg-white dark:bg-slate-800 text-gray-800 dark:text-gray-100"
-//     >
-//       <div className="flex justify-between items-start">
-//         <h2 className="text-lg font-semibold">Attendance</h2>
-//         {/* <div className={`flex items-center text-sm ${changeColor}`}>
-//           <svg className="w-4 h-4 mr-1 fill-current" viewBox="0 0 20 20">
-//             <path d={arrowPath} />
-//           </svg>
-//           <span>{Math.abs(changePercent)}%</span>
-//         </div> */}
-//       </div>
-
-//       <div className="relative w-32 h-32 mx-auto my-4">
-//         <Doughnut data={data} options={options} />
-//         <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-//           <span className="text-xl font-semibold">{clampedPercent}%</span>
-//           <span className="text-xs text-gray-500 dark:text-gray-400">
-//             Attendance
-//           </span>
-//         </div>
-//       </div>
-
-//       <div className="flex flex-col space-y-1 text-sm mt-2">
-//         <div className="flex justify-between">
-//           <span className="font-medium">Present</span>
-//           <span>{present}</span>
-//         </div>
-//         <div className="flex justify-between">
-//           <span className="font-medium">Absent</span>
-//           <span>{absent}</span>
-//         </div>
-//         <div className="flex justify-between">
-//           <span className="font-medium">Leaves</span>
-//           <span>{leaves}</span>
-//         </div>
-//       </div>
-//     </motion.div>
-//   );
-// };
-
-// export default AttendanceCard;
-
-
-
-// import React, { useEffect, useState } from 'react';
-// import { Doughnut } from 'react-chartjs-2';
-// import { motion } from 'framer-motion';
-// import 'chart.js/auto';
 // import { 
 //   FiUsers, 
 //   FiUserCheck, 
@@ -252,16 +117,16 @@
 //       <motion.div
 //         initial={{ opacity: 0 }}
 //         animate={{ opacity: 1 }}
-//         className="w-full h-full min-h-[320px] lg:min-h-[280px] p-6 rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl backdrop-blur-sm flex items-center justify-center"
+//         className="w-full h-full min-h-[280px] sm:min-h-[300px] md:min-h-[320px] lg:min-h-[280px] xl:min-h-[300px] 2xl:min-h-[320px] p-3 sm:p-4 md:p-5 lg:p-6 xl:p-7 rounded-xl sm:rounded-2xl bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800 dark:to-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl backdrop-blur-sm flex items-center justify-center"
 //       >
-//         <div className="flex flex-col items-center space-y-4">
+//         <div className="flex flex-col items-center space-y-3 sm:space-y-4">
 //           <motion.div
 //             animate={{ rotate: 360 }}
 //             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
 //           >
-//             <FiLoader className="w-8 h-8 text-indigo-500" />
+//             <FiLoader className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 lg:w-7 lg:h-7 xl:w-8 xl:h-8 text-indigo-500" />
 //           </motion.div>
-//           <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
+//           <span className="text-xs sm:text-sm md:text-base lg:text-sm xl:text-base font-medium text-slate-500 dark:text-slate-400 text-center px-2">
 //             Loading attendance data...
 //           </span>
 //         </div>
@@ -278,26 +143,26 @@
 //         scale: 1.02,
 //         transition: { duration: 0.2 }
 //       }}
-//       className="w-full h-full min-h-[320px] lg:min-h-[280px] p-6 rounded-2xl bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl hover:shadow-2xl transition-all duration-300 backdrop-blur-sm relative overflow-hidden"
+//       className="w-full h-full min-h-[280px] sm:min-h-[300px] md:min-h-[320px] lg:min-h-[280px] xl:min-h-[300px] 2xl:min-h-[320px] p-3 sm:p-4 md:p-5 lg:p-6 xl:p-7 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl hover:shadow-2xl transition-all duration-300 backdrop-blur-sm relative overflow-hidden"
 //     >
-//       {/* Background Decoration */}
-//       <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-indigo-100 to-transparent dark:from-indigo-900/20 rounded-full -translate-y-16 translate-x-16" />
-//       <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-100 to-transparent dark:from-purple-900/20 rounded-full translate-y-12 -translate-x-12" />
+//       {/* Background Decoration - Responsive */}
+//       <div className="absolute top-0 right-0 w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 bg-gradient-to-bl from-indigo-100 to-transparent dark:from-indigo-900/20 rounded-full -translate-y-8 translate-x-8 sm:-translate-y-12 sm:translate-x-12 md:-translate-y-14 md:translate-x-14 lg:-translate-y-16 lg:translate-x-16" />
+//       <div className="absolute bottom-0 left-0 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-gradient-to-tr from-purple-100 to-transparent dark:from-purple-900/20 rounded-full translate-y-6 -translate-x-6 sm:translate-y-8 sm:-translate-x-8 md:translate-y-10 md:-translate-x-10 lg:translate-y-12 lg:-translate-x-12" />
       
-//       {/* Header */}
+//       {/* Header - Fully Responsive */}
 //       <motion.div 
 //         variants={itemVariants}
-//         className="flex justify-between items-start mb-6 relative z-10"
+//         className="flex flex-col xs:flex-row justify-between items-start xs:items-center mb-4 sm:mb-5 md:mb-6 relative z-10 space-y-2 xs:space-y-0"
 //       >
-//         <div className="flex items-center space-x-3">
-//           <div className="p-2 rounded-xl bg-indigo-100 dark:bg-indigo-900/30">
-//             <FiUsers className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+//         <div className="flex items-center space-x-2 sm:space-x-3">
+//           <div className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-indigo-100 dark:bg-indigo-900/30">
+//             <FiUsers className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600 dark:text-indigo-400" />
 //           </div>
 //           <div>
-//             <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100">
+//             <h2 className="text-base sm:text-lg md:text-xl font-bold text-slate-800 dark:text-slate-100">
 //               Attendance
 //             </h2>
-//             <p className="text-xs text-slate-500 dark:text-slate-400">
+//             <p className="text-xs sm:text-sm md:text-base text-slate-500 dark:text-slate-400">
 //               Monthly Overview
 //             </p>
 //           </div>
@@ -309,23 +174,24 @@
 //             isNegativeChange ? 'bg-red-100 dark:bg-red-900/20' : 'bg-emerald-100 dark:bg-emerald-900/20'
 //           }`}
 //         >
-//           <TrendIcon className={`w-3 h-3 ${changeColor}`} />
-//           <span className={`text-xs font-semibold ${changeColor}`}>
+//           <TrendIcon className={`w-3 h-3 sm:w-4 sm:h-4 ${changeColor}`} />
+//           <span className={`text-xs sm:text-sm font-semibold ${changeColor}`}>
 //             {Math.abs(changePercent)}%
 //           </span>
 //         </motion.div>
 //       </motion.div>
 
-//       {/* Chart Section */}
+//       {/* Chart Section - Adaptive Layout */}
 //       <motion.div 
 //         variants={itemVariants}
-//         className="flex flex-col lg:flex-row items-center justify-between mb-6 space-y-4 lg:space-y-0"
+//         className="flex flex-col sm:flex-col md:flex-col lg:flex-row xl:flex-row items-center justify-between mb-4 sm:mb-5 md:mb-6 space-y-4 lg:space-y-0"
 //       >
-//         <div className="relative">
+//         {/* Chart Container - Responsive Size */}
+//         <div className="relative flex-shrink-0">
 //           <motion.div 
 //             variants={pulseVariants}
 //             animate="pulse"
-//             className="w-24 h-24 lg:w-28 lg:h-28"
+//             className="w-20 h-20 xs:w-24 xs:h-24 sm:w-28 sm:h-28 md:w-32 md:h-32 lg:w-28 lg:h-28 xl:w-32 xl:h-32 2xl:w-36 2xl:h-36"
 //           >
 //             <Doughnut data={data} options={options} />
 //           </motion.div>
@@ -334,28 +200,28 @@
 //               initial={{ scale: 0 }}
 //               animate={{ scale: 1 }}
 //               transition={{ delay: 0.5, duration: 0.5, type: "spring" }}
-//               className="text-2xl lg:text-3xl font-bold text-slate-800 dark:text-slate-100"
+//               className="text-lg xs:text-xl sm:text-2xl md:text-3xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold text-slate-800 dark:text-slate-100"
 //             >
 //               {clampedPercent}%
 //             </motion.span>
 //           </div>
 //         </div>
 
-//         {/* Stats Grid */}
-//         <div className="grid grid-cols-3 lg:grid-cols-1 gap-3 lg:gap-2 w-full lg:w-auto lg:ml-6">
+//         {/* Stats Grid - Fully Responsive */}
+//         <div className="grid grid-cols-1 xs:grid-cols-3 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-1 gap-2 sm:gap-3 md:gap-4 lg:gap-2 xl:gap-3 w-full lg:w-auto lg:ml-4 xl:ml-6 2xl:ml-8">
 //           <motion.div 
 //             variants={itemVariants}
 //             whileHover={{ scale: 1.05 }}
-//             className="flex flex-col lg:flex-row lg:items-center space-y-1 lg:space-y-0 lg:space-x-3 p-3 lg:p-2 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800"
+//             className="flex flex-col xs:flex-col sm:flex-col md:flex-col lg:flex-row xl:flex-row items-center lg:items-center space-y-1 lg:space-y-0 lg:space-x-2 xl:space-x-3 p-2 sm:p-3 md:p-4 lg:p-2 xl:p-3 rounded-lg sm:rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800"
 //           >
-//             <div className="flex items-center justify-center lg:justify-start">
-//               <FiUserCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+//             <div className="flex items-center justify-center">
+//               <FiUserCheck className="w-3 h-3 xs:w-4 xs:h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-emerald-600 dark:text-emerald-400" />
 //             </div>
-//             <div className="text-center lg:text-left">
-//               <p className="text-xs font-medium text-emerald-700 dark:text-emerald-300">
+//             <div className="text-center lg:text-left xl:text-left">
+//               <p className="text-xs sm:text-sm md:text-base lg:text-xs xl:text-sm font-medium text-emerald-700 dark:text-emerald-300">
 //                 Present
 //               </p>
-//               <p className="text-lg lg:text-base font-bold text-emerald-800 dark:text-emerald-200">
+//               <p className="text-sm sm:text-base md:text-lg lg:text-sm xl:text-base 2xl:text-lg font-bold text-emerald-800 dark:text-emerald-200">
 //                 {present}
 //               </p>
 //             </div>
@@ -364,16 +230,16 @@
 //           <motion.div 
 //             variants={itemVariants}
 //             whileHover={{ scale: 1.05 }}
-//             className="flex flex-col lg:flex-row lg:items-center space-y-1 lg:space-y-0 lg:space-x-3 p-3 lg:p-2 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
+//             className="flex flex-col xs:flex-col sm:flex-col md:flex-col lg:flex-row xl:flex-row items-center lg:items-center space-y-1 lg:space-y-0 lg:space-x-2 xl:space-x-3 p-2 sm:p-3 md:p-4 lg:p-2 xl:p-3 rounded-lg sm:rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800"
 //           >
-//             <div className="flex items-center justify-center lg:justify-start">
-//               <FiUserX className="w-4 h-4 text-red-600 dark:text-red-400" />
+//             <div className="flex items-center justify-center">
+//               <FiUserX className="w-3 h-3 xs:w-4 xs:h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-red-600 dark:text-red-400" />
 //             </div>
-//             <div className="text-center lg:text-left">
-//               <p className="text-xs font-medium text-red-700 dark:text-red-300">
+//             <div className="text-center lg:text-left xl:text-left">
+//               <p className="text-xs sm:text-sm md:text-base lg:text-xs xl:text-sm font-medium text-red-700 dark:text-red-300">
 //                 Absent
 //               </p>
-//               <p className="text-lg lg:text-base font-bold text-red-800 dark:text-red-200">
+//               <p className="text-sm sm:text-base md:text-lg lg:text-sm xl:text-base 2xl:text-lg font-bold text-red-800 dark:text-red-200">
 //                 {absent}
 //               </p>
 //             </div>
@@ -382,16 +248,16 @@
 //           <motion.div 
 //             variants={itemVariants}
 //             whileHover={{ scale: 1.05 }}
-//             className="flex flex-col lg:flex-row lg:items-center space-y-1 lg:space-y-0 lg:space-x-3 p-3 lg:p-2 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
+//             className="flex flex-col xs:flex-col sm:flex-col md:flex-col lg:flex-row xl:flex-row items-center lg:items-center space-y-1 lg:space-y-0 lg:space-x-2 xl:space-x-3 p-2 sm:p-3 md:p-4 lg:p-2 xl:p-3 rounded-lg sm:rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800"
 //           >
-//             <div className="flex items-center justify-center lg:justify-start">
-//               <FiCalendar className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+//             <div className="flex items-center justify-center">
+//               <FiCalendar className="w-3 h-3 xs:w-4 xs:h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 lg:w-4 lg:h-4 xl:w-5 xl:h-5 text-amber-600 dark:text-amber-400" />
 //             </div>
-//             <div className="text-center lg:text-left">
-//               <p className="text-xs font-medium text-amber-700 dark:text-amber-300">
-//                 Leaves
+//             <div className="text-center lg:text-left xl:text-left">
+//               <p className="text-xs sm:text-sm md:text-base lg:text-xs xl:text-sm font-medium text-amber-700 dark:text-amber-300">
+//                 Half Day
 //               </p>
-//               <p className="text-lg lg:text-base font-bold text-amber-800 dark:text-amber-200">
+//               <p className="text-sm sm:text-base md:text-lg lg:text-sm xl:text-base 2xl:text-lg font-bold text-amber-800 dark:text-amber-200">
 //                 {leaves}
 //               </p>
 //             </div>
@@ -399,20 +265,20 @@
 //         </div>
 //       </motion.div>
 
-//       {/* Progress Bar */}
+//       {/* Progress Bar - Responsive */}
 //       <motion.div 
 //         variants={itemVariants}
 //         className="relative z-10"
 //       >
 //         <div className="flex justify-between items-center mb-2">
-//           <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+//           <span className="text-xs sm:text-sm md:text-base lg:text-sm xl:text-base font-medium text-slate-600 dark:text-slate-400">
 //             Overall Performance
 //           </span>
-//           <span className="text-xs font-bold text-indigo-600 dark:text-indigo-400">
+//           <span className="text-xs sm:text-sm md:text-base lg:text-sm xl:text-base font-bold text-indigo-600 dark:text-indigo-400">
 //             {clampedPercent}%
 //           </span>
 //         </div>
-//         <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 overflow-hidden">
+//         <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-1.5 sm:h-2 md:h-2.5 lg:h-2 xl:h-2.5 overflow-hidden">
 //           <motion.div
 //             initial={{ width: 0 }}
 //             animate={{ width: `${clampedPercent}%` }}
@@ -462,11 +328,17 @@ const AttendanceCard = () => {
       setIsLoading(true);
       const res = await getAttendanceStats();
       if (res.success) {
-        const { present, absent, leaves, attendancePercent } = res.data;
-        setPresent(present);
-        setAbsent(absent);
-        setLeaves(leaves);
-        setAttendancePercent(attendancePercent);
+        // Updated to match your API response structure
+        const { presentDays, halfDays, absentDays } = res.data;
+        
+        setPresent(presentDays);
+        setAbsent(absentDays);
+        setLeaves(halfDays);
+        
+        // Calculate attendance percentage
+        const totalDays = presentDays + absentDays + halfDays;
+        const calculatedPercent = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 0;
+        setAttendancePercent(calculatedPercent);
         
         // If you track daily/weekly changes, compute or fetch real data here:
         setChangePercent(-15); 
@@ -687,7 +559,7 @@ const AttendanceCard = () => {
             </div>
             <div className="text-center lg:text-left xl:text-left">
               <p className="text-xs sm:text-sm md:text-base lg:text-xs xl:text-sm font-medium text-amber-700 dark:text-amber-300">
-                Leaves
+                Half Day
               </p>
               <p className="text-sm sm:text-base md:text-lg lg:text-sm xl:text-base 2xl:text-lg font-bold text-amber-800 dark:text-amber-200">
                 {leaves}

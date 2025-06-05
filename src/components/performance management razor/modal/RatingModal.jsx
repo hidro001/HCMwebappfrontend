@@ -8,7 +8,7 @@ import { BiTargetLock } from "react-icons/bi";
 import { IoMdTime } from "react-icons/io";
 import { BsCalendarWeek, BsCalendarMonth } from "react-icons/bs";
 
-const FREQUENCIES = ["daily", "weekly", "monthly", "yearly"];
+const FREQUENCIES = ["daily"];
 
 function RatingModal({
   showModal,
