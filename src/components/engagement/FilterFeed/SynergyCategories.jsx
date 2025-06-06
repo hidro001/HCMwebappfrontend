@@ -198,7 +198,7 @@ export default function CategoriesListCompact({ onCategoryChange }) {
       {/* Background blur layer */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50 dark:from-blue-950/20 dark:via-purple-950/10 dark:to-pink-950/20 pointer-events-none" />
 
-      <div className="relative z-10 h-[70vh] overflow-y-auto custom-scrollbar px-2 py-3">
+      <div className="relative z-10 h-[50vh] overflow-y-auto custom-scrollbar px-2 py-3">
         <ul className="space-y-2">
           <AnimatePresence>
             {categories.map(({ name, count, icon: Icon, gradient }, index) => {
