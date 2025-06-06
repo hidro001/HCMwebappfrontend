@@ -144,7 +144,7 @@ const ChartNode = ({ node, onClick, hasChildren, expanded, hoverColor,  }) => (
   <div
     onClick={onClick}
     className="flex items-center justify-center
-      cursor-pointer select-none w-[auto] px-4 py-3 bg-white dark:bg-gray-100 rounded-xl font-sans shadow-md border-2 border-gray-200 flex items-center space-x-3 relative 
+      cursor-pointer select-none w-[auto] px-4 py-3 bg-white dark:bg-gray-100 rounded-xl font-sans shadow-md border-2 border-gray-200 space-x-3 relative 
       transition-shadow duration-300 hover:shadow-lg text-black
     "
      style={{ 
