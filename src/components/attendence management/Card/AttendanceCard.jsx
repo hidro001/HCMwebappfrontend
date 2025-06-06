@@ -1,44 +1,48 @@
-import React from 'react'
-import { FaCheck } from "react-icons/fa";
-import { MdPeopleAlt } from "react-icons/md";
 import { GiUmbrella } from "react-icons/gi";
 import { BsPersonFillX } from "react-icons/bs";
 import { TbClockHour3Filled } from "react-icons/tb";
 import { IoMdCheckmark } from "react-icons/io";
 import { FaUsers} from "react-icons/fa";
-import { motion, useAnimation } from "framer-motion";
+import { motion } from "framer-motion";
 
+const AttendanceCard = ({attendanceData = {}, data=''}) => {
 
-const AttendanceCard = () => {
+   const {
+    totalSubordinates = 0,
+    presentCount     = 0,
+    absentCount      = 0,
+    onLeaveCount     = 0,
+    lateCount        = 0,
+  } = attendanceData;
 
     const cards = [
       {
-        title: "Our Employees",
-        count: 200,
+        title: data === 'team' ? 'My Team' :"Our Employees",
+        count: totalSubordinates,
         gradient: "bg-[linear-gradient(57deg,_#56AB2F_5.45%,_#A8E063_85.58%)]",
         icon: <FaUsers className="text-3xl text-[#6CC947]" />,
       },
       {
         title: "Checked In",
-        count: 200,
+        count: presentCount,
         gradient: "bg-[linear-gradient(57deg,_#36D1DC_9.92%,_#5B86E5_90.08%)]",
         icon: <IoMdCheckmark className="text-3xl text-[#32B1F4]" />,
       },
       {
         title: "Absent",
-        count: 200,
+        count: absentCount,
         gradient: "bg-[linear-gradient(90deg,_#848A96_1.76%,_#5C5C5C_100%)]",
         icon: <GiUmbrella className="text-3xl text-[#5C5C5C]" />,
       },
       {
         title: "On Leave",
-        count: 200,
+        count: onLeaveCount,
         gradient: "bg-[linear-gradient(90deg,_#F76363_1.76%,_#F88484_100%)]",
         icon: <BsPersonFillX className="text-3xl text-[#F06464]" />,
       },
       {
         title: "Late In",
-        count: 200,
+        count: lateCount,
         gradient: "bg-[linear-gradient(56deg,_#F68F54_8.67%,_#FFA962_92.17%)]",
         icon: <TbClockHour3Filled className="text-3xl text-[#FFA654]" />,
       },

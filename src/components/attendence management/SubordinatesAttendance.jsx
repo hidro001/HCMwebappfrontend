@@ -558,10 +558,8 @@ export default function SubordinatesAttendance() {
       }))
     : [];
 
-    // const teamStatus = subordinateStats
-    // ? subordinateStats.map((sub, i))
 
-    console.log(employeesData, 'data')
+    console.log(subordinateStats, 'data')
 
   // Filter employees based on criteria
   const filteredEmployees = employeesData.filter((emp) => {
@@ -687,8 +685,7 @@ export default function SubordinatesAttendance() {
       } else {
         pages = [1, '...', validPage - 1, validPage, validPage + 1, '...', totalPages];
       }
-    }
-    
+    }   
     return pages;
   };
 
@@ -713,7 +710,7 @@ export default function SubordinatesAttendance() {
         </p>
       </motion.div>
 
-       <AttendanceCard />
+       <AttendanceCard attendanceData={subordinateStats} data='team'/>
       {/* Stats Overview Cards */}
       {/* <motion.div
         variants={containerVariants}
@@ -983,20 +980,20 @@ export default function SubordinatesAttendance() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="bg-[#F3F4F6] dark:bg-slate-700/50">
+                <tr className="bg-[#ECF3FD] dark:bg-slate-700/50">
                   <th className="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">S.No</th>
                   <th onClick={() => setSortConfig(prev => prev.key === 'empID'
                     ? { key: 'empID', direction: prev.direction === 'asc' ? 'desc' : 'asc' }
                     : { key: 'empID', direction: 'asc' } )} 
-                    className="py-4 px-6 flex items-center text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    className="py-4 px-6 flex items-center text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-r border-[#F1F1F1] dark:border-slate-600">
                       Emp ID 
                       {sortConfig.key === 'empID' && (
                         <span className="text-slate-300 cursor-pointer ml-1">{sortConfig.direction === 'asc' ? <FaLongArrowAltUp /> : <FaLongArrowAltDown />}</span>
                       )}           
                    </th>
-                  <th className="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Name</th>
-                  <th className="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Department</th>
-                  <th className="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Email</th>
+                  <th className="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-r border-[#F1F1F1] dark:border-slate-600">Name</th>
+                  <th className="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-r border-[#F1F1F1] dark:border-slate-600">Department</th>
+                  <th className="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-r border-[#F1F1F1] dark:border-slate-600">Email</th>
                   <th className="py-4 px-6 text-right text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">Actions</th>
                 </tr>
               </thead>
@@ -1008,15 +1005,17 @@ export default function SubordinatesAttendance() {
                       <motion.tr
                         key={emp.id}
                         variants={tableRowVariants}
-                        className="hover:bg-slate-50 dark:hover:bg-slate-700/30 transition-colors"
-                      >
-                        <td className="py-4 px-6 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 border-r border-[#F1F1F1] dark:border-slate-600">
+                        className={`${
+                  index % 2 ? "bg-[#ECF3FD]" : "bg-white"
+                } hover:bg-[#f7f7f8] dark:hover:bg-slate-700/30 transition-colors`}
+               >
+                        <td className="py-2 px-6 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 border-r border-[#F1F1F1] dark:border-slate-600">
                           {String(serialNumber).padStart(2, "0")}
                         </td>
-                        <td className="py-4 px-6 whitespace-nowrap text-sm font-medium text-blue-500 dark:text-blue-400  border-r border-[#F1F1F1] dark:border-slate-600">
+                        <td className="py-2 px-6 whitespace-nowrap text-sm font-medium text-blue-500 dark:text-blue-400  border-r border-[#F1F1F1] dark:border-slate-600">
                           {emp.empID}
                         </td>
-                        <td className="py-4 px-6 whitespace-nowrap  border-r border-[#F1F1F1] dark:border-slate-600">
+                        <td className="py-2 px-6 whitespace-nowrap  border-r border-[#F1F1F1] dark:border-slate-600">
                           <div className="flex items-center">
                             {emp.userAvatar ? (
                               <img
@@ -1032,13 +1031,13 @@ export default function SubordinatesAttendance() {
                             <span className="text-sm font-medium text-slate-800 dark:text-white">{emp.name}</span>
                           </div>
                         </td>
-                        <td className="py-4 px-6 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300  border-r border-[#F1F1F1] dark:border-slate-600">
+                        <td className="py-2 px-6 whitespace-nowrap text-sm text-slate-600 dark:text-slate-300  border-r border-[#F1F1F1] dark:border-slate-600">
                           {emp.department}
                         </td>
-                        <td className="py-4 px-6 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400  border-r border-[#F1F1F1] dark:border-slate-600">
+                        <td className="py-2 px-6 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400  border-r border-[#F1F1F1] dark:border-slate-600">
                           {emp.email}
                         </td>
-                        <td className="py-4 px-6 whitespace-nowrap text-right">
+                        <td className="py-2 px-6 whitespace-nowrap text-right">
                           <div className="flex justify-end gap-2">
                             <button
                               onClick={() => navigate(`/dashboard/attendance/${emp.empID}`)}

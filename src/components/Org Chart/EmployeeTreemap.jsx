@@ -2,8 +2,8 @@ import React from 'react'
 import OrgChart from './OrgChart'
 
 function EmployeeTreemap() {
-  return (
-    <div>
+   return (
+    <div className='flex items-center justify-center'>
       <OrgChart/>
     </div>
   )

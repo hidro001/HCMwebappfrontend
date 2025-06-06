@@ -532,11 +532,9 @@ function monthName(m) {
   return months[m - 1] || "Unknown";
 }
 
-/* 
-  --------------------------------------------------------------------------------------
-  MAIN COMPONENT
-  --------------------------------------------------------------------------------------
-*/
+
+
+
 export default function OwmFullAttendance() {
 const [punchReason, setPunchReason] = useState("");
   const [missedPunchModalOpen, setMissedPunchModalOpen] = useState(false);
@@ -829,43 +827,61 @@ const [punchOutTime, setPunchOutTime] = useState("");
     (userProfileData?.last_Name || "");
   const empCode = userProfileData?.employee_Id || "N/A";
 
-  function renderStatusBadge(status) {
-    let bgColor = "bg-gray-100 dark:bg-gray-700";
-    let textColor = "text-gray-600 dark:text-gray-200";
+  const renderStatusBadge = (status) => {
+  const base =
+    "inline-flex items-center gap-1 rounded-lg px-4 py-[4px] text-xs font-medium";
 
-    switch ((status || "").toLowerCase()) {
-      case "present":
-        bgColor = "bg-green-100 dark:bg-green-900";
-        textColor = "text-green-700 dark:text-green-100";
-        break;
-      case "absent":
-        bgColor = "bg-red-100 dark:bg-red-900";
-        textColor = "text-red-700 dark:text-red-100";
-        break;
-      case "holiday":
-        bgColor = "bg-black";
-        textColor = "text-white";
-        break;
-      case "half day":
-        bgColor = "bg-pink-100 dark:bg-pink-900";
-        textColor = "text-pink-700 dark:text-pink-100";
-        break;
-      case "not even half day":
-        bgColor = "bg-gray-100 dark:bg-gray-700";
-        textColor = "text-gray-600 dark:text-gray-200";
-        break;
-      default:
-        break;
-    }
+  const dot = "before:content-[''] before:block before:h-[6px] before:w-[6px] \
+               before:rounded-full";
 
-    return (
-      <span
-        className={`px-2 py-1 text-sm rounded-md font-medium ${bgColor} ${textColor}`}
-      >
-        {status || "------"}
-      </span>
-    );
+  switch (status) {
+    case "Present":
+      return (
+        <span
+          className={`${base} ${dot} bg-[#e1fae9] text-[#038403] border border-[#29ce29] \
+                      before:bg-[#038403]`}
+        >
+          Present
+        </span>
+      );
+    case "Absent":
+      return (
+        <span
+          className={`${base} ${dot} bg-[#FFE5E5] text-[#D92D20] border border-[#D92D20] \
+                      before:bg-[#D92D20]`}
+        >
+          Absent
+        </span>
+      );
+    case "Late":
+      return (
+        <span
+          className={`${base} ${dot} bg-[#E0EAFF] text-[#1849FF] border border-[#1849FF]\
+                      before:bg-[#1849FF]`}
+        >
+          Late
+        </span>
+      );
+    case "Half Day":
+      return (
+        <span
+          className={`${base} ${dot} bg-[#E5E5E5] text-[#575757] border border-[#575757] \
+                      before:bg-[#575757]`}
+        >
+          Half&nbsp;Day
+        </span>
+      );
+    default:
+      return (
+        <span
+          className={`${base} ${dot} bg-gray-200 text-gray-600 border border-gray-600 \
+                      before:bg-gray-600`}
+        >
+          {status}
+        </span>
+      );
   }
+};
 
   return (
     <motion.div
@@ -966,121 +982,119 @@ const [punchOutTime, setPunchOutTime] = useState("");
 
       {/* Main area: table + side overview */}
       <motion.div
-        className="grid grid-cols-1 lg:grid-cols-4 gap-4"
+        // className="grid grid-cols-1 lg:grid-cols-4 gap-4"
+        className="flex items-center"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
         {/* Table (3/4) */}
-        <div className="lg:col-span-3">
-          <motion.div
-            className="overflow-x-auto bg-white dark:bg-gray-800 rounded-md shadow"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <table className="w-full text-left min-w-max">
-              <thead className="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-                <tr className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                  <th className="py-3 px-4">S.L</th>
-                  <th className="py-3 px-4">Date</th>
-                  <th className="py-3 px-4">Day</th>
-                  <th className="py-3 px-4">Log In Time</th>
-                  <th className="py-3 px-4">Log Out Time</th>
-                  <th className="py-3 px-4">Hours Worked</th>
-                  <th className="py-3 px-4">Total Break</th>
-                  <th className="py-3 px-4">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {displayedData.map((item) => (
-                  <tr
-                    key={item.sl}
-                    className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
-                  >
-                    <td className="py-3 px-4">
-                      {String(item.sl).padStart(2, "0")}
-                    </td>
-                    <td className="py-3 px-4">{item.date}</td>
-                    <td className="py-3 px-4">{item.day}</td>
-                    <td className="py-3 px-4">{item.logInTime}</td>
-                    <td className="py-3 px-4">{item.logOutTime}</td>
-                    <td className="py-3 px-4">{item.hoursWorked}</td>
-                    <td className="py-3 px-4">{item.totalBreak}</td>
-                    
-                    <td className="py-3 px-4">
-  {renderStatusBadge(item.status)}
+       {/* ------------------------------------------------------------------
+   ATTENDANCE TABLE – styled to match the screenshot
+------------------------------------------------------------------- */}
+<motion.div
+  className="overflow-x-auto rounded-md shadow ring-1 ring-black/5
+             bg-white dark:bg-gray-800"
+  initial={{ opacity: 0, y: 10 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.5 }}
+>
+  <table className="w-full whitespace-nowrap text-sm">
+    {/* ------------ HEADER ------------- */}
+    <thead>
+      <tr className="bg-[#F3F7FF] dark:bg-gray-700 text-gray-600 dark:text-gray-300
+                     text-[13px] font-semibold tracking-wide">
+        {[
+          "S.L",
+          "Date",
+          "Days",
+          "Checked In & Out",
+          "Total Break",
+          "Status",
+          "Punch Request",
+        ].map((h) => (
+          <th key={h} className="py-[14px] px-4 text-left">
+            {h}
+          </th>
+        ))}
+      </tr>
+    </thead>
 
-  {/* If there's no login or it's a holiday, show "Request Punch" button */}
-  {((item.status === "Absent") || (item.status === "Holiday")) && (
-    <button
-      className="ml-2 text-blue-500 hover:underline"
-      onClick={() => openMissedPunchModal(item)}
-    >
-      Request Punch
-    </button>
-  )}
-</td>
-                  </tr>
-                ))}
-                {displayedData.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={7}
-                      className="py-4 text-center text-gray-500 dark:text-gray-400"
-                    >
-                      No records found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </motion.div>
+    {/* ------------- BODY -------------- */}
+    <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
+      {displayedData.map((item) => (
+        <tr
+          key={item.sl}
+          className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        >
+          {/* 1️⃣ Serial */}
+          <td className="py-3 px-4 font-medium text-gray-700 dark:text-gray-200">
+            {String(item.sl).padStart(2, "0")}
+          </td>
 
-          {/* Pagination */}
-          <motion.div
-            className="flex flex-col sm:flex-row items-center justify-between mt-3 text-sm 
-                       text-gray-500 dark:text-gray-400"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <p className="mb-2 sm:mb-0">
-              Showing {startIndex + 1} to {Math.min(endIndex, totalEntries)} of{" "}
-              {totalEntries} entries
-            </p>
-            <div className="space-x-1">
-              <button
-                onClick={() => goToPage(safeCurrentPage - 1)}
-                className="py-1 px-2 border border-gray-300 dark:border-gray-600 rounded 
-                           text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-              >
-                &lt;
-              </button>
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => goToPage(i + 1)}
-                  className={`py-1 px-2 border border-gray-300 dark:border-gray-600 rounded 
-                    ${
-                      safeCurrentPage === i + 1
-                        ? "bg-blue-500 text-white"
-                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                    }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-              <button
-                onClick={() => goToPage(safeCurrentPage + 1)}
-                className="py-1 px-2 border border-gray-300 dark:border-gray-600 rounded 
-                           text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-              >
-                &gt;
-              </button>
+          {/* 2️⃣ Date */}
+          <td className="py-3 px-4 text-gray-700 dark:text-gray-200">
+            {item.date}
+          </td>
+
+          {/* 3️⃣ Day */}
+          <td className="py-3 px-4 text-gray-700 dark:text-gray-200">
+            {item.day}
+          </td>
+
+          {/* 4️⃣ Checked-in / out – blue • grey • red */}
+          <td className="py-3 px-4">
+            <div className="flex items-center gap-2 text-[13px]">
+              <span className="font-semibold text-[#0d6efd]">
+                {item.logInTime}
+              </span>
+              <span className="h-[4px] w-[4px] rounded-full bg-gray-400" />
+              <span className="text-gray-500">{item.hoursWorked}</span>
+              <span className="h-[4px] w-[4px] rounded-full bg-gray-400" />
+              <span className="font-semibold text-[#ff3e3e]">
+                {item.logOutTime}
+              </span>
             </div>
-          </motion.div>
-        </div>
+          </td>
+
+          <td className="py-3 px-4 text-gray-700 dark:text-gray-200">
+            {item.totalBreak}
+          </td>
+
+          <td className="py-3 px-4">
+            {renderStatusBadge(item.status)}
+          </td>
+
+          <td className="py-3 px-4">
+            {(item.status === "Absent" || item.status === "Holiday") && (
+              <button
+                onClick={() => openMissedPunchModal(item)}
+                className="inline-flex items-center rounded-md border border-[#0d6efd]
+                           px-3 py-1 text-[13px] font-medium text-[#0d6efd]
+                           hover:bg-[#0d6efd] hover:text-white transition-colors"
+              >
+                Request
+              </button>
+            )}
+          </td>
+        </tr>
+      ))}
+
+      {/* Empty-state row */}
+      {displayedData.length === 0 && (
+        <tr>
+          <td
+            colSpan={7}
+            className="py-4 text-center text-gray-500 dark:text-gray-400"
+          >
+            No records found.
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+</motion.div>
+
 
         {/* Side panel (1/4) */}
         <motion.div
@@ -1356,3 +1370,6 @@ const [punchOutTime, setPunchOutTime] = useState("");
     </motion.div>
   );
 }
+
+
+
