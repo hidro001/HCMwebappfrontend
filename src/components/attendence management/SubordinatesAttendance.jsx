@@ -446,25 +446,20 @@
 // }
 
 
-
 import React, { useEffect, useState, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import useAuthStore from "../../store/store";
 import useAttendanceStore from "../../store/useAttendanceStore";
 import { FaLongArrowAltDown, FaLongArrowAltUp } from "react-icons/fa";
-import { 
-  FiSearch, FiCalendar, FiUsers, FiCheckCircle, 
-  FiClock, FiClipboard, FiDownload, FiPrinter, 
-  FiFilter, FiChevronDown, FiChevronUp, FiChevronLeft, 
-  FiChevronRight, FiGrid, FiList, FiSliders
-} from "react-icons/fi";
-import { BsPersonCheckFill, BsPersonXFill, BsClockHistory } from "react-icons/bs";
+import { FiSearch, FiCalendar, FiCheckCircle, FiChevronDown, FiChevronLeft, 
+  FiChevronRight, FiSliders } from "react-icons/fi";
 import { BiBuildings } from "react-icons/bi";
 import { HiOutlineChartBar } from "react-icons/hi";
 import { TbMoodEmpty } from "react-icons/tb";
+import AttendanceCard from "./Card/AttendanceCard";
 
-// Helper to format dates
+
 function formatMonthYear(monthValue) {
   if (!monthValue) return "";
   const [year, month] = monthValue.split("-");
@@ -476,38 +471,6 @@ function formatMonthYear(monthValue) {
   return `${monthNames[monthIndex]} ${year}`;
 }
 
-// Skeleton loader for table rows
-function SkeletonTableRows({ rows = 5 }) {
-  return Array(rows)
-    .fill(0)
-    .map((_, i) => (
-      <tr key={i} className="animate-pulse">
-        <td className="py-4 px-4">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-6"></div>
-        </td>
-        <td className="py-4 px-4">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-16"></div>
-        </td>
-        <td className="py-4 px-4">
-          <div className="flex items-center">
-            <div className="w-8 h-8 bg-gray-200 dark:bg-gray-700 rounded-full mr-2"></div>
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
-          </div>
-        </td>
-        <td className="py-4 px-4">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
-        </td>
-        <td className="py-4 px-4">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
-        </td>
-        <td className="py-4 px-4">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-28"></div>
-        </td>
-      </tr>
-    ));
-}
-
-// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -542,6 +505,7 @@ const tableRowVariants = {
 };
 
 export default function SubordinatesAttendance() {
+
   const navigate = useNavigate();
 
   const {
@@ -582,7 +546,6 @@ export default function SubordinatesAttendance() {
     fetchSubordinateStats();
   }, [fetchSubordinates, fetchDepartments, fetchSubordinateStats, userId]);
 
-  // Transform subordinates data for display
   const employeesData = subordinates
     ? subordinates.map((sub, i) => ({
         id: sub._id ?? i,
@@ -594,6 +557,11 @@ export default function SubordinatesAttendance() {
         userAvatar: sub.user_Avatar,
       }))
     : [];
+
+    // const teamStatus = subordinateStats
+    // ? subordinateStats.map((sub, i))
+
+    console.log(employeesData, 'data')
 
   // Filter employees based on criteria
   const filteredEmployees = employeesData.filter((emp) => {
@@ -745,15 +713,16 @@ export default function SubordinatesAttendance() {
         </p>
       </motion.div>
 
+       <AttendanceCard />
       {/* Stats Overview Cards */}
-      <motion.div
+      {/* <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8"
-      >
+      > */}
         {/* Total Subordinates Card */}
-        <motion.div
+        {/* <motion.div
           variants={cardVariants}
           className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 shadow-lg text-white relative overflow-hidden"
         >
@@ -767,10 +736,10 @@ export default function SubordinatesAttendance() {
             </h3>
             <p className="text-blue-100 text-sm">Active employees</p>
           </div>
-        </motion.div>
+        </motion.div> */}
 
         {/* Present Card */}
-        <motion.div
+        {/* <motion.div
           variants={cardVariants}
           className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl p-6 shadow-lg text-white relative overflow-hidden"
         >
@@ -784,10 +753,10 @@ export default function SubordinatesAttendance() {
             </h3>
             <p className="text-emerald-100 text-sm">On time check-ins</p>
           </div>
-        </motion.div>
+        </motion.div> */}
 
         {/* Late Card */}
-        <motion.div
+        {/* <motion.div
           variants={cardVariants}
           className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl p-6 shadow-lg text-white relative overflow-hidden"
         >
@@ -801,10 +770,10 @@ export default function SubordinatesAttendance() {
             </h3>
             <p className="text-amber-100 text-sm">Delayed check-ins</p>
           </div>
-        </motion.div>
+        </motion.div> */}
 
         {/* On Leave Card */}
-        <motion.div
+        {/* <motion.div
           variants={cardVariants}
           className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 shadow-lg text-white relative overflow-hidden"
         >
@@ -819,7 +788,7 @@ export default function SubordinatesAttendance() {
             <p className="text-purple-100 text-sm">Approved absences</p>
           </div>
         </motion.div>
-      </motion.div>
+      </motion.div> */}
 
       {/* Filters Bar */}
       <motion.div 

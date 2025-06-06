@@ -5,7 +5,7 @@ import GreetFeed from '../../components/engagement/todayCelebrate/GreetFeed';
 import CreateCard from '../../components/engagement/Card/CreateCard';
 
 const FeedPage = () => {
-  const [category, setCategory] = useState('All Announcement');
+  const [category, setCategory] = useState('All Post');
   const [department, setDepartment] = useState('all');
   const [sort, setSort] = useState('newest');
   const [showFilters, setShowFilters] = useState(false); 
@@ -25,7 +25,7 @@ const FeedPage = () => {
 
       <div
         className={`
-          w-full lg:w-[30%] px-3 
+          w-full lg:w-[25%] px-3 
           ${showFilters ? 'block' : 'hidden'} 
           lg:block
         `}
@@ -37,7 +37,7 @@ const FeedPage = () => {
         />
       </div>
 
-      <div className="w-full lg:w-[50%] h-full mb-4 lg:mb-0">
+      <div className="w-full lg:w-[55%] h-full mb-4 lg:mb-0">
         <CreateCard refreshStatus={setRefresh} />
         <Feed 
           curCategory={category} 

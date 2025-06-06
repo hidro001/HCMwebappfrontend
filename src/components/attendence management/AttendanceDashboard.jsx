@@ -1,11 +1,8 @@
-
-
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Bar, Doughnut } from "react-chartjs-2";
 import { FaCheckCircle, FaRegClock } from "react-icons/fa";
 
-// Import your other service calls
 import {
   fetchOverview,
   fetchAttendanceToday,

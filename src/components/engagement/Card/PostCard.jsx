@@ -33,7 +33,7 @@ const PostCard = ({ post }) => {
   });
   return userReaction?.type || null;
   });
-console.log(post.likes, 'df')
+
   const liked = (post.likes || []).some((likeItem) =>
     typeof likeItem === "string" ? likeItem === userId : likeItem._id === userId
   );
@@ -283,7 +283,7 @@ useEffect(() => {
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: 20, scale: 0.95 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="max-w-md mx-auto p-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg transition-colors "
+        className="w-full mx-auto p-3 bg-white dark:bg-gray-800 rounded-lg shadow-lg transition-colors "
       >
         {/* Header */}
         <div className="flex items-center space-x-3 mb-2">

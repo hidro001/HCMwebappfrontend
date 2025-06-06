@@ -84,7 +84,7 @@ import useFeedStore from "../../../store/feedStore.js";
 
 const baseCategories = [
   {
-    name: "All Announcement",
+    name: "All Post",
     icon: HiSpeakerphone,
     gradient: "from-emerald-500 to-teal-600",
     lightBg: "bg-emerald-50",
@@ -152,7 +152,7 @@ export default function CategoriesListCompact({ onCategoryChange }) {
   const feed = useFeedStore((state) => state.feed);
 
   const [categories, setCategories] = useState(baseCategories);
-  const [selected, setSelected] = useState("All Announcement");
+  const [selected, setSelected] = useState("All Post");
   const [hoveredItem, setHoveredItem] = useState(null);
 
   useEffect(() => {
@@ -172,7 +172,7 @@ export default function CategoriesListCompact({ onCategoryChange }) {
       }
     });
 
-    counts["All Announcement"] = feed.length;
+    counts["All Post"] = feed.length;
 
     setCategories(
       baseCategories.map((cat) => ({
@@ -193,7 +193,7 @@ export default function CategoriesListCompact({ onCategoryChange }) {
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
-      className="relative w-full bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl dark:border-gray-700/50 select-none font-sans overflow-hidden rounded-xl border border-white/30 dark:border-gray-700"
+      className="relative w-full h-[50vh] bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl dark:border-gray-700/50 select-none font-sans overflow-hidden rounded-xl border border-white/30 dark:border-gray-700"
     >
       {/* Background blur layer */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 via-purple-50/30 to-pink-50/50 dark:from-blue-950/20 dark:via-purple-950/10 dark:to-pink-950/20 pointer-events-none" />

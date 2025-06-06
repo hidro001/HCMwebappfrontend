@@ -35,6 +35,8 @@ export async function fetchAttendanceToday() {
   try {
 
     const response = await axiosInstance.get(`/attendance/attendance-today`, );
+    console.log(response.data, 'full data')
+
     return response.data;
   } catch (error) {
     console.error("Error in fetchAttendanceToday:", error);
@@ -85,6 +87,8 @@ export async function fetchPunchStatusToday() {
     throw error;
   }
 }
+
+
 export const fetchAttendanceByEmployeeId = async (employeeId) => {
   try {
     const response = await axiosInstance.get(`/attendance/employee-overview?employeeId=${employeeId}`);
