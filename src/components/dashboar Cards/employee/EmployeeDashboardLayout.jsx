@@ -70,7 +70,7 @@ function EmployeeDashboardLayout() {
               initial="hidden"
               animate="visible"
             >
-              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 p-6 transition-transform duration-200 hover:scale-[1.01]">
+              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 p-6 transition-transform duration-200 ">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg">
                     <FiGrid className="w-6 h-6 text-white" />
@@ -89,7 +89,7 @@ function EmployeeDashboardLayout() {
             </motion.section>
             
             {/* Tasks Section */}
-            <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 hover:scale-[1.005]">
+            <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">
               <div className="p-6">
                 <AssignedTaskListCard />
               </div>
@@ -99,7 +99,7 @@ function EmployeeDashboardLayout() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               {/* Performance Card */}
-              <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 hover:scale-[1.01]">
+              <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">
                 <div className="p-6 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/10 dark:to-red-900/10 border-b border-gray-200/50 dark:border-gray-700/50">
                   <div className="flex items-center gap-3">
                     <div className="p-3 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl shadow-lg">
@@ -121,7 +121,7 @@ function EmployeeDashboardLayout() {
               </section>
 
               {/* Holidays Card */}
-              <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 hover:scale-[1.01]">
+              <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">
                 <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 border-b border-gray-200/50 dark:border-gray-700/50">
                   <div className="flex items-center gap-3">
                     <div className="p-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl shadow-lg">
@@ -148,7 +148,7 @@ function EmployeeDashboardLayout() {
           <div className="lg:col-span-4 space-y-6">
             
             {/* Attendance Card */}
-            <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 hover:scale-[1.01]">
+            <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">
               <div className="p-6 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/10 dark:to-blue-900/10 border-b border-gray-200/50 dark:border-gray-700/50">
                 <div className="flex items-center gap-3">
                   <div className="p-3 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-xl shadow-lg">
@@ -170,7 +170,7 @@ function EmployeeDashboardLayout() {
             </section>
 
             {/* Announcements Card */}
-            <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 hover:scale-[1.01]">
+            <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">
               <div className="p-6 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/10 dark:to-pink-900/10 border-b border-gray-200/50 dark:border-gray-700/50">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -195,7 +195,7 @@ function EmployeeDashboardLayout() {
             </section>
 
             {/* Top Performer Card */}
-            <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 hover:scale-[1.01]">
+            <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">
               <div className="p-6 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/10 dark:to-orange-900/10 border-b border-gray-200/50 dark:border-gray-700/50">
                 <div className="flex items-center gap-3">
                   <div className="p-3 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl shadow-lg">
