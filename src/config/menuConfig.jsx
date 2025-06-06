@@ -658,124 +658,116 @@ export const menuItems = [
     ],
   },
 
-  // // ------------------------------ Resignation & FNF ------------------------------
-  // {
-  //   name: "Resignation & FNF Dashboard",
-  //   icon: <LuFileCheck2 />,
-  //   color: "text-green-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Resignation Dashboard",
-  //       link: "/dashboard/employee-resignation-history",
-  //       permission: "resignation-main",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Submit Resignation",
-  //       link: "/dashboard/submit-resignation",
-  //       permission: "resignation-submit",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Resignation Approvals",
-  //       link: "/dashboard/resignation-approvals",
-  //       permission: "resignation-manage",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "HR FNF Approvals",
-  //       link: "/dashboard/fnf-request-hr",
-  //       permission: "resignation-fnf-approve",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+  // ------------------------------ Resignation & FNF ------------------------------
+  {
+    name: "Resignation & FNF Dashboard",
+    icon: <LuFileCheck2 />,
+    color: "text-green-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Resignation Dashboard",
+        link: "/dashboard/employee-resignation-history",
+        permission: "resignation-main",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Submit Resignation",
+        link: "/dashboard/submit-resignation",
+        permission: "resignation-submit",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Resignation Approvals",
+        link: "/dashboard/resignation-approvals",
+        permission: "resignation-manage",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "HR FNF Approvals",
+        link: "/dashboard/fnf-request-hr",
+        permission: "resignation-fnf-approve",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
 
-  // // ------------------------------ Policies & Induction ------------------------------
-  // {
-  //   name: "Policies & Induction",
-  //   icon: <FaFileSignature />,
-  //   color: "text-blue-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     // {
-  //     //   name: "Admin Panel Training",
-  //     //   link: "/dashboard/admin-panel-training",
-  //     //   permission: "training-manage",
-  //     //   textAnimation: { x: 10 },
-  //     // },
-  //     {
-  //       name: "Induction PPT's",
-  //       link: "/dashboard/induction-ppt",
-  //       permission: "induction-view",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Company Policies",
-  //       link: "/dashboard/company-policies",
-  //       permission: "policies-view",
-  //       textAnimation: { x: 10 },
-  //     },
-  //     {
-  //       name: "Training Material",
-  //       link: "/dashboard/training-material",
-  //       permission: "training-view",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // },
+  // ------------------------------ Policies & Induction ------------------------------
+  {
+    name: "Policies & Induction",
+    icon: <FaFileSignature />,
+    color: "text-blue-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      // {
+      //   name: "Admin Panel Training",
+      //   link: "/dashboard/admin-panel-training",
+      //   permission: "training-manage",
+      //   textAnimation: { x: 10 },
+      // },
+      {
+        name: "Induction PPT's",
+        link: "/dashboard/induction-ppt",
+        permission: "induction-view",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Company Policies",
+        link: "/dashboard/company-policies",
+        permission: "policies-view",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Training Material",
+        link: "/dashboard/training-material",
+        permission: "training-view",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
 
-  // // ------------------------------ Organization Chart ------------------------------
-  // {
-  //   name: "Organization Chart",
-  //   tooltip: "",
-  //   icon: <RiOrganizationChart />,
-  //   color: "text-yellow-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Organization Chart",
-  //       link: "/dashboard/organization-chart",
-  //       permission: "organization-chart",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // }, 
+  // ------------------------------ Organization Chart ------------------------------
+  {
+    name: "Organization Chart",
+    tooltip: "",
+    icon: <RiOrganizationChart />,
+    color: "text-yellow-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Organization Chart",
+        link: "/dashboard/organization-chart",
+        permission: "organization-chart",
+        textAnimation: { x: 10 },
+      },
+    ],
+  }, 
 
 
-  // {
-  //   name: "Geo Location",
-  //   tooltip: "",
-  //   icon: <BiCurrentLocation />,
-  //   color: "text-red-400",
-  //   iconAnimation: { scale: 1.2 },
-  //   textAnimation: { x: 10 },
-  //   options: [
-  //     {
-  //       name: "Field Workers",
-  //       link: "/dashboard/field-worker",
-  //       permission: "geolocation-all-permission",
-  //       textAnimation: { x: 10 },
-  //     },  {
-  //       name: "View Map",
-  //       link: "/dashboard/geo-location",
-  //       permission: "geolocation-all-permission",
-  //       textAnimation: { x: 10 },
-  //     },
-  //   ],
-  // }, 
+  {
+    name: "Geo Location",
+    tooltip: "",
+    icon: <BiCurrentLocation />,
+    color: "text-red-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Field Workers",
+        link: "/dashboard/field-worker",
+        permission: "geolocation-all-permission",
+        textAnimation: { x: 10 },
+      },  {
+        name: "View Map",
+        link: "/dashboard/geo-location",
+        permission: "geolocation-all-permission",
+        textAnimation: { x: 10 },
+      },
+    ],
+  }, 
   
-  
-  
-  
-
-
-
-
-
 
 ];
