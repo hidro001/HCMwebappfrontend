@@ -484,29 +484,7 @@ export default function PerformanceAnalytics({
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={handleRefresh}
-              disabled={isLoading}
-              className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-            >
-              <FiRefreshCw
-                className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
-              />
-              <span className="hidden sm:inline">Refresh</span>
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg hover:from-blue-600 hover:to-purple-700 transition-all"
-            >
-              <FiDownload className="w-4 h-4" />
-              <span className="hidden sm:inline">Export</span>
-            </motion.button>
-          </div>
+         
         </motion.div>
 
         {/* Summary Stats */}
@@ -514,7 +492,6 @@ export default function PerformanceAnalytics({
           <StatCard
             title="Total Score"
             value={totalScore.toLocaleString()}
-            change="+12.5%"
             trend="up"
             icon={FiTrendingUp}
             gradient={GRADIENT_COLORS.primary}
@@ -522,7 +499,6 @@ export default function PerformanceAnalytics({
           <StatCard
             title="Avg Performance"
             value={`${avgPerformance}%`}
-            change="+5.3%"
             trend="up"
             icon={FiTarget}
             gradient={GRADIENT_COLORS.success}
