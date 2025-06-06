@@ -27,6 +27,7 @@ import {
 
 // ===== IMPORT UPDATED KPIDetailModal HERE =====
 import KPIDetailModal from "./modal/KPIDetailModal";
+import PerformanceAnalytics from "./Analytics/PerformanceAnalytics";
 
 const FREQUENCIES = [
   { value: "daily",   label: "Daily",   icon: <FiCalendar className="mr-2" /> },
@@ -1061,30 +1062,34 @@ function EmployeeRatingAdvanced() {
                 </>
               )}
 
-              {activeTab === "charts" && (
-                <div className="flex flex-col items-center justify-center py-12 text-center">
-                  <svg
-                    className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M8 13v-1m4 1v-3m4 3V8M12 21l9-9-9-9-9 9 9 9z"
-                    />
-                  </svg>
-                  <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
-                    Analytics Coming Soon
-                  </h3>
-                  <p className="text-gray-500 dark:text-gray-400 max-w-md">
-                    Performance analytics visualizations are coming in the next
-                    update.
-                  </p>
-                </div>
-              )}
+                 {activeTab === "charts" && (
+                           // <div className="flex flex-col items-center justify-center py-12 text-center">
+                           //   <svg
+                           //     className="w-16 h-16 text-gray-300 dark:text-gray-600 mb-4"
+                           //     fill="none"
+                           //     stroke="currentColor"
+                           //     viewBox="0 0 24 24"
+                           //   >
+                           //     <path
+                           //       strokeLinecap="round"
+                           //       strokeLinejoin="round"
+                           //       strokeWidth="2"
+                           //       d="M8 13v-1m4 1v-3m4 3V8M12 21l9-9-9-9-9 9 9 9z"
+                           //     />
+                           //   </svg>
+                           //   <h3 className="text-lg font-medium text-gray-700 dark:text-gray-300 mb-1">
+                           //     Analytics Coming Soon
+                           //   </h3>
+                           //   <p className="text-gray-500 dark:text-gray-400 max-w-md">
+                           //     Performance analytics visualizations are coming in the next
+                           //     update.
+                           //   </p>
+                           // </div>
+                           <PerformanceAnalytics
+                             aggregatedData={aggregatedData}
+                             rawRatings={rawRatings}
+                           />
+                         )}
             </div>
           </div>
         )}
