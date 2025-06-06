@@ -12,6 +12,7 @@ const useAttendanceStore = create((set, get) => ({
   error: null,
   subordinateStats: null, // new piece of state
   todayPunches: [],
+  todayLateIn: [],
 
   // ---- Actions ----
 
@@ -111,8 +112,6 @@ const useAttendanceStore = create((set, get) => ({
       // Call your new endpoint
       const response = await axiosInstance.get("/attendance/getSubordinateStats");
       if (response.data.success) {
-        // Save just the "data" object from the response
-        // which has totalSubordinates, presentCount, lateCount, onLeaveCount, etc.
         set({ subordinateStats: response.data.data });
       } else {
         throw new Error(response.data.message || "Failed to fetch subordinate stats.");
@@ -134,6 +133,7 @@ const useAttendanceStore = create((set, get) => ({
       const response = await axiosInstance.get("/attendance-user/today");
       const data = response.data;
 
+      console.log(data, 'dfdf')
       if (data.success) {
         // Save the returned array under `todayPunches`
         set({ todayPunches: data.data });
@@ -149,6 +149,27 @@ const useAttendanceStore = create((set, get) => ({
     }
   },
 
+   fetchTodaysLateIn: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axiosInstance.get("/attendance/late-in-today");
+      const data = response.data;
+
+      console.log(data, 'gf')
+
+      if (data.success) {
+        set({ todayLateIn: data.data });
+      } else {
+        throw new Error(data.message || "Failed to fetch today's late in.");
+      }
+    } catch (err) {
+      console.error("Error fetching today's late in:", err);
+      toast.error(err.message);
+      set({ error: err.message });
+    } finally {
+      set({ loading: false });
+    }
+  },
   
 }));
 

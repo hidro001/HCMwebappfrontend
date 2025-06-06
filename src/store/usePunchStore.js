@@ -356,6 +356,7 @@ startMeetingRequest: async (userId) => {
       });
 
       if (res.data.success) {
+        console.log(res.data.success,'data atte')
         toast.success("You have punched in successfully!");
         await get().fetchAttendanceData();
       } else {

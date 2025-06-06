@@ -5,8 +5,8 @@ import Dashboard from "../../components/attendence management/UIattendance.jsx";
 const AttendanceDashboardPage = () => {
   return (
     <>
-      {/* <AttendanceDashboard /> */}
-      <Dashboard />
+      <AttendanceDashboard />
+      {/* <Dashboard /> */}
     </>
   );
 };

@@ -10,33 +10,20 @@ import {
   Cell,
 } from "recharts";
 
-/**
- * AttendanceChart – refined shadow + optional fixed‑height cap
- * -----------------------------------------------------------
- *   • Uses colour‑tinted drop‑shadow (no more black halo)
- *   • Top cap can be either
- *        – dynamic (100 – value)  👉 default
- *        – or a fixed N % height  👉 set `FIXED_CAP = X` below
- */
 
-// ────────────────────────────────────────────────────────────
-// CONFIG
-// Set to a percentage (0‑100) if you want **constant** cap height.
-// Leave `null` to keep the dynamic (100 – value) behaviour.
-const FIXED_CAP = null; // e.g. 15  → every bar gets a 15 % pale cap
-// ────────────────────────────────────────────────────────────
+
+const TOTAL_EMPLOYEES = 200;
 
 const rawData = [
-  { name: "Checked In", value: 85 },
+  { name: "Checked In", value: 110 },
   { name: "Late In", value: 40 },
-  { name: "Absent", value: 35 },
-  { name: "On Leave", value: 55 },
+  { name: "Absent", value: 20 },
+  { name: "On Leave", value: 30 },
 ];
 
-// Gradient palettes
 const PALETTE = {
   "Checked In": {
-    solid: { start: "#36D1DC", end: "#5B86E5" },
+    solid: { start: "#5B86E5", end: "#36D1DC" },
     light: { start: "#DDEAFF", end: "#DDEAFF" },
   },
   "Late In": {
@@ -53,69 +40,86 @@ const PALETTE = {
   },
 };
 
-// Assemble dataset with a cap field (dynamic or fixed)
+// Build data with running remainder caps
+let cumulative = 0;
 const data = rawData.map((d) => {
-  const cap = FIXED_CAP != null ? FIXED_CAP : 100 - d.value;
-  return { ...d, cap };
+  const capCount = Math.max(0, TOTAL_EMPLOYEES - (cumulative + d.value));
+  cumulative += d.value;
+  return {
+    name: d.name,
+    valueCount: d.value,
+    capCount,
+    value: (d.value / TOTAL_EMPLOYEES) * 100,
+    cap: (capCount / TOTAL_EMPLOYEES) * 100,
+  };
 });
 
-// Custom striped bar shape (gradient base + stripe overlay)
-const StripedBar = (props) => {
-  const { x, y, width, height, payload, radius = [0, 0, 8, 8] } = props;
+// ── Striped bar – rounds top if no cap ─────────────────────
+const StripedBar = ({ x, y, width, height, payload }) => {
   if (height <= 0 || width <= 0) return null;
   const base = payload.name.replace(/\s+/g, "");
+  const r = 8;
+  const hasCap = payload.cap > 0; // % value from processed data
+
+  // Case A: there **is** a cap → square top, rounded bottom
+  if (hasCap) {
+    const d = [
+      `M${x},${y}`,
+      `h${width}`,
+      `v${height - r}`,
+      `q0,${r} -${r},${r}`,
+      `h-${width - 2 * r}`,
+      `q-${r},0 -${r}-${r}`,
+      `Z`,
+    ].join(" ");
+    return (
+      <g>
+        <path d={d} fill={`url(#${base}Solid)`} />
+        <path d={d} fill={`url(#${base}Stripes)`} />
+      </g>
+    );
+  }
+
+  // Case B: cap == 0 → fully rounded rectangle
   return (
     <g>
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        rx={radius[0]}
-        ry={radius[0]}
-        fill={`url(#${base}Solid)`}
-      />
-      <rect
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        rx={radius[0]}
-        ry={radius[0]}
-        fill={`url(#${base}Stripes)`}
-      />
+      <rect x={x} y={y} width={width} height={height} rx={r} ry={r} fill={`url(#${base}Solid)`} />
+      <rect x={x} y={y} width={width} height={height} rx={r} ry={r} fill={`url(#${base}Stripes)`} />
     </g>
   );
 };
 
+const CustomTooltip = ({ active, payload, label }) => {
+  if (!active || !payload?.length) return null;
+  const entry = payload.find((p) => p.dataKey === "value");
+  if (!entry) return null;
+  return (
+    <div className="rounded-lg bg-white/95 backdrop-blur shadow p-3 text-sm font-medium text-gray-800">
+      <p className="mb-1">{label}</p>
+      <p>
+        count : {entry.payload.valueCount} / {TOTAL_EMPLOYEES}
+      </p>
+    </div>
+  );
+};
+
 const AttendanceChart = () => (
-  <div className="w-full max-w-4xl mx-auto">
+  <div className="w-full max-w-5xl mx-auto">
     {/* Legend */}
-    <div className="flex justify-center gap-8 mb-6 flex-wrap">
+    <div className="flex justify-end gap-2 mb-3 ">
       {Object.keys(PALETTE).map((key) => (
         <div key={key} className="flex items-center gap-2">
           <span
-            className="w-6 h-3 rounded-full"
-            style={{
-              background: `linear-gradient(90deg, ${PALETTE[key].solid.start}, ${PALETTE[key].solid.end})`,
-            }}
+            className="w-5 h-3 rounded-full"
+            style={{ background: `linear-gradient(90deg, ${PALETTE[key].solid.start}, ${PALETTE[key].solid.end})` }}
           />
-          <span className="text-sm font-semibold text-gray-700 tracking-wide">
-            {key.toUpperCase()}
-          </span>
+          <span className="text-xs font-medium text-gray-700 tracking-wide">{key.toUpperCase()}</span>
         </div>
       ))}
     </div>
 
-    {/* Chart */}
-    <ResponsiveContainer width="80%" height="80%">
-      <BarChart
-        data={data}
-        margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-        barCategoryGap={60}
-        barSize={45}
-      >
-        {/* Gradients, stripes, tinted shadows */}
+    <ResponsiveContainer width="100%" height={200}>
+      <BarChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }} barCategoryGap={60} barSize={50}>
         <defs>
           {data.map((d) => {
             const base = d.name.replace(/\s+/g, "");
@@ -123,53 +127,25 @@ const AttendanceChart = () => (
             const lightId = `${base}Light`;
             const stripeId = `${base}Stripes`;
             const shadowId = `${base}Shadow`;
-
             const {
               solid: { start: sStart, end: sEnd },
-              light: { start: lStart, end: lEnd },
+              light: { end: lEnd },
             } = PALETTE[d.name];
-
             return (
               <React.Fragment key={d.name}>
-                {/* Primary gradient */}
                 <linearGradient id={solidId} x1="0" y1="0" x2="0" y2="1">
                   <stop offset="0%" stopColor={sStart} />
                   <stop offset="100%" stopColor={sEnd} />
                 </linearGradient>
-
-                {/* Cap gradient */}
                 <linearGradient id={lightId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={lStart} />
-                  <stop offset="100%" stopColor={lEnd} />
+                  <stop offset="0%" stopColor={PALETTE[d.name].light.start} />
+                  <stop offset="100%" stopColor={PALETTE[d.name].light.end} />
                 </linearGradient>
-
-                {/* Stripe pattern */}
-                <pattern
-                  id={stripeId}
-                  patternUnits="userSpaceOnUse"
-                  width="8"
-                  height="8"
-                  patternTransform="rotate(45)"
-                >
-                  <line
-                    x1="0"
-                    y1="0"
-                    x2="0"
-                    y2="8"
-                    stroke="rgba(255,255,255,0.4)"
-                    strokeWidth="4"
-                  />
+                <pattern id={stripeId} width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                  <line x1="0" y1="0" x2="0" y2="8" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
                 </pattern>
-
-                {/* Colour‑tinted shadow – uses light gradient end colour */}
-                <filter id={shadowId} x="-20%" y="-20%" width="140%" height="140%">
-                  <feDropShadow
-                    dx="0"
-                    dy="3"
-                    stdDeviation="4"
-                    floodColor={lEnd}
-                    floodOpacity="0.45"
-                  />
+                <filter id={shadowId} x="-30%" y="-30%" width="160%" height="160%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="4" floodColor={lEnd} floodOpacity="0.35" />
                 </filter>
               </React.Fragment>
             );
@@ -177,46 +153,15 @@ const AttendanceChart = () => (
         </defs>
 
         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
-        <XAxis
-          dataKey="name"
-          tick={{ fontSize: 14, fill: "#6b7280" }}
-          axisLine={false}
-          tickLine={false}
-        />
-        <YAxis
-          tickFormatter={(v) => `${v}%`}
-          tick={{ fontSize: 12, fill: "#6b7280" }}
-          domain={[0, 100]}
-          axisLine={false}
-          tickLine={false}
-          width={40}
-        />
-        <Tooltip
-          cursor={{ fill: "transparent" }}
-          formatter={(v, key) => (key === "value" ? `${v}%` : undefined)}
-          contentStyle={{ borderRadius: "0.5rem" }}
-        />
+        <XAxis dataKey="name" tick={{ fontSize: 14, fill: "#6b7280" }} axisLine={false} tickLine={false} />
+        <YAxis tickFormatter={(v) => `${v}%`} tick={{ fontSize: 12, fill: "#6b7280" }} domain={[0, 100]} axisLine={false} tickLine={false} width={40} />
+        <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
 
-        {/* Bottom – value */}
-        <Bar
-          dataKey="value"
-          stackId="a"
-          shape={StripedBar}
-          radius={[8, 0, 8, 8]}
-          isAnimationActive={false}
-        />
-
-        {/* Top – cap with tinted shadow */}
+        <Bar dataKey="value" stackId="a" shape={StripedBar} isAnimationActive={false} />
         <Bar dataKey="cap" stackId="a" radius={[8, 8, 0, 0]} isAnimationActive={false}>
           {data.map((d, i) => {
             const base = d.name.replace(/\s+/g, "");
-            return (
-              <Cell
-                key={i}
-                fill={`url(#${base}Light)`}
-                filter={`url(#${base}Shadow)`}
-              />
-            );
+            return <Cell key={i} fill={`url(#${base}Light)`} filter={`url(#${base}Shadow)`} />;
           })}
         </Bar>
       </BarChart>

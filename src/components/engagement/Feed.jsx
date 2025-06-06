@@ -190,7 +190,7 @@ import useSocketStore from "../../store/socketStore";
 import { RiRobot2Line, RiTimeLine } from "react-icons/ri";
 
 const Feed = ({
-  curCategory = "All Announcement",
+  curCategory = "All Post",
   curDepartment = "all",
   curSort = "newest",
   onRefresh =false
@@ -221,7 +221,7 @@ const Feed = ({
   const filteredSortedFeed = feed
     .filter((item) => {
       const matchesCategory =
-        curCategory === "All Announcement" || item.categories === curCategory;
+        curCategory === "All Post" || item.categories === curCategory;
 
       const matchesDepartment =
         curDepartment === "all" || item.department.includes(curDepartment);
@@ -285,7 +285,7 @@ const Feed = ({
               </div>
             </div>
           ) : (
-            <div className="space-y-4 px-1 pt-2 pb-6">
+            <div className="w-full space-y-4 px-1 pt-2 pb-6">
               {filteredSortedFeed.map((item) =>
                 item.type === "post" ? (
                   <PostCard key={item._id} post={item} />

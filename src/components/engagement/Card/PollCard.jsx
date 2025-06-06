@@ -132,7 +132,7 @@ const PollCard = ({ poll }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className=" max-w-md mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-2xl mb-2 p-4 transition-colors duration-300"
+      className=" w-full mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-2xl mb-2 p-4 transition-colors duration-300"
     >
       {/* Poll Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center sm:space-x-4">
