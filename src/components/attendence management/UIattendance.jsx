@@ -6,6 +6,8 @@ import AttendanceCard from './Card/AttendanceCard.jsx';
 import LateInToday from './Table/AttendanceTable.jsx';
 import useAttendanceStore from "../../store/useAttendanceStore";
 import { motion } from "framer-motion";
+import GaugeCard from "./Card/GaugeCard.jsx"
+import LineCard from "./Card/LineCard.jsx"
 import {
   fetchOverview,
   fetchAttendanceToday,
@@ -190,12 +192,19 @@ const data = [
      </div>
 
      {/* 3rd Section */} 
-     <div>
-
+     <div className='w-full flex justify-center gap-2 mt-4 mb-6'>
+       <div className='w-full'>
+        <GaugeCard title="Attendance Percentage" value={90} scheme="blue" />
+      </div> 
+      <div className='w-full'>
+        <GaugeCard title="Absent Percentage"     value={10} scheme="greyOnBlue" />
+      </div> 
+      <div className='w-full'>
+        <LineCard /> </div>
      </div>
 
     {/* 4th section Table */}
-     <div className="bg-white rounded-lg shadow p-6">
+     <div className="bg-white  rounded-lg shadow p-6">
         <h2 className="text-lg font-semibold mb-4">Late In Today</h2>
       <div className="flex gap-2 mb-6 overflow-x-auto">
         { departmentTabs?.length > 0 && departmentTabs.map((tab) => (

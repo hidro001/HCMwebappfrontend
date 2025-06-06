@@ -10,7 +10,7 @@ const useAttendanceStore = create((set, get) => ({
   stats: null,
   loading: false,
   error: null,
-  subordinateStats: null, // new piece of state
+  subordinateStats: [], // new piece of state
   todayPunches: [],
   todayLateIn: [],
 
@@ -112,6 +112,7 @@ const useAttendanceStore = create((set, get) => ({
       // Call your new endpoint
       const response = await axiosInstance.get("/attendance/getSubordinateStats");
       if (response.data.success) {
+        console.log(response.data.data, 'subordinateStats')
         set({ subordinateStats: response.data.data });
       } else {
         throw new Error(response.data.message || "Failed to fetch subordinate stats.");
