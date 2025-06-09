@@ -257,32 +257,7 @@ const EmployeeCard = ({ id, closeCard }) => {
               </div>
             </motion.div>
 
-            {/* Action buttons */}
-            <motion.div 
-              className="flex space-x-3 mt-6"
-              variants={itemVariants}
-            >
-              <motion.button
-                className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700
-                           dark:from-blue-600 dark:to-blue-700 dark:hover:from-blue-700 dark:hover:to-blue-800
-                           text-white py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-200
-                           shadow-lg hover:shadow-blue-500/25 dark:hover:shadow-blue-600/25"
-                whileHover={{ scale: 1.02, y: -1 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                View Profile
-              </motion.button>
-              
-              <motion.button
-                className="flex-1 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600
-                           text-gray-700 dark:text-gray-300 py-3 px-4 rounded-xl font-semibold text-sm
-                           transition-all duration-200 border border-gray-200 dark:border-gray-600"
-                whileHover={{ scale: 1.02, y: -1 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Contact
-              </motion.button>
-            </motion.div>
+    
           </motion.div>
         </div>
       </motion.div>
