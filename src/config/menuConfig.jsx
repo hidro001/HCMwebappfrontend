@@ -466,6 +466,11 @@ export const menuItems = [
         permission: "rate-team-members-quantitative-qualitative",
       },
       {
+        name: "Performance Analytics",
+        link: "/dashboard/performance-analytics",
+        permission: "rate-team-members-quantitative-qualitative",
+      },
+      {
         name: "Team Members Performance",
         link: "/dashboard/team-members-performance-aggregate",
         permission: "team-members-performance-quantitative-qualitative",

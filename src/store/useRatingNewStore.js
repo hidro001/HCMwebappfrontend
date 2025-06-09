@@ -3,7 +3,6 @@
 import { create } from "zustand";
 import axiosInstance from "../service/axiosInstance";
 
-
 const useRatingStore = create((set, get) => ({
   subordinates: [],
   kpiSet: null,
@@ -244,7 +243,6 @@ const useRatingStore = create((set, get) => ({
     }
   },
 
-
   getOrganizationTopPerformer: async (params) => {
     set({ loading: true, error: null });
     try {
@@ -259,7 +257,6 @@ const useRatingStore = create((set, get) => ({
       return { success: false, message };
     }
   },
-
 
   getDesignationTopPerformer: async (params) => {
     set({ loading: true, error: null });
@@ -277,69 +274,124 @@ const useRatingStore = create((set, get) => ({
     }
   },
 
-
-    generatePastRatingsTemplate: async (params) => {
+  generatePastRatingsTemplate: async (params) => {
     try {
       set({ loading: true, error: null });
       const queryParams = new URLSearchParams(params).toString();
-      const res = await axiosInstance.get(`/ratings/past-template?${queryParams}`, {
-        responseType: "arraybuffer", // important for Excel binary data
-      });
+      const res = await axiosInstance.get(
+        `/ratings/past-template?${queryParams}`,
+        {
+          responseType: "arraybuffer", // important for Excel binary data
+        }
+      );
       set({ loading: false, error: null });
       return res; // caller handles blob
     } catch (err) {
       set({
         loading: false,
-        error: err.response?.data?.message || err.message || "Failed to generate past ratings template",
+        error:
+          err.response?.data?.message ||
+          err.message ||
+          "Failed to generate past ratings template",
       });
       throw err;
     }
   },
 
-    uploadPastRatings: async (formData) => {
+  uploadPastRatings: async (formData) => {
     try {
       set({ loading: true, error: null });
-      const res = await axiosInstance.post("/ratings/bulk-upload-past", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await axiosInstance.post(
+        "/ratings/bulk-upload-past",
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       set({ loading: false, error: null });
       return res.data;
     } catch (err) {
       set({
         loading: false,
-        error: err.response?.data?.message || err.message || "Failed to upload past ratings",
+        error:
+          err.response?.data?.message ||
+          err.message ||
+          "Failed to upload past ratings",
+      });
+      throw err;
+    }
+  },
+
+  // ============================================
+  // NEW: 9) Fetch Aggregated Ratings for one Employee
+  // ============================================
+  getEmployeeAggregatedRatings: async (employeeId, params) => {
+    try {
+      set({ loading: true, error: null });
+      // Build query string from params
+      // params must include: { periodType, (and the appropriate start/end fields) }
+      const queryParams = new URLSearchParams(params).toString();
+      // The new endpoint on back‐end is:
+      //   GET /ratings/employee/:employeeId/aggregate
+      const res = await axiosInstance.get(
+        `/ratings/employee/${employeeId}/aggregate?${queryParams}`
+      );
+
+      set({ loading: false, error: null });
+      return res.data; // { success: true, employee: {…}, aggregatedBy: "...", data: [ ... ] }
+    } catch (err) {
+      set({
+        loading: false,
+        error: err.response?.data?.message || err.message,
       });
       throw err;
     }
   },
 
 
-      // ============================================
-    // NEW: 9) Fetch Aggregated Ratings for one Employee
-    // ============================================
-   getEmployeeAggregatedRatings: async (employeeId, params) => {
-     try {
-       set({ loading: true, error: null });
-       // Build query string from params
-       // params must include: { periodType, (and the appropriate start/end fields) }
-       const queryParams = new URLSearchParams(params).toString();
-       // The new endpoint on back‐end is:
-       //   GET /ratings/employee/:employeeId/aggregate
-       const res = await axiosInstance.get(
-         `/ratings/employee/${employeeId}/aggregate?${queryParams}`
-       );
+  /* ────────────────────────────────────────────────────────────
+   * MANAGER  ▸  TEAM-AGGREGATED ANALYTICS
+   * ──────────────────────────────────────────────────────────── */
+  getManagerTeamAggregated: async (params) => {
+    try {
+      set({ loading: true, error: null });
 
-       set({ loading: false, error: null });
-       return res.data; // { success: true, employee: {…}, aggregatedBy: "...", data: [ ... ] }
-     } catch (err) {
-       set({
-         loading: false,
-         error: err.response?.data?.message || err.message,
-       });
-       throw err;
-     }
-   },
+      const qs = new URLSearchParams(params).toString();
+      const { data: res } = await axiosInstance.get(
+        `/ratings/manager/team?${qs}`
+      );
 
+      const d = res.data; // what the back-end sends
+
+      /* 👉  Flatten & rename once here.
+       *     Anything new from the API gets mapped exactly once. */
+      set({ loading: false });
+      return {
+        success: true,
+        data: {
+          chart:           d.chartDataTeam,
+          rawRatings:      d.rawRatingsTeam,
+          categories:      d.categoryDist,
+          avgKpi:          d.avgKpiPerf,
+          scatter:         d.scatterData,
+          avgDailyKpi:     d.avgDailyKpi,
+          buckets:         d.normalizedBuckets,
+          employees:       d.employeeAggregates,
+          top:             d.topPerformers,
+          bottom:          d.bottomPerformers,
+          heatmap:         d.heatmap,
+          movingAverage:   d.movingAverage,
+          periodChange:    d.periodChange,
+        },
+      };
+    } catch (err) {
+      set({
+        loading: false,
+        error: err.response?.data?.message || err.message,
+      });
+      throw err;
+    }
+  },
 }));
 
 export default useRatingStore;
