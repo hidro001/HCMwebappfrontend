@@ -1,49 +1,43 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Legend, Tooltip } from 'chart.js';
-import AttendanceChart from './extra';
+import AttendanceChart from './DepartmentAttendance.jsx';
 import useDepartmentStore from "../../store/departmentStore.js";
-import AttendanceCard from './Card/AttendanceCard.jsx';
+import AttendanceCards from './Card/AttendanceCard.jsx';
 import LateInToday from './Table/AttendanceTable.jsx';
-import useAttendanceStore from "../../store/useAttendanceStore";
+import useAttendanceStore from "../../store/useAttendanceStore.js";
 import { motion } from "framer-motion";
-import GaugeCard from "./Card/GaugeCard.jsx"
-import LineCard from "./Card/LineCard.jsx"
-import {
-  fetchOverview,
-  fetchAttendanceToday,
-  fetchEmployeeOverview,
-  fetchPunchStatusToday,
-  fetchDepartmentAttendanceSummary, // <-- new function
-} from "../../service/attendanceService";
-
+import GaugeCard from "./Card/GaugeCard.jsx";
+import LineCard from "./Card/LineCard.jsx";
+import { toast } from "react-hot-toast";
+import axiosInstance from "../../service/axiosInstance.js";
 ChartJS.register(BarElement, CategoryScale, LinearScale, Legend, Tooltip);
 
 const Dashboard = () => {
 
- const [departmentId, setDepartmentId] = useState("");
+  const [departmentId, setDepartmentId] = useState("");
+  const [activeTab, setActiveTab] = useState("All Departments");
+  const [attendanceData, setAttendanceData] = useState(null);
   const [date, setDate] = useState(
     () => new Date().toISOString().substring(0, 10) 
   );
 
-  const {todayLateIn, fetchTodaysPunchTimes, fetchTodaysLateIn } = useAttendanceStore();
+  const {todayLateIn, todayAttendance, fetchTodaysPunchTimes, fetchTodaysLateIn, fetchTodaysAttendanceStatus } = useAttendanceStore();
 
- const { departments } = useDepartmentStore();
+  const {  departments,
+    loading: departmentsLoading,
+    error: departmentsError,
+    fetchDepartments, } = useDepartmentStore();
 
   useEffect(() => {
      fetchTodaysPunchTimes();
       fetchTodaysLateIn();
-   }, [fetchTodaysPunchTimes, fetchTodaysLateIn]);
+      fetchTodaysAttendanceStatus()
+   }, [fetchTodaysPunchTimes, fetchTodaysLateIn, fetchTodaysAttendanceStatus]);
  
-
   const departmentTabs = [
     { department : "All Departments", _id : 'all'},
     ...departments
   ];
-
- const [activeTab, setActiveTab] = useState("all");
-  const [page, setPage]           = useState(1);
-  const PER_PAGE                  = 5;
-
 
   const TodaylateIn = todayLateIn
   ? todayLateIn.map((late, i) => ({
@@ -59,85 +53,78 @@ const Dashboard = () => {
       }))
     : [];
 
+    const {totalEmployees, presentCount, absentCount} = todayAttendance
 
-//  useEffect(() => {
-//     loadDashboardData();
-//     // eslint-disable-next-line
-//   }, []);
+    const percentageCount = (total, data) => {
+      return (data/total)*100
+    }
 
-//   async function loadDashboardData() {
-//     setLoading(true);
-//     setError("");
-//     try {
-//       await Promise.all([
-//         fetchOverviewData(),
-//         fetchAttendanceTodayData(),
-//         fetchEmployeeOverviewData(),
-//         fetchPunchStatusTodayData(),
-//         fetchDepartmentAttendanceData(), // We'll call the new departmental API
-//       ]);
-//     } catch (err) {
-//       console.error("Error loading attendance dashboard data:", err);
-//       setError(err.response?.data?.message || "Failed to load data");
-//     } finally {
-//       setLoading(false);
-//     }
-//   }
+    useEffect(() => {
+      handleDapertmentAttendance()
+    }, [date, departmentId])
 
-  
+     const handleDapertmentAttendance = async (e) => {  
+        try {
+          const res  = await axiosInstance.get(`/attendance/department-attendance?department=${encodeURIComponent(departmentId)}&date=${date}`);
+          setAttendanceData(res.data.data);
+        } catch (error) {
+          toast.error(error.response?.data?.message || "Failed to Get Department Attendance.");
+        } finally {
+          
+        }
+      };
 
-  const festivals = [
-  {
-    name: "Jagannath Rathyatra",
-    date: "27, June, Fri",
-    barColor: "bg-green-400",
-  },
-  {
-    name: "Jagannath Rathyatra",
-    date: "27, June, Fri",
-    barColor: "bg-rose-400",
-  },
-  {
-    name: "Jagannath Rathyatra",
-    date: "27, June, Fri",
-    barColor: "bg-orange-400",
-  },
-  {
-    name: "Jagannath Rathyatra",
-    date: "27, June, Fri",
-    barColor: "bg-green-400",
-  },
-];
-  
+    const festivals = [
+      {
+        name: "Jagannath Rathyatra",
+        date: "27, June, Fri",
+        barColor: "bg-green-400",
+      },
+      {
+        name: "Jagannath Rathyatra",
+        date: "27, June, Fri",
+        barColor: "bg-rose-400",
+      },
+      {
+        name: "Jagannath Rathyatra",
+        date: "27, June, Fri",
+        barColor: "bg-orange-400",
+      },
+      {
+        name: "Jagannath Rathyatra",
+        date: "27, June, Fri",
+        barColor: "bg-green-400",
+      },
+    ];
 
-const data = [
-  { label: "Total Checked In",     value: 200, gradient: "from-lime-500 to-green-500" },
-  { label: "Biometric Checked-in", value: 200, gradient: "from-indigo-400 to-pink-300" },
-  { label: "App Check-in",         value: 200, gradient: "from-sky-400   to-cyan-500" },
-  { label: "Manual Check-in",      value: 200, gradient: "from-rose-300  to-rose-500" },
-];
+    const data = [
+      { label: "Total Checked In",     value: 200, gradient: "from-lime-500 to-green-500" },
+      { label: "Biometric Checked-in", value: 200, gradient: "from-indigo-400 to-pink-300" },
+      { label: "App Check-in",         value: 200, gradient: "from-sky-400   to-cyan-500" },
+      { label: "Manual Check-in",      value: 200, gradient: "from-rose-300  to-rose-500" },
+    ];
  
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <AttendanceCard />
+    <div className="p-6 bg-gray-100 dark:bg-gray-900 min-h-screen">
+      <AttendanceCards attendanceData={todayAttendance} />
 
       {/* 2nd Section */}
       <div className='w-full flex justify-between mt-4 mb-6'>
         
         {/* Attendance Graph */}
-        <div className="w-[45%] bg-white px-4 pt-4 rounded-xl  shadow-[0px_5px_24px_0px_#BABABA]">
+        <div className="w-[45%] bg-white dark:bg-gray-800 px-4 pt-4 rounded-xl  shadow-[0px_5px_24px_0px_#BABABA] dark:shadow-sm">
           <div className='flex flex-wrap justify-between items-center gap-1 mb-4'>
             <h2 className="font-semibold text-md "> Department Attendance</h2>
             <div className="flex gap-1">
                   <select
-                    className="border border-gray-300 rounded-md py-1 text-sm
+                    className="border border-gray-300 dark:bg-gray-800 rounded-md py-1 text-sm
                               focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     value={departmentId}
                     onChange={e => setDepartmentId(e.target.value)}
                   >
                     <option value="">Department</option>
                     {departments.map(d => (
-                      <option key={d._id} value={d._id}>
+                      <option key={d._id} value={d.department}>
                         {d.department}
                       </option>
                     ))}
@@ -145,22 +132,22 @@ const data = [
 
                   <input
                     type="date"
-                    className="border border-gray-300 rounded-md px-2 py-1 text-sm
+                    className="border border-gray-300 dark:bg-gray-800 rounded-md px-2 py-1 text-sm
                               focus:outline-none focus:ring-2 focus:ring-indigo-500"
                     value={date}
                     onChange={e => setDate(e.target.value)}
                   />
             </div>
           </div>
-          <AttendanceChart />
+          <AttendanceChart attendanceData={attendanceData} />
         </div>
        
        {/* Attendance Card */}
-        <div className="w-[26%] max-w-sm p-4 bg-white rounded-xl shadow-[0px_5px_24px_0px_#BABABA]">
+        <div className="w-[26%] max-w-sm p-4 bg-white dark:bg-gray-800 rounded-xl shadow-[0px_5px_24px_0px_#BABABA] dark:shadow-sm">
       
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-md font-semibold">Attendance Sources</h2>
-              <select className="border border-gray-300 rounded-md px-1 py-1 text-sm focus:outline-none">
+              <select className="border border-gray-300 dark:bg-gray-800 rounded-md px-1 py-1 text-sm focus:outline-none">
                 <option>Date</option>
                 <option>Today</option>
                 <option>Yesterday</option>
@@ -177,7 +164,7 @@ const data = [
         </div>
         
         {/* Festival Card */}
-        <div className="w-[27%] max-w-sm p-4 bg-white rounded-xl shadow-[0px_5px_24px_0px_#BABABA]">
+        <div className="w-[27%] max-w-sm p-4 bg-white dark:bg-gray-800 rounded-xl shadow-[0px_5px_24px_0px_#BABABA] dark:shadow-sm">
             <h2 className="text-md font-semibold mb-2">Festival In June 2025</h2>
 
             <ul className="space-y-6">
@@ -194,17 +181,17 @@ const data = [
      {/* 3rd Section */} 
      <div className='w-full flex justify-center gap-2 mt-4 mb-6'>
        <div className='w-full'>
-        <GaugeCard title="Attendance Percentage" value={90} scheme="blue" />
+        <GaugeCard title="Attendance Percentage" value={percentageCount(totalEmployees,presentCount)} scheme="blue"  label1='present'/>
       </div> 
       <div className='w-full'>
-        <GaugeCard title="Absent Percentage"     value={10} scheme="greyOnBlue" />
+        <GaugeCard title="Absent Percentage"     value={percentageCount(totalEmployees, absentCount)} scheme="greyOnBlue" label1='absent' />
       </div> 
       <div className='w-full'>
         <LineCard /> </div>
      </div>
 
     {/* 4th section Table */}
-     <div className="bg-white  rounded-lg shadow p-6">
+     <div className="bg-white dark:bg-gray-800  rounded-lg shadow p-6">
         <h2 className="text-lg font-semibold mb-4">Late In Today</h2>
       <div className="flex gap-2 mb-6 overflow-x-auto">
         { departmentTabs?.length > 0 && departmentTabs.map((tab) => (
@@ -214,7 +201,7 @@ const data = [
             className={`relative px-4 py-2 rounded transition
               ${activeTab === tab.department
                 ? "text-white bg-gradient-to-r from-blue-500 to-indigo-500"
-                : "text-gray-700 bg-gray-100 hover:bg-gray-200"}`}
+                : "text-gray-700 dark:text-white bg-gray-100 dark:bg-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700"}`}
           >
             {tab.department}
  
@@ -252,7 +239,7 @@ function Card({ label, value, gradient }) {
 
 function FestivalRow({ name, date, barColor }) {
   return (
-    <div className="flex items-center justify-between rounded-xl border border-gray-300 bg-white shadow-sm">
+    <div className="flex items-center justify-between rounded-xl border border-gray-300 bg-white dark:bg-gray-600 shadow-sm">
       <div className={`${barColor} w-3 self-stretch rounded-l-xl`} />
       <div className="flex-1 flex items-center justify-between px-2 py-4">
         <span className="text-sm font-medium">{name}</span>

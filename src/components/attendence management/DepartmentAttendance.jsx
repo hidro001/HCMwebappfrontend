@@ -1,24 +1,22 @@
 import React from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 
 
-const TOTAL_EMPLOYEES = 200;
+const AttendanceChart = ({ attendanceData }) => {
+  if (!attendanceData) return null;
+
+  const { totalEmployees, presentCount, onTimeCount, lateCount, absentCount, onleaveCount } = attendanceData;
+
+
+  const TOTAL_EMPLOYEES = totalEmployees;
+  console.log(TOTAL_EMPLOYEES, 'fad')
 
 const rawData = [
-  { name: "Checked In", value: 110 },
-  { name: "Late In", value: 40 },
-  { name: "Absent", value: 20 },
-  { name: "On Leave", value: 30 },
+  { name: "Checked In", value: presentCount },
+  { name: "Late In", value: lateCount },
+  { name: "Absent", value: absentCount },
+  { name: "On Leave", value: onleaveCount },
 ];
 
 const PALETTE = {
@@ -40,8 +38,8 @@ const PALETTE = {
   },
 };
 
-// Build data with running remainder caps
 let cumulative = 0;
+
 const data = rawData.map((d) => {
   const capCount = Math.max(0, TOTAL_EMPLOYEES - (cumulative + d.value));
   cumulative += d.value;
@@ -54,14 +52,12 @@ const data = rawData.map((d) => {
   };
 });
 
-// ── Striped bar – rounds top if no cap ─────────────────────
 const StripedBar = ({ x, y, width, height, payload }) => {
   if (height <= 0 || width <= 0) return null;
   const base = payload.name.replace(/\s+/g, "");
   const r = 8;
-  const hasCap = payload.cap > 0; // % value from processed data
+  const hasCap = payload.cap > 0; 
 
-  // Case A: there **is** a cap → square top, rounded bottom
   if (hasCap) {
     const d = [
       `M${x},${y}`,
@@ -80,7 +76,6 @@ const StripedBar = ({ x, y, width, height, payload }) => {
     );
   }
 
-  // Case B: cap == 0 → fully rounded rectangle
   return (
     <g>
       <rect x={x} y={y} width={width} height={height} rx={r} ry={r} fill={`url(#${base}Solid)`} />
@@ -103,8 +98,8 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-const AttendanceChart = () => (
-  <div className="w-full max-w-5xl mx-auto">
+ return ( 
+ <div className="w-full max-w-5xl mx-auto">
     {/* Legend */}
     <div className="flex justify-end gap-2 mb-3 ">
       {Object.keys(PALETTE).map((key) => (
@@ -166,7 +161,7 @@ const AttendanceChart = () => (
         </Bar>
       </BarChart>
     </ResponsiveContainer>
-  </div>
-);
+  </div>)
+};
 
 export default AttendanceChart;

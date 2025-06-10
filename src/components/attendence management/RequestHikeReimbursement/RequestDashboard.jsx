@@ -1,393 +1,4 @@
-// import React, { useEffect, useState } from "react";
-// import { useRequestsStore } from "../../../store/useRequestsStore";
-// import RequestModal from "./RequestModal";
-// import { FaPaperPlane } from "react-icons/fa";
-// import { motion } from "framer-motion";
-// import ConfirmationDialog from "../../common/ConfirmationDialog";
-
-// // Simple tab configuration
-// const tabs = [
-  
-//   { key: "Advance", label: "Advance" },
-//   { key: "Reimbursement", label: "Reimbursement" },
-//   { key: "Loan", label: "Loan" },
-// ];
-
-// const RequestDashboard = () => {
-//   const { requests, loading, fetchRequests } = useRequestsStore();
-//   const [showModal, setShowModal] = useState(false);
-//   const [activeTab, setActiveTab] = useState("Advance");
-//   const [confirmDialog, setConfirmDialog] = useState({
-//     open: false,
-//     title: "",
-//     message: "",
-//     onConfirm: () => {},
-//   });
-
-//   useEffect(() => {
-//     fetchRequests();
-//     // eslint-disable-next-line
-//   }, []);
-
-//   // Group requests by type
-//   const getRequestsByType = (type) => {
-//     return requests.filter((r) => r.type === type);
-//   };
-
-//   const openMediaInNewTab = (url) => {
-//     window.open(url, "_blank", "noopener,noreferrer");
-//   };
-
-//   const handleOpenModal = () => {
-//     setShowModal(true);
-//   };
-//   const handleCloseModal = () => {
-//     setShowModal(false);
-//   };
-
-//   // Example usage of ConfirmationDialog (you can adapt this as needed):
-//   const handleDangerAction = () => {
-//     setConfirmDialog({
-//       open: true,
-//       title: "Danger Action",
-//       message: "Are you sure you want to proceed?",
-//       onConfirm: () => {
-//         // Perform dangerous action here
-//         setConfirmDialog({ ...confirmDialog, open: false });
-//       },
-//     });
-//   };
-
-//   const handleCancelConfirm = () => {
-//     setConfirmDialog({ ...confirmDialog, open: false });
-//   };
-
-//   return (
-//     <div className="p-4 dark:bg-slate-900 min-h-screen dark:text-white">
-//       {/* ConfirmationDialog example (toggle open with handleDangerAction) */}
-//       <ConfirmationDialog
-//         open={confirmDialog.open}
-//         title={confirmDialog.title}
-//         message={confirmDialog.message}
-//         onConfirm={confirmDialog.onConfirm}
-//         onCancel={handleCancelConfirm}
-//       />
-
-//       {/* Heading / Submit Button */}
-//       <div className="flex items-center justify-between mb-4">
-//         <h1 className="text-2xl font-semibold">
-//           Request Hike Advance Reimbursement Dashboard
-//         </h1>
-//         <button
-//           className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-//           onClick={handleOpenModal}
-//         >
-//           <FaPaperPlane />
-//           <span>Submit Request</span>
-//         </button>
-//       </div>
-
-//       {/* Custom Tabs */}
-//       <div className="flex gap-4 mb-6 border-b border-gray-200 dark:border-gray-700">
-//         {tabs.map((tab) => (
-//           <button
-//             key={tab.key}
-//             onClick={() => setActiveTab(tab.key)}
-//             className={`py-2 px-4 focus:outline-none ${
-//               activeTab === tab.key
-//                 ? "border-b-2 border-blue-600 text-blue-600"
-//                 : "text-gray-600 dark:text-gray-300"
-//             }`}
-//           >
-//             {tab.label}
-//           </button>
-//         ))}
-//       </div>
-
-//       {/* Loading Spinner */}
-//       {loading && (
-//         <div className="flex justify-center my-5">
-//           <div className="w-8 h-8 border-4 border-blue-400 border-t-transparent rounded-full animate-spin"></div>
-//         </div>
-//       )}
-
-//       {/* No requests */}
-//       {!loading && requests.length === 0 && (
-//         <p className="text-center text-gray-500">
-//           No requests submitted yet.
-//         </p>
-//       )}
-
-//       {/* Render Active Tab */}
-//       <motion.div
-//         key={activeTab}
-//         initial={{ opacity: 0, x: 50 }}
-//         animate={{ opacity: 1, x: 0 }}
-//         exit={{ opacity: 0, x: -50 }}
-//       >
-//         {/* {activeTab === "Hike" && (
-//           <RequestsTable
-//             requests={getRequestsByType("Hike")}
-//             openMediaInNewTab={openMediaInNewTab}
-//             columns={[
-//               "Employee ID",
-//               "Salary Hike (%)",
-//               "Reason",
-//               "Status",
-//               "Requested At",
-//               "Processed At",
-//               "Remarks",
-//               "Media",
-//             ]}
-//           />
-//         )} */}
-
-//         {activeTab === "Advance" && (
-//           <RequestsTable
-//             requests={getRequestsByType("Advance")}
-//             openMediaInNewTab={openMediaInNewTab}
-//             columns={[
-//               "Employee ID",
-//               "Amount",
-//               "Reason",
-//               "Status",
-//               "Requested At",
-//               "Processed At",
-//               "Remarks",
-//               "Media",
-//             ]}
-//           />
-//         )}
-
-//         {activeTab === "Reimbursement" && (
-//           <RequestsTable
-//             requests={getRequestsByType("Reimbursement")}
-//             openMediaInNewTab={openMediaInNewTab}
-//             columns={[
-//               "Employee ID",
-//               "Amount",
-//               "Reason",
-//               "Status",
-//               "Requested At",
-//               "Processed At",
-//               "Remarks",
-//               "Documents",
-//             ]}
-//           />
-//         )}
-
-//         {activeTab === "Loan" && (
-//           <RequestsTable
-//             requests={getRequestsByType("Loan")}
-//             openMediaInNewTab={openMediaInNewTab}
-//             columns={[
-//               "Employee ID",
-//               "Amount",
-//               "Tenure (months)",
-//               "Interest Rate (%)",
-//               "Monthly Repayment",
-//               "Total Repayment",
-//               "Reason",
-//               "Status",
-//               "Requested At",
-//               "Processed At",
-//               "Remarks",
-//               "Media",
-//             ]}
-//           />
-//         )}
-//       </motion.div>
-
-//       {/* Request Modal */}
-//       <RequestModal isOpen={showModal} onClose={handleCloseModal} />
-//     </div>
-//   );
-// };
-
-// /**
-//  * Renders a table of requests with solid borders for each cell.
-//  */
-// const RequestsTable = ({ requests, openMediaInNewTab, columns }) => {
-//   if (!requests || requests.length === 0) {
-//     return (
-//       <p className="text-center text-gray-500 dark:text-gray-400">
-//         No requests found for this category.
-//       </p>
-//     );
-//   }
-
-//   return (
-//     <div className="overflow-x-auto">
-//       <table className="min-w-full table-auto border-collapse border border-gray-200 dark:border-gray-700">
-//         <thead>
-//           <tr className="bg-gray-100 dark:bg-gray-800">
-//             {columns.map((col) => (
-//               <th
-//                 key={col}
-//                 className="border border-gray-200 dark:border-gray-700 px-4 py-2 text-left text-sm font-semibold dark:text-gray-200"
-//               >
-//                 {col}
-//               </th>
-//             ))}
-//           </tr>
-//         </thead>
-//         <tbody>
-//           {requests.map((req) => (
-//             <tr key={req._id} className="dark:text-gray-200">
-//               {renderCells(req, columns, openMediaInNewTab)}
-//             </tr>
-//           ))}
-//         </tbody>
-//       </table>
-//     </div>
-//   );
-// };
-
-// /**
-//  * Dynamically renders each cell based on the columns array.
-//  * Adds a consistent border around each td.
-//  */
-// const renderCells = (request, columns, openMediaInNewTab) => {
-//   // Common classes for each <td>
-//   const baseTdClasses =
-//     "border border-gray-200 dark:border-gray-700 px-4 py-2";
-
-//   return columns.map((col) => {
-//     switch (col) {
-//       case "Employee ID":
-//         return (
-//           <td className={baseTdClasses} key={`${request._id}-emp`}>
-//             {request.employeeId}
-//           </td>
-//         );
-
-//       case "Salary Hike (%)":
-//         return (
-//           <td className={baseTdClasses} key={`${request._id}-hike`}>
-//             {request.salaryHikePercentage ?? "N/A"}
-//           </td>
-//         );
-
-//       case "Amount":
-//         return (
-//           <td className={baseTdClasses} key={`${request._id}-amount`}>
-//             {request.amount ? `₹${request.amount}` : "N/A"}
-//           </td>
-//         );
-
-//       case "Tenure (months)":
-//         return (
-//           <td className={baseTdClasses} key={`${request._id}-tenure`}>
-//             {request.tenure ?? "N/A"}
-//           </td>
-//         );
-
-//       case "Interest Rate (%)":
-//         return (
-//           <td className={baseTdClasses} key={`${request._id}-irate`}>
-//             {request.interestRate ?? "N/A"}
-//           </td>
-//         );
-
-//       case "Monthly Repayment":
-//         return (
-//           <td className={baseTdClasses} key={`${request._id}-mrep`}>
-//             {request.monthlyRepayment
-//               ? `₹${request.monthlyRepayment.toFixed(2)}`
-//               : "N/A"}
-//           </td>
-//         );
-
-//       case "Total Repayment":
-//         return (
-//           <td className={baseTdClasses} key={`${request._id}-trep`}>
-//             {request.totalRepayment
-//               ? `₹${request.totalRepayment.toFixed(2)}`
-//               : "N/A"}
-//           </td>
-//         );
-
-//       case "Reason":
-//         return (
-//           <td className={baseTdClasses} key={`${request._id}-reason`}>
-//             {request.reason}
-//           </td>
-//         );
-
-//       case "Status":
-//         return (
-//           <td className={baseTdClasses} key={`${request._id}-status`}>
-//             <span
-//               className={`px-2 py-1 text-xs rounded ${
-//                 request.status === "Approved"
-//                   ? "bg-green-500 text-white"
-//                   : request.status === "Rejected"
-//                   ? "bg-red-500 text-white"
-//                   : "bg-yellow-400 text-black"
-//               }`}
-//             >
-//               {request.status}
-//             </span>
-//           </td>
-//         );
-
-//       case "Requested At":
-//         return (
-//           <td className={baseTdClasses} key={`${request._id}-reqAt`}>
-//             {new Date(request.requestedAt).toLocaleString()}
-//           </td>
-//         );
-
-//       case "Processed At":
-//         return (
-//           <td className={baseTdClasses} key={`${request._id}-procAt`}>
-//             {request.processedAt
-//               ? new Date(request.processedAt).toLocaleString()
-//               : "N/A"}
-//           </td>
-//         );
-
-//       case "Remarks":
-//         return (
-//           <td className={baseTdClasses} key={`${request._id}-remarks`}>
-//             {request.remarks || "N/A"}
-//           </td>
-//         );
-
-//       case "Documents":
-//       case "Media":
-//         return (
-//           <td className={baseTdClasses} key={`${request._id}-media`}>
-//             {request.documents && request.documents.length > 0 ? (
-//               request.documents.map((doc, index) => (
-//                 <button
-//                   key={index}
-//                   className="inline-block px-3 py-1 m-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
-//                   onClick={() => openMediaInNewTab(doc)}
-//                 >
-//                   View {col} {index + 1}
-//                 </button>
-//               ))
-//             ) : (
-//               <span>-</span>
-//             )}
-//           </td>
-//         );
-
-//       default:
-//         return (
-//           <td className={baseTdClasses} key={`${request._id}-default-${col}`}>
-//             -
-//           </td>
-//         );
-//     }
-//   });
-// };
-
-// export default RequestDashboard;
-
-
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRequestsStore } from "../../../store/useRequestsStore";
 import RequestModal from "./RequestModal";
 import { motion, AnimatePresence } from "framer-motion";
@@ -417,6 +28,7 @@ const tabs = [
 ];
 
 const RequestDashboard = () => {
+
   const { requests, loading, fetchRequests } = useRequestsStore();
   const [showModal, setShowModal] = useState(false);
   const [activeTab, setActiveTab] = useState("Advance");
@@ -481,20 +93,19 @@ const RequestDashboard = () => {
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="backdrop-blur-md bg-white/30 dark:bg-slate-800/30 p-6 rounded-2xl shadow-lg mb-8 border border-white/20 dark:border-slate-700/30"
+        className="backdrop-blur-md bg-white/30 dark:bg-slate-800/30 p-3 rounded-lg shadow-lg mb-3 border border-white/20 dark:border-slate-700/30"
       >
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <HiOutlineSparkles className="text-3xl text-blue-600 dark:text-blue-400" />
-            <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
-              Financial Request Dashboard
+          <h1 className="text-2xl md:text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 bg-clip-text text-transparent">
+               Request Hike Advance Reimbursement Dashboard
             </h1>
           </div>
           
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-full shadow-md hover:shadow-lg transition-all duration-300 font-medium"
+            className="flex items-center gap-2 px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 font-medium"
             onClick={handleOpenModal}
           >
             <FaPaperPlane />
@@ -504,9 +115,17 @@ const RequestDashboard = () => {
       </motion.div>
 
       {/* Custom Tabs with Animations */}
-      <div className="mb-8">
+ <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          className="bg-white dark:bg-slate-800 rounded-lg shadow-md overflow-hidden border border-gray-100 dark:border-slate-700"
+        >
+      <div className="bg-[#E4E9F0] dark:bg-gray-600 px-2 py-2">
         <motion.div 
-          className="flex flex-wrap gap-2 justify-center"
+          className="flex flex-wrap gap-2 justify-start"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -517,10 +136,10 @@ const RequestDashboard = () => {
               onClick={() => setActiveTab(tab.key)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className={`py-3 px-6 rounded-full flex items-center gap-2 transition-all duration-300 ${
+              className={`py-2 px-2 mx-2  flex items-center gap-2 transition-all duration-300 ${
                 activeTab === tab.key
-                  ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md"
-                  : "bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 shadow"
+                  ? "border-b-2 border-blue-600 "
+                  : "  text-gray-700 dark:text-gray-300 hover:text-slate-500 dark:hover:text-slate-700 "
               }`}
             >
               <span className="text-lg">{tab.icon}</span>
@@ -571,7 +190,7 @@ const RequestDashboard = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
-          className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 overflow-hidden border border-gray-100 dark:border-slate-700"
+          // className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 overflow-hidden border border-gray-100 dark:border-slate-700"
         >
           {activeTab === "Advance" && (
             <RequestsTable
@@ -630,9 +249,11 @@ const RequestDashboard = () => {
         </motion.div>
       </AnimatePresence>
 
-      {/* Request Modal */}
-      <RequestModal isOpen={showModal} onClose={handleCloseModal} />
+          {/* Request Modal */}
+          <RequestModal isOpen={showModal} onClose={handleCloseModal} />
+       </motion.div>
     </div>
+   
   );
 };
 
@@ -640,7 +261,22 @@ const RequestDashboard = () => {
  * Modernized table of requests with card-based layout
  */
 const RequestsTable = ({ requests, openMediaInNewTab, columns }) => {
-  const [viewMode, setViewMode] = useState("table");
+  const [viewMode, setViewMode] = useState("auto");
+  const [effectiveViewMode, setEffectiveViewMode] = useState("table");
+
+  useEffect(() => {
+  const handleResize = () => {
+    if (viewMode === "auto") {
+      const isMobile = window.innerWidth < 1024;
+      setEffectiveViewMode(isMobile ? "cards" : "table");
+    }
+  };
+
+  window.addEventListener("resize", handleResize);
+  handleResize();
+
+  return () => window.removeEventListener("resize", handleResize);
+}, [viewMode]);
 
   if (!requests || requests.length === 0) {
     return (
@@ -654,22 +290,28 @@ const RequestsTable = ({ requests, openMediaInNewTab, columns }) => {
   }
 
   // Toggle view between table and cards
-  const toggleView = () => {
-    setViewMode(viewMode === "table" ? "cards" : "table");
-  };
+// const toggleView = () => {
+//   if (effectiveViewMode === "table") {
+//     setViewMode("cards");
+//     setEffectiveViewMode("cards");
+//   } else {
+//     setViewMode("table");
+//     setEffectiveViewMode("table");
+//   }
+// };
 
   // Card view for more mobile-friendly experience
-  if (viewMode === "cards") {
+  if (effectiveViewMode === "cards") {
     return (
       <>
-        <div className="flex justify-end mb-4">
+        {/* <div className="flex justify-end mb-4">
           <button 
             onClick={toggleView}
             className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-slate-700 rounded-lg hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors"
           >
             <HiOutlineDocumentText /> Switch to Table View
           </button>
-        </div>
+        </div> */}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 ">
           {requests.map((request) => (
@@ -755,23 +397,23 @@ const RequestsTable = ({ requests, openMediaInNewTab, columns }) => {
   // Enhanced table view
   return (
     <>
-      <div className="flex justify-end mb-4">
+      {/* <div className="flex justify-end mb-4">
         <button 
           onClick={toggleView}
           className="flex items-center gap-2 px-4 py-2 bg-gray-200 dark:bg-slate-700 rounded-lg hover:bg-gray-300 dark:hover:bg-slate-600 transition-colors"
         >
           <HiOutlineChartSquareBar /> Switch to Card View
         </button>
-      </div>
+      </div> */}
 
       <div className="overflow-x-auto rounded-xl">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-slate-700">
+          <thead className="bg-[#F3F4F6] dark:bg-slate-700">
             <tr>
               {columns.map((col) => (
                 <th
                   key={col}
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider "
                 >
                   {col}
                 </th>
@@ -785,7 +427,7 @@ const RequestsTable = ({ requests, openMediaInNewTab, columns }) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
-                className="hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors cursor-pointer"
+                className="hover:bg-gray-100 dark:hover:bg-gray-900 transition-colors cursor-pointer "
                 >
                 {renderCells(req, columns, openMediaInNewTab)}
               </motion.tr>
@@ -797,9 +439,7 @@ const RequestsTable = ({ requests, openMediaInNewTab, columns }) => {
   );
 };
 
-/**
- * Renders modern, clean styled cells
- */
+
 const renderCells = (request, columns, openMediaInNewTab) => {
   const baseTdClasses = "px-6 py-4 whitespace-nowrap text-sm";
 
@@ -807,7 +447,7 @@ const renderCells = (request, columns, openMediaInNewTab) => {
     switch (col) {
       case "Employee ID":
         return (
-          <td className={`${baseTdClasses} font-medium text-gray-900 dark:text-gray-100`} key={`${request._id}-emp`}>
+          <td className={`${baseTdClasses} font-medium text-gray-900 dark:text-gray-100`} key={`${request._id}-emp `}>
             {request.employeeId}
           </td>
         );
@@ -821,7 +461,7 @@ const renderCells = (request, columns, openMediaInNewTab) => {
 
       case "Amount":
         return (
-          <td className={`${baseTdClasses} font-medium text-blue-700 dark:text-blue-400`} key={`${request._id}-amount`}>
+          <td className={`${baseTdClasses}  `} key={`${request._id}-amount`}>
             {request.amount ? `₹${request.amount}` : "N/A"}
           </td>
         );
@@ -842,7 +482,7 @@ const renderCells = (request, columns, openMediaInNewTab) => {
 
       case "Monthly Repayment":
         return (
-          <td className={`${baseTdClasses} font-medium text-blue-700 dark:text-blue-400`} key={`${request._id}-mrep`}>
+          <td className={`${baseTdClasses} `} key={`${request._id}-mrep`}>
             {request.monthlyRepayment
               ? `₹${request.monthlyRepayment.toFixed(2)}`
               : "N/A"}
@@ -869,12 +509,12 @@ const renderCells = (request, columns, openMediaInNewTab) => {
         return (
           <td className={baseTdClasses} key={`${request._id}-status`}>
             <span
-              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+              className={`inline-flex items-center px-4 py-2 rounded-lg text-xs font-medium ${
                 request.status === "Approved"
                   ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200"
                   : request.status === "Rejected"
                   ? "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200"
-                  : "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200"
+                  : "bg-[#E6C418] text-white dark:bg-yellow-900 dark:text-yellow-200"
               }`}
             >
               {request.status}
@@ -924,7 +564,7 @@ const renderCells = (request, columns, openMediaInNewTab) => {
                 ))}
               </div>
             ) : (
-              <span className="text-gray-400 dark:text-gray-500">None</span>
+              <span className="text-gray-400 dark:text-gray-500 text-center">-</span>
             )}
           </td>
         );

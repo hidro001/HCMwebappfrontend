@@ -879,6 +879,8 @@ import useAttendanceStore from "../../store/useAttendanceStore";
 import useFullAttendanceStore from "../../store/useFullAttendanceStore";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+import AttendanceCards from "./Card/AttendanceCard";
+
 
 // Card component for mobile/tablet view
 const AttendanceCard = ({ employee, onViewClick }) => {
@@ -1051,6 +1053,8 @@ export default function AllEmployeeAttendance() {
     fetchTodaysPunchTimes,
     departments,
     fetchDepartments,
+    todayAttendance,
+    fetchTodaysAttendanceStatus,
     loading,
   } = useAttendanceStore();
 
@@ -1068,7 +1072,8 @@ export default function AllEmployeeAttendance() {
   useEffect(() => {
     fetchTodaysPunchTimes();
     fetchDepartments();
-  }, [fetchTodaysPunchTimes, fetchDepartments]);
+    fetchTodaysAttendanceStatus()
+  }, [fetchTodaysPunchTimes, fetchDepartments, fetchTodaysAttendanceStatus]);
 
   // Build a flat array of employees from today's punches
   const employeesData = todayPunches.map((punch, i) => ({
@@ -1212,55 +1217,8 @@ export default function AllEmployeeAttendance() {
         </div>
       </motion.div>
 
-      {/* Stats & Actions Row */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8"
-      >
-        {/* Total Employees Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-6 flex items-center border border-gray-100 dark:border-gray-700">
-          <div className="rounded-full bg-blue-100 dark:bg-blue-900/30 p-3 md:p-4 mr-3 md:mr-4">
-            <FiUser className="text-blue-600 dark:text-blue-400 text-xl md:text-2xl" />
-          </div>
-          <div>
-            <h3 className="text-gray-500 dark:text-gray-400 text-xs md:text-sm font-medium">Total Employees</h3>
-            <p className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">{totalEntries}</p>
-          </div>
-        </div>
+       <AttendanceCards attendanceData={todayAttendance} />
 
-        {/* Present Today Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-6 flex items-center border border-gray-100 dark:border-gray-700">
-          <div className="rounded-full bg-green-100 dark:bg-green-900/30 p-3 md:p-4 mr-3 md:mr-4">
-            <FiClock className="text-green-600 dark:text-green-400 text-xl md:text-2xl" />
-          </div>
-          <div>
-            <h3 className="text-gray-500 dark:text-gray-400 text-xs md:text-sm font-medium">Present Today</h3>
-            <p className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white">
-              {filteredData.filter(emp => emp.status?.toLowerCase() === 'present').length}
-            </p>
-          </div>
-        </div>
-
-        {/* Export Button Card */}
-        <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-6 flex items-center justify-between border border-gray-100 dark:border-gray-700 sm:col-span-2 md:col-span-1">
-          <div>
-            <h3 className="text-gray-500 dark:text-gray-400 text-xs md:text-sm font-medium">Export Data</h3>
-            <p className="text-gray-900 dark:text-white text-xs md:text-sm">Download as Excel</p>
-          </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={handleExportAllAttendance}
-            disabled={exporting}
-            className="flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-3 md:px-4 py-2 md:py-3 rounded-lg text-xs md:text-sm font-medium transition-all shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            <FiDownload />
-            {exporting ? "Exporting..." : "Export"}
-          </motion.button>
-        </div>
-      </motion.div>
 
       {/* Search & Filters Bar */}
       <motion.div
@@ -1269,26 +1227,9 @@ export default function AllEmployeeAttendance() {
         transition={{ duration: 0.6, delay: 0.2 }}
         className="bg-white dark:bg-gray-800 rounded-xl shadow-sm p-4 md:p-5 mb-6 border border-gray-100 dark:border-gray-700"
       >
-        <div className="flex flex-col space-y-4">
+        <div className="flex justify-between items-center">
           {/* Search */}
-          <div className="relative w-full">
-            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 dark:text-gray-400">
-              <FiSearch />
-            </span>
-            <input
-              type="text"
-              placeholder="Search employee name or ID"
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg pl-10 pr-4 py-2.5 text-sm bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            {/* Toggle Filters Button */}
+         <div className="flex flex-wrap gap-3">
             <motion.button
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
@@ -1315,16 +1256,33 @@ export default function AllEmployeeAttendance() {
                 <option value={50}>50</option>
               </select>
             </div>
-
+        </div>
+          <div className="flex flex-wrap gap-3">
+            <div className="relative ">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500 dark:text-gray-400">
+              <FiSearch />
+            </span>
+            <input
+              type="text"
+              placeholder="Search employee name or ID"
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full border border-gray-300 dark:border-gray-600 rounded-lg pl-10 pr-4 py-2.5 text-sm bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+            />
+          </div>
+           
             {/* Department Filter */}
-            <div className="flex-grow">
+            <div className="flex-grow items-center">
               <select
                 value={selectedDepartment}
                 onChange={(e) => {
                   setSelectedDepartment(e.target.value);
                   setCurrentPage(1);
                 }}
-                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-3 text-sm bg-white dark:bg-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option>Department</option>
                 {departments.map((dept) => (
@@ -1332,6 +1290,16 @@ export default function AllEmployeeAttendance() {
                 ))}
               </select>
             </div>
+            <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={handleExportAllAttendance}
+            disabled={exporting}
+            className="flex items-center gap-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-2 md:px-3 py-2 md:py-2 rounded-md text-xs md:text-xs font-medium transition-all shadow-md disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            <FiDownload />
+            {exporting ? "Exporting..." : "Export"}
+          </motion.button>
           </div>
         </div>
 
