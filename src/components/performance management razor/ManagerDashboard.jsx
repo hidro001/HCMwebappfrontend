@@ -1090,7 +1090,7 @@ export default function ManagerDashboard() {
                   value={startMonth}
                   onChange={(e) => setStartMonth(e.target.value)}
                 >
-                  <option value="">--</option>
+                  <option value="">Select Month</option>
                   {MONTHS.map((m) => (
                     <option key={m.value} value={m.value}>
                       {m.label}
@@ -1135,7 +1135,7 @@ export default function ManagerDashboard() {
                   value={endMonth}
                   onChange={(e) => setEndMonth(e.target.value)}
                 >
-                  <option value="">--</option>
+                  <option value="">Select Month</option>
                   {MONTHS.map((m) => (
                     <option key={m.value} value={m.value}>
                       {m.label}
