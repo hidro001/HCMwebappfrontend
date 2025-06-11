@@ -10,6 +10,7 @@ import GaugeCard from "./Card/GaugeCard.jsx";
 import LineCard from "./Card/LineCard.jsx";
 import { toast } from "react-hot-toast";
 import axiosInstance from "../../service/axiosInstance.js";
+import { getMonthHolidays } from '../../service/holidayService.js';
 ChartJS.register(BarElement, CategoryScale, LinearScale, Legend, Tooltip);
 
 const Dashboard = () => {
@@ -32,12 +33,35 @@ const Dashboard = () => {
      fetchTodaysPunchTimes();
       fetchTodaysLateIn();
       fetchTodaysAttendanceStatus()
+      fetchHolidayData();
    }, [fetchTodaysPunchTimes, fetchTodaysLateIn, fetchTodaysAttendanceStatus]);
  
   const departmentTabs = [
     { department : "All Departments", _id : 'all'},
     ...departments
   ];
+
+   useEffect(() => {
+      fetchHolidayData();
+    }, []);
+  
+    const fetchHolidayData = async () => {
+      try {
+        
+  
+        const resData = await getMonthHolidays(); 
+           console.log(resData, 'afds');
+        if (resData.success) {
+          getMonthHolidays(resData.data || []);
+        } else {
+          setErrorMsg(resData.message || "Failed to fetch holidays");
+        }
+      } catch (error) {
+        setErrorMsg(error.message || "Network error");
+      } finally {
+        setLoading(false);
+      }
+    };
 
   const TodaylateIn = todayLateIn
   ? todayLateIn.map((late, i) => ({
