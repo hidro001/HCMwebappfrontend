@@ -10,9 +10,10 @@ const useAttendanceStore = create((set, get) => ({
   stats: null,
   loading: false,
   error: null,
-  subordinateStats: [], // new piece of state
+  subordinateStats: [], 
   todayPunches: [],
   todayLateIn: [],
+  todayAttendance: [],
 
   // ---- Actions ----
 
@@ -155,9 +156,7 @@ const useAttendanceStore = create((set, get) => ({
     try {
       const response = await axiosInstance.get("/attendance/late-in-today");
       const data = response.data;
-
-      console.log(data, 'gf')
-
+      console.log(data.data, 'df')
       if (data.success) {
         set({ todayLateIn: data.data });
       } else {
@@ -171,6 +170,28 @@ const useAttendanceStore = create((set, get) => ({
       set({ loading: false });
     }
   },
+
+  fetchTodaysAttendanceStatus: async () => {
+    set({ loading: true, error: null });
+     try {
+      const response = await axiosInstance.get("/attendance/attendance-status-today");
+      const data = response.data;
+
+      console.log(data.data, 'gsdf')
+
+      if (data.success) {
+        set({ todayAttendance: data.data });
+      } else {
+        throw new Error(data.message || "Failed to fetch today's attendance.");
+      }
+    } catch (err) {
+      console.error("Error fetching today's attendance:", err);
+      toast.error(err.message);
+      set({ error: err.message });
+    } finally {
+      set({ loading: false });
+    }
+  }
   
 }));
 

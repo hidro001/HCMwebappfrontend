@@ -9,7 +9,7 @@ const toArray = (maybe) =>
       ? Object.values(maybe)
       : [];
 
-export default function LateInToday({ data, activeTab }) {
+export default function LateInToday({ data, activeTab = "All Departments" }) {
 
 
   const [page, setPage]           = useState(1);
@@ -40,7 +40,7 @@ export default function LateInToday({ data, activeTab }) {
       <div className="overflow-x-auto">
         <table className="min-w-full text-left">
           <thead>
-            <tr className="bg-gray-100 text-sm">
+            <tr className="bg-gray-100 dark:bg-gray-700 text-sm">
               <th className="px-4 py-2">Employee ID</th>
               <th className="px-4 py-2">Department</th>
               <th className="px-4 py-2">Punch In</th>
@@ -59,7 +59,7 @@ export default function LateInToday({ data, activeTab }) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 4 }}
                   transition={{ duration: 0.18 }}
-                  className="even:bg-blue-50/40 text-sm"
+                  className="even:bg-blue-50/40 dark:bg-gray-600 text-sm"
                 >
                   <td className="px-4 py-2">
                     <a

@@ -85,13 +85,13 @@ const schemes={
   }
 };
 
-export default function GaugeCard({ title, value=0, scheme='blue' }){
+export default function GaugeCard({ title, value=0, scheme='blue', label1 }){
   const {arc,empty,pointer}=schemes[scheme]??schemes.blue;
   const ref=useRef(null);
   const iv =useInView(ref,{once:true,amount:0.45});
 
   const data={
-    labels:['filled','empty'],
+    labels:[label1,'empty'],
     datasets:[{
       data:[value,100-value],
       backgroundColor:sctx=>[
@@ -113,16 +113,16 @@ export default function GaugeCard({ title, value=0, scheme='blue' }){
   return(
     <motion.div ref={ref}
       initial={{opacity:0,y:30}} animate={iv?{opacity:1,y:0}:{}} transition={{duration:0.45}}
-      className="w-full h-full bg-white rounded-[14px] shadow-card p-4 flex flex-col"
+      className="w-full h-full bg-white dark:bg-gray-800 rounded-[14px] shadow-card p-4 flex flex-col"
     >
-      <h3 className="text-sm font-semibold text-gray-700 mb-2">{title}</h3>
+      <h3 className="text-sm font-semibold text-gray-700 dark:text-white mb-2">{title}</h3>
 
       <div className="relative flex-1">
         <Doughnut data={data} options={opts} plugins={[extras]}/>
         <motion.span
           initial={{opacity:0}} animate={iv?{opacity:1}:{}} transition={{delay:0.55}}
           className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[18%]
-                     text-lg font-bold text-gray-700"
+                     text-lg font-bold text-gray-700 dark:text-white"
         >
           {value}%
         </motion.span>

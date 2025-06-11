@@ -88,6 +88,17 @@ export async function fetchPunchStatusToday() {
   }
 }
 
+// export async function fetchAttendanceStatusToday() {
+//   try {
+//    const response = await axiosInstance.get(
+//       "/attendance/attendance-status-today"
+//     );
+//     return response.data; 
+//   }catch (error) {
+//     console.error("Error in fetchPunchStatusToday:", error);
+//     throw error;
+//   }
+// }
 
 export const fetchAttendanceByEmployeeId = async (employeeId) => {
   try {
@@ -102,8 +113,6 @@ export const fetchAttendanceByEmployeeId = async (employeeId) => {
     };
   }
 };
-
-
 
 export async function fetchDepartmentAttendanceSummary() {
   try {
