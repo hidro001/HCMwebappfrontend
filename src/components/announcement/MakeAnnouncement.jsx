@@ -1,10 +1,3 @@
-
-
-
-
-
-
-
 import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -17,10 +10,8 @@ import {
   FaFilter,
 } from "react-icons/fa";
 import { toast } from "react-hot-toast";
-
 import useAnnouncementStore from "../../store/announcementStore";
 import useDepartmentStore from "../../store/departmentStore";
-
 // Modals
 import AnnouncementDetailModal from "./model/AnnouncementDetailModal";
 import AnnouncementEditModal from "./model/AnnouncementEditModal";

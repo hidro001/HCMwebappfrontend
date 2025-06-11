@@ -5,20 +5,21 @@ import { IoMdCheckmark } from "react-icons/io";
 import { FaUsers} from "react-icons/fa";
 import { motion } from "framer-motion";
 
-const AttendanceCard = ({attendanceData = {}, data=''}) => {
+const AttendanceCards = ({attendanceData = {}, data=''}) => {
 
    const {
-    totalSubordinates = 0,
+    totalSubordinates  = 0,
     presentCount     = 0,
     absentCount      = 0,
     onLeaveCount     = 0,
     lateCount        = 0,
+    totalEmployees  = 0,
   } = attendanceData;
 
     const cards = [
       {
         title: data === 'team' ? 'My Team' :"Our Employees",
-        count: totalSubordinates,
+        count: totalSubordinates || totalEmployees,
         gradient: "bg-[linear-gradient(57deg,_#56AB2F_5.45%,_#A8E063_85.58%)]",
         icon: <FaUsers className="text-3xl text-[#6CC947]" />,
       },
@@ -93,4 +94,4 @@ const AttendanceCard = ({attendanceData = {}, data=''}) => {
   )
 }
 
-export default AttendanceCard
+export default AttendanceCards

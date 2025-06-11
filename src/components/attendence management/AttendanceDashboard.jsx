@@ -2,14 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Bar, Doughnut } from "react-chartjs-2";
 import { FaCheckCircle, FaRegClock } from "react-icons/fa";
-
-import {
-  fetchOverview,
-  fetchAttendanceToday,
-  fetchEmployeeOverview,
-  fetchPunchStatusToday,
-  fetchDepartmentAttendanceSummary, // <-- new function
-} from "../../service/attendanceService";
+import { fetchOverview, fetchAttendanceToday, fetchEmployeeOverview, fetchPunchStatusToday, fetchDepartmentAttendanceSummary,} from "../../service/attendanceService";
 
 export default function AttendanceDashboard() {
   // Loading & Error states
@@ -115,9 +108,10 @@ export default function AttendanceDashboard() {
   async function fetchPunchStatusTodayData() {
     const result = await fetchPunchStatusToday();
     if (result?.data) {
-      setLateInToday(result.data.late);
+      setLateInToday(result.data.late); // missing
       setOnTimeCount(result.data.onTimeCount);
       setLateCount(result.data.lateCount);
+
     }
   }
 

@@ -983,131 +983,123 @@ const [punchOutTime, setPunchOutTime] = useState("");
       {/* Main area: table + side overview */}
       <motion.div
         // className="grid grid-cols-1 lg:grid-cols-4 gap-4"
-        className="flex items-center"
+        className="flex justify-center gap-2"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
       >
-        {/* Table (3/4) */}
-       {/* ------------------------------------------------------------------
-   ATTENDANCE TABLE – styled to match the screenshot
-------------------------------------------------------------------- */}
-<motion.div
-  className="overflow-x-auto rounded-md shadow ring-1 ring-black/5
-             bg-white dark:bg-gray-800"
-  initial={{ opacity: 0, y: 10 }}
-  animate={{ opacity: 1, y: 0 }}
-  transition={{ duration: 0.5 }}
->
-  <table className="w-full whitespace-nowrap text-sm">
-    {/* ------------ HEADER ------------- */}
-    <thead>
-      <tr className="bg-[#F3F7FF] dark:bg-gray-700 text-gray-600 dark:text-gray-300
-                     text-[13px] font-semibold tracking-wide">
-        {[
-          "S.L",
-          "Date",
-          "Days",
-          "Checked In & Out",
-          "Total Break",
-          "Status",
-          "Punch Request",
-        ].map((h) => (
-          <th key={h} className="py-[14px] px-4 text-left">
-            {h}
-          </th>
-        ))}
-      </tr>
-    </thead>
-
-    {/* ------------- BODY -------------- */}
-    <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
-      {displayedData.map((item) => (
-        <tr
-          key={item.sl}
-          className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        <motion.div
+          className="w-full  overflow-x-auto rounded-md shadow ring-1 ring-black/5
+                    bg-white dark:bg-gray-800"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
         >
-          {/* 1️⃣ Serial */}
-          <td className="py-3 px-4 font-medium text-gray-700 dark:text-gray-200">
-            {String(item.sl).padStart(2, "0")}
-          </td>
+          <table className="w-full whitespace-nowrap text-sm">
+            <thead>
+              <tr className="bg-[#F3F7FF] dark:bg-gray-700 text-gray-600 dark:text-gray-300
+                            text-[13px] font-semibold tracking-wide">
+                {[
+                  "S.L",
+                  "Date",
+                  "Days",
+                  "Checked In & Out",
+                  "Total Break",
+                  "Status",
+                  "Punch Request",
+                ].map((h) => (
+                  <th key={h} className="py-[14px] px-3 text-left">
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
+              {displayedData.map((item) => (
+                <tr
+                  key={item.sl}
+                  className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                >
+                
+                  <td className="py-3 px-3 font-medium text-gray-700 dark:text-gray-200">
+                    {String(item.sl).padStart(2, "0")}
+                  </td>
 
-          {/* 2️⃣ Date */}
-          <td className="py-3 px-4 text-gray-700 dark:text-gray-200">
-            {item.date}
-          </td>
+                
+                  <td className="py-3 px-3 text-gray-700 dark:text-gray-200">
+                    {item.date}
+                  </td>
 
-          {/* 3️⃣ Day */}
-          <td className="py-3 px-4 text-gray-700 dark:text-gray-200">
-            {item.day}
-          </td>
+                
+                  <td className="py-3 px-3 text-gray-700 dark:text-gray-200">
+                    {item.day}
+                  </td>
 
-          {/* 4️⃣ Checked-in / out – blue • grey • red */}
-          <td className="py-3 px-4">
-            <div className="flex items-center gap-2 text-[13px]">
-              <span className="font-semibold text-[#0d6efd]">
-                {item.logInTime}
-              </span>
-              <span className="h-[4px] w-[4px] rounded-full bg-gray-400" />
-              <span className="text-gray-500">{item.hoursWorked}</span>
-              <span className="h-[4px] w-[4px] rounded-full bg-gray-400" />
-              <span className="font-semibold text-[#ff3e3e]">
-                {item.logOutTime}
-              </span>
-            </div>
-          </td>
+                
+                  <td className="py-3 px-3">
+                    <div className="flex items-center gap-2 text-[13px]">
+                      <span className="font-semibold text-[#0d6efd]">
+                        {item.logInTime}
+                      </span>
+                      <span className="h-[4px] w-[4px] rounded-full bg-gray-400" />
+                      <span className="text-gray-500">{item.hoursWorked}</span>
+                      <span className="h-[4px] w-[4px] rounded-full bg-gray-400" />
+                      <span className="font-semibold text-[#ff3e3e]">
+                        {item.logOutTime}
+                      </span>
+                    </div>
+                  </td>
 
-          <td className="py-3 px-4 text-gray-700 dark:text-gray-200">
-            {item.totalBreak}
-          </td>
+                  <td className="py-3 px-3 text-gray-700 dark:text-gray-200">
+                    {item.totalBreak}
+                  </td>
 
-          <td className="py-3 px-4">
-            {renderStatusBadge(item.status)}
-          </td>
+                  <td className="py-3 px-3">
+                    {renderStatusBadge(item.status)}
+                  </td>
 
-          <td className="py-3 px-4">
-            {(item.status === "Absent" || item.status === "Holiday") && (
-              <button
-                onClick={() => openMissedPunchModal(item)}
-                className="inline-flex items-center rounded-md border border-[#0d6efd]
-                           px-3 py-1 text-[13px] font-medium text-[#0d6efd]
-                           hover:bg-[#0d6efd] hover:text-white transition-colors"
-              >
-                Request
-              </button>
-            )}
-          </td>
-        </tr>
-      ))}
+                  <td className="py-3 px-3">
+                    {(item.status === "Absent" || item.status === "Holiday") && (
+                      <button
+                        onClick={() => openMissedPunchModal(item)}
+                        className="inline-flex items-center rounded-md border border-[#0d6efd]
+                                  px-3 py-1 text-[13px] font-medium text-[#0d6efd]
+                                  hover:bg-[#0d6efd] hover:text-white transition-colors"
+                      >
+                        Request
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
 
-      {/* Empty-state row */}
-      {displayedData.length === 0 && (
-        <tr>
-          <td
-            colSpan={7}
-            className="py-4 text-center text-gray-500 dark:text-gray-400"
-          >
-            No records found.
-          </td>
-        </tr>
-      )}
-    </tbody>
-  </table>
-</motion.div>
+              {/* Empty-state row */}
+              {displayedData.length === 0 && (
+                <tr>
+                  <td
+                    colSpan={7}
+                    className="py-4 text-center text-gray-500 dark:text-gray-400"
+                  >
+                    No records found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </motion.div>
 
 
-        {/* Side panel (1/4) */}
         <motion.div
           className="bg-white dark:bg-gray-800 rounded-md shadow p-4"
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <h2 className="font-semibold text-gray-700 dark:text-gray-200 mb-3 text-lg">
+          <h2 className="font-semibold text-gray-700 dark:text-gray-200 mb-3 text-md">
             Employee Overview
           </h2>
 
-          <div className="space-y-3 text-sm">
+          <div className="space-y-3 text-xs">
             <div className="flex items-center justify-between">
               <span>
                 <FiBriefcase className="inline-block mr-1 text-blue-500 animate-bounce" />

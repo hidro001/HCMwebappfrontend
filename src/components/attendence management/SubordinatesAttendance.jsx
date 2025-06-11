@@ -457,7 +457,7 @@ import { FiSearch, FiCalendar, FiCheckCircle, FiChevronDown, FiChevronLeft,
 import { BiBuildings } from "react-icons/bi";
 import { HiOutlineChartBar } from "react-icons/hi";
 import { TbMoodEmpty } from "react-icons/tb";
-import AttendanceCard from "./Card/AttendanceCard";
+import AttendanceCards from "./Card/AttendanceCard";
 
 
 function formatMonthYear(monthValue) {
@@ -710,7 +710,7 @@ export default function SubordinatesAttendance() {
         </p>
       </motion.div>
 
-       <AttendanceCard attendanceData={subordinateStats} data='team'/>
+       <AttendanceCards attendanceData={subordinateStats} data='team'/>
       {/* Stats Overview Cards */}
       {/* <motion.div
         variants={containerVariants}
@@ -1006,10 +1006,10 @@ export default function SubordinatesAttendance() {
                         key={emp.id}
                         variants={tableRowVariants}
                         className={`${
-                  index % 2 ? "bg-[#ECF3FD]" : "bg-white"
+                  index % 2 ? "bg-[#ECF3FD] dark:bg-gray-500" : "bg-white dark:bg-gray-600"
                 } hover:bg-[#f7f7f8] dark:hover:bg-slate-700/30 transition-colors`}
                >
-                        <td className="py-2 px-6 whitespace-nowrap text-sm text-slate-500 dark:text-slate-400 border-r border-[#F1F1F1] dark:border-slate-600">
+                        <td className="py-2 px-6 whitespace-nowrap text-sm text-slate-500 dark:text-slate-300 border-r border-[#F1F1F1] dark:border-slate-600">
                           {String(serialNumber).padStart(2, "0")}
                         </td>
                         <td className="py-2 px-6 whitespace-nowrap text-sm font-medium text-blue-500 dark:text-blue-400  border-r border-[#F1F1F1] dark:border-slate-600">
