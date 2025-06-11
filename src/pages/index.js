@@ -104,6 +104,8 @@ import EmployeeRatingAdvancedPageRazor from "./performance management razor/Empl
 import MyPerformanceAdvancedPageRazor from "./performance management razor/MyPerformanceAdvancedPage";
 import TeamRatingsAdvancedPageRazor from "./performance management razor/TeamRatingsAdvancedPage";
 import AllEmployeeRatingsPageRazor from "./performance management razor/AllEmployeeRatingsPage";
+import ManagerDashboardPage from "./performance management razor/ManagerDashboardPage";
+
 
 export {
   Login,
@@ -192,5 +194,6 @@ export {
   EmployeeRatingAdvancedPageRazor,
   MyPerformanceAdvancedPageRazor,
   TeamRatingsAdvancedPageRazor,
-  AllEmployeeRatingsPageRazor
+  AllEmployeeRatingsPageRazor,
+  ManagerDashboardPage,
 };
