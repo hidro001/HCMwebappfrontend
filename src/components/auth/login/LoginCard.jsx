@@ -221,15 +221,20 @@ const LoginCard = () => {
     });
     toast.success("Login successful!");
 
- // In handleLoginSuccess function:
-  // Persist credentials to electron-store so they survive a reboot
-  window.electronAPI.saveCredentials({
+ // In LoginCard.jsx's handleLoginSuccess
+if (window.electronAPI?.sendCredentials) {
+  window.electronAPI.sendCredentials({
     accessToken,
     employeeId: user.employee_Id,
     userName: `${user.first_Name} ${user.last_Name || ""}`.trim(),
   });
-    // navigate is handled by our redirect useEffect
-  };
+  console.log("React -> Electron credentials sent:", {
+    accessToken,
+    employeeId: user.employee_Id,
+    userName: `${user.first_Name} ${user.last_Name || ""}`.trim(),
+  });
+}
+
 
   const handleForgotPasswordOpen = () => setForgotPasswordOpen(true);
   const handleForgotPasswordClose = () => setForgotPasswordOpen(false);
