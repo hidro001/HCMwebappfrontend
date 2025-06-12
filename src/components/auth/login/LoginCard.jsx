@@ -221,18 +221,15 @@ const LoginCard = () => {
     });
     toast.success("Login successful!");
 
-     // ⬇️ **NEW IPC CODE TO ADD HERE**
-  if (window?.electron?.ipcRenderer) {
-    window.electron.ipcRenderer.send(
-      'electron.ipc.storageUpdate-9f41cca1-3ba0-4562-b136-bc90c6774907',
-      {
-        accessToken,
-        employeeId: user.employee_Id,
-        userName: `${user.first_Name} ${user.last_Name || ""}`.trim(),
-      }
-    );
+     // ✅ Corrected IPC call matching preload.js
+  if (window?.electronAPI?.sendCredentials) {
+    window.electronAPI.sendCredentials({
+      accessToken,
+      employeeId: user.employee_Id,
+      userName: `${user.first_Name} ${user.last_Name || ""}`.trim(),
+    });
   } else {
-    console.warn("Electron IPC Renderer not found!");
+    console.warn("Electron API not found!");
   }
     // navigate is handled by our redirect useEffect
   };
