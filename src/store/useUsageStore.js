@@ -37,21 +37,25 @@ const useUsageStatsStore = create((set) => ({
       set({ loading: false });
     }
   },
-  fetchTopProductivityStats: async (employeeId, filterType) => {
-    set({ loading: true, error: null });
-    try {
-      const res = await axiosInstance.get(
-        `/usage-stats/productivity/${employeeId}?filter=${filterType}`
-      );
-      set({ topProductivityStats: res.data.data });
-    } catch (err) {
-      set({ error: err.message });
-      toast.error(err.message);
-    } finally {
-      set({ loading: false });
-    }
-  },
-  topProductivityStats: null,
+// Updated fetchTopProductivityStats - purely date-based
+fetchTopProductivityStats: async (employeeId, selectedDate = null) => {
+  set({ loading: true, error: null });
+  try {
+    const params = new URLSearchParams();
+    const targetDate = selectedDate || dayjs().format("YYYY-MM-DD");
+    params.append('date', targetDate);
+    
+    const res = await axiosInstance.get(
+      `/usage-stats/productivity/${employeeId}?${params.toString()}`
+    );
+    set({ topProductivityStats: res.data.data });
+  } catch (err) {
+    set({ error: err.message });
+    toast.error(err.message);
+  } finally {
+    set({ loading: false });
+  }
+},
   
   
 
@@ -186,11 +190,20 @@ fetchSubordinateMostUsedStats: async (department, designation, limit) => {
   
 
   // Add these lines in the store:
-fetchMostUsedStats: async (employeeId, filterType) => {
+// Update these methods in your useUsageStatsStore.js
+
+
+
+// Updated fetchMostUsedStats - purely date-based
+fetchMostUsedStats: async (employeeId, selectedDate = null) => {
   set({ loading: true, error: null });
   try {
+    const params = new URLSearchParams();
+    const targetDate = selectedDate || dayjs().format("YYYY-MM-DD");
+    params.append('date', targetDate);
+    
     const res = await axiosInstance.get(
-      `/usage-stats/most-used/${employeeId}?filter=${filterType}`
+      `/usage-stats/most-used/${employeeId}?${params.toString()}`
     );
     set({ mostUsedStats: res.data.data });
   } catch (err) {
@@ -200,7 +213,6 @@ fetchMostUsedStats: async (employeeId, filterType) => {
     set({ loading: false });
   }
 },
-mostUsedStats: null,
 
 fetchGraphData: async (employeeId, date) => {
   set({ loading: true, error: null });
@@ -215,6 +227,39 @@ fetchGraphData: async (employeeId, date) => {
   }
 },
 graphData: [],
+
+// Fetch stats for a specific date using date picker filter
+fetchStatsForSpecificDate: async (employeeId, date) => {
+  set({ loading: true, error: null });
+  try {
+    const res = await axiosInstance.get(`/usage-stats/date-filter-stats/${employeeId}?date=${date}`);
+    set({ specificDateStats: res.data.data });
+  } catch (err) {
+    set({ error: err.message });
+    toast.error(err.message);
+  } finally {
+    set({ loading: false });
+  }
+},
+specificDateStats: null,
+
+fetchFilteredStats: async (employeeId, startDate, endDate) => {
+  set({ loading: true, error: null });
+  try {
+    const res = await axiosInstance.get(
+      `/usage-stats/date-2-filter-stats/${employeeId}?startDate=${startDate}&endDate=${endDate}`
+    );
+    set({ filteredStats: res.data.data });
+  } catch (err) {
+    set({ error: err.message });
+    toast.error(err.message);
+  } finally {
+    set({ loading: false });
+  }
+},
+filteredStats: { usageStats: [], attendanceRecords: [] },
+
+
 
   
 }));

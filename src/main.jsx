@@ -30,7 +30,7 @@ if ("serviceWorker" in navigator) {
 
 
 const employee = localStorage.getItem("employeeId");
-console.log("Employee ID:", employee);
+// console.log("Employee ID:", employee);
 
 createRoot(document.getElementById("root")).render(
   <ThemeProvider>

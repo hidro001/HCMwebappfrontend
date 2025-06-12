@@ -89,7 +89,8 @@ import {
   EmployeeRatingAdvancedPageRazor,
   MyPerformanceAdvancedPageRazor,
   TeamRatingsAdvancedPageRazor,
-  AllEmployeeRatingsPageRazor
+  AllEmployeeRatingsPageRazor,
+  ManagerDashboardPage
 } from "../pages";
 import EmployeeFullStatisticsPage from "../pages/attendence management/EmployeeFullStatisticsPage";
 import MainLayout from "./MainLayout";
@@ -541,6 +542,10 @@ const router = createBrowserRouter([
       {
         path: "all-employess-ratings-aggregate",
         element: <AllEmployeeRatingsPageRazor />,
+      },
+      {
+        path: "performance-analytics",
+        element: <ManagerDashboardPage />,
       },
 
 

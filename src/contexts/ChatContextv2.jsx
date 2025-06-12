@@ -70,9 +70,15 @@ export function ChatProviderv2({ children }) {
     }
   }, []);
 
-  useEffect(() => {
-    fetchMembers();
-  }, [fetchMembers]);
+  // useEffect(() => {
+  //   fetchMembers();
+  // }, [fetchMembers]);
+
+ useEffect(() => {
+   // Don’t call fetchMembers until we have a valid storeEmployeeId
+   if (!storeEmployeeId) return;
+   fetchMembers();
+ }, [fetchMembers, storeEmployeeId]);
 
   //----------------------------------------------------------------
   // 3) One-to-one conversations
