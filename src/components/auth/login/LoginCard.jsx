@@ -197,7 +197,7 @@ const LoginCard = () => {
     }
   };
 
-  const handleLoginSuccess = (resp) => {
+  const handleLoginSuccess = async (resp) => {
     const { user, accessToken } = resp;
     // parse arrays if needed...
     authStore.login({
@@ -220,21 +220,21 @@ const LoginCard = () => {
       engagement_permission: user.engagement_permission,
     });
     toast.success("Login successful!");
-
- // In LoginCard.jsx's handleLoginSuccess
-if (window.electronAPI?.sendCredentials) {
-  window.electronAPI.sendCredentials({
-    accessToken,
-    employeeId: user.employee_Id,
-    userName: `${user.first_Name} ${user.last_Name || ""}`.trim(),
-  });
-  console.log("React -> Electron credentials sent:", {
-    accessToken,
-    employeeId: user.employee_Id,
-    userName: `${user.first_Name} ${user.last_Name || ""}`.trim(),
-  });
-}
-
+if (window.electronAPI?.saveCredentials) {
+    try {
+      await window.electronAPI.saveCredentials({
+        accessToken,
+        employeeId: user.employee_Id,
+        userName: `${user.first_Name} ${user.last_Name || ""}`.trim(),
+      });
+      console.log("React -> Electron credentials saved successfully.");
+    } catch (error) {
+      console.error("Failed to save credentials:", error);
+      toast.error("Failed to store credentials securely.");
+    }
+  }
+    // navigate is handled by our redirect useEffect
+  };
 
   const handleForgotPasswordOpen = () => setForgotPasswordOpen(true);
   const handleForgotPasswordClose = () => setForgotPasswordOpen(false);
