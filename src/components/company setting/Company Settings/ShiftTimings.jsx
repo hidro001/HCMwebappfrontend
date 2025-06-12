@@ -33,6 +33,8 @@ export default function ShiftTimings() {
       startTime: start,
       endTime: end,
     };
+
+    console.log(payload, 'shift -timings')
     addOrUpdateShiftTiming(payload);
     setIsModalOpen(false);
     setName("");
