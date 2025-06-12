@@ -221,16 +221,13 @@ const LoginCard = () => {
     });
     toast.success("Login successful!");
 
-     // ✅ Corrected IPC call matching preload.js
-  if (window?.electronAPI?.sendCredentials) {
-    window.electronAPI.sendCredentials({
-      accessToken,
-      employeeId: user.employee_Id,
-      userName: `${user.first_Name} ${user.last_Name || ""}`.trim(),
-    });
-  } else {
-    console.warn("Electron API not found!");
-  }
+ // In handleLoginSuccess function:
+  // Persist credentials to electron-store so they survive a reboot
+  window.electronAPI.saveCredentials({
+    accessToken,
+    employeeId: user.employee_Id,
+    userName: `${user.first_Name} ${user.last_Name || ""}`.trim(),
+  });
     // navigate is handled by our redirect useEffect
   };
 
