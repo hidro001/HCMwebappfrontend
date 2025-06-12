@@ -29,7 +29,6 @@ import {
   FiTrendingDown,
 } from "react-icons/fi";
 
-// Register Chart.js components
 ChartJS.register(
   ArcElement,
   Tooltip,
@@ -66,7 +65,6 @@ const MainDashboard = () => {
     fetchData();
   }, [intervalSelect]);
 
-  // Prepare Donut Chart
   const topCount = topSubs.length;
   const lessCount = lessSubs.length;
 
@@ -101,7 +99,6 @@ const MainDashboard = () => {
     },
   };
 
-  // Prepare Bar Chart
   const departmentSet = new Set();
   const topCountByDept = {};
   const lessCountByDept = {};
