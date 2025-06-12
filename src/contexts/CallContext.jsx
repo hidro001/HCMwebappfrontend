@@ -22,7 +22,7 @@ export function CallProvider({ children, currentUserId }) {
   const [call, setCall] = useState(null);
 
   useEffect(() => {
-    socket.current = io("http://localhost:6030/chat", {
+    socket.current = io("https://apiv2.humanmaximizer.com/chat", {
       query: { userId: currentUserId },
     });
 
