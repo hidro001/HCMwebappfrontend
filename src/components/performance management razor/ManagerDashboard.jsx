@@ -483,7 +483,7 @@ export default function ManagerDashboard() {
 
   /* ────────────────────────── MARKUP ─────────────────────────── */
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+    <div className="">
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -826,6 +826,7 @@ export default function ManagerDashboard() {
             >
               <PerformanceAnalytics
                 data={analyticsData}
+                frequency={frequency} 
                 onRefresh={handleFetch}
               />
             </motion.div>
