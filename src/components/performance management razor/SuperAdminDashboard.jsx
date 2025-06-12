@@ -401,9 +401,9 @@ const FrequencySelector = ({ frequency, setFrequency }) => (
   </div>
 );
 
-export default function ManagerDashboard() {
+export default function SuperAdminDashboard() {
   /* ── Store hooks ───────────────────────────────────────── */
-  const { getManagerTeamAggregated, loading, error } = useRatingStore();
+  const { getSuperAdminOrgAggregated, loading, error } = useRatingStore();
   const { departments, fetchDepartments } = useDepartmentStore();
   const { designations, fetchDesignations } = useDesignationStore();
 
@@ -495,7 +495,7 @@ export default function ManagerDashboard() {
     }
 
     try {
-      const res = await getManagerTeamAggregated(params);
+      const res = await getSuperAdminOrgAggregated(params);
       if (res.success) {
         setAnalyticsData(res.data);
         // Auto-hide filters after successful API response

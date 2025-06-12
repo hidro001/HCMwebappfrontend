@@ -19,14 +19,17 @@ export const registerFcmToken = async () => {
       return;
     }
 
-    const registration = await navigator.serviceWorker.getRegistration("/firebase-messaging-sw.js");
+    const registration = await navigator.serviceWorker.getRegistration(
+      "/firebase-messaging-sw.js"
+    );
     if (!registration) {
       toast.error("Service worker not found.");
       return;
     }
 
     const currentToken = await getToken(messaging, {
-      vapidKey: "BBykmU7Dhx_RslCY4uwxEm_csewzyq-KFJitYAutqyAyTmfOsMA80EqarmKvlK6C66i-rjVj2InFgeGGHUmgHjU",
+      vapidKey:
+        "BBykmU7Dhx_RslCY4uwxEm_csewzyq-KFJitYAutqyAyTmfOsMA80EqarmKvlK6C66i-rjVj2InFgeGGHUmgHjU",
       serviceWorkerRegistration: registration,
     });
 
@@ -68,7 +71,7 @@ export const registerFcmToken = async () => {
         }
       );
     } else {
-      toast.error("An error occurred during FCM setup.");
+      console.log("An error occurred during FCM setup.");
     }
   }
 };

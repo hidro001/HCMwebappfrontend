@@ -1,3 +1,6 @@
+
+
+
 // import React, { useMemo, useState, useEffect } from "react";
 // import { motion, AnimatePresence } from "framer-motion";
 // import {
@@ -62,25 +65,26 @@
 //   RiPieChartLine,
 // } from "react-icons/ri";
 
-// // Enhanced color palette with gradients
+// // Enhanced color palette with better contrast
 // const COLORS = [
-//   "#6366F1",
-//   "#10B981",
-//   "#F59E0B",
-//   "#EF4444",
-//   "#8B5CF6",
-//   "#06B6D4",
-//   "#F97316",
-//   "#84CC16",
-//   "#EC4899",
-//   "#14B8A6",
-//   "#3B82F6",
-//   "#F43F5E",
-//   "#8B5CF6",
-//   "#10B981",
-//   "#F59E0B",
+//   "#6366F1", // Indigo
+//   "#10B981", // Emerald  
+//   "#F59E0B", // Amber
+//   "#EF4444", // Red
+//   "#8B5CF6", // Violet
+//   "#06B6D4", // Cyan
+//   "#F97316", // Orange
+//   "#84CC16", // Lime
+//   "#EC4899", // Pink
+//   "#14B8A6", // Teal
+//   "#3B82F6", // Blue
+//   "#F43F5E", // Rose
+//   "#A855F7", // Purple
+//   "#22C55E", // Green
+//   "#EAB308", // Yellow
 // ];
 
+// // Improved gradients for better visibility
 // const GRADIENTS = {
 //   primary: "from-indigo-500 via-purple-500 to-pink-500",
 //   success: "from-emerald-400 via-cyan-400 to-blue-500",
@@ -153,6 +157,49 @@
 //     boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
 //   },
 //   tap: { scale: 0.95 },
+// };
+
+// // Helper function to detect period type from period label
+// const detectPeriodType = (periodLabel) => {
+//   if (!periodLabel) return 'Unknown';
+//   if (periodLabel.includes('W')) return 'Weekly';
+//   if (periodLabel.includes('-') && periodLabel.length === 10) return 'Daily';
+//   if (periodLabel.length === 7) return 'Monthly';
+//   if (periodLabel.length === 4) return 'Yearly';
+//   return 'Custom';
+// };
+
+// // Helper function to format period labels for better readability
+// const formatPeriodLabel = (period, type) => {
+//   if (type === 'Weekly' && period.includes('W')) {
+//     const [year, week] = period.split('-W');
+//     return `Week ${week}, ${year}`;
+//   }
+//   if (type === 'Daily') {
+//     try {
+//       return new Date(period).toLocaleDateString('en-US', {
+//         weekday: 'short',
+//         year: 'numeric',
+//         month: 'short',
+//         day: 'numeric'
+//       });
+//     } catch {
+//       return period;
+//     }
+//   }
+//   if (type === 'Monthly') {
+//     try {
+//       const [year, month] = period.split('-');
+//       const date = new Date(year, month - 1);
+//       return date.toLocaleDateString('en-US', {
+//         year: 'numeric',
+//         month: 'long'
+//       });
+//     } catch {
+//       return period;
+//     }
+//   }
+//   return period;
 // };
 
 // // Enhanced reusable components
@@ -543,7 +590,7 @@
 //   const {
 //     chart = [],
 //     aggregatedTeam = [],
-//     categories = [],
+//     categories = [], // Keep this for backward compatibility
 //     avgKpi = [],
 //     scatter = [],
 //     avgDailyKpi = [],
@@ -555,6 +602,10 @@
 //     movingAverage = [],
 //     periodChange = [],
 //   } = data || {};
+
+//   // Debug logging to check what data we're getting
+//   console.log('Debug - Full data object:', data);
+//   console.log('Debug - Categories from destructuring:', categories);
 
 //   const [expanded, setExpanded] = useState(null);
 //   const [isLoading, setIsLoading] = useState(false);
@@ -572,7 +623,34 @@
 //     }
 //   };
 
-//   // Enhanced data processing
+//   // Sort employees by performance (highest to lowest)
+//   const sortedEmployees = useMemo(() => {
+//     return [...employees].sort((a, b) => b.averageRating - a.averageRating);
+//   }, [employees]);
+
+//   // Sort heatmap data by average performance (highest to lowest)
+//   const sortedHeatmap = useMemo(() => {
+//     return [...heatmap].sort((a, b) => {
+//       const avgA = a.data.reduce((sum, d) => sum + (d.normalizedScore || 0), 0) / a.data.length;
+//       const avgB = b.data.reduce((sum, d) => sum + (d.normalizedScore || 0), 0) / b.data.length;
+//       return avgB - avgA;
+//     });
+//   }, [heatmap]);
+
+//   // Enhanced data processing for category distribution
+//   const categoryDistributionData = useMemo(() => {
+//     console.log('Debug - Processing categories data:', categories);
+    
+//     return (categories || []).map((cat) => ({
+//       category: cat.category,
+//       value: cat.value,
+//       periods: cat.periods || [],
+//       // Add additional metadata for better tooltips
+//       periodCount: cat.periods?.length || 0,
+//       periodType: detectPeriodType(cat.periods?.[0] || ''),
+//     }));
+//   }, [categories]);
+
 //   const categoryMap = useMemo(() => {
 //     const map = {};
 //     aggregatedTeam.forEach((p) => {
@@ -584,13 +662,6 @@
 //     });
 //     return map;
 //   }, [aggregatedTeam]);
-
-//   const categoriesWithPeriods = useMemo(() => {
-//     return categories.map((cat) => ({
-//       ...cat,
-//       periods: categoryMap[cat.category] || [],
-//     }));
-//   }, [categories, categoryMap]);
 
 //   const mvData = useMemo(
 //     () =>
@@ -645,8 +716,6 @@
 //         animate="visible"
 //         className="space-y-6 p-4 sm:p-6 lg:p-8"
 //       >
-  
-
 //         {/* Enhanced Summary Cards */}
 //         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
 //           <StatCard
@@ -846,34 +915,12 @@
 //                 <BarChart data={chart} margin={{ top: 20 }}>
 //                   <defs>
 //                     <linearGradient id="targetBar" x1="0" y1="0" x2="0" y2="1">
-//                       <stop
-//                         offset="5%"
-//                         stopColor={COLORS[4]}
-//                         stopOpacity={0.8}
-//                       />
-//                       <stop
-//                         offset="95%"
-//                         stopColor={COLORS[4]}
-//                         stopOpacity={0.6}
-//                       />
+//                       <stop offset="0%" stopColor="#6366f1" />
+//                       <stop offset="100%" stopColor="#4f46e5" />
 //                     </linearGradient>
-//                     <linearGradient
-//                       id="achievedBar"
-//                       x1="0"
-//                       y1="0"
-//                       x2="0"
-//                       y2="1"
-//                     >
-//                       <stop
-//                         offset="5%"
-//                         stopColor={COLORS[3]}
-//                         stopOpacity={0.8}
-//                       />
-//                       <stop
-//                         offset="95%"
-//                         stopColor={COLORS[3]}
-//                         stopOpacity={0.6}
-//                       />
+//                     <linearGradient id="achievedBar" x1="0" y1="0" x2="0" y2="1">
+//                       <stop offset="0%" stopColor="#10b981" />
+//                       <stop offset="100%" stopColor="#059669" />
 //                     </linearGradient>
 //                   </defs>
 //                   <CartesianGrid
@@ -1001,24 +1048,24 @@
 //             )}
 //           </ChartCard>
 
-//           {/* Category Distribution */}
+//           {/* Enhanced Category Distribution */}
 //           <ChartCard
 //             title="Category Distribution"
 //             icon={RiPieChartLine}
 //             isExpanded={expanded === "categories"}
 //             onToggle={() => toggle("categories")}
 //           >
-//             {categoriesWithPeriods.length === 0 ? (
+//             {categoryDistributionData.length === 0 ? (
 //               <EmptyState
 //                 icon={RiPieChartLine}
 //                 title="No category data"
 //                 description="Category distribution will be displayed here"
 //               />
 //             ) : (
-//               <ResponsiveContainer width="100%" height="100%">
+//               <ResponsiveContainer>
 //                 <PieChart>
 //                   <Pie
-//                     data={categoriesWithPeriods}
+//                     data={categoryDistributionData}
 //                     dataKey="value"
 //                     nameKey="category"
 //                     cx="50%"
@@ -1028,47 +1075,120 @@
 //                     paddingAngle={2}
 //                     label={({ category, value }) => `${category}: ${value}`}
 //                   >
-//                     {categoriesWithPeriods.map((_, i) => (
-//                       <Cell
-//                         key={i}
-//                         fill={COLORS[i % COLORS.length]}
-//                         stroke="#fff"
-//                         strokeWidth={2}
-//                       />
+//                     {categoryDistributionData.map((_, i) => (
+//                       <Cell key={i} fill={COLORS[i % COLORS.length]} />
 //                     ))}
 //                   </Pie>
+
+//                   {/* Enhanced custom tooltip */}
 //                   <Tooltip
 //                     content={({ payload }) => {
-//                       if (!payload?.length) return null;
-//                       const { category, value, periods } = payload[0].payload;
+//                       if (!payload || !payload.length) return null;
+//                       const { category, value, periods, periodType } = payload[0].payload;
+                      
 //                       return (
 //                         <motion.div
-//                           initial={{ opacity: 0, scale: 0.8 }}
-//                           animate={{ opacity: 1, scale: 1 }}
-//                           className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 text-sm max-w-xs"
+//                           initial={{ opacity: 0, scale: 0.8, y: 10 }}
+//                           animate={{ opacity: 1, scale: 1, y: 0 }}
+//                           exit={{ opacity: 0, scale: 0.8, y: 10 }}
+//                           className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 text-sm max-w-sm"
 //                         >
-//                           <p className="font-semibold mb-2 text-gray-900 dark:text-white">
-//                             {category}
-//                           </p>
-//                           <p className="text-gray-700 dark:text-gray-300 mb-2">
-//                             {value} period{value > 1 ? "s" : ""}
-//                           </p>
-//                           {periods.length > 0 && (
-//                             <>
-//                               <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
-//                                 Periods:
+//                           {/* Header */}
+//                           <div className="flex items-center space-x-2 mb-3">
+//                             <div
+//                               className="w-3 h-3 rounded-full"
+//                               style={{ backgroundColor: COLORS[payload[0].dataKey % COLORS.length] }}
+//                             />
+//                             <p className="font-semibold text-gray-900 dark:text-white">
+//                               {category}
+//                             </p>
+//                           </div>
+
+//                           {/* Value and Period Type */}
+//                           <div className="grid grid-cols-2 gap-3 mb-3">
+//                             <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-2">
+//                               <p className="text-xs text-gray-500 dark:text-gray-400">Count</p>
+//                               <p className="font-bold text-lg text-gray-900 dark:text-white">
+//                                 {value}
 //                               </p>
-//                               <p className="text-xs text-gray-800 dark:text-gray-200 break-words">
-//                                 {periods.join(", ")}
+//                             </div>
+//                             <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-2">
+//                               <p className="text-xs text-gray-500 dark:text-gray-400">Frequency</p>
+//                               <p className="font-medium text-gray-900 dark:text-white">
+//                                 {periodType}
 //                               </p>
-//                             </>
+//                             </div>
+//                           </div>
+
+//                           {/* Periods List */}
+//                           {periods && periods.length > 0 && (
+//                             <div className="space-y-2">
+//                               <div className="flex items-center justify-between">
+//                                 <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+//                                   Time Periods:
+//                                 </p>
+//                                 <span className="text-xs bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded-full">
+//                                   {periods.length} period{periods.length > 1 ? 's' : ''}
+//                                 </span>
+//                               </div>
+                              
+//                               <div className="max-h-32 overflow-y-auto space-y-1">
+//                                 {periods.map((period, i) => (
+//                                   <div
+//                                     key={i}
+//                                     className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-lg px-2 py-1"
+//                                   >
+//                                     <span className="text-xs text-gray-800 dark:text-gray-200">
+//                                       {formatPeriodLabel(period, periodType)}
+//                                     </span>
+//                                     <span className="text-xs text-gray-500 dark:text-gray-400">
+//                                       {period}
+//                                     </span>
+//                                   </div>
+//                                 ))}
+//                               </div>
+
+//                               {/* Period Range Summary */}
+//                               {periods.length > 1 && (
+//                                 <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+//                                   <p className="text-xs text-gray-500 dark:text-gray-400">
+//                                     <span className="font-medium">Range:</span> {formatPeriodLabel(periods[0], periodType)} → {formatPeriodLabel(periods[periods.length - 1], periodType)}
+//                                   </p>
+//                                 </div>
+//                               )}
+//                             </div>
 //                           )}
+
+//                           {/* Performance Indicator */}
+//                           <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-700">
+//                             <div className="flex items-center space-x-2">
+//                               {category.includes('Exceeds') && (
+//                                 <div className="flex items-center space-x-1 text-green-600 dark:text-green-400">
+//                                   <FiTrendingUp className="w-3 h-3" />
+//                                   <span className="text-xs font-medium">Above Target</span>
+//                                 </div>
+//                               )}
+//                               {category.includes('Needs') && (
+//                                 <div className="flex items-center space-x-1 text-red-600 dark:text-red-400">
+//                                   <FiTrendingDown className="w-3 h-3" />
+//                                   <span className="text-xs font-medium">Below Target</span>
+//                                 </div>
+//                               )}
+//                               {category.includes('Meets') && (
+//                                 <div className="flex items-center space-x-1 text-blue-600 dark:text-blue-400">
+//                                   <FiTarget className="w-3 h-3" />
+//                                   <span className="text-xs font-medium">On Target</span>
+//                                 </div>
+//                               )}
+//                             </div>
+//                           </div>
 //                         </motion.div>
 //                       );
 //                     }}
 //                   />
-//                   <Legend
-//                     verticalAlign="bottom"
+
+//                   <Legend 
+//                     verticalAlign="bottom" 
 //                     height={36}
 //                     wrapperStyle={{ fontSize: "12px" }}
 //                   />
@@ -1078,6 +1198,7 @@
 //           </ChartCard>
 //         </div>
 
+//         {/* Continue with the rest of the charts... */}
 //         {/* KPI Performance - Full Width */}
 //         <div className="grid grid-cols-1 gap-6">
 //           <ChartCard
@@ -1101,20 +1222,12 @@
 //                     kpiName: k.kpiName,
 //                     avgPercent: Math.round(k.avgPercent * 10) / 10,
 //                   }))}
-//                   margin={{ left: 150, right: 30 }}
+//                   margin={{ left: 80, right: 30, top: 20, bottom: 20 }}
 //                 >
 //                   <defs>
 //                     <linearGradient id="kpiBar" x1="0" y1="0" x2="1" y2="0">
-//                       <stop
-//                         offset="5%"
-//                         stopColor={COLORS[5]}
-//                         stopOpacity={0.8}
-//                       />
-//                       <stop
-//                         offset="95%"
-//                         stopColor={COLORS[5]}
-//                         stopOpacity={0.6}
-//                       />
+//                       <stop offset="0%" stopColor="#06b6d4" />
+//                       <stop offset="100%" stopColor="#0891b2" />
 //                     </linearGradient>
 //                   </defs>
 //                   <CartesianGrid
@@ -1133,7 +1246,7 @@
 //                   <YAxis
 //                     type="category"
 //                     dataKey="kpiName"
-//                     width={150}
+//                     width={80}
 //                     tick={{ fontSize: 12 }}
 //                     tickLine={false}
 //                     axisLine={false}
@@ -1390,41 +1503,13 @@
 //               <ResponsiveContainer width="100%" height="100%">
 //                 <BarChart data={mvData}>
 //                   <defs>
-//                     <linearGradient
-//                       id="changeBarPositive"
-//                       x1="0"
-//                       y1="0"
-//                       x2="0"
-//                       y2="1"
-//                     >
-//                       <stop
-//                         offset="5%"
-//                         stopColor={COLORS[2]}
-//                         stopOpacity={0.8}
-//                       />
-//                       <stop
-//                         offset="95%"
-//                         stopColor={COLORS[2]}
-//                         stopOpacity={0.6}
-//                       />
+//                     <linearGradient id="changeBarPositive" x1="0" y1="0" x2="0" y2="1">
+//                       <stop offset="0%" stopColor="#10b981" />
+//                       <stop offset="100%" stopColor="#059669" />
 //                     </linearGradient>
-//                     <linearGradient
-//                       id="changeBarNegative"
-//                       x1="0"
-//                       y1="0"
-//                       x2="0"
-//                       y2="1"
-//                     >
-//                       <stop
-//                         offset="5%"
-//                         stopColor={COLORS[3]}
-//                         stopOpacity={0.8}
-//                       />
-//                       <stop
-//                         offset="95%"
-//                         stopColor={COLORS[3]}
-//                         stopOpacity={0.6}
-//                       />
+//                     <linearGradient id="changeBarNegative" x1="0" y1="0" x2="0" y2="1">
+//                       <stop offset="0%" stopColor="#f87171" />
+//                       <stop offset="100%" stopColor="#ef4444" />
 //                     </linearGradient>
 //                   </defs>
 //                   <CartesianGrid
@@ -1448,13 +1533,14 @@
 //                   <Bar
 //                     dataKey="periodChange"
 //                     name="% Change"
-//                     fill={(entry) =>
-//                       entry > 0
-//                         ? "url(#changeBarPositive)"
-//                         : "url(#changeBarNegative)"
-//                     }
 //                     radius={[4, 4, 0, 0]}
 //                   >
+//                     {mvData.map((entry, index) => (
+//                       <Cell
+//                         key={`cell-${index}`}
+//                         fill={entry.periodChange >= 0 ? "url(#changeBarPositive)" : "url(#changeBarNegative)"}
+//                       />
+//                     ))}
 //                     <LabelList
 //                       dataKey="periodChange"
 //                       position="top"
@@ -1489,16 +1575,12 @@
 //                   kpiName: k.kpiName,
 //                   avgDailyScore: Math.round(k.avgDailyScore * 10) / 10,
 //                 }))}
-//                 margin={{ bottom: 60 }}
+//                 margin={{ bottom: 20 }}
 //               >
 //                 <defs>
 //                   <linearGradient id="dailyKpiBar" x1="0" y1="0" x2="0" y2="1">
-//                     <stop offset="5%" stopColor={COLORS[6]} stopOpacity={0.8} />
-//                     <stop
-//                       offset="95%"
-//                       stopColor={COLORS[6]}
-//                       stopOpacity={0.6}
-//                     />
+//                     <stop offset="0%" stopColor="#f97316" />
+//                     <stop offset="100%" stopColor="#ea580c" />
 //                   </linearGradient>
 //                 </defs>
 //                 <CartesianGrid
@@ -1508,10 +1590,7 @@
 //                 />
 //                 <XAxis
 //                   dataKey="kpiName"
-//                   angle={-45}
-//                   textAnchor="end"
-//                   height={80}
-//                   tick={{ fontSize: 11 }}
+//                   tick={{ fontSize: 12 }}
 //                   tickLine={false}
 //                   axisLine={false}
 //                 />
@@ -1560,7 +1639,7 @@
 //                       Employee Performance
 //                     </h3>
 //                     <p className="text-sm text-gray-500 dark:text-gray-400">
-//                       Comprehensive employee metrics
+//                       Comprehensive employee metrics (sorted by performance)
 //                     </p>
 //                   </div>
 //                 </div>
@@ -1569,7 +1648,7 @@
 //             <div className="p-6">
 //               <ResponsiveTable
 //                 headers={["Employee", "Avg Rating", "Rating Count", "Category"]}
-//                 rows={employees}
+//                 rows={sortedEmployees}
 //                 rowRenderer={(e) => [
 //                   <div className="flex items-center space-x-3">
 //                     <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
@@ -1745,7 +1824,7 @@
 //                       Performance Heatmap
 //                     </h3>
 //                     <p className="text-sm text-gray-500 dark:text-gray-400">
-//                       Employee performance across periods
+//                       Employee performance across periods (sorted by avg performance)
 //                     </p>
 //                   </div>
 //                 </div>
@@ -1778,7 +1857,7 @@
 //               </div>
 //             </div>
 //             <div className="p-6">
-//               {heatmap.length === 0 ? (
+//               {sortedHeatmap.length === 0 ? (
 //                 <EmptyState
 //                   icon={FiFilter}
 //                   title="No heatmap data"
@@ -1810,7 +1889,7 @@
 //                       </div>
 
 //                       {/* Data Rows */}
-//                       {heatmap.map((row, i) => (
+//                       {sortedHeatmap.map((row, i) => (
 //                         <React.Fragment key={i}>
 //                           <div className="p-4 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 flex items-center">
 //                             <div className="flex items-center space-x-3">
@@ -1882,7 +1961,6 @@
 //     </div>
 //   );
 // }
-
 
 
 import React, { useMemo, useState, useEffect } from "react";
@@ -2043,39 +2121,148 @@ const buttonVariants = {
   tap: { scale: 0.95 },
 };
 
+// Helper function to detect period type from period label
+const detectPeriodType = (periodLabel) => {
+  if (!periodLabel) return 'Unknown';
+  if (periodLabel.includes('W')) return 'Weekly';
+  if (periodLabel.includes('-') && periodLabel.length === 10) return 'Daily';
+  if (periodLabel.length === 7) return 'Monthly';
+  if (periodLabel.length === 4) return 'Yearly';
+  return 'Custom';
+};
+
+// Helper function to format period labels for better readability
+const formatPeriodLabel = (period, type) => {
+  if (type === 'Weekly' && period.includes('W')) {
+    const [year, week] = period.split('-W');
+    return `Week ${week}, ${year}`;
+  }
+  if (type === 'Daily') {
+    try {
+      return new Date(period).toLocaleDateString('en-US', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
+    } catch {
+      return period;
+    }
+  }
+  if (type === 'Monthly') {
+    try {
+      const [year, month] = period.split('-');
+      const date = new Date(year, month - 1);
+      return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long'
+      });
+    } catch {
+      return period;
+    }
+  }
+  return period;
+};
+
 // Enhanced reusable components
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
+
+  // Detect chart type from payload to customize tooltip
+  const hasPercentage = payload.some(p => p.name?.includes('%') || p.name?.includes('Percent'));
+  const hasScore = payload.some(p => p.name?.includes('Score'));
+  const hasTarget = payload.some(p => p.name?.includes('Target'));
 
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8, y: 10 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0, scale: 0.8, y: 10 }}
-      className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 text-sm max-w-xs"
+      className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 text-sm max-w-sm"
     >
-      <p className="font-semibold mb-3 text-gray-900 dark:text-white">
-        {label}
-      </p>
-      <div className="space-y-2">
-        {payload.map((p, i) => (
-          <div key={i} className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <div
-                className="w-3 h-3 rounded-full"
-                style={{ backgroundColor: p.color }}
-              />
-              <span className="text-gray-700 dark:text-gray-300">
-                {p.name}:
-              </span>
-            </div>
-            <span className="font-medium text-gray-900 dark:text-white">
-              {typeof p.value === "number" ? p.value.toLocaleString() : p.value}
-              {p.unit || ""}
-            </span>
-          </div>
-        ))}
+      {/* Header with period/label */}
+      <div className="flex items-center space-x-2 mb-3">
+        <div className="p-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-lg">
+          <FiCalendar className="w-3 h-3 text-white" />
+        </div>
+        <p className="font-semibold text-gray-900 dark:text-white">
+          {label}
+        </p>
       </div>
+
+      {/* Values Grid */}
+      <div className="grid grid-cols-1 gap-3 mb-3">
+        {payload.map((p, i) => {
+          const value = typeof p.value === "number" ? p.value.toLocaleString() : p.value;
+          const unit = p.unit || (p.name?.includes('%') ? '%' : '');
+          
+          return (
+            <div key={i} className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+              <div className="flex items-center justify-between mb-1">
+                <div className="flex items-center space-x-2">
+                  <div
+                    className="w-3 h-3 rounded-full"
+                    style={{ backgroundColor: p.color }}
+                  />
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                    {p.name}
+                  </span>
+                </div>
+                {/* Performance indicator */}
+                {hasPercentage && typeof p.value === "number" && (
+                  <div className="flex items-center space-x-1">
+                    {p.value >= 80 ? (
+                      <FiTrendingUp className="w-3 h-3 text-green-500" />
+                    ) : p.value >= 60 ? (
+                      <FiTarget className="w-3 h-3 text-blue-500" />
+                    ) : (
+                      <FiTrendingDown className="w-3 h-3 text-red-500" />
+                    )}
+                  </div>
+                )}
+              </div>
+              <div className="flex items-baseline space-x-1">
+                <span className="text-lg font-bold text-gray-900 dark:text-white">
+                  {value}
+                </span>
+                {unit && (
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {unit}
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Summary/insights */}
+      {hasTarget && payload.length >= 2 && (
+        <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+          <div className="text-xs text-gray-600 dark:text-gray-400">
+            {(() => {
+              const targetItem = payload.find(p => p.name?.includes('Target'));
+              const achievedItem = payload.find(p => p.name?.includes('Achieved'));
+              if (targetItem && achievedItem && typeof targetItem.value === 'number' && typeof achievedItem.value === 'number') {
+                const percentage = ((achievedItem.value / targetItem.value) * 100).toFixed(1);
+                return (
+                  <div className="flex items-center justify-between">
+                    <span>Achievement Rate:</span>
+                    <span className={`font-medium ${
+                      parseFloat(percentage) >= 100 ? 'text-green-600 dark:text-green-400' :
+                      parseFloat(percentage) >= 80 ? 'text-blue-600 dark:text-blue-400' :
+                      'text-red-600 dark:text-red-400'
+                    }`}>
+                      {percentage}%
+                    </span>
+                  </div>
+                );
+              }
+              return null;
+            })()}
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 };
@@ -2084,22 +2271,94 @@ const ScatterTooltip = ({ active, payload }) => {
   if (!active || !payload?.length) return null;
   const { period, target, achieved } = payload[0].payload;
 
+  // Calculate achievement rate
+  const achievementRate = target > 0 ? ((achieved / target) * 100).toFixed(1) : 0;
+  const isOverAchieved = achieved > target;
+  const variance = achieved - target;
+
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 text-sm"
+      initial={{ opacity: 0, scale: 0.8, y: 10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.8, y: 10 }}
+      className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 text-sm max-w-sm"
     >
-      <p className="font-semibold mb-2 text-gray-900 dark:text-white">
-        {period}
-      </p>
-      <div className="space-y-1">
-        <p className="text-gray-700 dark:text-gray-300">
-          Target: <span className="font-medium">{target}</span>
+      {/* Header */}
+      <div className="flex items-center space-x-2 mb-3">
+        <div className="p-2 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500 rounded-lg">
+          <FiTarget className="w-3 h-3 text-white" />
+        </div>
+        <p className="font-semibold text-gray-900 dark:text-white">
+          {period}
         </p>
-        <p className="text-gray-700 dark:text-gray-300">
-          Achieved: <span className="font-medium">{achieved}</span>
-        </p>
+      </div>
+
+      {/* Target vs Achieved Grid */}
+      <div className="grid grid-cols-2 gap-3 mb-3">
+        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+          <p className="text-xs text-blue-600 dark:text-blue-400 mb-1">Target</p>
+          <p className="text-lg font-bold text-blue-800 dark:text-blue-200">
+            {target?.toLocaleString()}
+          </p>
+        </div>
+        <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
+          <p className="text-xs text-green-600 dark:text-green-400 mb-1">Achieved</p>
+          <p className="text-lg font-bold text-green-800 dark:text-green-200">
+            {achieved?.toLocaleString()}
+          </p>
+        </div>
+      </div>
+
+      {/* Performance Summary */}
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3">
+        <div className="flex items-center justify-between mb-2">
+          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+            Achievement Rate
+          </span>
+          <div className="flex items-center space-x-1">
+            {isOverAchieved ? (
+              <FiTrendingUp className="w-3 h-3 text-green-500" />
+            ) : (
+              <FiTrendingDown className="w-3 h-3 text-red-500" />
+            )}
+            <span className={`font-bold text-sm ${
+              isOverAchieved 
+                ? 'text-green-600 dark:text-green-400' 
+                : 'text-red-600 dark:text-red-400'
+            }`}>
+              {achievementRate}%
+            </span>
+          </div>
+        </div>
+        
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+            Variance
+          </span>
+          <span className={`font-medium text-sm ${
+            variance >= 0 
+              ? 'text-green-600 dark:text-green-400' 
+              : 'text-red-600 dark:text-red-400'
+          }`}>
+            {variance >= 0 ? '+' : ''}{variance?.toLocaleString()}
+          </span>
+        </div>
+      </div>
+
+      {/* Performance Category */}
+      <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+        <div className="flex items-center justify-center">
+          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+            achievementRate >= 100 
+              ? 'bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300'
+              : achievementRate >= 80
+              ? 'bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300'
+              : 'bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300'
+          }`}>
+            {achievementRate >= 100 ? 'Exceeds Target' : 
+             achievementRate >= 80 ? 'Near Target' : 'Below Target'}
+          </span>
+        </div>
       </div>
     </motion.div>
   );
@@ -2431,7 +2690,7 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
   const {
     chart = [],
     aggregatedTeam = [],
-    categories = [],
+    categories = [], // Keep this for backward compatibility
     avgKpi = [],
     scatter = [],
     avgDailyKpi = [],
@@ -2443,6 +2702,10 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
     movingAverage = [],
     periodChange = [],
   } = data || {};
+
+  // Debug logging to check what data we're getting
+  console.log('Debug - Full data object:', data);
+  console.log('Debug - Categories from destructuring:', categories);
 
   const [expanded, setExpanded] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -2474,7 +2737,20 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
     });
   }, [heatmap]);
 
-  // Enhanced data processing
+  // Enhanced data processing for category distribution
+  const categoryDistributionData = useMemo(() => {
+    console.log('Debug - Processing categories data:', categories);
+    
+    return (categories || []).map((cat) => ({
+      category: cat.category,
+      value: cat.value,
+      periods: cat.periods || [],
+      // Add additional metadata for better tooltips
+      periodCount: cat.periods?.length || 0,
+      periodType: detectPeriodType(cat.periods?.[0] || ''),
+    }));
+  }, [categories]);
+
   const categoryMap = useMemo(() => {
     const map = {};
     aggregatedTeam.forEach((p) => {
@@ -2487,13 +2763,6 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
     return map;
   }, [aggregatedTeam]);
 
-  const categoriesWithPeriods = useMemo(() => {
-    return categories.map((cat) => ({
-      ...cat,
-      periods: categoryMap[cat.category] || [],
-    }));
-  }, [categories, categoryMap]);
-
   const mvData = useMemo(
     () =>
       chart.map((c, i) => ({
@@ -2503,15 +2772,6 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
       })),
     [chart, movingAverage, periodChange]
   );
-
-  const categoryDistributionData = useMemo(() => {
-  return (data?.categoryDist || []).map((cat) => ({
-    category: cat.category,
-    value: cat.value,
-    periods: cat.periods || [],
-  }));
-}, [data]);
-
 
   const bucketsWithPeriods = useMemo(() => {
     const b = buckets.map((bkt) => ({
@@ -2598,7 +2858,7 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
             subtitle="Peak performance"
           />
           <StatCard
-            title="Team Members dummy"
+            title="Team Members"
             value={employees.length}
             icon={FiUsers}
             gradient={GRADIENTS.info}
@@ -2645,12 +2905,17 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                       <stop
                         offset="5%"
                         stopColor={COLORS[0]}
-                        stopOpacity={0.3}
+                        stopOpacity={0.4}
+                      />
+                      <stop
+                        offset="50%"
+                        stopColor={COLORS[0]}
+                        stopOpacity={0.2}
                       />
                       <stop
                         offset="95%"
                         stopColor={COLORS[0]}
-                        stopOpacity={0}
+                        stopOpacity={0.05}
                       />
                     </linearGradient>
                     <linearGradient
@@ -2663,29 +2928,42 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                       <stop
                         offset="5%"
                         stopColor={COLORS[1]}
-                        stopOpacity={0.3}
+                        stopOpacity={0.4}
+                      />
+                      <stop
+                        offset="50%"
+                        stopColor={COLORS[1]}
+                        stopOpacity={0.2}
                       />
                       <stop
                         offset="95%"
                         stopColor={COLORS[1]}
-                        stopOpacity={0}
+                        stopOpacity={0.05}
                       />
                     </linearGradient>
+                    {/* Glow effects */}
+                    <filter id="glow">
+                      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                      <feMerge> 
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
                   </defs>
                   <CartesianGrid
                     strokeDasharray="3 3"
                     stroke="#E5E7EB"
-                    opacity={0.5}
+                    strokeOpacity={0.3}
                   />
                   <XAxis
                     dataKey="period"
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 12, fill: "#6B7280" }}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
                     yAxisId="left"
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 12, fill: "#6B7280" }}
                     tickLine={false}
                     axisLine={false}
                   />
@@ -2693,12 +2971,15 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                     yAxisId="right"
                     orientation="right"
                     tickFormatter={(v) => `${v}%`}
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 12, fill: "#6B7280" }}
                     tickLine={false}
                     axisLine={false}
                   />
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Legend 
+                    wrapperStyle={{ paddingTop: '20px' }}
+                    iconType="circle"
+                  />
                   <Area
                     yAxisId="left"
                     type="monotone"
@@ -2718,18 +2999,40 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                     dataKey="totalScore"
                     name="Total Score"
                     stroke={COLORS[0]}
-                    strokeWidth={3}
-                    dot={{ r: 4, strokeWidth: 2, fill: "#fff" }}
-                    activeDot={{ r: 6, strokeWidth: 2 }}
+                    strokeWidth={4}
+                    filter="url(#glow)"
+                    dot={{ 
+                      r: 6, 
+                      strokeWidth: 3, 
+                      fill: "#fff",
+                      stroke: COLORS[0]
+                    }}
+                    activeDot={{ 
+                      r: 8, 
+                      strokeWidth: 3,
+                      fill: COLORS[0],
+                      stroke: "#fff"
+                    }}
                   />
                   <Line
                     yAxisId="right"
                     dataKey="percentOfTarget"
                     name="% of Target"
                     stroke={COLORS[1]}
-                    strokeWidth={3}
-                    dot={{ r: 4, strokeWidth: 2, fill: "#fff" }}
-                    activeDot={{ r: 6, strokeWidth: 2 }}
+                    strokeWidth={4}
+                    filter="url(#glow)"
+                    dot={{ 
+                      r: 6, 
+                      strokeWidth: 3, 
+                      fill: "#fff",
+                      stroke: COLORS[1]
+                    }}
+                    activeDot={{ 
+                      r: 8, 
+                      strokeWidth: 3,
+                      fill: COLORS[1],
+                      stroke: "#fff"
+                    }}
                     unit="%"
                   />
                 </LineChart>
@@ -2756,55 +3059,68 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                   <defs>
                     <linearGradient id="targetBar" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#6366f1" />
-                      <stop offset="100%" stopColor="#4f46e5" />
+                      <stop offset="50%" stopColor="#8b5cf6" />
+                      <stop offset="100%" stopColor="#a855f7" />
                     </linearGradient>
                     <linearGradient id="achievedBar" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#10b981" />
-                      <stop offset="100%" stopColor="#059669" />
+                      <stop offset="50%" stopColor="#059669" />
+                      <stop offset="100%" stopColor="#047857" />
                     </linearGradient>
+                    {/* Shadow effect */}
+                    <filter id="dropshadow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="0" dy="4" stdDeviation="3" floodColor="#000000" floodOpacity="0.1"/>
+                    </filter>
                   </defs>
                   <CartesianGrid
                     strokeDasharray="3 3"
                     stroke="#E5E7EB"
-                    opacity={0.5}
+                    strokeOpacity={0.3}
                   />
                   <XAxis
                     dataKey="period"
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 12, fill: "#6B7280" }}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 12, fill: "#6B7280" }}
                     tickLine={false}
                     axisLine={false}
                   />
                   <Tooltip content={<CustomTooltip />} />
-                  <Legend />
+                  <Legend 
+                    wrapperStyle={{ paddingTop: '20px' }}
+                    iconType="rect"
+                  />
                   <Bar
                     dataKey="totalTarget"
                     name="Target"
                     fill="url(#targetBar)"
-                    radius={[4, 4, 0, 0]}
+                    radius={[6, 6, 0, 0]}
+                    filter="url(#dropshadow)"
                   >
                     <LabelList
                       dataKey="totalTarget"
                       position="top"
                       formatter={(v) => v.toLocaleString()}
                       fontSize={10}
+                      fill="#6B7280"
                     />
                   </Bar>
                   <Bar
                     dataKey="totalAchieved"
                     name="Achieved"
                     fill="url(#achievedBar)"
-                    radius={[4, 4, 0, 0]}
+                    radius={[6, 6, 0, 0]}
+                    filter="url(#dropshadow)"
                   >
                     <LabelList
                       dataKey="totalAchieved"
                       position="top"
                       formatter={(v) => v.toLocaleString()}
                       fontSize={10}
+                      fill="#6B7280"
                     />
                   </Bar>
                 </BarChart>
@@ -2842,7 +3158,12 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                       <stop
                         offset="5%"
                         stopColor={COLORS[1]}
-                        stopOpacity={0.8}
+                        stopOpacity={0.9}
+                      />
+                      <stop
+                        offset="25%"
+                        stopColor={COLORS[1]}
+                        stopOpacity={0.7}
                       />
                       <stop
                         offset="50%"
@@ -2850,26 +3171,39 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                         stopOpacity={0.4}
                       />
                       <stop
+                        offset="75%"
+                        stopColor={COLORS[1]}
+                        stopOpacity={0.2}
+                      />
+                      <stop
                         offset="95%"
                         stopColor={COLORS[1]}
-                        stopOpacity={0.1}
+                        stopOpacity={0.05}
                       />
                     </linearGradient>
+                    {/* Glow effect for area */}
+                    <filter id="areaGlow">
+                      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                      <feMerge> 
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
                   </defs>
                   <CartesianGrid
                     strokeDasharray="3 3"
                     stroke="#E5E7EB"
-                    opacity={0.5}
+                    strokeOpacity={0.3}
                   />
                   <XAxis
                     dataKey="period"
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 12, fill: "#6B7280" }}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
                     tickFormatter={(v) => `${v}%`}
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 12, fill: "#6B7280" }}
                     tickLine={false}
                     axisLine={false}
                   />
@@ -2879,86 +3213,208 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                     dataKey="normalizedScore"
                     name="Normalized Score"
                     stroke={COLORS[1]}
-                    strokeWidth={3}
+                    strokeWidth={4}
                     fill="url(#perfGradient)"
-                    dot={{ r: 4, strokeWidth: 2, fill: "#fff" }}
+                    filter="url(#areaGlow)"
+                    dot={{ 
+                      r: 6, 
+                      strokeWidth: 3, 
+                      fill: "#fff",
+                      stroke: COLORS[1]
+                    }}
+                    activeDot={{ 
+                      r: 8, 
+                      strokeWidth: 3,
+                      fill: COLORS[1],
+                      stroke: "#fff"
+                    }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
             )}
           </ChartCard>
 
-          {/* Category Distribution */}
+          {/* Enhanced Category Distribution */}
           <ChartCard
             title="Category Distribution"
             icon={RiPieChartLine}
             isExpanded={expanded === "categories"}
             onToggle={() => toggle("categories")}
           >
-            {categoriesWithPeriods.length === 0 ? (
+            {categoryDistributionData.length === 0 ? (
               <EmptyState
                 icon={RiPieChartLine}
                 title="No category data"
                 description="Category distribution will be displayed here"
               />
             ) : (
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer>
                 <PieChart>
+                  <defs>
+                    {/* Add subtle gradients for each slice */}
+                    {categoryDistributionData.map((_, i) => (
+                      <linearGradient key={i} id={`categoryGrad${i}`} x1="0" y1="0" x2="1" y2="1">
+                        <stop offset="0%" stopColor={COLORS[i % COLORS.length]} stopOpacity={1} />
+                        <stop offset="100%" stopColor={COLORS[i % COLORS.length]} stopOpacity={0.8} />
+                      </linearGradient>
+                    ))}
+                    {/* Drop shadow */}
+                    <filter id="pieDropShadow" x="-50%" y="-50%" width="200%" height="200%">
+                      <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="#000000" floodOpacity="0.15"/>
+                    </filter>
+                  </defs>
                   <Pie
-                    data={categoriesWithPeriods}
+                    data={categoryDistributionData}
                     dataKey="value"
                     nameKey="category"
                     cx="50%"
                     cy="50%"
-                    innerRadius={40}
-                    outerRadius={80}
-                    paddingAngle={2}
-                    label={({ category, value }) => `${category}: ${value}`}
+                    innerRadius={50}
+                    outerRadius={100}
+                    paddingAngle={3}
+                    filter="url(#pieDropShadow)"
+                    label={({ category, value, percent }) => `${category}: ${value} (${(percent * 100).toFixed(0)}%)`}
+                    labelLine={false}
                   >
-                    {categoriesWithPeriods.map((_, i) => (
-                      <Cell
-                        key={i}
-                        fill={COLORS[i % COLORS.length]}
+                    {categoryDistributionData.map((_, i) => (
+                      <Cell 
+                        key={i} 
+                        fill={`url(#categoryGrad${i})`}
                         stroke="#fff"
-                        strokeWidth={2}
+                        strokeWidth={3}
                       />
                     ))}
                   </Pie>
-           <Tooltip
-  content={({ payload }) => {
-    if (!payload?.length) return null;
-    const { category, value, periods } = payload[0].payload;
-    return (
-      <motion.div
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 text-sm max-w-xs"
-      >
-        <p className="font-semibold mb-2 text-gray-900 dark:text-white">
-          {category}
-        </p>
-        <p className="text-gray-700 dark:text-gray-300 mb-2">
-          {value} period{value > 1 ? "s" : ""}
-        </p>
-        {periods.length > 0 && (
-          <>
-            <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
-              Periods:
-            </p>
-            <p className="text-xs text-gray-800 dark:text-gray-200 break-words">
-              {periods.join(", ")}
-            </p>
-          </>
-        )}
-      </motion.div>
-    );
-  }}
-/>
 
-                  <Legend
-                    verticalAlign="bottom"
-                    height={36}
-                    wrapperStyle={{ fontSize: "12px" }}
+                  {/* Enhanced custom tooltip */}
+                  <Tooltip
+                    content={({ payload }) => {
+                      if (!payload || !payload.length) return null;
+                      const { category, value, periods, periodType } = payload[0].payload;
+                      
+                      return (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.8, y: 10 }}
+                          className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 text-sm max-w-sm"
+                        >
+                          {/* Header */}
+                          <div className="flex items-center space-x-2 mb-3">
+                            <div
+                              className="w-4 h-4 rounded-full border-2 border-white shadow-lg"
+                              style={{ backgroundColor: COLORS[payload[0].dataKey % COLORS.length] }}
+                            />
+                            <p className="font-semibold text-gray-900 dark:text-white">
+                              {category}
+                            </p>
+                          </div>
+
+                          {/* Value and Period Type */}
+                          <div className="grid grid-cols-2 gap-3 mb-3">
+                            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Count</p>
+                              <p className="font-bold text-xl text-gray-900 dark:text-white">
+                                {value}
+                              </p>
+                            </div>
+                            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Frequency</p>
+                              <p className="font-medium text-gray-900 dark:text-white">
+                                {periodType}
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Periods List */}
+                          {periods && periods.length > 0 && (
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                  Time Periods:
+                                </p>
+                                <span className="text-xs bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded-full">
+                                  {periods.length} period{periods.length > 1 ? 's' : ''}
+                                </span>
+                              </div>
+                              
+                              <div className="max-h-32 overflow-y-auto space-y-1">
+                                {periods.map((period, i) => (
+                                  <div
+                                    key={i}
+                                    className="flex items-center justify-between bg-gray-50 dark:bg-gray-800 rounded-lg px-3 py-2"
+                                  >
+                                    <span className="text-xs font-medium text-gray-800 dark:text-gray-200">
+                                      {formatPeriodLabel(period, periodType)}
+                                    </span>
+                                    <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                                      {period}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+
+                              {/* Period Range Summary */}
+                              {periods.length > 1 && (
+                                <div className="pt-2 border-t border-gray-200 dark:border-gray-700">
+                                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    <span className="font-medium">Range:</span> {formatPeriodLabel(periods[0], periodType)} → {formatPeriodLabel(periods[periods.length - 1], periodType)}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Performance Indicator */}
+                          <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-700">
+                            <div className="flex items-center justify-center">
+                              <div className="flex items-center space-x-2">
+                                {category.includes('Exceeds') && (
+                                  <>
+                                    <div className="p-2 bg-green-100 dark:bg-green-900/50 rounded-lg">
+                                      <FiTrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
+                                    </div>
+                                    <span className="text-sm font-medium text-green-600 dark:text-green-400">
+                                      Above Target Performance
+                                    </span>
+                                  </>
+                                )}
+                                {category.includes('Needs') && (
+                                  <>
+                                    <div className="p-2 bg-red-100 dark:bg-red-900/50 rounded-lg">
+                                      <FiTrendingDown className="w-4 h-4 text-red-600 dark:text-red-400" />
+                                    </div>
+                                    <span className="text-sm font-medium text-red-600 dark:text-red-400">
+                                      Below Target Performance
+                                    </span>
+                                  </>
+                                )}
+                                {category.includes('Meets') && (
+                                  <>
+                                    <div className="p-2 bg-blue-100 dark:bg-blue-900/50 rounded-lg">
+                                      <FiTarget className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                    </div>
+                                    <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                                      On Target Performance
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    }}
+                  />
+
+                  <Legend 
+                    verticalAlign="bottom" 
+                    height={60}
+                    wrapperStyle={{ 
+                      fontSize: "12px",
+                      paddingTop: "20px"
+                    }}
+                    iconType="circle"
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -2966,6 +3422,7 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
           </ChartCard>
         </div>
 
+        {/* Continue with the rest of the charts... */}
         {/* KPI Performance - Full Width */}
         <div className="grid grid-cols-1 gap-6">
           <ChartCard
@@ -2989,32 +3446,37 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                     kpiName: k.kpiName,
                     avgPercent: Math.round(k.avgPercent * 10) / 10,
                   }))}
-                  margin={{ left: 80, right: 30, top: 20, bottom: 20 }}
+                  margin={{ left: 100, right: 50, top: 20, bottom: 20 }}
                 >
                   <defs>
                     <linearGradient id="kpiBar" x1="0" y1="0" x2="1" y2="0">
                       <stop offset="0%" stopColor="#06b6d4" />
-                      <stop offset="100%" stopColor="#0891b2" />
+                      <stop offset="50%" stopColor="#0891b2" />
+                      <stop offset="100%" stopColor="#0e7490" />
                     </linearGradient>
+                    {/* Add shadows */}
+                    <filter id="kpiShadow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="2" dy="2" stdDeviation="3" floodColor="#000000" floodOpacity="0.1"/>
+                    </filter>
                   </defs>
                   <CartesianGrid
                     strokeDasharray="3 3"
                     stroke="#E5E7EB"
-                    opacity={0.5}
+                    strokeOpacity={0.3}
                   />
                   <XAxis
                     type="number"
                     domain={[0, 100]}
                     tickFormatter={(v) => `${v}%`}
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 12, fill: "#6B7280" }}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
                     type="category"
                     dataKey="kpiName"
-                    width={80}
-                    tick={{ fontSize: 12 }}
+                    width={100}
+                    tick={{ fontSize: 12, fill: "#6B7280" }}
                     tickLine={false}
                     axisLine={false}
                   />
@@ -3023,13 +3485,15 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                     dataKey="avgPercent"
                     name="Average Percentage"
                     fill="url(#kpiBar)"
-                    radius={[0, 6, 6, 0]}
+                    radius={[0, 8, 8, 0]}
+                    filter="url(#kpiShadow)"
                   >
                     <LabelList
                       dataKey="avgPercent"
                       position="right"
                       formatter={(v) => `${v}%`}
                       fontSize={12}
+                      fill="#6B7280"
                     />
                   </Bar>
                 </BarChart>
@@ -3058,44 +3522,65 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                 <ScatterChart
                   margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
                 >
+                  <defs>
+                    {/* Gradient for scatter dots */}
+                    <radialGradient id="scatterGradient" cx="30%" cy="30%">
+                      <stop offset="0%" stopColor="#ffffff" stopOpacity={0.8} />
+                      <stop offset="70%" stopColor={COLORS[2]} stopOpacity={1} />
+                      <stop offset="100%" stopColor={COLORS[2]} stopOpacity={0.8} />
+                    </radialGradient>
+                    {/* Glow effect */}
+                    <filter id="scatterGlow">
+                      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                      <feMerge> 
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
+                  </defs>
                   <CartesianGrid
                     strokeDasharray="3 3"
                     stroke="#E5E7EB"
-                    opacity={0.5}
+                    strokeOpacity={0.3}
                   />
                   <XAxis
                     dataKey="target"
                     name="Target"
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 12, fill: "#6B7280" }}
                     tickLine={false}
                     axisLine={false}
+                    label={{ value: 'Target', position: 'insideBottom', offset: -10 }}
                   />
                   <YAxis
                     dataKey="achieved"
                     name="Achieved"
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 12, fill: "#6B7280" }}
                     tickLine={false}
                     axisLine={false}
+                    label={{ value: 'Achieved', angle: -90, position: 'insideLeft' }}
                   />
                   <Tooltip
-                    cursor={{ strokeDasharray: "3 3" }}
+                    cursor={{ strokeDasharray: "3 3", stroke: COLORS[2], strokeWidth: 2 }}
                     content={<ScatterTooltip />}
                   />
                   <Scatter
                     data={scatter}
-                    fill={COLORS[2]}
+                    fill="url(#scatterGradient)"
                     shape="circle"
-                    r={6}
-                    stroke="#fff"
-                    strokeWidth={2}
+                    r={8}
+                    stroke={COLORS[2]}
+                    strokeWidth={3}
+                    filter="url(#scatterGlow)"
                   />
-                  {/* Add trend line if possible */}
+                  {/* Trend line - ideal performance line */}
                   <Line
                     type="linear"
                     dataKey="target"
-                    stroke={COLORS[4]}
-                    strokeDasharray="5 5"
+                    stroke="#94A3B8"
+                    strokeDasharray="8 8"
+                    strokeWidth={2}
                     dot={false}
+                    name="Ideal Performance"
                   />
                 </ScatterChart>
               </ResponsiveContainer>
@@ -3142,27 +3627,106 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                     content={({ payload }) => {
                       if (!payload?.length) return null;
                       const { range, count, periods } = payload[0].payload;
+                      
+                      // Extract range percentages for color coding
+                      const rangeStart = parseInt(range.split('–')[0] || range.split('-')[0] || '0');
+                      
                       return (
                         <motion.div
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          animate={{ opacity: 1, scale: 1 }}
-                          className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 text-sm max-w-xs"
+                          initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                          animate={{ opacity: 1, scale: 1, y: 0 }}
+                          exit={{ opacity: 0, scale: 0.8, y: 10 }}
+                          className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl p-4 rounded-2xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 text-sm max-w-sm"
                         >
-                          <p className="font-semibold mb-2 text-gray-900 dark:text-white">
-                            {range}
-                          </p>
-                          <p className="text-gray-700 dark:text-gray-300 mb-2">
-                            {count} period{count > 1 ? "s" : ""}
-                          </p>
-                          {periods.length > 0 && (
-                            <>
-                              <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">
-                                Periods:
+                          {/* Header */}
+                          <div className="flex items-center space-x-2 mb-3">
+                            <div className={`p-2 rounded-lg ${
+                              rangeStart >= 80 ? 'bg-gradient-to-r from-green-500 to-emerald-500' :
+                              rangeStart >= 60 ? 'bg-gradient-to-r from-blue-500 to-cyan-500' :
+                              rangeStart >= 40 ? 'bg-gradient-to-r from-yellow-500 to-orange-500' :
+                              'bg-gradient-to-r from-red-500 to-pink-500'
+                            }`}>
+                              <FiBarChart2 className="w-3 h-3 text-white" />
+                            </div>
+                            <p className="font-semibold text-gray-900 dark:text-white">
+                              Performance Range
+                            </p>
+                          </div>
+
+                          {/* Range and Count */}
+                          <div className="grid grid-cols-2 gap-3 mb-3">
+                            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Range</p>
+                              <p className="font-bold text-lg text-gray-900 dark:text-white">
+                                {range}
                               </p>
-                              <p className="text-xs text-gray-800 dark:text-gray-200 break-words">
-                                {periods.join(", ")}
+                            </div>
+                            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Periods</p>
+                              <p className="font-bold text-lg text-gray-900 dark:text-white">
+                                {count}
                               </p>
-                            </>
+                            </div>
+                          </div>
+
+                          {/* Performance Category */}
+                          <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3 mb-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                Performance Level
+                              </span>
+                              <div className="flex items-center space-x-1">
+                                {rangeStart >= 80 ? (
+                                  <>
+                                    <FiTrendingUp className="w-3 h-3 text-green-500" />
+                                    <span className="text-xs font-medium text-green-600 dark:text-green-400">
+                                      Excellent
+                                    </span>
+                                  </>
+                                ) : rangeStart >= 60 ? (
+                                  <>
+                                    <FiTarget className="w-3 h-3 text-blue-500" />
+                                    <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+                                      Good
+                                    </span>
+                                  </>
+                                ) : rangeStart >= 40 ? (
+                                  <>
+                                    <FiActivity className="w-3 h-3 text-yellow-500" />
+                                    <span className="text-xs font-medium text-yellow-600 dark:text-yellow-400">
+                                      Average
+                                    </span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <FiTrendingDown className="w-3 h-3 text-red-500" />
+                                    <span className="text-xs font-medium text-red-600 dark:text-red-400">
+                                      Needs Improvement
+                                    </span>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Periods List */}
+                          {periods && periods.length > 0 && (
+                            <div className="space-y-2">
+                              <div className="flex items-center justify-between">
+                                <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                                  Time Periods:
+                                </p>
+                                <span className="text-xs bg-indigo-100 dark:bg-indigo-900/50 text-indigo-700 dark:text-indigo-300 px-2 py-1 rounded-full">
+                                  {periods.length} period{periods.length > 1 ? 's' : ''}
+                                </span>
+                              </div>
+                              
+                              <div className="max-h-24 overflow-y-auto">
+                                <div className="text-xs text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800 rounded-lg p-2">
+                                  {periods.join(", ")}
+                                </div>
+                              </div>
+                            </div>
                           )}
                         </motion.div>
                       );
@@ -3208,28 +3772,41 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                       <stop
                         offset="5%"
                         stopColor={COLORS[1]}
-                        stopOpacity={0.3}
+                        stopOpacity={0.4}
+                      />
+                      <stop
+                        offset="50%"
+                        stopColor={COLORS[1]}
+                        stopOpacity={0.2}
                       />
                       <stop
                         offset="95%"
                         stopColor={COLORS[1]}
-                        stopOpacity={0}
+                        stopOpacity={0.05}
                       />
                     </linearGradient>
+                    {/* Line glow effect */}
+                    <filter id="movingAvgGlow">
+                      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+                      <feMerge> 
+                        <feMergeNode in="coloredBlur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                      </feMerge>
+                    </filter>
                   </defs>
                   <CartesianGrid
                     strokeDasharray="3 3"
                     stroke="#E5E7EB"
-                    opacity={0.5}
+                    strokeOpacity={0.3}
                   />
                   <XAxis
                     dataKey="period"
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 12, fill: "#6B7280" }}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 12, fill: "#6B7280" }}
                     tickLine={false}
                     axisLine={false}
                   />
@@ -3244,9 +3821,20 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                     dataKey="movingAverage"
                     name="Moving Average"
                     stroke={COLORS[1]}
-                    strokeWidth={3}
-                    dot={{ r: 4, strokeWidth: 2, fill: "#fff" }}
-                    activeDot={{ r: 6, strokeWidth: 2 }}
+                    strokeWidth={4}
+                    filter="url(#movingAvgGlow)"
+                    dot={{ 
+                      r: 6, 
+                      strokeWidth: 3, 
+                      fill: "#fff",
+                      stroke: COLORS[1]
+                    }}
+                    activeDot={{ 
+                      r: 8, 
+                      strokeWidth: 3,
+                      fill: COLORS[1],
+                      stroke: "#fff"
+                    }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -3272,27 +3860,33 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                   <defs>
                     <linearGradient id="changeBarPositive" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#10b981" />
-                      <stop offset="100%" stopColor="#059669" />
+                      <stop offset="50%" stopColor="#059669" />
+                      <stop offset="100%" stopColor="#047857" />
                     </linearGradient>
                     <linearGradient id="changeBarNegative" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="0%" stopColor="#f87171" />
-                      <stop offset="100%" stopColor="#ef4444" />
+                      <stop offset="50%" stopColor="#ef4444" />
+                      <stop offset="100%" stopColor="#dc2626" />
                     </linearGradient>
+                    {/* Bar shadows */}
+                    <filter id="changeBarShadow" x="-20%" y="-20%" width="140%" height="140%">
+                      <feDropShadow dx="0" dy="3" stdDeviation="3" floodColor="#000000" floodOpacity="0.1"/>
+                    </filter>
                   </defs>
                   <CartesianGrid
                     strokeDasharray="3 3"
                     stroke="#E5E7EB"
-                    opacity={0.5}
+                    strokeOpacity={0.3}
                   />
                   <XAxis
                     dataKey="period"
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 12, fill: "#6B7280" }}
                     tickLine={false}
                     axisLine={false}
                   />
                   <YAxis
                     tickFormatter={(v) => `${v}%`}
-                    tick={{ fontSize: 12 }}
+                    tick={{ fontSize: 12, fill: "#6B7280" }}
                     tickLine={false}
                     axisLine={false}
                   />
@@ -3300,7 +3894,8 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                   <Bar
                     dataKey="periodChange"
                     name="% Change"
-                    radius={[4, 4, 0, 0]}
+                    radius={[6, 6, 6, 6]}
+                    filter="url(#changeBarShadow)"
                   >
                     {mvData.map((entry, index) => (
                       <Cell
@@ -3311,8 +3906,9 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                     <LabelList
                       dataKey="periodChange"
                       position="top"
-                      formatter={(v) => (v != null ? `${v}%` : "")}
+                      formatter={(v) => (v != null ? `${v > 0 ? '+' : ''}${v}%` : "")}
                       fontSize={10}
+                      fill="#6B7280"
                     />
                   </Bar>
                 </BarChart>
@@ -3342,27 +3938,35 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                   kpiName: k.kpiName,
                   avgDailyScore: Math.round(k.avgDailyScore * 10) / 10,
                 }))}
-                margin={{ bottom: 20 }}
+                margin={{ bottom: 40, top: 20, left: 20, right: 20 }}
               >
                 <defs>
                   <linearGradient id="dailyKpiBar" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#f97316" />
-                    <stop offset="100%" stopColor="#ea580c" />
+                    <stop offset="50%" stopColor="#ea580c" />
+                    <stop offset="100%" stopColor="#dc2626" />
                   </linearGradient>
+                  {/* Shadow effect */}
+                  <filter id="dailyKpiShadow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feDropShadow dx="0" dy="4" stdDeviation="3" floodColor="#000000" floodOpacity="0.1"/>
+                  </filter>
                 </defs>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   stroke="#E5E7EB"
-                  opacity={0.5}
+                  strokeOpacity={0.3}
                 />
                 <XAxis
                   dataKey="kpiName"
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 12, fill: "#6B7280" }}
                   tickLine={false}
                   axisLine={false}
+                  angle={-45}
+                  textAnchor="end"
+                  height={60}
                 />
                 <YAxis
-                  tick={{ fontSize: 12 }}
+                  tick={{ fontSize: 12, fill: "#6B7280" }}
                   tickLine={false}
                   axisLine={false}
                 />
@@ -3371,12 +3975,14 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                   dataKey="avgDailyScore"
                   name="Avg Daily Score"
                   fill="url(#dailyKpiBar)"
-                  radius={[4, 4, 0, 0]}
+                  radius={[8, 8, 0, 0]}
+                  filter="url(#dailyKpiShadow)"
                 >
                   <LabelList
                     dataKey="avgDailyScore"
                     position="top"
                     fontSize={11}
+                    fill="#6B7280"
                   />
                 </Bar>
               </BarChart>

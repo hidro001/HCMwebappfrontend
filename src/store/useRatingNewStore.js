@@ -348,7 +348,6 @@ const useRatingStore = create((set, get) => ({
     }
   },
 
-
   /* ────────────────────────────────────────────────────────────
    * MANAGER  ▸  TEAM-AGGREGATED ANALYTICS
    * ──────────────────────────────────────────────────────────── */
@@ -358,7 +357,7 @@ const useRatingStore = create((set, get) => ({
 
       const qs = new URLSearchParams(params).toString();
       const { data: res } = await axiosInstance.get(
-        `/ratings/manager/team?${qs}`
+        `/ratings/manager/team/analytics?${qs}`
       );
 
       const d = res.data; // what the back-end sends
@@ -369,19 +368,60 @@ const useRatingStore = create((set, get) => ({
       return {
         success: true,
         data: {
-          chart:           d.chartDataTeam,
-          rawRatings:      d.rawRatingsTeam,
-          categories:      d.categoryDist,
-          avgKpi:          d.avgKpiPerf,
-          scatter:         d.scatterData,
-          avgDailyKpi:     d.avgDailyKpi,
-          buckets:         d.normalizedBuckets,
-          employees:       d.employeeAggregates,
-          top:             d.topPerformers,
-          bottom:          d.bottomPerformers,
-          heatmap:         d.heatmap,
-          movingAverage:   d.movingAverage,
-          periodChange:    d.periodChange,
+          chart: d.chartDataTeam,
+          rawRatings: d.rawRatingsTeam,
+          categories: d.categoryDist,
+          avgKpi: d.avgKpiPerf,
+          scatter: d.scatterData,
+          avgDailyKpi: d.avgDailyKpi,
+          buckets: d.normalizedBuckets,
+          employees: d.employeeAggregates,
+          top: d.topPerformers,
+          bottom: d.bottomPerformers,
+          heatmap: d.heatmap,
+          movingAverage: d.movingAverage,
+          periodChange: d.periodChange,
+        },
+      };
+    } catch (err) {
+      set({
+        loading: false,
+        error: err.response?.data?.message || err.message,
+      });
+      throw err;
+    }
+  },
+
+  getSuperAdminOrgAggregated: async (params) => {
+    try {
+      set({ loading: true, error: null });
+
+      const qs = new URLSearchParams(params).toString();
+      const { data: res } = await axiosInstance.get(
+        `/ratings/superadmin/org/analytics?${qs}`
+      );
+
+      const d = res.data; // what the back-end sends
+
+      /* 👉  Flatten & rename once here.
+       *     Anything new from the API gets mapped exactly once. */
+      set({ loading: false });
+      return {
+        success: true,
+        data: {
+          chart: d.chartDataTeam,
+          rawRatings: d.rawRatingsTeam,
+          categories: d.categoryDist,
+          avgKpi: d.avgKpiPerf,
+          scatter: d.scatterData,
+          avgDailyKpi: d.avgDailyKpi,
+          buckets: d.normalizedBuckets,
+          employees: d.employeeAggregates,
+          top: d.topPerformers,
+          bottom: d.bottomPerformers,
+          heatmap: d.heatmap,
+          movingAverage: d.movingAverage,
+          periodChange: d.periodChange,
         },
       };
     } catch (err) {
