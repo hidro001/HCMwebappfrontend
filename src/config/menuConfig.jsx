@@ -99,8 +99,6 @@ export const menuItems = [
     ],
   },
 
-
-
   // ------------------------------ Manage Employees ------------------------------
   {
     name: "Manage Employees",
@@ -456,6 +454,11 @@ export const menuItems = [
     iconAnimation: { rotate: 360 },
     options: [
       {
+        name: "Emp Performance Analytics",
+        link: "/dashboard/all-performance-analytics",
+        permission: "view-all-employee-rating-quantitative-qualitative",
+      },
+      {
         name: "Set KPIs",
         link: "/dashboard/set-kpis-daily",
         permission: "set-kpis-quantitative-qualitative",
@@ -466,9 +469,9 @@ export const menuItems = [
         permission: "rate-team-members-quantitative-qualitative",
       },
       {
-        name: "Performance Analytics",
+        name: "Team Performance Analytics",
         link: "/dashboard/performance-analytics",
-        permission: "rate-team-members-quantitative-qualitative",
+        permission: "team-members-performance-quantitative-qualitative",
       },
       {
         name: "Team Members Performance",
@@ -749,8 +752,7 @@ export const menuItems = [
         textAnimation: { x: 10 },
       },
     ],
-  }, 
-
+  },
 
   {
     name: "Geo Location",
@@ -765,14 +767,13 @@ export const menuItems = [
         link: "/dashboard/field-worker",
         permission: "geolocation-all-permission",
         textAnimation: { x: 10 },
-      },  {
+      },
+      {
         name: "View Map",
         link: "/dashboard/geo-location",
         permission: "geolocation-all-permission",
         textAnimation: { x: 10 },
       },
     ],
-  }, 
-  
-
+  },
 ];
