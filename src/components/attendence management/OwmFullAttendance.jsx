@@ -7,8 +7,6 @@ import 'react-clock/dist/Clock.css';      // React Clock's default styles
 import 'react-time-picker/dist/TimePicker.css'; 
 import TimePicker from 'react-time-picker';
 import axiosInstance from "../../service/axiosInstance";
-
-// If your store has a PDF method, import that from your Zustand store
 import { useOwnFullAttendanceStore } from "../../store/useOwnFullAttendanceStore";
 import {
   FiBriefcase,
@@ -22,13 +20,7 @@ import {
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
-/* 
-  --------------------------------------------------------------------------------------
-  HELPER FUNCTIONS (no TypeScript, purely JS)
-  --------------------------------------------------------------------------------------
-*/
 
-// Returns all days of a given (year, month) pinned around noon to avoid TZ shift:
 function getAllDaysInMonth(year, month) {
   const days = [];
   let date = new Date(year, month - 1, 1, 12);
@@ -533,8 +525,6 @@ function monthName(m) {
 }
 
 
-
-
 export default function OwmFullAttendance() {
 const [punchReason, setPunchReason] = useState("");
   const [missedPunchModalOpen, setMissedPunchModalOpen] = useState(false);
@@ -683,7 +673,7 @@ const [punchOutTime, setPunchOutTime] = useState("");
     if (hoursWorked >= 9) {
       row.status = "Present";
     } else if (hoursWorked >= 4.5 && hoursWorked < 9) {
-      row.status = hoursWorked <= 5 ? "Half Day" : "Not Even Half Day";
+      row.status = hoursWorked >= 5 ? "Half Day" : "Not Even Half Day";
     } else if (hoursWorked > 0 && hoursWorked < 4.5) {
       row.status = "Not Even Half Day";
     } else {
