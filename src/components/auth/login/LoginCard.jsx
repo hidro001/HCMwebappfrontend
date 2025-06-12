@@ -220,6 +220,17 @@ const LoginCard = () => {
       engagement_permission: user.engagement_permission,
     });
     toast.success("Login successful!");
+
+     // ✅ Corrected IPC call matching preload.js
+  if (window?.electronAPI?.sendCredentials) {
+    window.electronAPI.sendCredentials({
+      accessToken,
+      employeeId: user.employee_Id,
+      userName: `${user.first_Name} ${user.last_Name || ""}`.trim(),
+    });
+  } else {
+    console.warn("Electron API not found!");
+  }
     // navigate is handled by our redirect useEffect
   };
 

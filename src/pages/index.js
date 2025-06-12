@@ -105,6 +105,7 @@ import MyPerformanceAdvancedPageRazor from "./performance management razor/MyPer
 import TeamRatingsAdvancedPageRazor from "./performance management razor/TeamRatingsAdvancedPage";
 import AllEmployeeRatingsPageRazor from "./performance management razor/AllEmployeeRatingsPage";
 import ManagerDashboardPage from "./performance management razor/ManagerDashboardPage";
+import SuperAdminDashboardAnlyticsPage from "./performance management razor/SuperAdminDashboardPage";
 
 
 export {
@@ -196,4 +197,5 @@ export {
   TeamRatingsAdvancedPageRazor,
   AllEmployeeRatingsPageRazor,
   ManagerDashboardPage,
+  SuperAdminDashboardAnlyticsPage
 };
