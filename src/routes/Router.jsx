@@ -114,8 +114,13 @@ import IndividualAssignedTasks from "../components/task/assigned-task/Individual
 import EmployeeDailyTaskDetail from "../components/task/daily-task/EmployeeDailyTaskDetail";
 import EmployeeDetails from "../components/payroll/manage-payroll/EmployeePayrollDetails";
 import EmployeeIndividualRatings from "../components/performance management new/EmployeeIndividualRating";
+import SuperAdminRegistration from "../components/SuperAdminRegistration/SuperAdminRegistration";
 
 const router = createBrowserRouter([
+  {
+    path: "/super-admin-registration",
+    element: <SuperAdminRegistration />,
+  },
   {
     path: "/reset-password/:resetToken",
     element: <ResetPassword />,
