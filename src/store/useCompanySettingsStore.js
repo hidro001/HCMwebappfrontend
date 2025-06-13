@@ -55,7 +55,7 @@ const useCompanySettingsStore = create((set, get) => ({
   updateAttendancePolicies: async (updatedSettings) => {
     try {
       await axiosInstance.post(
-        '/company-settings/update-policies',
+        '/company-settings/settings',
         updatedSettings
       )
       toast.success('Attendance Policies updated successfully.')
