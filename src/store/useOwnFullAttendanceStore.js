@@ -381,6 +381,11 @@ export const useOwnFullAttendanceStore = create(
             (ls) => ls.id === leaveSystemId
           );
 
+          const normalizedWorkingDays = (leaveSystem.workingDays || [])
+            .flatMap((s) => s.split(",")) // ["Mon"," Tue",…]
+            .map((s) => s.trim()); // ["Mon","Tue",…]
+            leaveSystem.workingDays = normalizedWorkingDays;
+
           const monthlyPaidLeavesValue = leaveSystem?.monthlyPaidLeaves || 0;
           const totalPaidLeavesValue = userData?.no_of_Paid_Leave || 0;
 
@@ -427,7 +432,8 @@ export const useOwnFullAttendanceStore = create(
           } = get();
 
           // 2) Calculate final salary for that (year, month)
-          const baseSalary = parseFloat(userProfileData?.current_Base_Salary) || 0;
+          const baseSalary =
+            parseFloat(userProfileData?.current_Base_Salary) || 0;
           const { finalSalary, deduction, leaves } = calculateFinalSalary({
             baseSalary,
             attendanceData,

@@ -754,7 +754,7 @@ export default function OwnFullAttendance() {
   const todayObj = new Date();
   const finalAttendanceData = allDaysInMonth.map((dateObj, idx) => {
     const formatted = dateObj.toISOString().split("T")[0];
-    const dayName = dateObj.toLocaleDateString("en-US", { weekday: "long" });
+    const dayName = dateObj.toLocaleDateString("en-US", { weekday: "short" });
     let row = {
       sl: idx + 1,
       date: formatted,
