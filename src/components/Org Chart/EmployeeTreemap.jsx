@@ -1,5 +1,3 @@
-
-
 import React from "react";
 import { motion } from "framer-motion";
 import { FiUsers, FiTrendingUp, FiGrid, FiZap } from "react-icons/fi";
@@ -61,17 +59,12 @@ function EmployeeTreemap() {
       initial="hidden"
       animate="visible"
     >
-      {/* Background decorative elements */}
-  
-
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Header Section */}
         <motion.div
           className="text-center mb-8 sm:mb-12"
           variants={headerVariants}
         >
-       
-
           <motion.h1
             className="text-3xl sm:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4"
             initial={{ opacity: 0, y: 20 }}
@@ -86,16 +79,6 @@ function EmployeeTreemap() {
               Hierarchy
             </span>
           </motion.h1>
-
-          <motion.p
-            className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            Explore your organization's structure with our interactive and
-            intuitive hierarchy visualization
-          </motion.p>
         </motion.div>
 
         {/* Chart Container */}
