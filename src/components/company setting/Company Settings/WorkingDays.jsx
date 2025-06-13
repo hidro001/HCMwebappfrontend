@@ -7,7 +7,7 @@ import WorkingDaySystemModal from "./models/WorkingDaySystemModal";
 export default function WorkingDays() {
   const {
     workingDaySystem,
-    fetchworkingDaySystem,
+    fetchWorkingDaySystems,
     addOrUpdateWorkingDaySystem,
     deleteLeaveSystem,
   } = useCompanySettingsStore();
@@ -19,8 +19,8 @@ export default function WorkingDays() {
   const [editId, setEditId] = useState(null);
 
   useEffect(() => {
-    fetchworkingDaySystem();
-  }, [fetchworkingDaySystem]);
+    fetchWorkingDaySystems();
+  }, [fetchWorkingDaySystems]);
 
   const handleSave = () => {
     if (!sysName || workingDays.length === 0 || monthlyLeaves === "") {

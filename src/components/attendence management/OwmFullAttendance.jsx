@@ -39,7 +39,12 @@ import { useOwnFullAttendanceStore } from "../../store/useOwnFullAttendanceStore
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
-
+/* 
+  --------------------------------------------------------------------------------------
+  HELPER FUNCTIONS (no TypeScript, purely JS) - KEEPING ALL ORIGINAL FUNCTIONS
+  --------------------------------------------------------------------------------------
+*/
+// Returns all days of a given (year, month) pinned around noon to avoid TZ shift:
 function getAllDaysInMonth(year, month) {
   const days = [];
   let date = new Date(year, month - 1, 1, 12);
@@ -83,10 +88,40 @@ function getHoursWorked(login, logout) {
   const logout24 = convertTo24Hour(logout);
   if (!login24 || !logout24) return 0;
 
+  // FIX: Use the converted 24-hour format instead of original 12-hour format
   const loginDate = new Date("1970-01-01T" + login24);
   const logoutDate = new Date("1970-01-01T" + logout24);
   const diffMs = logoutDate - loginDate;
   return diffMs > 0 ? diffMs / (1000 * 60 * 60) : 0;
+}
+
+// IMPROVED: Better formatting for hours worked display
+function formatHoursWorked(hoursWorked) {
+  if (hoursWorked === 0) return "0h 0m";
+  
+  const totalMinutes = hoursWorked * 60;
+  
+  // If less than 1 minute, show seconds
+  if (totalMinutes < 1) {
+    const seconds = Math.round(hoursWorked * 3600);
+    return `${seconds}s`;
+  }
+  
+  // If less than 60 minutes, show minutes
+  if (totalMinutes < 60) {
+    const minutes = Math.round(totalMinutes);
+    return `${minutes}m`;
+  }
+  
+  // Otherwise show hours and minutes
+  const wholeHours = Math.floor(hoursWorked);
+  const remainingMinutes = Math.round((hoursWorked - wholeHours) * 60);
+  
+  if (remainingMinutes === 0) {
+    return `${wholeHours}h`;
+  }
+  
+  return `${wholeHours}h ${remainingMinutes}m`;
 }
 
 // If your breaks contain either durations in minutes or start/end times:
@@ -273,7 +308,11 @@ function calculateTotalLates(
       const shiftDate = new Date("1970-01-01T" + shiftStart24);
       shiftDate.setMinutes(shiftDate.getMinutes() + graceMins);
 
-      const loginDate = new Date("1970-01-01T" + convertTo24Hour(rec.login));
+      // FIX: Use converted 24-hour format here too
+      const login24 = convertTo24Hour(rec.login);
+      if (!login24) continue;
+      const loginDate = new Date("1970-01-01T" + login24);
+      
       if (loginDate > shiftDate) {
         count++;
       }
@@ -456,7 +495,6 @@ function calculateFinalSalary({
   const notLoggedOutDays = calculateNotLoggedOut(attendanceData, year, month);
   const totalUnpaidLeaves = totalLeaves + notEvenHalfDays + notLoggedOutDays;
 
-  // how many of those are "paid" leaves
   let paidLeavesUsed = 0;
   for (const lv of approvedLeaves) {
     const from = new Date(lv.leave_From);
@@ -543,9 +581,81 @@ function monthName(m) {
   return months[m - 1] || "Unknown";
 }
 
+// DEBUGGING FUNCTIONS - NEW
+function debugAttendanceData(attendanceDataRaw, year, month) {
+  console.log("=== DEBUGGING ATTENDANCE DATA ===");
+  console.log("Raw attendance data count:", attendanceDataRaw?.length || 0);
+  
+  if (!attendanceDataRaw || attendanceDataRaw.length === 0) {
+    console.log("❌ No attendance data found");
+    return;
+  }
+  
+  // Show sample of raw data
+  console.log("Sample raw data:", attendanceDataRaw.slice(0, 2));
+  
+  // Filter for current month
+  const currentMonthData = attendanceDataRaw.filter(rec => {
+    const d = new Date(rec.date);
+    return d.getFullYear() === year && d.getMonth() + 1 === month;
+  });
+  
+  console.log("Current month data count:", currentMonthData.length);
+  console.log("Target year/month:", year, month);
+  
+  if (currentMonthData.length === 0) {
+    console.log("❌ No data for current month");
+    console.log("Available dates:", attendanceDataRaw.map(r => r.date));
+    return;
+  }
+  
+  // Check each record
+  currentMonthData.forEach((record, index) => {
+    console.log(`\n--- Record ${index + 1} ---`);
+    console.log("Date:", record.date);
+    console.log("Login:", record.login);
+    console.log("Logout:", record.logout);
+    console.log("Status:", record.status);
+    
+    if (record.login && record.logout) {
+      const hoursWorked = getHoursWorked(record.login, record.logout);
+      console.log("Hours worked:", hoursWorked);
+      console.log("Formatted:", formatHoursWorked(hoursWorked));
+    }
+  });
+  
+  return currentMonthData;
+}
 
-export default function OwmFullAttendance() {
-const [punchReason, setPunchReason] = useState("");
+function checkFilteringIssues(finalAttendanceData, searchText) {
+  console.log("=== CHECKING FILTERING ISSUES ===");
+  console.log("Total processed records:", finalAttendanceData.length);
+  
+  const recordsWithData = finalAttendanceData.filter(item => 
+    item.logInTime !== "------" || item.logOutTime !== "------"
+  );
+  console.log("Records with actual data:", recordsWithData.length);
+  
+  if (searchText) {
+    console.log("Search text:", searchText);
+    const filteredCount = finalAttendanceData.filter((item) => {
+      const combined = (item.date + " " + item.day + " " + item.status).toLowerCase().trim();
+      return combined.includes(searchText.toLowerCase().trim());
+    }).length;
+    console.log("Records after search filter:", filteredCount);
+  }
+  
+  // Show sample of records with data
+  if (recordsWithData.length > 0) {
+    console.log("\nSample records with data:");
+    recordsWithData.slice(0, 3).forEach(record => {
+      console.log(`${record.date}: ${record.logInTime} - ${record.logOutTime} (${record.status}) - ${record.hoursWorked || 'N/A'}`);
+    });
+  }
+}
+
+export default function OwnFullAttendance() {
+  const [punchReason, setPunchReason] = useState("");
   const [missedPunchModalOpen, setMissedPunchModalOpen] = useState(false);
   const [selectedDateForPunch, setSelectedDateForPunch] = useState(null);
   const [punchInTime, setPunchInTime] = useState("");
@@ -609,10 +719,24 @@ const [punchReason, setPunchReason] = useState("");
   // Make sure we have unique attendance records - KEEPING ORIGINAL LOGIC
   const attendanceData = getUniqueAttendanceData(attendanceDataRaw || []);
 
+  // DEBUGGING - NEW: Add comprehensive debugging
+  useEffect(() => {
+    console.log("=== ATTENDANCE COMPONENT DEBUG ===");
+    console.log("Selected year/month:", year, month);
+    console.log("Raw attendance data:", attendanceDataRaw);
+    console.log("Unique attendance data:", attendanceData);
+    console.log("Leave system details:", leaveSystemDetails);
+    console.log("Company settings:", companySettings);
+    
+    if (attendanceDataRaw) {
+      debugAttendanceData(attendanceDataRaw, year, month);
+    }
+  }, [attendanceDataRaw, year, month, leaveSystemDetails, companySettings]);
+
   // SHIFT TIMING - KEEPING ORIGINAL LOGIC
   const shiftTimingDetails = parseShiftTiming(userProfileData?.shift_Timing || "");
 
-  // Build daily table - KEEPING ALL ORIGINAL LOGIC
+  // Build daily table - KEEPING ALL ORIGINAL LOGIC BUT WITH IMPROVED DEBUGGING
   const allDaysInMonth = getAllDaysInMonth(year, month);
 
   // set of approved leaves - KEEPING ORIGINAL LOGIC
@@ -648,6 +772,16 @@ const [punchReason, setPunchReason] = useState("");
     const isWorkingDay = leaveSystemDetails?.workingDays?.includes(dayName) || false;
     const isApprovedLeave = approvedLeaveDates.has(formatted);
 
+    // DEBUGGING - Add logging for working days
+    if (formatted === "2025-06-13") {
+      console.log(`=== DEBUGGING ${formatted} ===`);
+      console.log("Day name:", dayName);
+      console.log("Is working day:", isWorkingDay);
+      console.log("Working days config:", leaveSystemDetails?.workingDays);
+      console.log("Is holiday:", isHoliday);
+      console.log("Is approved leave:", isApprovedLeave);
+    }
+
     if (isApprovedLeave) {
       row.status = "Holiday";
       return row;
@@ -659,6 +793,13 @@ const [punchReason, setPunchReason] = useState("");
 
     // find attendance record - KEEPING ORIGINAL LOGIC
     const record = attendanceData.find((r) => r.date === formatted);
+    
+    // DEBUGGING - Add logging for record finding
+    if (formatted === "2025-06-13") {
+      console.log("Found record:", !!record);
+      console.log("Record details:", record);
+    }
+    
     if (!record) {
       row.status = dateObj < todayObj ? "Absent" : "------";
       return row;
@@ -679,23 +820,41 @@ const [punchReason, setPunchReason] = useState("");
       return row;
     }
 
-    // Calculate total hours worked - KEEPING ORIGINAL LOGIC
+    // Calculate total hours worked - IMPROVED WITH BETTER FORMATTING
     const hoursWorked = getHoursWorked(record.login, record.logout);
-    const wholeHours = Math.floor(hoursWorked);
-    const remainingMinutes = Math.round((hoursWorked - wholeHours) * 60);
-    row.hoursWorked = `${wholeHours}h ${remainingMinutes}m`;
+    row.hoursWorked = formatHoursWorked(hoursWorked); // IMPROVED: Use better formatting
 
+    // DEBUGGING - Add logging for hours calculation
+    if (formatted === "2025-06-13") {
+      console.log("Hours worked:", hoursWorked);
+      console.log("Formatted hours:", row.hoursWorked);
+    }
+
+    // IMPROVED: Better status logic
     if (hoursWorked >= 9) {
       row.status = "Present";
-    } else if (hoursWorked >= 4.5 && hoursWorked < 9) {
-      row.status = hoursWorked >= 5 ? "Half Day" : "Not Even Half Day";
-    } else if (hoursWorked > 0 && hoursWorked < 4.5) {
+    } else if (hoursWorked >= 4.5) {
+      row.status = hoursWorked <= 5 ? "Half Day" : "Present";
+    } else if (hoursWorked > 0) {
       row.status = "Not Even Half Day";
     } else {
-      row.status = "Present";
+      row.status = "Absent";
     }
+    
+    // DEBUGGING - Add logging for status calculation
+    if (formatted === "2025-06-13") {
+      console.log("Final status:", row.status);
+    }
+    
     return row;
   });
+
+  // DEBUGGING - Add comprehensive debugging for final data
+  useEffect(() => {
+    if (finalAttendanceData.length > 0) {
+      checkFilteringIssues(finalAttendanceData, searchText);
+    }
+  }, [finalAttendanceData, searchText]);
 
   // filter by search - KEEPING ORIGINAL LOGIC
   const filteredData = finalAttendanceData.filter((item) => {

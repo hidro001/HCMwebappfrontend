@@ -22,6 +22,18 @@ export default function RoleTable({ isLoading }) {
   const [editPermissions, setEditPermissions] = useState([]);
   const [deleteData, setDeleteData] = useState({ open: false, id: null, name: "" });
   const [actionLoading, setActionLoading] = useState(false);
+  const [selectedPerms, setSelectedPerms] = useState([]);
+
+const onTogglePerm = (perm) => {
+  setSelectedPerms((prev) => {
+    const exists = prev.some((p) => p.value === perm.permission);
+    if (exists) {
+      return prev.filter((p) => p.value !== perm.permission);
+    } else {
+      return [...prev, { value: perm.permission, name: perm.name }];
+    }
+  });
+};
 
   useEffect(() => {
     fetchRoles();
@@ -37,19 +49,20 @@ export default function RoleTable({ isLoading }) {
     setShowAddModal(false);
   }
 
-  function handleToggleAddPerm(permObj) {
-    const exists = addSelectedPerms.find((p) => p.value === permObj.permission);
-    if (exists) {
-      setAddSelectedPerms(
-        addSelectedPerms.filter((p) => p.value !== permObj.permission)
-      );
-    } else {
-      setAddSelectedPerms([
-        ...addSelectedPerms,
-        { label: permObj.name, value: permObj.permission },
-      ]);
-    }
+function handleToggleAddPerm(permObj) {
+  const exists = addSelectedPerms.find((p) => p.value === permObj.permission);
+  if (exists) {
+    setAddSelectedPerms(
+      addSelectedPerms.filter((p) => p.value !== permObj.permission)
+    );
+  } else {
+    setAddSelectedPerms([
+      ...addSelectedPerms,
+      { value: permObj.permission, label: permObj.name },
+    ]);
   }
+}
+
 
   async function handleAddRoleSubmit() {
     if (!addRoleName.trim()) {
@@ -238,9 +251,11 @@ export default function RoleTable({ isLoading }) {
         roleName={addRoleName}
         setRoleName={setAddRoleName}
         selectedPerms={addSelectedPerms}
+        setSelectedPerms={setAddSelectedPerms} 
         onTogglePerm={handleToggleAddPerm}
         onSubmit={handleAddRoleSubmit}
       />
+
       <RolePermissionModal
         show={showPermissionModal}
         onClose={handleClosePermissionModal}

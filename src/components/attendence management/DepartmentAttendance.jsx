@@ -8,100 +8,98 @@ const AttendanceChart = ({ attendanceData }) => {
 
   const { totalEmployees, presentCount, onTimeCount, lateCount, absentCount, onleaveCount } = attendanceData;
 
-
   const TOTAL_EMPLOYEES = totalEmployees;
-  console.log(TOTAL_EMPLOYEES, 'fad')
 
-const rawData = [
-  { name: "Checked In", value: presentCount },
-  { name: "Late In", value: lateCount },
-  { name: "Absent", value: absentCount },
-  { name: "On Leave", value: onleaveCount },
-];
+  const rawData = [
+    { name: "Checked In", value: presentCount },
+    { name: "Late In", value: lateCount },
+    { name: "Absent", value: absentCount },
+    { name: "On Leave", value: onleaveCount },
+  ];
 
-const PALETTE = {
-  "Checked In": {
-    solid: { start: "#5B86E5", end: "#36D1DC" },
-    light: { start: "#DDEAFF", end: "#DDEAFF" },
-  },
-  "Late In": {
-    solid: { start: "#F7971E", end: "#FFD200" },
-    light: { start: "#FFE6C5", end: "#FFE6C5" },
-  },
-  Absent: {
-    solid: { start: "#D0D0D0", end: "#A8A8A8" },
-    light: { start: "#E8E8E8", end: "#E8E8E8" },
-  },
-  "On Leave": {
-    solid: { start: "#F86565", end: "#E19692" },
-    light: { start: "#FFDADA", end: "#FFDADA" },
-  },
-};
-
-let cumulative = 0;
-
-const data = rawData.map((d) => {
-  const capCount = Math.max(0, TOTAL_EMPLOYEES - (cumulative + d.value));
-  cumulative += d.value;
-  return {
-    name: d.name,
-    valueCount: d.value,
-    capCount,
-    value: (d.value / TOTAL_EMPLOYEES) * 100,
-    cap: (capCount / TOTAL_EMPLOYEES) * 100,
+  const PALETTE = {
+    "Checked In": {
+      solid: { start: "#5B86E5", end: "#36D1DC" },
+      light: { start: "#DDEAFF", end: "#DDEAFF" },
+    },
+    "Late In": {
+      solid: { start: "#F7971E", end: "#FFD200" },
+      light: { start: "#FFE6C5", end: "#FFE6C5" },
+    },
+    Absent: {
+      solid: { start: "#D0D0D0", end: "#A8A8A8" },
+      light: { start: "#E8E8E8", end: "#E8E8E8" },
+    },
+    "On Leave": {
+      solid: { start: "#F86565", end: "#E19692" },
+      light: { start: "#FFDADA", end: "#FFDADA" },
+    },
   };
-});
 
-const StripedBar = ({ x, y, width, height, payload }) => {
-  if (height <= 0 || width <= 0) return null;
-  const base = payload.name.replace(/\s+/g, "");
-  const r = 8;
-  const hasCap = payload.cap > 0; 
+  let cumulative = 0;
 
-  if (hasCap) {
-    const d = [
-      `M${x},${y}`,
-      `h${width}`,
-      `v${height - r}`,
-      `q0,${r} -${r},${r}`,
-      `h-${width - 2 * r}`,
-      `q-${r},0 -${r}-${r}`,
-      `Z`,
-    ].join(" ");
+  const data = rawData.map((d) => {
+    const capCount = Math.max(0, TOTAL_EMPLOYEES - (cumulative + d.value));
+    cumulative += d.value;
+    return {
+      name: d.name,
+      valueCount: d.value,
+      capCount,
+      value: (d.value / TOTAL_EMPLOYEES) * 100,
+      cap: (capCount / TOTAL_EMPLOYEES) * 100,
+    };
+  });
+
+  const StripedBar = ({ x, y, width, height, payload }) => {
+    if (height <= 0 || width <= 0) return null;
+    const base = payload.name.replace(/\s+/g, "");
+    const r = 8;
+    const hasCap = payload.cap > 0; 
+
+    if (hasCap) {
+      const d = [
+        `M${x},${y}`,
+        `h${width}`,
+        `v${height - r}`,
+        `q0,${r} -${r},${r}`,
+        `h-${width - 2 * r}`,
+        `q-${r},0 -${r}-${r}`,
+        `Z`,
+      ].join(" ");
+      return (
+        <g>
+          <path d={d} fill={`url(#${base}Solid)`} />
+          <path d={d} fill={`url(#${base}Stripes)`} />
+        </g>
+      );
+    }
+
     return (
       <g>
-        <path d={d} fill={`url(#${base}Solid)`} />
-        <path d={d} fill={`url(#${base}Stripes)`} />
+        <rect x={x} y={y} width={width} height={height} rx={r} ry={r} fill={`url(#${base}Solid)`} />
+        <rect x={x} y={y} width={width} height={height} rx={r} ry={r} fill={`url(#${base}Stripes)`} />
       </g>
     );
-  }
+  };
 
-  return (
-    <g>
-      <rect x={x} y={y} width={width} height={height} rx={r} ry={r} fill={`url(#${base}Solid)`} />
-      <rect x={x} y={y} width={width} height={height} rx={r} ry={r} fill={`url(#${base}Stripes)`} />
-    </g>
-  );
-};
-
-const CustomTooltip = ({ active, payload, label }) => {
-  if (!active || !payload?.length) return null;
-  const entry = payload.find((p) => p.dataKey === "value");
-  if (!entry) return null;
-  return (
-    <div className="rounded-lg bg-white/95 backdrop-blur shadow p-3 text-sm font-medium text-gray-800">
-      <p className="mb-1">{label}</p>
-      <p>
-        count : {entry.payload.valueCount} / {TOTAL_EMPLOYEES}
-      </p>
-    </div>
-  );
-};
+  const CustomTooltip = ({ active, payload, label }) => {
+    if (!active || !payload?.length) return null;
+    const entry = payload.find((p) => p.dataKey === "value");
+    if (!entry) return null;
+    return (
+      <div className="rounded-lg bg-white/95 backdrop-blur shadow p-3 text-sm font-medium text-gray-800">
+        <p className="mb-1">{label}</p>
+        <p>
+          count : {entry.payload.valueCount} / {TOTAL_EMPLOYEES}
+        </p>
+      </div>
+    );
+  };
 
  return ( 
  <div className="w-full max-w-5xl mx-auto">
     {/* Legend */}
-    <div className="flex justify-end gap-2 mb-3 ">
+    <div className="flex justify-end gap-2 mb-3">
       {Object.keys(PALETTE).map((key) => (
         <div key={key} className="flex items-center gap-2">
           <span
