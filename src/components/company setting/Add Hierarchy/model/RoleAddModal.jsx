@@ -9,10 +9,31 @@ export default function RoleAddModal({
   roleName,
   setRoleName,
   selectedPerms,
+  setSelectedPerms,
   onTogglePerm,
   onSubmit,
 }) {
   if (!show) return null;
+
+
+  const allSelected =
+    selectedPerms.length === availablePermission.length &&
+    availablePermission.every((perm) =>
+      selectedPerms.some((p) => p.value === perm.permission)
+    );
+
+  const handleSelectAll = () => {
+    if (allSelected) {
+      setSelectedPerms([]);
+    } else {
+      setSelectedPerms(
+        availablePermission.map((perm) => ({
+          value: perm.permission,
+          label: perm.name,
+        }))
+      );
+    }
+  };
 
   return (
     <BaseModal isOpen={show} onClose={onClose}>
@@ -24,6 +45,7 @@ export default function RoleAddModal({
           <FaTimes />
         </button>
         <h2 className="text-lg font-semibold mb-4">Add New Role</h2>
+
         <label className="block mb-2 font-medium" htmlFor="addRoleName">
           Role Name
         </label>
@@ -35,7 +57,9 @@ export default function RoleAddModal({
           onChange={(e) => setRoleName(e.target.value)}
           className="w-full mb-4 px-3 py-2 border border-gray-300 rounded dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
         />
+
         <p className="font-medium mb-2">Select Permissions</p>
+
         <div className="space-y-2 mb-4">
           {availablePermission.map((perm) => {
             const isChecked = selectedPerms.some(
@@ -56,6 +80,18 @@ export default function RoleAddModal({
             );
           })}
         </div>
+        <label className="flex items-center space-x-2 mb-2">
+          <input
+            type="checkbox"
+            className="w-4 h-4 accent-blue-500"
+            checked={allSelected}
+            onChange={handleSelectAll}
+          />
+          <span className=" dark:text-gray-100 text-gray-800">
+            Select All
+          </span>
+        </label>
+
         <div className="flex justify-end space-x-4">
           <button
             onClick={onClose}

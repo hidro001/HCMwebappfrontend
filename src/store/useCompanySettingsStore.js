@@ -242,7 +242,7 @@ const useCompanySettingsStore = create((set, get) => ({
   // -----------------------------
   workingDaySystem: [],
 
-  fetchworkingDaySystem: async () => {
+  fetchWorkingDaySystems: async () => {
     try {
       const res = await axiosInstance.get('/company-settings/workingDay-systems')
       set({ workingDaySystem: res.data?.data || [] })
