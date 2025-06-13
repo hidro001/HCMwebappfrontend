@@ -3910,7 +3910,7 @@ export default function OwnFullAttendance() {
               : 'hidden lg:block lg:relative'
           }`}
         >
-          <div className="p-6 border">
+          <div className="p-6 ">
             <div className="flex items-center justify-between mb-6 lg:hidden border">
               <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Overview</h2>
               <button
