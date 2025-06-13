@@ -4028,12 +4028,6 @@ export default function OwnFullAttendance() {
                 )}
               </AnimatePresence>
 
-              <div className="mt-4 pt-4 border-t border-emerald-200 dark:border-emerald-700">
-                <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <FiCalendar className="w-4 h-4" />
-                  <span>Next Payroll: {formattedNextPayrollDate}</span>
-                </div>
-              </div>
             </motion.div>
 
             {/* Shift Timing Details - KEEPING ORIGINAL SHIFT TIMING TABLE */}
