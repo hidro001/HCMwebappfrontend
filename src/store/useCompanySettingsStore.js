@@ -238,44 +238,44 @@ const useCompanySettingsStore = create((set, get) => ({
   },
 
   // -----------------------------
-  // Leave Systems
+  // Working Day Systems
   // -----------------------------
-  leaveSystems: [],
+  workingDaySystem: [],
 
-  fetchLeaveSystems: async () => {
+  fetchworkingDaySystem: async () => {
     try {
-      const res = await axiosInstance.get('/company-settings/leave-systems')
-      set({ leaveSystems: res.data?.data || [] })
+      const res = await axiosInstance.get('/company-settings/workingDay-systems')
+      set({ workingDaySystem: res.data?.data || [] })
     } catch (error) {
       console.error(error)
-      toast.error('Failed to fetch Leave Systems.')
+      toast.error('Failed to fetch Working Days System.')
     }
   },
 
-  addOrUpdateLeaveSystem: async (leaveData) => {
+  addOrUpdateWorkingDaySystem: async (workindDayData) => {
     try {
-      if (leaveData.id) {
-        await axiosInstance.post('/company-settings/leave-systems', leaveData)
-        toast.success('Leave System updated successfully.')
+      if (workindDayData.id) {
+        await axiosInstance.post('/company-settings/workingDay-systems', workindDayData)
+        toast.success('Working Day System updated successfully.')
       } else {
-        await axiosInstance.post('/company-settings/leave-systems', leaveData)
-        toast.success('Leave System added successfully.')
+        await axiosInstance.post('/company-settings/workingDay-systems', workindDayData)
+        toast.success('Working Days System added successfully.')
       }
-      get().fetchLeaveSystems()
+      get().fetchworkingDaySystem()
     } catch (error) {
       console.error(error)
-      toast.error('Failed to save Leave System.')
+      toast.error('Failed to save Working Days System.')
     }
   },
 
-  deleteLeaveSystem: async (id) => {
+  deleteWorkingDaySystem: async (id) => {
     try {
-      await axiosInstance.delete(`/company-settings/leave-systems/${id}`)
-      toast.success('Leave System deleted successfully.')
-      get().fetchLeaveSystems()
+      await axiosInstance.delete(`/company-settings/workingDay-systems/${id}`)
+      toast.success('Working Days System deleted successfully.')
+      get().fetchworkingDaySystem()
     } catch (error) {
       console.error(error)
-      toast.error('Failed to delete Leave System.')
+      toast.error('Failed to delete Working Days System.')
     }
   },
 

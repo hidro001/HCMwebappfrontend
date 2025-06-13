@@ -12,7 +12,7 @@ import ShiftTimings from "./ShiftTimings";
 import Holidays from "./Holidays";
 import Deductions from "./Deductions";
 import PayrollCycles from "./PayrollCycles";
-import LeaveSystems from "./LeaveSystems";
+import WorkingDays from "./WorkingDays";
 import EmploymentTypes from "./EmploymentTypes";
 
 export default function CompanySetting() {
@@ -24,7 +24,7 @@ export default function CompanySetting() {
     { name: "Holidays", icon: <FaRegCalendar />, component: <Holidays /> },
     { name: "Deductions", icon: <FaMoneyBill />, component: <Deductions /> },
     { name: "Payroll Cycles", icon: <FaMoneyBill />, component: <PayrollCycles /> },
-    { name: "Leave Systems", icon: <FaSun />, component: <LeaveSystems /> },
+    { name: "Working Days", icon: <FaSun />, component: <WorkingDays /> },
     { name: "Employment Types", icon: <FaUserCog />, component: <EmploymentTypes /> },
   ];
 
