@@ -194,7 +194,7 @@ function calculateTotalLeaves({
   let totalLeaves = 0;
   for (const dateObj of allDays) {
     const formatted = dateObj.toISOString().split("T")[0];
-    const dayName = dateObj.toLocaleDateString("en-US", { weekday: "long" });
+    const dayName = dateObj.toLocaleDateString("en-US", { weekday: "short" });
 
     const isWorkingDay =
       leaveSystemDetails &&
