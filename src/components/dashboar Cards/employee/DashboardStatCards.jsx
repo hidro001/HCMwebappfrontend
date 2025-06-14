@@ -1111,7 +1111,7 @@ function StatCard({
     >
       {/* Reduced Glow Effect */}
       <motion.div
-        className={`absolute -inset-0.5 bg-gradient-to-r ${gradient} rounded-2xl blur-sm opacity-0 group-hover:opacity-8 transition-opacity duration-300`}
+        className={`absolute -inset-0.5 bg-gradient-to-r ${gradient} rounded-2xl  opacity-0 group-hover:opacity-8 transition-opacity duration-300`}
         variants={glowVariants}
         initial="initial"
         animate={isHovered ? "hover" : "initial"}

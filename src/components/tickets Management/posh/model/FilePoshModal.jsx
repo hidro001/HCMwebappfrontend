@@ -471,7 +471,14 @@ export default function FilePoshModal({ isOpen, onClose, ticket, onSave }) {
       <AnimatePresence>
         {isOpen && !isSubmitting && (
           <motion.div
-            className="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-hidden border h-[90%] max-h-[90vh] relative"
+            className="w-full max-w-2xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl overflow-auto  h-[90%] max-h-[90vh] relative
+             [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+                transition-colors duration-300
+            "
             variants={containerVariants}
             initial="hidden"
             animate="visible"
