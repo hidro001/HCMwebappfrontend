@@ -943,16 +943,16 @@ const AssignedTaskListCard = () => {
   ];
 
   return (
-    <div className="w-full h-full ">
+    <div className="w-full h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-2xl">
       {/* Modern Card Container */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="h-full flex flex-col backdrop-blur-2xl bg-gradient-to-br from-slate-50/90 via-white/80 to-slate-100/90 dark:from-slate-900/90 dark:via-slate-800/80 dark:to-slate-900/90 rounded-3xl border border-white/30 dark:border-slate-700/50 overflow-hidden"
+        className="h-full flex flex-col  bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-2xl "
       >
         {/* Futuristic Header */}
-        <div className="relative p-4 sm:p-6 border-b border-slate-200/50 dark:border-slate-700/50 bg-gradient-to-r from-violet-500/5 via-purple-500/5 to-pink-500/5">
+        <div className="relative p-4 sm:p-6 border-b border-slate-200/50 dark:border-slate-700/50 ">
           {/* Animated Background Pattern */}
           <div className="absolute inset-0 opacity-20">
             <div className="absolute top-0 left-0 w-32 h-32 bg-gradient-to-br from-violet-500/20 to-purple-600/20 rounded-full blur-3xl animate-pulse"></div>
@@ -1021,7 +1021,7 @@ const AssignedTaskListCard = () => {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="overflow-hidden bg-gradient-to-r from-violet-50/30 via-purple-50/30 to-pink-50/30 dark:from-violet-950/30 dark:via-purple-950/30 dark:to-pink-950/30"
+            className="overflow-hidden   bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-700/50"
           >
             <div className="p-4 sm:p-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3">
