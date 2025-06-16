@@ -17,7 +17,7 @@ export const fetchLineChartData = async (year = 2025) => {
 export const fetchDoughnutChartData = async () => {
   try {
     const res = await axiosInstance.get(`/payroll/doughnut`);
-    return res.data?.data;
+    return res.data?.data; 
   } catch (error) {
     console.error("Error fetching doughnut chart data:", error);
     throw error;
