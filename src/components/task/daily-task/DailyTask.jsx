@@ -125,7 +125,7 @@
 //   /* ---------- submit ---------- */
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
-    
+
 //     const nonEmpty = taskList.filter((t) => t.trim().length);
 //     if (!nonEmpty.length) return toast.error("Please enter at least one task.");
 //     if (!taskDate) return toast.error("Please select a date for this task.");
@@ -486,8 +486,6 @@
 //   );
 // }
 
-
-
 // import { useState, useEffect, useCallback } from "react";
 // import { motion, AnimatePresence } from "framer-motion";
 // import {
@@ -629,7 +627,7 @@
 //   /* ---------- submit ---------- */
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
-    
+
 //     const nonEmpty = taskList.filter((t) => t.trim().length);
 //     if (!nonEmpty.length) return toast.error("Please enter at least one task.");
 //     if (!taskDate) return toast.error("Please select a date for this task.");
@@ -710,14 +708,14 @@
 //   return (
 //     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 text-gray-800 dark:text-gray-100 transition-all duration-500">
 //       {/* HEADER */}
-//       <motion.div 
+//       <motion.div
 //         initial={{ y: -20, opacity: 0 }}
 //         animate={{ y: 0, opacity: 1 }}
 //         className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-30 shadow-lg shadow-slate-900/5 dark:shadow-black/20"
 //       >
 //         <div className="mx-auto py-4 px-4 sm:px-6 lg:px-8 max-w-7xl">
 //           <div className="flex items-center justify-between">
-//             <motion.div 
+//             <motion.div
 //               className="flex items-center space-x-3"
 //               whileHover={{ scale: 1.02 }}
 //               transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -734,7 +732,7 @@
 //                 </p>
 //               </div>
 //             </motion.div>
-            
+
 //             <div className="flex items-center space-x-2 sm:space-x-3">
 //               {/* View Toggle - Hidden on mobile */}
 //               <div className="hidden md:flex items-center bg-gray-100 dark:bg-gray-800 rounded-xl p-1 border border-gray-200 dark:border-gray-700">
@@ -773,7 +771,7 @@
 //                   className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`}
 //                 />
 //               </motion.button>
-              
+
 //               <motion.button
 //                 onClick={openAddTaskModal}
 //                 whileHover={{ scale: 1.05 }}
@@ -791,9 +789,9 @@
 
 //       {/* MAIN CONTENT */}
 //       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-7xl">
-        
+
 //         {/* STATS CARDS */}
-//         <motion.div 
+//         <motion.div
 //           initial={{ y: 20, opacity: 0 }}
 //           animate={{ y: 0, opacity: 1 }}
 //           transition={{ delay: 0.1 }}
@@ -808,7 +806,7 @@
 //               <FiTarget className="h-8 w-8 text-blue-200" />
 //             </div>
 //           </div>
-          
+
 //           <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-emerald-500/25">
 //             <div className="flex items-center justify-between">
 //               <div>
@@ -820,7 +818,7 @@
 //               <FiClock className="h-8 w-8 text-emerald-200" />
 //             </div>
 //           </div>
-          
+
 //           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-amber-500/25">
 //             <div className="flex items-center justify-between">
 //               <div>
@@ -832,7 +830,7 @@
 //               <FiAlertCircle className="h-8 w-8 text-amber-200" />
 //             </div>
 //           </div>
-          
+
 //           <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-purple-500/25">
 //             <div className="flex items-center justify-between">
 //               <div>
@@ -845,7 +843,7 @@
 //         </motion.div>
 
 //         {/* FILTER / SEARCH */}
-//         <motion.div 
+//         <motion.div
 //           initial={{ y: 20, opacity: 0 }}
 //           animate={{ y: 0, opacity: 1 }}
 //           transition={{ delay: 0.2 }}
@@ -894,7 +892,7 @@
 //                       className="pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-700/50 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 w-full sm:w-auto"
 //                     />
 //                   </div>
-                  
+
 //                   {(filterDate || searchTerm) && (
 //                     <motion.button
 //                       initial={{ scale: 0, opacity: 0 }}
@@ -911,7 +909,7 @@
 
 //               {/* Active Filters */}
 //               {(filterDate || searchTerm) && (
-//                 <motion.div 
+//                 <motion.div
 //                   initial={{ height: 0, opacity: 0 }}
 //                   animate={{ height: 'auto', opacity: 1 }}
 //                   className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700"
@@ -1002,7 +1000,7 @@
 //                                   </div>
 //                                 </div>
 //                               </div>
-                              
+
 //                               <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
 //                                 <motion.button
 //                                   whileHover={{ scale: 1.1 }}
@@ -1054,7 +1052,7 @@
 //                                 <FiBookmark className="h-3 w-3" />
 //                                 <span>{item.task.length} task{item.task.length !== 1 ? 's' : ''}</span>
 //                               </div>
-                              
+
 //                               {!item.task_Date && (
 //                                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
 //                                   <FiAlertCircle className="mr-1 h-3 w-3" />
@@ -1072,7 +1070,7 @@
 //                       <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl overflow-hidden shadow-xl shadow-slate-900/5 dark:shadow-black/20 border border-gray-200/50 dark:border-gray-700/50">
 //                         <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 py-6 px-8">
 //                           <h2 className="text-2xl font-bold text-white flex items-center">
-//                             <FiList className="mr-3 h-6 w-6" /> 
+//                             <FiList className="mr-3 h-6 w-6" />
 //                             Your Tasks
 //                             {(filterDate || searchTerm) && (
 //                               <span className="ml-3 text-sm font-medium bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
@@ -1294,7 +1292,7 @@
 //                     </span>{" "}
 //                     tasks
 //                   </div>
-                  
+
 //                   <div className="flex items-center space-x-2">
 //                     <motion.button
 //                       whileHover={{ scale: 1.05 }}
@@ -1364,7 +1362,6 @@
 //     </div>
 //   );
 // }
-
 
 // import { useState, useEffect, useCallback } from "react";
 // import { motion, AnimatePresence } from "framer-motion";
@@ -1509,7 +1506,7 @@
 //   /* ---------- submit ---------- */
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
-    
+
 //     const nonEmpty = taskList.filter((t) => t.trim().length);
 //     if (!nonEmpty.length) return toast.error("Please enter at least one task.");
 //     if (!taskDate) return toast.error("Please select a date for this task.");
@@ -1605,14 +1602,14 @@
 //   return (
 //     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 text-gray-800 dark:text-gray-100 transition-all duration-500">
 //       {/* HEADER */}
-//       <motion.div 
+//       <motion.div
 //         initial={{ y: -20, opacity: 0 }}
 //         animate={{ y: 0, opacity: 1 }}
 //         className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-30 shadow-lg shadow-slate-900/5 dark:shadow-black/20"
 //       >
 //         <div className="mx-auto py-4 px-4 sm:px-6 lg:px-8 max-w-7xl">
 //           <div className="flex items-center justify-between">
-//             <motion.div 
+//             <motion.div
 //               className="flex items-center space-x-3"
 //               whileHover={{ scale: 1.02 }}
 //               transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -1629,7 +1626,7 @@
 //                 </p>
 //               </div>
 //             </motion.div>
-            
+
 //             <div className="flex items-center space-x-2 sm:space-x-3">
 //               {/* View Toggle - Hidden on mobile */}
 //               <div className="hidden md:flex items-center bg-gray-100 dark:bg-gray-800 rounded-xl p-1 border border-gray-200 dark:border-gray-700">
@@ -1668,7 +1665,7 @@
 //                   className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`}
 //                 />
 //               </motion.button>
-              
+
 //               <motion.button
 //                 onClick={openAddTaskModal}
 //                 whileHover={{ scale: 1.05 }}
@@ -1686,9 +1683,9 @@
 
 //       {/* MAIN CONTENT */}
 //       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-7xl">
-        
+
 //         {/* STATS CARDS */}
-//         <motion.div 
+//         <motion.div
 //           initial={{ y: 20, opacity: 0 }}
 //           animate={{ y: 0, opacity: 1 }}
 //           transition={{ delay: 0.1 }}
@@ -1703,7 +1700,7 @@
 //               <FiTarget className="h-8 w-8 text-blue-200" />
 //             </div>
 //           </div>
-          
+
 //           <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-emerald-500/25">
 //             <div className="flex items-center justify-between">
 //               <div>
@@ -1715,7 +1712,7 @@
 //               <FiClock className="h-8 w-8 text-emerald-200" />
 //             </div>
 //           </div>
-          
+
 //           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-amber-500/25">
 //             <div className="flex items-center justify-between">
 //               <div>
@@ -1727,7 +1724,7 @@
 //               <FiAlertCircle className="h-8 w-8 text-amber-200" />
 //             </div>
 //           </div>
-          
+
 //           <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-purple-500/25">
 //             <div className="flex items-center justify-between">
 //               <div>
@@ -1740,7 +1737,7 @@
 //         </motion.div>
 
 //         {/* FILTER / SEARCH */}
-//         <motion.div 
+//         <motion.div
 //           initial={{ y: 20, opacity: 0 }}
 //           animate={{ y: 0, opacity: 1 }}
 //           transition={{ delay: 0.2 }}
@@ -1789,7 +1786,7 @@
 //                       className="pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-700/50 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 w-full sm:w-auto"
 //                     />
 //                   </div>
-                  
+
 //                   {(filterDate || searchTerm) && (
 //                     <motion.button
 //                       initial={{ scale: 0, opacity: 0 }}
@@ -1806,7 +1803,7 @@
 
 //               {/* Active Filters */}
 //               {(filterDate || searchTerm) && (
-//                 <motion.div 
+//                 <motion.div
 //                   initial={{ height: 0, opacity: 0 }}
 //                   animate={{ height: 'auto', opacity: 1 }}
 //                   className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700"
@@ -1897,7 +1894,7 @@
 //                                   </div>
 //                                 </div>
 //                               </div>
-                              
+
 //                               <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
 //                                 <motion.button
 //                                   whileHover={{ scale: 1.1 }}
@@ -1949,7 +1946,7 @@
 //                                 <FiBookmark className="h-3 w-3" />
 //                                 <span>{item.task.length} task{item.task.length !== 1 ? 's' : ''}</span>
 //                               </div>
-                              
+
 //                               {!item.task_Date && (
 //                                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
 //                                   <FiAlertCircle className="mr-1 h-3 w-3" />
@@ -1967,7 +1964,7 @@
 //                       <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl overflow-hidden shadow-xl shadow-slate-900/5 dark:shadow-black/20 border border-gray-200/50 dark:border-gray-700/50">
 //                         <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 py-6 px-8">
 //                           <h2 className="text-2xl font-bold text-white flex items-center">
-//                             <FiList className="mr-3 h-6 w-6" /> 
+//                             <FiList className="mr-3 h-6 w-6" />
 //                             Your Tasks
 //                             {(filterDate || searchTerm) && (
 //                               <span className="ml-3 text-sm font-medium bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
@@ -2205,7 +2202,7 @@
 //                     </span>{" "}
 //                     tasks
 //                   </div>
-                  
+
 //                   <div className="flex items-center space-x-2">
 //                     <motion.button
 //                       whileHover={{ scale: 1.05 }}
@@ -2300,7 +2297,7 @@
 //                   <div>
 //                     <h3 className="text-xl font-bold text-white">Task Details</h3>
 //                     <p className="text-white/80 text-sm">
-//                       {selectedTaskDetails.task.length} task{selectedTaskDetails.task.length !== 1 ? 's' : ''} 
+//                       {selectedTaskDetails.task.length} task{selectedTaskDetails.task.length !== 1 ? 's' : ''}
 //                       {selectedTaskDetails.task_Date && ` • ${formatDate(selectedTaskDetails.task_Date)}`}
 //                     </p>
 //                   </div>
@@ -2395,7 +2392,6 @@
 //   );
 // }
 
-
 // import { useState, useEffect, useCallback } from "react";
 // import { motion, AnimatePresence } from "framer-motion";
 // import {
@@ -2539,7 +2535,7 @@
 //   /* ---------- submit ---------- */
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
-    
+
 //     const nonEmpty = taskList.filter((t) => t.trim().length);
 //     if (!nonEmpty.length) return toast.error("Please enter at least one task.");
 //     if (!taskDate) return toast.error("Please select a date for this task.");
@@ -2635,14 +2631,14 @@
 //   return (
 //     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 text-gray-800 dark:text-gray-100 transition-all duration-500">
 //       {/* HEADER */}
-//       <motion.div 
+//       <motion.div
 //         initial={{ y: -20, opacity: 0 }}
 //         animate={{ y: 0, opacity: 1 }}
 //         className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-30 shadow-lg shadow-slate-900/5 dark:shadow-black/20"
 //       >
 //         <div className="mx-auto py-4 px-4 sm:px-6 lg:px-8 max-w-7xl">
 //           <div className="flex items-center justify-between">
-//             <motion.div 
+//             <motion.div
 //               className="flex items-center space-x-3"
 //               whileHover={{ scale: 1.02 }}
 //               transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -2659,7 +2655,7 @@
 //                 </p>
 //               </div>
 //             </motion.div>
-            
+
 //             <div className="flex items-center space-x-2 sm:space-x-3">
 //               {/* View Toggle - Hidden on mobile */}
 //               <div className="hidden md:flex items-center bg-gray-100 dark:bg-gray-800 rounded-xl p-1 border border-gray-200 dark:border-gray-700">
@@ -2698,7 +2694,7 @@
 //                   className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`}
 //                 />
 //               </motion.button>
-              
+
 //               <motion.button
 //                 onClick={openAddTaskModal}
 //                 whileHover={{ scale: 1.05 }}
@@ -2716,9 +2712,9 @@
 
 //       {/* MAIN CONTENT */}
 //       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-7xl">
-        
+
 //         {/* STATS CARDS */}
-//         <motion.div 
+//         <motion.div
 //           initial={{ y: 20, opacity: 0 }}
 //           animate={{ y: 0, opacity: 1 }}
 //           transition={{ delay: 0.1 }}
@@ -2733,7 +2729,7 @@
 //               <FiTarget className="h-8 w-8 text-blue-200" />
 //             </div>
 //           </div>
-          
+
 //           <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-emerald-500/25">
 //             <div className="flex items-center justify-between">
 //               <div>
@@ -2745,7 +2741,7 @@
 //               <FiClock className="h-8 w-8 text-emerald-200" />
 //             </div>
 //           </div>
-          
+
 //           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-amber-500/25">
 //             <div className="flex items-center justify-between">
 //               <div>
@@ -2757,7 +2753,7 @@
 //               <FiAlertCircle className="h-8 w-8 text-amber-200" />
 //             </div>
 //           </div>
-          
+
 //           <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-purple-500/25">
 //             <div className="flex items-center justify-between">
 //               <div>
@@ -2770,7 +2766,7 @@
 //         </motion.div>
 
 //         {/* FILTER / SEARCH */}
-//         <motion.div 
+//         <motion.div
 //           initial={{ y: 20, opacity: 0 }}
 //           animate={{ y: 0, opacity: 1 }}
 //           transition={{ delay: 0.2 }}
@@ -2819,7 +2815,7 @@
 //                       className="pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-700/50 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 w-full sm:w-auto"
 //                     />
 //                   </div>
-                  
+
 //                   {(filterDate || searchTerm) && (
 //                     <motion.button
 //                       initial={{ scale: 0, opacity: 0 }}
@@ -2836,7 +2832,7 @@
 
 //               {/* Active Filters */}
 //               {(filterDate || searchTerm) && (
-//                 <motion.div 
+//                 <motion.div
 //                   initial={{ height: 0, opacity: 0 }}
 //                   animate={{ height: 'auto', opacity: 1 }}
 //                   className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700"
@@ -2927,7 +2923,7 @@
 //                                   </div>
 //                                 </div>
 //                               </div>
-                              
+
 //                               <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
 //                                 <motion.button
 //                                   whileHover={{ scale: 1.1 }}
@@ -2979,7 +2975,7 @@
 //                                 <FiBookmark className="h-3 w-3" />
 //                                 <span>{item.task.length} task{item.task.length !== 1 ? 's' : ''}</span>
 //                               </div>
-                              
+
 //                               {!item.task_Date && (
 //                                 <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-600">
 //                                   <FiAlertCircle className="mr-1 h-3 w-3" />
@@ -3028,7 +3024,7 @@
 //                                   </span>
 //                                 </div>
 //                               </div>
-                              
+
 //                               <div className="flex items-center space-x-2">
 //                                 <motion.button
 //                                   whileHover={{ scale: 1.1 }}
@@ -3072,7 +3068,7 @@
 //                                   </p>
 //                                 </motion.div>
 //                               ))}
-                              
+
 //                               {item.task.length > 3 && (
 //                                 <motion.button
 //                                   whileHover={{ scale: 1.02 }}
@@ -3135,7 +3131,7 @@
 //                       <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl overflow-hidden shadow-xl shadow-slate-900/5 dark:shadow-black/20 border border-gray-200/50 dark:border-gray-700/50">
 //                         <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 py-6 px-8">
 //                           <h2 className="text-2xl font-bold text-white flex items-center">
-//                             <FiList className="mr-3 h-6 w-6" /> 
+//                             <FiList className="mr-3 h-6 w-6" />
 //                             Your Tasks
 //                             {(filterDate || searchTerm) && (
 //                               <span className="ml-3 text-sm font-medium bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
@@ -3373,7 +3369,7 @@
 //                     </span>{" "}
 //                     tasks
 //                   </div>
-                  
+
 //                   <div className="flex items-center space-x-2">
 //                     <motion.button
 //                       whileHover={{ scale: 1.05 }}
@@ -3468,7 +3464,7 @@
 //                   <div>
 //                     <h3 className="text-xl font-bold text-white">Task Details</h3>
 //                     <p className="text-white/80 text-sm">
-//                       {selectedTaskDetails.task.length} task{selectedTaskDetails.task.length !== 1 ? 's' : ''} 
+//                       {selectedTaskDetails.task.length} task{selectedTaskDetails.task.length !== 1 ? 's' : ''}
 //                       {selectedTaskDetails.task_Date && ` • ${formatDate(selectedTaskDetails.task_Date)}`}
 //                     </p>
 //                   </div>
@@ -3706,7 +3702,7 @@
 //   /* ---------- submit ---------- */
 //   const handleSubmit = async (e) => {
 //     e.preventDefault();
-    
+
 //     const nonEmpty = taskList.filter((t) => t.trim().length);
 //     if (!nonEmpty.length) return toast.error("Please enter at least one task.");
 //     if (!taskDate) return toast.error("Please select a date for this task.");
@@ -3802,14 +3798,14 @@
 //   return (
 //     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 text-gray-800 dark:text-gray-100 transition-all duration-500">
 //       {/* HEADER */}
-//       <motion.div 
+//       <motion.div
 //         initial={{ y: -20, opacity: 0 }}
 //         animate={{ y: 0, opacity: 1 }}
 //         className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-30 shadow-lg shadow-slate-900/5 dark:shadow-black/20"
 //       >
 //         <div className="mx-auto py-4 px-4 sm:px-6 lg:px-8 max-w-7xl">
 //           <div className="flex items-center justify-between">
-//             <motion.div 
+//             <motion.div
 //               className="flex items-center space-x-3"
 //               whileHover={{ scale: 1.02 }}
 //               transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -3826,7 +3822,7 @@
 //                 </p>
 //               </div>
 //             </motion.div>
-            
+
 //             <div className="flex items-center space-x-2 sm:space-x-3">
 //               {/* View Toggle - Hidden on mobile */}
 //               <div className="hidden md:flex items-center bg-gray-100 dark:bg-gray-800 rounded-xl p-1 border border-gray-200 dark:border-gray-700">
@@ -3865,7 +3861,7 @@
 //                   className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`}
 //                 />
 //               </motion.button>
-              
+
 //               <motion.button
 //                 onClick={openAddTaskModal}
 //                 whileHover={{ scale: 1.05 }}
@@ -3883,9 +3879,9 @@
 
 //       {/* MAIN CONTENT */}
 //       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-7xl">
-        
+
 //         {/* STATS CARDS */}
-//         <motion.div 
+//         <motion.div
 //           initial={{ y: 20, opacity: 0 }}
 //           animate={{ y: 0, opacity: 1 }}
 //           transition={{ delay: 0.1 }}
@@ -3900,7 +3896,7 @@
 //               <FiTarget className="h-8 w-8 text-blue-200" />
 //             </div>
 //           </div>
-          
+
 //           <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-emerald-500/25">
 //             <div className="flex items-center justify-between">
 //               <div>
@@ -3912,7 +3908,7 @@
 //               <FiClock className="h-8 w-8 text-emerald-200" />
 //             </div>
 //           </div>
-          
+
 //           <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-amber-500/25">
 //             <div className="flex items-center justify-between">
 //               <div>
@@ -3924,7 +3920,7 @@
 //               <FiAlertCircle className="h-8 w-8 text-amber-200" />
 //             </div>
 //           </div>
-          
+
 //           <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-purple-500/25">
 //             <div className="flex items-center justify-between">
 //               <div>
@@ -3937,7 +3933,7 @@
 //         </motion.div>
 
 //         {/* FILTER / SEARCH */}
-//         <motion.div 
+//         <motion.div
 //           initial={{ y: 20, opacity: 0 }}
 //           animate={{ y: 0, opacity: 1 }}
 //           transition={{ delay: 0.2 }}
@@ -3986,7 +3982,7 @@
 //                       className="pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-700/50 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 w-full sm:w-auto"
 //                     />
 //                   </div>
-                  
+
 //                   {(filterDate || searchTerm) && (
 //                     <motion.button
 //                       initial={{ scale: 0, opacity: 0 }}
@@ -4003,7 +3999,7 @@
 
 //               {/* Active Filters */}
 //               {(filterDate || searchTerm) && (
-//                 <motion.div 
+//                 <motion.div
 //                   initial={{ height: 0, opacity: 0 }}
 //                   animate={{ height: 'auto', opacity: 1 }}
 //                   className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700"
@@ -4096,7 +4092,7 @@
 //                                   </span>
 //                                 </div>
 //                               </div>
-                              
+
 //                               <div className="flex items-center space-x-2">
 //                                 <motion.button
 //                                   whileHover={{ scale: 1.1 }}
@@ -4134,7 +4130,7 @@
 //                                   </p>
 //                                 </div>
 //                               )}
-                              
+
 //                               {item.task.length > 1 && (
 //                                 <motion.button
 //                                   whileHover={{ scale: 1.02 }}
@@ -4228,7 +4224,7 @@
 //                                   </span>
 //                                 </div>
 //                               </div>
-                              
+
 //                               <div className="flex items-center space-x-2">
 //                                 <motion.button
 //                                   whileHover={{ scale: 1.1 }}
@@ -4272,7 +4268,7 @@
 //                                   </p>
 //                                 </motion.div>
 //                               ))}
-                              
+
 //                               {item.task.length > 3 && (
 //                                 <motion.button
 //                                   whileHover={{ scale: 1.02 }}
@@ -4335,7 +4331,7 @@
 //                       <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl overflow-hidden shadow-xl shadow-slate-900/5 dark:shadow-black/20 border border-gray-200/50 dark:border-gray-700/50">
 //                         <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 py-6 px-8">
 //                           <h2 className="text-2xl font-bold text-white flex items-center">
-//                             <FiList className="mr-3 h-6 w-6" /> 
+//                             <FiList className="mr-3 h-6 w-6" />
 //                             Your Tasks
 //                             {(filterDate || searchTerm) && (
 //                               <span className="ml-3 text-sm font-medium bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
@@ -4573,7 +4569,7 @@
 //                     </span>{" "}
 //                     tasks
 //                   </div>
-                  
+
 //                   <div className="flex items-center space-x-2">
 //                     <motion.button
 //                       whileHover={{ scale: 1.05 }}
@@ -4668,7 +4664,7 @@
 //                   <div>
 //                     <h3 className="text-xl font-bold text-white">Task Details</h3>
 //                     <p className="text-white/80 text-sm">
-//                       {selectedTaskDetails.task.length} task{selectedTaskDetails.task.length !== 1 ? 's' : ''} 
+//                       {selectedTaskDetails.task.length} task{selectedTaskDetails.task.length !== 1 ? 's' : ''}
 //                       {selectedTaskDetails.task_Date && ` • ${formatDate(selectedTaskDetails.task_Date)}`}
 //                     </p>
 //                   </div>
@@ -4763,7 +4759,6 @@
 //   );
 // }
 
-
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -4825,7 +4820,7 @@ export default function UpdateTask() {
 
   const [editMode, setEditMode] = useState(false);
   const [editTaskId, setEditTaskId] = useState(null);
-  const [viewMode, setViewMode] = useState('table'); // 'cards' or 'table'
+  const [viewMode, setViewMode] = useState("table"); // 'cards' or 'table'
   const [showFilters, setShowFilters] = useState(false);
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [selectedTaskDetails, setSelectedTaskDetails] = useState(null);
@@ -4855,9 +4850,7 @@ export default function UpdateTask() {
     if (filterDate) list = list.filter((t) => t.task_Date === filterDate);
     if (searchTerm)
       list = list.filter((t) =>
-        t.task.some((x) =>
-          x.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+        t.task.some((x) => x.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     setFilteredTasks(list);
     setCurrentPage(1);
@@ -4908,7 +4901,7 @@ export default function UpdateTask() {
   /* ---------- submit ---------- */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     const nonEmpty = taskList.filter((t) => t.trim().length);
     if (!nonEmpty.length) return toast.error("Please enter at least one task.");
     if (!taskDate) return toast.error("Please select a date for this task.");
@@ -4970,10 +4963,10 @@ export default function UpdateTask() {
   const formatDate = (dateString) => {
     if (!dateString) return "No date";
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
     });
   };
 
@@ -4987,7 +4980,7 @@ export default function UpdateTask() {
 
   const truncateText = (text, maxLength = 50) => {
     if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + '...';
+    return text.substring(0, maxLength) + "...";
   };
 
   const openTaskDetailsModal = (task) => {
@@ -5004,14 +4997,14 @@ export default function UpdateTask() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 text-gray-800 dark:text-gray-100 transition-all duration-500">
       {/* HEADER */}
-      <motion.div 
+      <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-30 shadow-lg shadow-slate-900/5 dark:shadow-black/20"
       >
         <div className="mx-auto py-4 px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="flex items-center justify-between">
-            <motion.div 
+            <motion.div
               className="flex items-center space-x-3"
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -5028,27 +5021,27 @@ export default function UpdateTask() {
                 </p>
               </div>
             </motion.div>
-            
+
             <div className="flex items-center space-x-2 sm:space-x-3">
               {/* View Toggle - Hidden on mobile */}
               <div className="hidden md:flex items-center bg-gray-100 dark:bg-gray-800 rounded-xl p-1 border border-gray-200 dark:border-gray-700">
                 <button
-                  onClick={() => setViewMode('cards')}
+                  onClick={() => setViewMode("cards")}
                   className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    viewMode === 'cards'
-                      ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    viewMode === "cards"
+                      ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                      : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                   }`}
                 >
                   <FiGrid className="h-4 w-4 mr-1" />
                   Cards
                 </button>
                 <button
-                  onClick={() => setViewMode('table')}
+                  onClick={() => setViewMode("table")}
                   className={`flex items-center px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                    viewMode === 'table'
-                      ? 'bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm'
-                      : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+                    viewMode === "table"
+                      ? "bg-white dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                      : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                   }`}
                 >
                   <FiList className="h-4 w-4 mr-1" />
@@ -5064,10 +5057,10 @@ export default function UpdateTask() {
                 title="Refresh tasks"
               >
                 <FiRefreshCw
-                  className={`h-5 w-5 ${loading ? 'animate-spin' : ''}`}
+                  className={`h-5 w-5 ${loading ? "animate-spin" : ""}`}
                 />
               </motion.button>
-              
+
               <motion.button
                 onClick={openAddTaskModal}
                 whileHover={{ scale: 1.05 }}
@@ -5085,61 +5078,10 @@ export default function UpdateTask() {
 
       {/* MAIN CONTENT */}
       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-7xl">
-        
-        {/* STATS CARDS */}
-        <motion.div 
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-6 lg:mb-8"
-        >
-          <div className="bg-gradient-to-br from-blue-500 to-blue-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-blue-500/25">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-blue-100 text-sm font-medium">Total Tasks</p>
-                <p className="text-2xl lg:text-3xl font-bold">{fetchedTasks.length}</p>
-              </div>
-              <FiTarget className="h-8 w-8 text-blue-200" />
-            </div>
-          </div>
-          
-          <div className="bg-gradient-to-br from-emerald-500 to-emerald-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-emerald-500/25">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-emerald-100 text-sm font-medium">Today's Tasks</p>
-                <p className="text-2xl lg:text-3xl font-bold">
-                  {fetchedTasks.filter(task => isToday(task.task_Date)).length}
-                </p>
-              </div>
-              <FiClock className="h-8 w-8 text-emerald-200" />
-            </div>
-          </div>
-          
-          <div className="bg-gradient-to-br from-amber-500 to-amber-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-amber-500/25">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-amber-100 text-sm font-medium">Overdue</p>
-                <p className="text-2xl lg:text-3xl font-bold">
-                  {fetchedTasks.filter(task => isPastDue(task.task_Date)).length}
-                </p>
-              </div>
-              <FiAlertCircle className="h-8 w-8 text-amber-200" />
-            </div>
-          </div>
-          
-          <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-4 lg:p-6 rounded-2xl text-white shadow-lg shadow-purple-500/25">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-purple-100 text-sm font-medium">Filtered</p>
-                <p className="text-2xl lg:text-3xl font-bold">{filteredTasks.length}</p>
-              </div>
-              <FiTrendingUp className="h-8 w-8 text-purple-200" />
-            </div>
-          </div>
-        </motion.div>
+  
 
         {/* FILTER / SEARCH */}
-        <motion.div 
+        <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -5156,12 +5098,20 @@ export default function UpdateTask() {
                   <FiFilter className="mr-2 h-4 w-4" />
                   Filters & Search
                 </span>
-                <FiChevronDown className={`h-5 w-5 transition-transform duration-200 ${showFilters ? 'rotate-180' : ''}`} />
+                <FiChevronDown
+                  className={`h-5 w-5 transition-transform duration-200 ${
+                    showFilters ? "rotate-180" : ""
+                  }`}
+                />
               </button>
             </div>
 
             {/* Filter Content */}
-            <div className={`p-4 lg:p-6 ${showFilters ? 'block' : 'hidden md:block'}`}>
+            <div
+              className={`p-4 lg:p-6 ${
+                showFilters ? "block" : "hidden md:block"
+              }`}
+            >
               <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
                 {/* Search */}
                 <div className="relative flex-grow lg:max-w-md">
@@ -5188,7 +5138,7 @@ export default function UpdateTask() {
                       className="pl-10 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-700/50 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 w-full sm:w-auto"
                     />
                   </div>
-                  
+
                   {(filterDate || searchTerm) && (
                     <motion.button
                       initial={{ scale: 0, opacity: 0 }}
@@ -5205,16 +5155,15 @@ export default function UpdateTask() {
 
               {/* Active Filters */}
               {(filterDate || searchTerm) && (
-                <motion.div 
+                <motion.div
                   initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
+                  animate={{ height: "auto", opacity: 1 }}
                   className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700"
                 >
                   <div className="flex flex-wrap gap-2">
                     {searchTerm && (
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700">
-                        <FiSearch className="mr-1 h-3 w-3" />
-                        "{searchTerm}"
+                        <FiSearch className="mr-1 h-3 w-3" />"{searchTerm}"
                       </span>
                     )}
                     {filterDate && (
@@ -5281,31 +5230,34 @@ export default function UpdateTask() {
                                 </div>
                                 <div className="flex flex-col">
                                   {item.task_Date && (
-                                    <span className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold mb-1 ${
-                                      isToday(item.task_Date)
-                                        ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700'
-                                        : isPastDue(item.task_Date)
-                                        ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700'
-                                        : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
-                                    }`}>
+                                    <span
+                                      className={`inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold mb-1 ${
+                                        isToday(item.task_Date)
+                                          ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700"
+                                          : isPastDue(item.task_Date)
+                                          ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700"
+                                          : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700"
+                                      }`}
+                                    >
                                       <FiCalendar className="mr-1 h-3 w-3" />
                                       {formatDate(item.task_Date)}
                                     </span>
                                   )}
                                   <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700">
                                     <FiList className="mr-1 h-3 w-3" />
-                                    {item.task.length} task{item.task.length !== 1 ? 's' : ''}
+                                    {item.task.length} task
+                                    {item.task.length !== 1 ? "s" : ""}
                                   </span>
                                 </div>
                               </div>
-                              
+
                               {/* ALWAYS VISIBLE ACTION BUTTONS - NO ANIMATIONS */}
                               <div className="flex items-center space-x-2">
                                 <button
                                   type="button"
                                   onClick={() => handleUpdateClick(item)}
                                   className="p-2.5 rounded-lg bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-800/50 transition-colors border border-amber-200 dark:border-amber-700 shadow-sm"
-                                  style={{ opacity: 1, visibility: 'visible' }}
+                                  style={{ opacity: 1, visibility: "visible" }}
                                 >
                                   <FiEdit2 className="h-4 w-4" />
                                 </button>
@@ -5314,7 +5266,7 @@ export default function UpdateTask() {
                                   disabled={loadingId === item._id}
                                   onClick={() => handleDeleteTask(item._id)}
                                   className="p-2.5 rounded-lg bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors disabled:opacity-50 border border-red-200 dark:border-red-700 shadow-sm"
-                                  style={{ opacity: 1, visibility: 'visible' }}
+                                  style={{ opacity: 1, visibility: "visible" }}
                                 >
                                   {loadingId === item._id ? (
                                     <FiRefreshCw className="h-4 w-4 animate-spin" />
@@ -5337,7 +5289,7 @@ export default function UpdateTask() {
                                   </p>
                                 </div>
                               )}
-                              
+
                               {item.task.length > 1 && (
                                 <button
                                   type="button"
@@ -5346,7 +5298,10 @@ export default function UpdateTask() {
                                 >
                                   <div className="flex items-center justify-center space-x-2">
                                     <FiMoreVertical className="h-4 w-4" />
-                                    <span>View {item.task.length - 1} more task{item.task.length - 1 !== 1 ? 's' : ''}</span>
+                                    <span>
+                                      View {item.task.length - 1} more task
+                                      {item.task.length - 1 !== 1 ? "s" : ""}
+                                    </span>
                                   </div>
                                 </button>
                               )}
@@ -5362,13 +5317,15 @@ export default function UpdateTask() {
                                   </span>
                                 )}
                                 {item.task_Date && (
-                                  <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                                    isToday(item.task_Date)
-                                      ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
-                                      : isPastDue(item.task_Date)
-                                      ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-                                      : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                                  }`}>
+                                  <span
+                                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                                      isToday(item.task_Date)
+                                        ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300"
+                                        : isPastDue(item.task_Date)
+                                        ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                                        : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                                    }`}
+                                  >
                                     {isToday(item.task_Date) ? (
                                       <>
                                         <FiClock className="mr-1 h-3 w-3" />
@@ -5395,7 +5352,11 @@ export default function UpdateTask() {
                     </div>
 
                     {/* Desktop View Toggle */}
-                    <div className={`${viewMode === 'cards' ? 'hidden lg:block' : 'hidden'}`}>
+                    <div
+                      className={`${
+                        viewMode === "cards" ? "hidden lg:block" : "hidden"
+                      }`}
+                    >
                       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                         {currentTasks.map((item, idx) => (
                           <motion.div
@@ -5413,31 +5374,34 @@ export default function UpdateTask() {
                                 </div>
                                 <div className="flex flex-col">
                                   {item.task_Date && (
-                                    <span className={`inline-flex items-center px-3 py-1.5 rounded-xl text-sm font-semibold mb-2 ${
-                                      isToday(item.task_Date)
-                                        ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700'
-                                        : isPastDue(item.task_Date)
-                                        ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700'
-                                        : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
-                                    }`}>
+                                    <span
+                                      className={`inline-flex items-center px-3 py-1.5 rounded-xl text-sm font-semibold mb-2 ${
+                                        isToday(item.task_Date)
+                                          ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700"
+                                          : isPastDue(item.task_Date)
+                                          ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700"
+                                          : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700"
+                                      }`}
+                                    >
                                       <FiCalendar className="mr-2 h-4 w-4" />
                                       {formatDate(item.task_Date)}
                                     </span>
                                   )}
                                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700">
                                     <FiList className="mr-1 h-3 w-3" />
-                                    {item.task.length} task{item.task.length !== 1 ? 's' : ''}
+                                    {item.task.length} task
+                                    {item.task.length !== 1 ? "s" : ""}
                                   </span>
                                 </div>
                               </div>
-                              
+
                               {/* ALWAYS VISIBLE ACTION BUTTONS - NO ANIMATIONS */}
                               <div className="flex items-center space-x-3">
                                 <button
                                   type="button"
                                   onClick={() => handleUpdateClick(item)}
                                   className="p-3 rounded-xl bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 hover:bg-amber-200 dark:hover:bg-amber-800/50 transition-colors border border-amber-200 dark:border-amber-700 shadow-lg shadow-amber-500/10"
-                                  style={{ opacity: 1, visibility: 'visible' }}
+                                  style={{ opacity: 1, visibility: "visible" }}
                                 >
                                   <FiEdit2 className="h-5 w-5" />
                                 </button>
@@ -5446,7 +5410,7 @@ export default function UpdateTask() {
                                   disabled={loadingId === item._id}
                                   onClick={() => handleDeleteTask(item._id)}
                                   className="p-3 rounded-xl bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors disabled:opacity-50 border border-red-200 dark:border-red-700 shadow-lg shadow-red-500/10"
-                                  style={{ opacity: 1, visibility: 'visible' }}
+                                  style={{ opacity: 1, visibility: "visible" }}
                                 >
                                   {loadingId === item._id ? (
                                     <FiRefreshCw className="h-5 w-5 animate-spin" />
@@ -5464,7 +5428,9 @@ export default function UpdateTask() {
                                   key={taskIdx}
                                   initial={{ opacity: 0, x: -20 }}
                                   animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: (idx * 0.1) + (taskIdx * 0.05) }}
+                                  transition={{
+                                    delay: idx * 0.1 + taskIdx * 0.05,
+                                  }}
                                   className="flex items-start space-x-4 p-4 rounded-xl bg-gradient-to-r from-gray-50 to-gray-100/50 dark:from-gray-700/50 dark:to-gray-700/30 border border-gray-200/60 dark:border-gray-600/40 backdrop-blur-sm"
                                 >
                                   <div className="flex items-center justify-center h-7 w-7 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 text-white text-sm font-bold flex-shrink-0 mt-0.5 shadow-lg">
@@ -5475,7 +5441,7 @@ export default function UpdateTask() {
                                   </p>
                                 </motion.div>
                               ))}
-                              
+
                               {item.task.length > 3 && (
                                 <motion.button
                                   whileHover={{ scale: 1.02 }}
@@ -5485,7 +5451,10 @@ export default function UpdateTask() {
                                 >
                                   <div className="flex items-center justify-center space-x-2">
                                     <FiMoreVertical className="h-4 w-4" />
-                                    <span>View {item.task.length - 3} more task{item.task.length - 3 !== 1 ? 's' : ''}</span>
+                                    <span>
+                                      View {item.task.length - 3} more task
+                                      {item.task.length - 3 !== 1 ? "s" : ""}
+                                    </span>
                                   </div>
                                 </motion.button>
                               )}
@@ -5501,13 +5470,15 @@ export default function UpdateTask() {
                                   </span>
                                 )}
                                 {item.task_Date && (
-                                  <span className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
-                                    isToday(item.task_Date)
-                                      ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
-                                      : isPastDue(item.task_Date)
-                                      ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-                                      : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                                  }`}>
+                                  <span
+                                    className={`inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium ${
+                                      isToday(item.task_Date)
+                                        ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300"
+                                        : isPastDue(item.task_Date)
+                                        ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300"
+                                        : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                                    }`}
+                                  >
                                     {isToday(item.task_Date) ? (
                                       <>
                                         <FiClock className="mr-1.5 h-3 w-3" />
@@ -5534,11 +5505,15 @@ export default function UpdateTask() {
                     </div>
 
                     {/* Desktop Table View */}
-                    <div className={`${viewMode === 'table' ? 'hidden lg:block' : 'hidden'}`}>
+                    <div
+                      className={`${
+                        viewMode === "table" ? "hidden lg:block" : "hidden"
+                      }`}
+                    >
                       <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl overflow-hidden shadow-xl shadow-slate-900/5 dark:shadow-black/20 border border-gray-200/50 dark:border-gray-700/50">
                         <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 py-6 px-8">
                           <h2 className="text-2xl font-bold text-white flex items-center">
-                            <FiList className="mr-3 h-6 w-6" /> 
+                            <FiList className="mr-3 h-6 w-6" />
                             Your Tasks
                             {(filterDate || searchTerm) && (
                               <span className="ml-3 text-sm font-medium bg-white/20 px-3 py-1 rounded-full backdrop-blur-sm">
@@ -5556,7 +5531,14 @@ export default function UpdateTask() {
                           <table className="min-w-full divide-y divide-gray-200/50 dark:divide-gray-700/50">
                             <thead className="bg-gray-50/80 dark:bg-gray-700/50 backdrop-blur-sm">
                               <tr>
-                                {["#", "First Task", "Total Tasks", "Date", "Status", "Actions"].map((header) => (
+                                {[
+                                  "#",
+                                  "First Task",
+                                  "Total Tasks",
+                                  "Date",
+                                  "Status",
+                                  "Actions",
+                                ].map((header) => (
                                   <th
                                     key={header}
                                     className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider"
@@ -5598,13 +5580,16 @@ export default function UpdateTask() {
                                     <div className="flex items-center space-x-2">
                                       <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700">
                                         <FiList className="mr-1 h-3 w-3" />
-                                        {item.task.length} task{item.task.length !== 1 ? 's' : ''}
+                                        {item.task.length} task
+                                        {item.task.length !== 1 ? "s" : ""}
                                       </span>
                                       {item.task.length > 1 && (
                                         <motion.button
                                           whileHover={{ scale: 1.05 }}
                                           whileTap={{ scale: 0.95 }}
-                                          onClick={() => openTaskDetailsModal(item)}
+                                          onClick={() =>
+                                            openTaskDetailsModal(item)
+                                          }
                                           className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 hover:bg-purple-200 dark:hover:bg-purple-800/50 transition-colors border border-purple-200 dark:border-purple-700"
                                         >
                                           <FiMoreVertical className="mr-1 h-3 w-3" />
@@ -5615,13 +5600,15 @@ export default function UpdateTask() {
                                   </td>
                                   <td className="px-6 py-4">
                                     {item.task_Date ? (
-                                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                                        isToday(item.task_Date)
-                                          ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700'
-                                          : isPastDue(item.task_Date)
-                                          ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700'
-                                          : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700'
-                                      }`}>
+                                      <span
+                                        className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                                          isToday(item.task_Date)
+                                            ? "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-700"
+                                            : isPastDue(item.task_Date)
+                                            ? "bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-700"
+                                            : "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-700"
+                                        }`}
+                                      >
                                         <FiCalendar className="mr-2 h-4 w-4" />
                                         {formatDate(item.task_Date)}
                                       </span>
@@ -5633,60 +5620,37 @@ export default function UpdateTask() {
                                     )}
                                   </td>
                                   <td className="px-6 py-4">
-                                    {item.task_Date && (
-                                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                                        isToday(item.task_Date)
-                                          ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'
-                                          : isPastDue(item.task_Date)
-                                          ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-                                          : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-                                      }`}>
-                                        {isToday(item.task_Date) ? (
-                                          <>
-                                            <FiClock className="mr-1 h-3 w-3" />
-                                            Today
-                                          </>
-                                        ) : isPastDue(item.task_Date) ? (
-                                          <>
-                                            <FiAlertCircle className="mr-1 h-3 w-3" />
-                                            Overdue
-                                          </>
-                                        ) : (
-                                          <>
-                                            <FiBookmark className="mr-1 h-3 w-3" />
-                                            Scheduled
-                                          </>
-                                        )}
-                                      </span>
-                                    )}
+                                    {item.task_Date}
                                   </td>
-                                  <td className="px-6 py-4">
-                                    <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                      <motion.button
-                                        whileHover={{ scale: 1.1 }}
-                                        whileTap={{ scale: 0.9 }}
-                                        onClick={() => handleUpdateClick(item)}
-                                        className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-800/40 transition-all duration-200 border border-amber-200 dark:border-amber-700"
-                                      >
-                                        <FiEdit2 className="mr-1 h-4 w-4" />
-                                        Edit
-                                      </motion.button>
-                                      <motion.button
-                                        whileHover={{ scale: 1.1 }}
-                                        whileTap={{ scale: 0.9 }}
-                                        disabled={loadingId === item._id}
-                                        onClick={() => handleDeleteTask(item._id)}
-                                        className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800/40 transition-all duration-200 disabled:opacity-50 border border-red-200 dark:border-red-700"
-                                      >
-                                        {loadingId === item._id ? (
-                                          <FiRefreshCw className="mr-1 h-4 w-4 animate-spin" />
-                                        ) : (
-                                          <FiTrash2 className="mr-1 h-4 w-4" />
-                                        )}
-                                        Delete
-                                      </motion.button>
-                                    </div>
-                                  </td>
+                              
+
+<td className="px-6 py-4">
+  <div className="flex items-center space-x-2">
+    <motion.button
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      onClick={() => handleUpdateClick(item)}
+      className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-800/40 transition-all duration-200 border border-amber-200 dark:border-amber-700"
+    >
+      <FiEdit2 className="mr-1 h-4 w-4" />
+      Edit
+    </motion.button>
+    <motion.button
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.9 }}
+      disabled={loadingId === item._id}
+      onClick={() => handleDeleteTask(item._id)}
+      className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800/40 transition-all duration-200 disabled:opacity-50 border border-red-200 dark:border-red-700"
+    >
+      {loadingId === item._id ? (
+        <FiRefreshCw className="mr-1 h-4 w-4 animate-spin" />
+      ) : (
+        <FiTrash2 className="mr-1 h-4 w-4" />
+      )}
+      Delete
+    </motion.button>
+  </div>
+</td>
                                 </motion.tr>
                               ))}
                             </tbody>
@@ -5776,7 +5740,7 @@ export default function UpdateTask() {
                     </span>{" "}
                     tasks
                   </div>
-                  
+
                   <div className="flex items-center space-x-2">
                     <motion.button
                       whileHover={{ scale: 1.05 }}
@@ -5857,5 +5821,3 @@ export default function UpdateTask() {
     </div>
   );
 }
-
-
