@@ -4759,6 +4759,8 @@
 //   );
 // }
 
+
+
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -4995,12 +4997,12 @@ export default function UpdateTask() {
 
   /* ---------- UI ---------- */
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 text-gray-800 dark:text-gray-100 transition-all duration-500">
+    <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl border border-white/20 dark:border-gray-700/30 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-500 animate-fade-in">
       {/* HEADER */}
       <motion.div
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-30 shadow-lg shadow-slate-900/5 dark:shadow-black/20"
+        className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border-b border-slate-200/50 dark:border-slate-700/50 sticky top-0 z-30 shadow-lg shadow-slate-900/5 dark:shadow-black/20 rounded-2xl"
       >
         <div className="mx-auto py-4 px-4 sm:px-6 lg:px-8 max-w-7xl">
           <div className="flex items-center justify-between">
@@ -5014,11 +5016,8 @@ export default function UpdateTask() {
               </div>
               <div>
                 <h1 className="text-2xl lg:text-3xl font-black bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 bg-clip-text text-transparent">
-                  TaskFlow Pro
+                  Update Daily Task
                 </h1>
-                <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-                  Organize • Execute • Achieve
-                </p>
               </div>
             </motion.div>
 
@@ -5065,7 +5064,7 @@ export default function UpdateTask() {
                 onClick={openAddTaskModal}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center px-4 py-2.5 rounded-xl shadow-lg shadow-indigo-500/25 text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-sm font-semibold transition-all duration-200 border border-indigo-500/20"
+                className="inline-flex items-center px-4 py-2.5 rounded-2xl  text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-700 hover:via-purple-700 hover:to-pink-700 text-sm font-semibold transition-all duration-200  overflow-hidden"
               >
                 <FiPlus className="mr-2 h-5 w-5" />
                 <span className="hidden sm:inline">Add Task</span>
@@ -5078,8 +5077,6 @@ export default function UpdateTask() {
 
       {/* MAIN CONTENT */}
       <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8 max-w-7xl">
-  
-
         {/* FILTER / SEARCH */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
@@ -5527,16 +5524,23 @@ export default function UpdateTask() {
                           </h2>
                         </div>
 
-                        <div className="overflow-x-auto">
+                        <div
+                          className="overflow-x-auto  [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+                transition-colors duration-300"
+                        >
                           <table className="min-w-full divide-y divide-gray-200/50 dark:divide-gray-700/50">
                             <thead className="bg-gray-50/80 dark:bg-gray-700/50 backdrop-blur-sm">
                               <tr>
                                 {[
-                                  "#",
+                                  "S.L",
                                   "First Task",
                                   "Total Tasks",
                                   "Date",
-                                  "Status",
+                               
                                   "Actions",
                                 ].map((header) => (
                                   <th
@@ -5579,8 +5583,8 @@ export default function UpdateTask() {
                                   <td className="px-6 py-4">
                                     <div className="flex items-center space-x-2">
                                       <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-700">
-                                        <FiList className="mr-1 h-3 w-3" />
-                                        {item.task.length} task
+                                        {/* <FiList className="mr-1 h-3 w-3" /> */}
+                                        {item.task.length} task{" "}
                                         {item.task.length !== 1 ? "s" : ""}
                                       </span>
                                       {item.task.length > 1 && (
@@ -5619,38 +5623,37 @@ export default function UpdateTask() {
                                       </span>
                                     )}
                                   </td>
-                                  <td className="px-6 py-4">
-                                    {item.task_Date}
-                                  </td>
-                              
+                           
 
-<td className="px-6 py-4">
-  <div className="flex items-center space-x-2">
-    <motion.button
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
-      onClick={() => handleUpdateClick(item)}
-      className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-800/40 transition-all duration-200 border border-amber-200 dark:border-amber-700"
-    >
-      <FiEdit2 className="mr-1 h-4 w-4" />
-      Edit
-    </motion.button>
-    <motion.button
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
-      disabled={loadingId === item._id}
-      onClick={() => handleDeleteTask(item._id)}
-      className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800/40 transition-all duration-200 disabled:opacity-50 border border-red-200 dark:border-red-700"
-    >
-      {loadingId === item._id ? (
-        <FiRefreshCw className="mr-1 h-4 w-4 animate-spin" />
-      ) : (
-        <FiTrash2 className="mr-1 h-4 w-4" />
-      )}
-      Delete
-    </motion.button>
-  </div>
-</td>
+                                  <td className="px-6 py-4">
+                                    <div className="flex items-center space-x-2">
+                                      <motion.button
+                                        whileHover={{ scale: 1.1 }}
+                                        whileTap={{ scale: 0.9 }}
+                                        onClick={() => handleUpdateClick(item)}
+                                        className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-800/40 transition-all duration-200 border border-amber-200 dark:border-amber-700"
+                                      >
+                                        <FiEdit2 className="mr-1 h-4 w-4" />
+                                        Edit
+                                      </motion.button>
+                                      <motion.button
+                                        whileHover={{ scale: 1.1 }}
+                                        whileTap={{ scale: 0.9 }}
+                                        disabled={loadingId === item._id}
+                                        onClick={() =>
+                                          handleDeleteTask(item._id)
+                                        }
+                                        className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800/40 transition-all duration-200 disabled:opacity-50 border border-red-200 dark:border-red-700"
+                                      >
+                                        {loadingId === item._id ? (
+                                          <FiRefreshCw className="mr-1 h-4 w-4 animate-spin" />
+                                        ) : (
+                                          <FiTrash2 className="mr-1 h-4 w-4" />
+                                        )}
+                                        Delete
+                                      </motion.button>
+                                    </div>
+                                  </td>
                                 </motion.tr>
                               ))}
                             </tbody>
