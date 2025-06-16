@@ -17,7 +17,7 @@ const Dashboard = () => {
 
   const [departmentId, setDepartmentId] = useState("");
   const [activeTab, setActiveTab] = useState("All Departments");
-  const [attendanceData, setAttendanceData] = useState(null);
+  const [attendanceData, setAttendanceData] = useState('');
   const [date, setDate] = useState(
     () => new Date().toISOString().substring(0, 10) 
   );
@@ -77,6 +77,7 @@ const Dashboard = () => {
 
     const {totalEmployees, presentCount, absentCount} = attendanceData
 
+
     const percentageCount = (total, data) => {
       return ((data / total) * 100).toFixed(2);
     }
@@ -91,7 +92,9 @@ const Dashboard = () => {
           setAttendanceData(res.data.data);
         } catch (error) {
           toast.error(error.response?.data?.message || "Failed to Get Department Attendance.");
-        } 
+        } finally {
+          
+        }
     };
 
     const festivals = [
