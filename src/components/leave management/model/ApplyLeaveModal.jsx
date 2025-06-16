@@ -1,5 +1,3 @@
-
-
 import React, { useEffect, useState } from "react";
 import BaseModal from "../../common/BaseModal";
 import { useForm } from "react-hook-form";
@@ -32,14 +30,12 @@ export default function ApplyLeaveModal({ show, onClose }) {
   const leave_To = watch("leave_To");
   const leave_HalfDay = watch("leave_HalfDay");
 
-  // Automatically set leave_From to leave_To for half-day leaves
   useEffect(() => {
     if (leave_HalfDay && leave_To) {
       setValue("leave_From", leave_To);
     }
   }, [leave_HalfDay, leave_To, setValue]);
 
-  // Re-calculate number of days whenever dates or half-day toggle changes
   useEffect(() => {
     if (leave_From) {
       const fromDate = new Date(leave_From);
@@ -58,7 +54,6 @@ export default function ApplyLeaveModal({ show, onClose }) {
     }
   }, [leave_From, leave_To, leave_HalfDay, setValue]);
 
-  // For confirmation dialog
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [formData, setFormData] = useState(null);
 
