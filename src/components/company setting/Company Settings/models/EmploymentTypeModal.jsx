@@ -10,7 +10,7 @@ export default function EmploymentTypeModal({
   handleCheckboxChange,
   deductions,
   payrollCycles,
-  leaveSystems,
+  workingDaySystem,
   selectedPayrollCycleId,
   setSelectedPayrollCycleId,
   selectedLeaveSystemId,
@@ -74,7 +74,7 @@ export default function EmploymentTypeModal({
         </div>
         <div className="mb-4">
           <label className="block mb-1 font-semibold">
-            Select Leave System
+            Select Working Day System
           </label>
           <select
             value={selectedLeaveSystemId}
@@ -82,7 +82,7 @@ export default function EmploymentTypeModal({
             className="w-full p-2 border dark:border-gray-700 rounded dark:bg-gray-800"
           >
             <option value="">Select System</option>
-            {leaveSystems.map((ls) => (
+            {workingDaySystem.map((ls) => (
               <option key={ls.id} value={ls.id}>
                 {ls.name}
               </option>

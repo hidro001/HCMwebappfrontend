@@ -12,10 +12,10 @@ export default function EmploymentTypes() {
     deleteEmploymentType,
     deductions,
     payrollCycles,
-    leaveSystems,
+    workingDaySystem,
     fetchDeductions,
     fetchPayrollCycles,
-    fetchLeaveSystems,
+    fetchWorkingDaySystems,
   } = useCompanySettingsStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,12 +30,12 @@ export default function EmploymentTypes() {
     fetchEmploymentTypes();
     fetchDeductions();
     fetchPayrollCycles();
-    fetchLeaveSystems();
+    fetchWorkingDaySystems();
   }, [
     fetchEmploymentTypes,
     fetchDeductions,
     fetchPayrollCycles,
-    fetchLeaveSystems,
+    fetchWorkingDaySystems,
   ]);
 
   const handleAdd = () => {
@@ -151,7 +151,7 @@ export default function EmploymentTypes() {
                   et.payrollCycleId}
               </td>
               <td className="p-2 text-gray-700 dark:text-gray-200">
-                {leaveSystems.find((ls) => ls.id === et.leaveSystemId)?.name ??
+                {workingDaySystem.find((ls) => ls.id === et.leaveSystemId)?.name ??
                   et.leaveSystemId}
               </td>
               <td className="p-2 text-gray-700 dark:text-gray-200">
@@ -184,7 +184,7 @@ export default function EmploymentTypes() {
         handleCheckboxChange={handleCheckboxChange}
         deductions={deductions}
         payrollCycles={payrollCycles}
-        leaveSystems={leaveSystems}
+        workingDaySystem={workingDaySystem}
         selectedPayrollCycleId={selectedPayrollCycleId}
         setSelectedPayrollCycleId={setSelectedPayrollCycleId}
         selectedLeaveSystemId={selectedLeaveSystemId}

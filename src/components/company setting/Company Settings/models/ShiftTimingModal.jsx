@@ -36,7 +36,8 @@ export default function ShiftTimingModal({
             type="time"
             value={start}
             onChange={onStartChange}
-            className="w-full p-2 border dark:border-gray-600 rounded dark:bg-gray-700"
+            step="60"
+            className="w-full p-2 border dark:border-gray-600 rounded dark:bg-gray-700 font-mono"
           />
         </div>
         <div className="mb-4">
@@ -45,7 +46,8 @@ export default function ShiftTimingModal({
             type="time"
             value={end}
             onChange={onEndChange}
-            className="w-full p-2 border dark:border-gray-600 rounded dark:bg-gray-700"
+            step="60"
+            className="w-full p-2 border dark:border-gray-600 rounded dark:bg-gray-700 font-mono"
           />
         </div>
         <div className="flex justify-end space-x-2">

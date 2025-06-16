@@ -148,7 +148,7 @@ export const usePoshStore = create((set, get) => ({
   fetchAllEmployees: async () => {
     try {
       set({ loading: true });
-      const response = await axiosInstance.get('/user/all-user');
+      const response = await axiosInstance.get('/user/get-all');
       // Assuming the server returns the employees array in response.data.data
       set({ employees: response.data.data, loading: false });
     } catch (err) {

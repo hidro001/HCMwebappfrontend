@@ -1,34 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { FiPrinter, FiDownload, FiSearch } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiPrinter, FiDownload, FiSearch, FiBriefcase, FiCalendar, FiAlertTriangle, FiSun, FiMoon, FiCheckCircle,
+ FiLogOut, FiClock, FiX, FiChevronLeft, FiChevronRight, FiFilter, FiRefreshCw, FiUser, FiDollarSign, FiTrendingUp,
+ FiMenu, FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import ConfirmationDialog from "../common/ConfirmationDialog";
-import 'react-clock/dist/Clock.css';      // React Clock's default styles
-import 'react-time-picker/dist/TimePicker.css'; 
-import TimePicker from 'react-time-picker';
+import "react-clock/dist/Clock.css";
+import "react-time-picker/dist/TimePicker.css";
+import TimePicker from "react-time-picker";
 import axiosInstance from "../../service/axiosInstance";
-
-// If your store has a PDF method, import that from your Zustand store
 import { useOwnFullAttendanceStore } from "../../store/useOwnFullAttendanceStore";
-import {
-  FiBriefcase,
-  FiCalendar,
-  FiAlertTriangle,
-  FiSun,
-  FiMoon,
-  FiCheckCircle,
-  FiLogOut,
-} from "react-icons/fi";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
-/* 
-  --------------------------------------------------------------------------------------
-  HELPER FUNCTIONS (no TypeScript, purely JS)
-  --------------------------------------------------------------------------------------
-*/
-
-// Returns all days of a given (year, month) pinned around noon to avoid TZ shift:
 function getAllDaysInMonth(year, month) {
   const days = [];
   let date = new Date(year, month - 1, 1, 12);
@@ -39,7 +23,6 @@ function getAllDaysInMonth(year, month) {
   return days;
 }
 
-// Convert "hh:mm:ss AM/PM" → "HH:mm:ss" in 24-hour format
 function convertTo24Hour(timeString) {
   if (!timeString) return null;
   const [timePart, ampm] = timeString.split(" ");
@@ -65,7 +48,6 @@ function convertTo24Hour(timeString) {
   );
 }
 
-// Calculate hours difference between login/logout
 function getHoursWorked(login, logout) {
   if (!login || !logout) return 0;
   const login24 = convertTo24Hour(login);
@@ -78,7 +60,31 @@ function getHoursWorked(login, logout) {
   return diffMs > 0 ? diffMs / (1000 * 60 * 60) : 0;
 }
 
-// If your breaks contain either durations in minutes or start/end times:
+function formatHoursWorked(hoursWorked) {
+  if (hoursWorked === 0) return "0h 0m";
+
+  const totalMinutes = hoursWorked * 60;
+  
+  if (totalMinutes < 1) {
+    const seconds = Math.round(hoursWorked * 3600);
+    return `${seconds}s`;
+  }
+  
+  if (totalMinutes < 60) {
+    const minutes = Math.round(totalMinutes);
+    return `${minutes}m`;
+  }
+  
+  const wholeHours = Math.floor(hoursWorked);
+  const remainingMinutes = Math.round((hoursWorked - wholeHours) * 60);
+
+  if (remainingMinutes === 0) {
+    return `${wholeHours}h`;
+  }
+
+  return `${wholeHours}h ${remainingMinutes}m`;
+}
+
 function getTotalBreakTime(breaks = []) {
   let totalMinutes = 0;
   for (const br of breaks) {
@@ -97,7 +103,6 @@ function getTotalBreakTime(breaks = []) {
   return `${hours}h ${minutes}m`;
 }
 
-// Return only unique dates from attendance to avoid duplicates
 function getUniqueAttendanceData(attendanceData = []) {
   const unique = [];
   const seen = new Set();
@@ -110,7 +115,6 @@ function getUniqueAttendanceData(attendanceData = []) {
   return unique;
 }
 
-// total shifts (old snippet logic)
 function calculateTotalShifts(attendanceData, year, month) {
   return attendanceData.filter((rec) => {
     const d = new Date(rec.date);
@@ -123,7 +127,6 @@ function calculateTotalShifts(attendanceData, year, month) {
   }).length;
 }
 
-// total leaves (excluding approved, ignoring holidays, etc.)
 function calculateTotalLeaves({
   attendanceData,
   approvedLeaves,
@@ -148,7 +151,7 @@ function calculateTotalLeaves({
   let totalLeaves = 0;
   for (const dateObj of allDays) {
     const formatted = dateObj.toISOString().split("T")[0];
-    const dayName = dateObj.toLocaleDateString("en-US", { weekday: "long" });
+    const dayName = dateObj.toLocaleDateString("en-US", { weekday: "short" });
 
     const isWorkingDay =
       leaveSystemDetails &&
@@ -178,7 +181,6 @@ function calculateTotalLeaves({
   return totalLeaves;
 }
 
-// total half days
 function calculateTotalHalfDays(
   attendanceData,
   year,
@@ -202,7 +204,6 @@ function calculateTotalHalfDays(
   return count;
 }
 
-// not even half day
 function calculateNotEvenHalfDays(attendanceData, year, month) {
   let count = 0;
   for (const rec of attendanceData) {
@@ -219,7 +220,6 @@ function calculateNotEvenHalfDays(attendanceData, year, month) {
   return count;
 }
 
-// completed days (≥ attendancePolicies.fullDayHours or 9 default)
 function calculateTotalCompletedDays(
   attendanceData,
   year,
@@ -242,7 +242,6 @@ function calculateTotalCompletedDays(
   return count;
 }
 
-// total lates
 function calculateTotalLates(
   attendanceData,
   year,
@@ -262,7 +261,11 @@ function calculateTotalLates(
       const shiftDate = new Date("1970-01-01T" + shiftStart24);
       shiftDate.setMinutes(shiftDate.getMinutes() + graceMins);
 
-      const loginDate = new Date("1970-01-01T" + convertTo24Hour(rec.login));
+      // FIX: Use converted 24-hour format here too
+      const login24 = convertTo24Hour(rec.login);
+      if (!login24) continue;
+      const loginDate = new Date("1970-01-01T" + login24);
+
       if (loginDate > shiftDate) {
         count++;
       }
@@ -271,7 +274,6 @@ function calculateTotalLates(
   return count;
 }
 
-// not logged out
 function calculateNotLoggedOut(attendanceData, year, month) {
   const today = new Date();
   return attendanceData.filter((rec) => {
@@ -286,7 +288,6 @@ function calculateNotLoggedOut(attendanceData, year, month) {
   }).length;
 }
 
-// get total working days
 function getTotalWorkingDays(
   leaveSystemDetails,
   companySettings,
@@ -323,7 +324,6 @@ function getTotalWorkingDays(
   return workingDays.length;
 }
 
-// next payroll date
 function getPayrollPeriodDates({
   year,
   month,
@@ -368,7 +368,6 @@ function getPayrollPeriodDates({
   return { startDate, endDate, nextPayrollDate };
 }
 
-// parse shift timing (e.g., "Saket (09:00 - 07:00)")
 function parseShiftTiming(shiftString) {
   if (!shiftString) return null;
   const regex = /(.+?)\s*\((\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})\)/;
@@ -378,7 +377,6 @@ function parseShiftTiming(shiftString) {
   return { name: name.trim(), startTime: start.trim(), endTime: end.trim() };
 }
 
-// old snippet approach to final salary
 function calculateFinalSalary({
   baseSalary,
   attendanceData,
@@ -391,7 +389,6 @@ function calculateFinalSalary({
   year,
   month,
 }) {
-  // If baseSalary is 0 or missing, bail out
   if (!baseSalary || !attendancePolicies || baseSalary <= 0) {
     return {
       finalSalary: "₹ 0.00",
@@ -406,7 +403,6 @@ function calculateFinalSalary({
   const calcMethod = attendancePolicies.calcSalaryBasedOn || "WORKING_DAYS";
   const totalPaidLeaves = userProfileData?.no_of_Paid_Leave || 0;
 
-  // determine denominator
   const denom =
     calcMethod === "CALENDAR_DAYS"
       ? new Date(year, month, 0).getDate()
@@ -432,7 +428,6 @@ function calculateFinalSalary({
         )
     : denom;
 
-  // total leaves
   const totalLeaves = calculateTotalLeaves({
     attendanceData,
     approvedLeaves,
@@ -445,7 +440,6 @@ function calculateFinalSalary({
   const notLoggedOutDays = calculateNotLoggedOut(attendanceData, year, month);
   const totalUnpaidLeaves = totalLeaves + notEvenHalfDays + notLoggedOutDays;
 
-  // how many of those are "paid" leaves
   let paidLeavesUsed = 0;
   for (const lv of approvedLeaves) {
     const from = new Date(lv.leave_From);
@@ -462,7 +456,6 @@ function calculateFinalSalary({
   }
   const unpaidLeaves = Math.max(totalUnpaidLeaves - paidLeavesUsed, 0);
 
-  // standard deductions from employmentType
   const deductionIds = employmentTypeDetails?.deductions || [];
   const allDeductions = companySettings?.deductions || [];
   const deductionDetails = deductionIds
@@ -487,11 +480,9 @@ function calculateFinalSalary({
     baseSalary - totalDeductionsAmount
   );
 
-  // fraction of the month
   const fractionOfMonthWorked = daysUpToToday / denom;
   const payForDaysUpToToday = leftoverAfterDeductions * fractionOfMonthWorked;
 
-  // daily rate
   const dailyRate = leftoverAfterDeductions / denom;
   const leavesDeduction = unpaidLeaves * dailyRate;
   breakdown.push({
@@ -500,7 +491,6 @@ function calculateFinalSalary({
     amount: leavesDeduction,
   });
 
-  // final
   const finalSalaryAmount = Math.max(0, payForDaysUpToToday - leavesDeduction);
 
   return {
@@ -513,7 +503,6 @@ function calculateFinalSalary({
   };
 }
 
-// monthName
 function monthName(m) {
   const months = [
     "January",
@@ -532,23 +521,89 @@ function monthName(m) {
   return months[m - 1] || "Unknown";
 }
 
+function debugAttendanceData(attendanceDataRaw, year, month) {
+  
+  if (!attendanceDataRaw || attendanceDataRaw.length === 0) {
+    return;
+  }
+  
+  const currentMonthData = attendanceDataRaw.filter(rec => {
+    const d = new Date(rec.date);
+    return d.getFullYear() === year && d.getMonth() + 1 === month;
+  });
+  
+  if (currentMonthData.length === 0) {
+    return;
+  }
 
+  // Check each record
+  currentMonthData.forEach((record, index) => {
+    
+    if (record.login && record.logout) {
+      const hoursWorked = getHoursWorked(record.login, record.logout);
+    }
+  });
+  return currentMonthData;
+}
 
-
-export default function OwmFullAttendance() {
-const [punchReason, setPunchReason] = useState("");
-  const [missedPunchModalOpen, setMissedPunchModalOpen] = useState(false);
-const [selectedDateForPunch, setSelectedDateForPunch] = useState(null);
-const [punchInTime, setPunchInTime] = useState("");
-const [punchOutTime, setPunchOutTime] = useState("");
-  const fetchAttendanceData = useOwnFullAttendanceStore(
-    (s) => s.fetchAttendanceData
+function checkFilteringIssues(finalAttendanceData, searchText) {
+  
+  const recordsWithData = finalAttendanceData.filter(item => 
+    item.logInTime !== "------" || item.logOutTime !== "------"
   );
+  
+  if (searchText) {
+    const filteredCount = finalAttendanceData.filter((item) => {
+      const combined = (item.date + " " + item.day + " " + item.status)
+        .toLowerCase()
+        .trim();
+      return combined.includes(searchText.toLowerCase().trim());
+    }).length;
+  }
+  
+  if (recordsWithData.length > 0) {
+    console.log("\nSample records with data:");
+    recordsWithData.slice(0, 3).forEach((record) => {
+      console.log(
+        `${record.date}: ${record.logInTime} - ${record.logOutTime} (${
+          record.status
+        }) - ${record.hoursWorked || "N/A"}`
+      );
+    });
+  }
+}
+
+export default function OwnFullAttendance() {
+
+  const [punchReason, setPunchReason] = useState("");
+  const [missedPunchModalOpen, setMissedPunchModalOpen] = useState(false);
+  const [selectedDateForPunch, setSelectedDateForPunch] = useState(null);
+  const [punchInTime, setPunchInTime] = useState("");
+  const [punchOutTime, setPunchOutTime] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
+      }
+    };
+
+    handleResize();
+
+    window.addEventListener('resize', handleResize);
+
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const [showPayrollDetails, setShowPayrollDetails] = useState(false);
+  const fetchAttendanceData = useOwnFullAttendanceStore((s) => s.fetchAttendanceData);
   const attendanceDataRaw = useOwnFullAttendanceStore((s) => s.attendanceData);
   const approvedLeaves = useOwnFullAttendanceStore((s) => s.approvedLeaves);
   const companySettings = useOwnFullAttendanceStore((s) => s.companySettings);
   const userProfileData = useOwnFullAttendanceStore((s) => s.userProfileData);
-
   const attendancePolicies = useOwnFullAttendanceStore(
     (s) => s.attendancePolicies
   );
@@ -557,25 +612,14 @@ const [punchOutTime, setPunchOutTime] = useState("");
   );
   const generatePDF = useOwnFullAttendanceStore((s) => s.generatePDF);
   const attendanceError = useOwnFullAttendanceStore((s) => s.error);
-  const leaveSystemDetails = useOwnFullAttendanceStore(
-    (s) => s.leaveSystemDetails
-  );
-
+  const leaveSystemDetails = useOwnFullAttendanceStore((s) => s.leaveSystemDetails);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
-  function openMissedPunchModal(dateRow) {
-  // 'dateRow' is the object containing date info, etc.
-  setSelectedDateForPunch(dateRow);
-  setMissedPunchModalOpen(true);
-}
-
-  // Date controls
   const today = new Date();
   const defaultMonthString =
     today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0");
   const [selectedMonth, setSelectedMonth] = useState(defaultMonthString);
 
-  // Search & pagination
   const [searchText, setSearchText] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -584,23 +628,24 @@ const [punchOutTime, setPunchOutTime] = useState("");
     fetchAttendanceData();
   }, [fetchAttendanceData]);
 
-  // parse year & month
   const parts = selectedMonth.split("-");
   const year = parseInt(parts[0], 10);
   const month = parseInt(parts[1], 10);
 
-  // Make sure we have unique attendance records
   const attendanceData = getUniqueAttendanceData(attendanceDataRaw || []);
 
-  // SHIFT TIMING
-  const shiftTimingDetails = parseShiftTiming(
-    userProfileData?.shift_Timing || ""
-  );
+  const attendancePolicy = companySettings.attendancePolicies
 
-  // Build daily table
+  useEffect(() => {
+    if (attendanceDataRaw) {
+      debugAttendanceData(attendanceDataRaw, year, month);
+    }
+  }, [attendanceDataRaw, year, month, leaveSystemDetails, companySettings]);
+
+  const shiftTimingDetails = parseShiftTiming(userProfileData?.shift_Timing || "");
+
   const allDaysInMonth = getAllDaysInMonth(year, month);
 
-  // set of approved leaves
   const approvedLeaveDates = new Set();
   if (approvedLeaves) {
     for (const lv of approvedLeaves) {
@@ -619,7 +664,8 @@ const [punchOutTime, setPunchOutTime] = useState("");
   const todayObj = new Date();
   const finalAttendanceData = allDaysInMonth.map((dateObj, idx) => {
     const formatted = dateObj.toISOString().split("T")[0];
-    const dayName = dateObj.toLocaleDateString("en-US", { weekday: "long" });
+    const dayName = dateObj.toLocaleDateString("en-US", { weekday: "short" });
+
     let row = {
       sl: idx + 1,
       date: formatted,
@@ -630,7 +676,6 @@ const [punchOutTime, setPunchOutTime] = useState("");
       status: "------",
     };
 
-    // Check if holiday or not working or an approved leave
     const isHoliday = companySettings?.holidays?.some(
       (h) => new Date(h.date).toISOString().split("T")[0] === formatted
     );
@@ -639,7 +684,6 @@ const [punchOutTime, setPunchOutTime] = useState("");
     const isApprovedLeave = approvedLeaveDates.has(formatted);
 
     if (isApprovedLeave) {
-      // old code might say "Paid Leave" or "Unpaid Leave" – up to you
       row.status = "Holiday";
       return row;
     }
@@ -648,51 +692,51 @@ const [punchOutTime, setPunchOutTime] = useState("");
       return row;
     }
 
-    // find attendance record
     const record = attendanceData.find((r) => r.date === formatted);
+    
     if (!record) {
       row.status = dateObj < todayObj ? "Absent" : "------";
       return row;
     }
 
-    // fill in login/logout
     if (record.login) row.logInTime = record.login;
     if (record.logout) row.logOutTime = record.logout;
 
-    // breaks
     if (record.breaks && record.breaks.length > 0) {
       row.totalBreak = getTotalBreakTime(record.breaks);
     }
 
-    // if no logout in the past => absent
     if (!record.logout) {
       row.status = dateObj < todayObj ? "Absent" : "------";
       return row;
     }
 
-    // Calculate total hours worked
     const hoursWorked = getHoursWorked(record.login, record.logout);
+    row.hoursWorked = formatHoursWorked(hoursWorked); 
 
-    // Convert decimal hours to “h m” format
-    const wholeHours = Math.floor(hoursWorked); //total hours worked
-    const remainingMinutes = Math.round((hoursWorked - wholeHours) * 60); //total hours worked
-
-    // Now store a string like "7h 21m"
-    row.hoursWorked = `${wholeHours}h ${remainingMinutes}m`; //total hours worked
-
-    if (hoursWorked >= 9) {
+    if (hoursWorked >= attendancePolicy.fullDayHours) {
       row.status = "Present";
-    } else if (hoursWorked >= 4.5 && hoursWorked < 9) {
-      row.status = hoursWorked <= 5 ? "Half Day" : "Not Even Half Day";
-    } else if (hoursWorked > 0 && hoursWorked < 4.5) {
+    } else if (hoursWorked >= attendancePolicy.halfDayHours) {
+      row.status = hoursWorked <= 5 ? "Half Day" : "Present";
+    } else if (hoursWorked > 0 && hoursWorked < attendancePolicy.halfDayHours) {
       row.status = "Not Even Half Day";
     } else {
-      row.status = "Present";
+      row.status = "Absent";
     }
+    
+    if (formatted === "2025-06-13") {
+      console.log("Final status:", row.status);
+    }
+
     return row;
   });
 
-  // filter by search
+  useEffect(() => {
+    if (finalAttendanceData.length > 0) {
+      checkFilteringIssues(finalAttendanceData, searchText);
+    }
+  }, [finalAttendanceData, searchText]);
+
   const filteredData = finalAttendanceData.filter((item) => {
     const combined = (item.date + " " + item.day + " " + item.status)
       .toLowerCase()
@@ -700,7 +744,6 @@ const [punchOutTime, setPunchOutTime] = useState("");
     return combined.includes(searchText.toLowerCase().trim());
   });
 
-  // pagination
   const totalEntries = filteredData.length;
   const totalPages = Math.ceil(totalEntries / rowsPerPage);
   const safeCurrentPage = Math.max(1, Math.min(currentPage, totalPages || 1));
@@ -708,7 +751,7 @@ const [punchOutTime, setPunchOutTime] = useState("");
   const endIndex = startIndex + rowsPerPage;
   const displayedData = filteredData.slice(startIndex, endIndex);
 
-  // "Old snippet" stats
+  // "Old snippet" stats - KEEPING ALL ORIGINAL CALCULATIONS
   const totalShifts = calculateTotalShifts(attendanceData, year, month);
   const totalLates = calculateTotalLates(
     attendanceData,
@@ -740,8 +783,7 @@ const [punchOutTime, setPunchOutTime] = useState("");
   );
   const notEvenHalfDays = calculateNotEvenHalfDays(attendanceData, year, month);
 
-  // final salary
-  // Parse the userProfileData?.salary as a number to avoid the toFixed() crash:
+  // final salary - KEEPING ORIGINAL LOGIC
   const numericBaseSalary =
     parseFloat(userProfileData?.current_Base_Salary) || 0;
 
@@ -764,7 +806,7 @@ const [punchOutTime, setPunchOutTime] = useState("");
     month,
   });
 
-  // next payroll date
+  // next payroll date - KEEPING ORIGINAL LOGIC
   const { nextPayrollDate } = getPayrollPeriodDates({
     year,
     month,
@@ -776,19 +818,27 @@ const [punchOutTime, setPunchOutTime] = useState("");
     ? nextPayrollDate.toDateString()
     : "Not available";
 
-  // event handlers
+  // event handlers - KEEPING ALL ORIGINAL HANDLERS
+  function openMissedPunchModal(dateRow) {
+    setSelectedDateForPunch(dateRow);
+    setMissedPunchModalOpen(true);
+  }
+
   function handleMonthChange(e) {
     setSelectedMonth(e.target.value);
     setCurrentPage(1);
   }
+
   function handleSearch(e) {
     setSearchText(e.target.value);
     setCurrentPage(1);
   }
+
   function handleRowsPerPage(e) {
     setRowsPerPage(Number(e.target.value));
     setCurrentPage(1);
   }
+
   function goToPage(pageNum) {
     if (pageNum >= 1 && pageNum <= totalPages) {
       setCurrentPage(pageNum);
@@ -801,7 +851,6 @@ const [punchOutTime, setPunchOutTime] = useState("");
 
   function onConfirmPDF() {
     setConfirmDialogOpen(false);
-    // Generate PDF for the selected month/year
     if (generatePDF) {
       generatePDF(year, month);
     } else {
@@ -813,11 +862,32 @@ const [punchOutTime, setPunchOutTime] = useState("");
     setConfirmDialogOpen(false);
     toast("PDF download cancelled", { icon: "❌" });
   }
+
   if (attendanceError) {
     return (
-      <div className="p-6 text-center text-red-600 dark:text-red-300">
-        <p>Error: {attendanceError}</p>
-      </div>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="min-h-screen bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20 flex items-center justify-center p-6"
+      >
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 max-w-md w-full text-center">
+          <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FiAlertTriangle className="w-8 h-8 text-red-500 dark:text-red-400" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+            Error Loading Data
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            {attendanceError}
+          </p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </motion.div>
     );
   }
 
@@ -828,540 +898,864 @@ const [punchOutTime, setPunchOutTime] = useState("");
   const empCode = userProfileData?.employee_Id || "N/A";
 
   const renderStatusBadge = (status) => {
-  const base =
-    "inline-flex items-center gap-1 rounded-lg px-4 py-[4px] text-xs font-medium";
+    const badgeConfig = {
+      Present: {
+        bg: "bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20",
+        text: "text-green-700 dark:text-green-400",
+        border: "border-green-200 dark:border-green-700",
+        icon: FiCheckCircle,
+        iconColor: "text-green-500 dark:text-green-400",
+      },
+      Absent: {
+        bg: "bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20",
+        text: "text-red-700 dark:text-red-400",
+        border: "border-red-200 dark:border-red-700",
+        icon: FiX,
+        iconColor: "text-red-500 dark:text-red-400",
+      },
+      "Half Day": {
+        bg: "bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20",
+        text: "text-yellow-700 dark:text-yellow-400",
+        border: "border-yellow-200 dark:border-yellow-700",
+        icon: FiSun,
+        iconColor: "text-yellow-500 dark:text-yellow-400",
+      },
+      "Not Even Half Day": {
+        bg: "bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20",
+        text: "text-purple-700 dark:text-purple-400",
+        border: "border-purple-200 dark:border-purple-700",
+        icon: FiMoon,
+        iconColor: "text-purple-500 dark:text-purple-400",
+      },
+      Holiday: {
+        bg: "bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20",
+        text: "text-blue-700 dark:text-blue-400",
+        border: "border-blue-200 dark:border-blue-700",
+        icon: FiCalendar,
+        iconColor: "text-blue-500 dark:text-blue-400",
+      },
+      Late: {
+        bg: "bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20",
+        text: "text-purple-700 dark:text-purple-400",
+        border: "border-purple-200 dark:border-purple-700",
+        icon: FiClock,
+        iconColor: "text-purple-500 dark:text-purple-400",
+      },
+    };
 
-  const dot = "before:content-[''] before:block before:h-[6px] before:w-[6px] \
-               before:rounded-full";
+    const config = badgeConfig[status] || badgeConfig.Holiday;
+    const IconComponent = config.icon;
 
-  switch (status) {
-    case "Present":
-      return (
-        <span
-          className={`${base} ${dot} bg-[#e1fae9] text-[#038403] border border-[#29ce29] \
-                      before:bg-[#038403]`}
-        >
-          Present
-        </span>
-      );
-    case "Absent":
-      return (
-        <span
-          className={`${base} ${dot} bg-[#FFE5E5] text-[#D92D20] border border-[#D92D20] \
-                      before:bg-[#D92D20]`}
-        >
-          Absent
-        </span>
-      );
-    case "Late":
-      return (
-        <span
-          className={`${base} ${dot} bg-[#E0EAFF] text-[#1849FF] border border-[#1849FF]\
-                      before:bg-[#1849FF]`}
-        >
-          Late
-        </span>
-      );
-    case "Half Day":
-      return (
-        <span
-          className={`${base} ${dot} bg-[#E5E5E5] text-[#575757] border border-[#575757] \
-                      before:bg-[#575757]`}
-        >
-          Half&nbsp;Day
-        </span>
-      );
-    default:
-      return (
-        <span
-          className={`${base} ${dot} bg-gray-200 text-gray-600 border border-gray-600 \
-                      before:bg-gray-600`}
-        >
-          {status}
-        </span>
-      );
-  }
-};
-
-  return (
-    <motion.div
-      className="p-6 bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 min-h-screen"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-    >
-      {/* Heading */}
-      <motion.h1
-        className="text-xl md:text-2xl font-bold mb-6"
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        Attendance for {monthName(month)} {year} ( {empName.trim()} ({empCode})
-        )
-      </motion.h1>
-
-      {/* Controls row */}
-      <motion.div
-        className="flex flex-col md:flex-row items-start md:items-center justify-between 
-                   bg-white dark:bg-gray-800 rounded-md shadow px-4 py-3 mb-6 gap-4"
+    return (
+      <motion.span
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ duration: 0.5 }}
+        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border ${config.bg} ${config.text} ${config.border}`}
       >
-        <div className="flex flex-wrap items-center gap-4">
-          {/* Rows Per Page */}
-          <div className="flex items-center space-x-2">
-            <label className="text-sm font-medium text-gray-600 dark:text-gray-300">
-              Show
-            </label>
-            <select
-              className="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 dark:text-gray-200 rounded-md py-1 px-2 text-sm focus:outline-none"
-              value={rowsPerPage}
-              onChange={handleRowsPerPage}
-            >
-              <option value={7}>7</option>
-              <option value={10}>10</option>
-              <option value={30}>30</option>
-              <option value={31}>31</option>
-            </select>
-          </div>
+        <IconComponent className={`w-3 h-3 ${config.iconColor}`} />
+        {status}
+      </motion.span>
+    );
+  };
 
-          {/* Month-Year input */}
-          <div>
-            <input
-              type="month"
-              value={selectedMonth}
-              onChange={handleMonthChange}
-              className="border border-gray-300 dark:border-gray-600 rounded-md py-1 px-2 text-sm 
-                         text-gray-700 dark:text-gray-200
-                         bg-white dark:bg-gray-700 focus:outline-none"
-            />
-          </div>
-        </div>
-
-        {/* Right group: Search + icons */}
-
-        {/* Search box */}
-        <div className="relative">
-          <input
-            type="text"
-            value={searchText}
-            onChange={handleSearch}
-            placeholder="Search"
-            className="border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200
-                         rounded-md py-1 px-3 pr-8 text-sm focus:outline-none"
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900/20 dark:to-indigo-900/20">
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onClick={() => setSidebarOpen(false)}
           />
-          <FiSearch
-            className="absolute right-2 top-1/2 -translate-y-1/2 
-                         text-gray-400 dark:text-gray-400"
-            size={16}
-          />
-        </div>
+        )}
+      </AnimatePresence>
 
-        {/* Print */}
-        <div className="flex justify-end space-x-3">
-          {/* Print button */}
-          <button
-            onClick={() => window.print()}
-            className="p-2 rounded bg-green-100 hover:bg-green-200"
-          >
-            <FiPrinter className="text-green-600" size={16} />
-          </button>
-
-          {/* Download Payslip button (with confirmation) */}
-          <button
-            className="p-2 rounded bg-pink-100 hover:bg-pink-200"
-            onClick={onRequestPDF}
-          >
-            <FiDownload className="text-pink-600" size={16} />
-            {/* Or label: "Download Payslip" */}
-          </button>
-        </div>
-      </motion.div>
-
-      {/* Main area: table + side overview */}
-      <motion.div
-        // className="grid grid-cols-1 lg:grid-cols-4 gap-4"
-        className="flex justify-center gap-2"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.6 }}
+      <motion.header
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30"
       >
-        <motion.div
-          className="w-full  overflow-x-auto rounded-md shadow ring-1 ring-black/5
-                    bg-white dark:bg-gray-800"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center gap-4">
+              <div>
+                <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent">
+                  Attendance Dashboard
+                </h1>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {monthName(month)} {year} • {empName.trim()} ({empCode})
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setSidebarOpen(!sidebarOpen)}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                title={sidebarOpen ? "Hide Overview" : "Show Overview"}
+              >
+                <FiMenu className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              </button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.print()}
+                className="p-2 rounded-lg bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 transition-colors"
+              >
+                <FiPrinter className="w-4 h-4" />
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={onRequestPDF}
+                className="p-2 rounded-lg bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 transition-colors"
+              >
+                <FiDownload className="w-4 h-4" />
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      </motion.header>
+
+      <div className="flex flex-row-reverse ">
+        <motion.aside
+          className={`w-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border-l border-gray-200 dark:border-gray-700 overflow-y-auto 
+            ${sidebarOpen 
+                ? 'fixed top-0 right-0 bottom-0 z-40 lg:relative lg:z-auto' 
+                : 'hidden lg:block lg:relative'}`}
         >
-          <table className="w-full whitespace-nowrap text-sm">
-            <thead>
-              <tr className="bg-[#F3F7FF] dark:bg-gray-700 text-gray-600 dark:text-gray-300
-                            text-[13px] font-semibold tracking-wide">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-6 lg:hidden border">
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                Overview
+              </h2>
+              <button
+                onClick={() => setSidebarOpen(false)}
+                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              >
+                <FiX className="w-5 h-5 text-gray-600 dark:text-gray-400" />
+              </button>
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 mb-6 border border-blue-100 dark:border-blue-800 min-w-56"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center">
+                  <FiUser className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-200">
+                    Employee Stats
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Monthly Overview
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
                 {[
-                  "S.L",
-                  "Date",
-                  "Days",
-                  "Checked In & Out",
-                  "Total Break",
-                  "Status",
-                  "Punch Request",
-                ].map((h) => (
-                  <th key={h} className="py-[14px] px-3 text-left">
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-600">
-              {displayedData.map((item) => (
-                <tr
-                  key={item.sl}
-                  className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-                >
-                
-                  <td className="py-3 px-3 font-medium text-gray-700 dark:text-gray-200">
-                    {String(item.sl).padStart(2, "0")}
-                  </td>
-
-                
-                  <td className="py-3 px-3 text-gray-700 dark:text-gray-200">
-                    {item.date}
-                  </td>
-
-                
-                  <td className="py-3 px-3 text-gray-700 dark:text-gray-200">
-                    {item.day}
-                  </td>
-
-                
-                  <td className="py-3 px-3">
-                    <div className="flex items-center gap-2 text-[13px]">
-                      <span className="font-semibold text-[#0d6efd]">
-                        {item.logInTime}
-                      </span>
-                      <span className="h-[4px] w-[4px] rounded-full bg-gray-400" />
-                      <span className="text-gray-500">{item.hoursWorked}</span>
-                      <span className="h-[4px] w-[4px] rounded-full bg-gray-400" />
-                      <span className="font-semibold text-[#ff3e3e]">
-                        {item.logOutTime}
+                  {
+                    label: "Total Shifts",
+                    value: totalShifts,
+                    icon: FiBriefcase,
+                    color: "blue",
+                  },
+                  {
+                    label: "Total Leaves",
+                    value: totalLeaves,
+                    icon: FiCalendar,
+                    color: "red",
+                  },
+                  {
+                    label: "Late Arrivals",
+                    value: totalLates,
+                    icon: FiAlertTriangle,
+                    color: "yellow",
+                  },
+                  {
+                    label: "Half Days",
+                    value: halfDays,
+                    icon: FiSun,
+                    color: "orange",
+                  },
+                  {
+                    label: "Incomplete Days",
+                    value: notEvenHalfDays,
+                    icon: FiMoon,
+                    color: "purple",
+                  },
+                  {
+                    label: "Completed Days",
+                    value: totalCompletedDays,
+                    icon: FiCheckCircle,
+                    color: "green",
+                  },
+                  {
+                    label: "Not Logged Out",
+                    value: notLoggedOut,
+                    icon: FiLogOut,
+                    color: "pink",
+                  },
+                ].map((stat, index) => (
+                  <motion.div
+                    key={stat.label}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 * index }}
+                    className="flex items-center justify-between p-3 bg-white/60 dark:bg-gray-700/60 rounded-xl border border-gray-200/50 dark:border-gray-600/50"
+                  >
+                    <div className="flex items-center gap-3">
+                      <stat.icon
+                        className={`w-4 h-4 text-${stat.color}-500 dark:text-${stat.color}-400`}
+                      />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {stat.label}
                       </span>
                     </div>
-                  </td>
+                    <span
+                      className={`text-sm font-bold text-${stat.color}-600 dark:text-${stat.color}-400`}
+                    >
+                      {stat.value}
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
 
-                  <td className="py-3 px-3 text-gray-700 dark:text-gray-200">
-                    {item.totalBreak}
-                  </td>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-900/20 dark:to-green-900/20 rounded-2xl p-6 border border-emerald-100 dark:border-emerald-800 min-w-56"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/40 rounded-full flex items-center justify-center">
+                    <FiDollarSign className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800 dark:text-gray-200">
+                      Payroll
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Salary Summary
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowPayrollDetails(!showPayrollDetails)}
+                  className="p-2 rounded-lg hover:bg-emerald-100 dark:hover:bg-emerald-900/50 transition-colors"
+                >
+                  {showPayrollDetails ? (
+                    <FiEyeOff className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  ) : (
+                    <FiEye className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                  )}
+                </button>
+              </div>
 
-                  <td className="py-3 px-3">
-                    {renderStatusBadge(item.status)}
-                  </td>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center p-3 bg-white/60 dark:bg-gray-700/60 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    Base Salary
+                  </span>
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">
+                    ₹ {numericBaseSalary.toFixed(2)}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/60 dark:bg-gray-700/60 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    Deductions
+                  </span>
+                  <span className="font-semibold text-red-600 dark:text-red-400">
+                    {deduction}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center p-3 bg-white/60 dark:bg-gray-700/60 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    Final Salary
+                  </span>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400 text-lg">
+                    {finalSalary}
+                  </span>
+                </div>
+              </div>
 
-                  <td className="py-3 px-3">
-                    {(item.status === "Absent" || item.status === "Holiday") && (
-                      <button
-                        onClick={() => openMissedPunchModal(item)}
-                        className="inline-flex items-center rounded-md border border-[#0d6efd]
-                                  px-3 py-1 text-[13px] font-medium text-[#0d6efd]
-                                  hover:bg-[#0d6efd] hover:text-white transition-colors"
-                      >
-                        Request
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-
-              {/* Empty-state row */}
-              {displayedData.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={7}
-                    className="py-4 text-center text-gray-500 dark:text-gray-400"
+              <AnimatePresence>
+                {showPayrollDetails && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="mt-4 space-y-2"
                   >
-                    No records found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </motion.div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                      Breakdown:
+                    </div>
+                    {deductionsBreakdown.map((breakdown, index) => (
+                      <div
+                        key={index}
+                        className="flex justify-between items-center p-2 bg-white/40 dark:bg-gray-700/40 rounded-lg text-xs border border-gray-200/30 dark:border-gray-600/30"
+                      >
+                        <span className="text-gray-700 dark:text-gray-300">
+                          {breakdown.name}
+                        </span>
+                        <span className="font-medium text-gray-800 dark:text-gray-200">
+                          ₹ {breakdown.amount.toFixed(2)}
+                        </span>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
 
+            {shiftTimingDetails && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="mt-6 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl p-6 border border-purple-100 dark:border-purple-800"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/40 rounded-full flex items-center justify-center">
+                    <FiClock className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-800 dark:text-gray-200">
+                      Shift Timing
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Working Hours
+                    </p>
+                  </div>
+                </div>
 
-        <motion.div
-          className="bg-white dark:bg-gray-800 rounded-md shadow p-4"
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="font-semibold text-gray-700 dark:text-gray-200 mb-3 text-md">
-            Employee Overview
-          </h2>
-
-          <div className="space-y-3 text-xs">
-            <div className="flex items-center justify-between">
-              <span>
-                <FiBriefcase className="inline-block mr-1 text-blue-500 animate-bounce" />
-                Total Shifts
-              </span>
-              <span className="font-medium">{totalShifts}</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span>
-                <FiCalendar className="inline-block mr-1 text-red-500 animate-pulse" />
-                Total Leaves
-              </span>
-              <span className="font-medium">{totalLeaves}</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span>
-                <FiAlertTriangle className="inline-block mr-1 text-yellow-500 animate-ping" />
-                Total Lates
-              </span>
-              <span className="font-medium">{totalLates}</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span>
-                <FiSun className="inline-block mr-1 text-purple-500 animate-bounce" />
-                Half Days
-              </span>
-              <span className="font-medium">{halfDays}</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span>
-                <FiMoon className="inline-block mr-1 text-pink-500 animate-spin" />
-                Not Even Half Days
-              </span>
-              <span className="font-medium">{notEvenHalfDays}</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span>
-                <FiCheckCircle className="inline-block mr-1 text-green-500 animate-pulse" />
-                Completed Shifts
-              </span>
-              <span className="font-medium">{totalCompletedDays}</span>
-            </div>
-
-            <div className="flex items-center justify-between">
-              <span>
-                <FiLogOut className="inline-block mr-1 text-orange-500 animate-bounce" />
-                Not Logged Out
-              </span>
-              <span className="font-medium">{notLoggedOut}</span>
-            </div>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center p-3 bg-white/60 dark:bg-gray-700/60 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      Shift Name
+                    </span>
+                    <span className="font-semibold text-gray-800 dark:text-gray-200">
+                      {shiftTimingDetails.name}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-white/60 dark:bg-gray-700/60 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      Start Time
+                    </span>
+                    <span className="font-semibold text-green-600 dark:text-green-400">
+                      {shiftTimingDetails.startTime}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center p-3 bg-white/60 dark:bg-gray-700/60 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      End Time
+                    </span>
+                    <span className="font-semibold text-red-600 dark:text-red-400">
+                      {shiftTimingDetails.endTime}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            )}
           </div>
-        </motion.div>
-      </motion.div>
+        </motion.aside>
 
-      {/* Payroll Summary */}
-      <motion.div
-        className="bg-white dark:bg-gray-800 rounded-md shadow p-4 mt-6"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <h2 className="font-semibold text-gray-700 dark:text-gray-200 mb-3 text-lg">
-          Payroll Summary
-        </h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-max w-full text-sm">
-            <thead>
-              <tr className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-                <th className="py-2 px-4">Base Salary</th>
-                <th className="py-2 px-4">Standard Deductions</th>
-                <th className="py-2 px-4">Leaves (Unpaid)</th>
-                <th className="py-2 px-4">Remaining Paid Leaves</th>
-                <th className="py-2 px-4">Final Salary</th>
-              </tr>
-            </thead>
-            <tbody className="border-t border-gray-200 dark:border-gray-600">
-              <tr>
-                {/* numericBaseSalary is guaranteed a number */}
-                <td className="py-2 px-4">₹ {numericBaseSalary.toFixed(2)}</td>
-                <td className="py-2 px-4">{deduction}</td>
-                <td className="py-2 px-4">{leaves}</td>
-                <td className="py-2 px-4">{remainingPaidLeaves}</td>
-                <td className="py-2 px-4">{finalSalary}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <main className="flex-1 lg:ml-0 w-full">
+          <div className="p-4 sm:p-6 lg:p-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mb-8"
+            >
+              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <FiFilter className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    <select
+                      className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                      value={rowsPerPage}
+                      onChange={handleRowsPerPage}
+                    >
+                      <option value={7}>7 rows</option>
+                      <option value={10}>10 rows</option>
+                      <option value={30}>30 rows</option>
+                      <option value={31}>All days</option>
+                    </select>
+                  </div>
 
-        {/* Deductions breakdown */}
-        {deductionsBreakdown && deductionsBreakdown.length > 0 && (
-          <div className="mt-4">
-            <h3 className="text-gray-700 dark:text-gray-200 font-semibold mb-2">
-              Deductions Breakdown
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="min-w-max w-full text-sm">
-                <thead>
-                  <tr className="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-                    <th className="py-2 px-4">Deduction Name</th>
-                    <th className="py-2 px-4">Percentage</th>
-                    <th className="py-2 px-4">Amount</th>
-                  </tr>
-                </thead>
-                <tbody className="border-t border-gray-200 dark:border-gray-600">
-                  {deductionsBreakdown.map((d, i) => (
-                    <tr key={i}>
-                      <td className="py-2 px-4">{d.name}</td>
-                      <td className="py-2 px-4">{d.percentage}</td>
-                      <td className="py-2 px-4">₹ {d.amount.toFixed(2)}</td>
+                  <div className="flex items-center gap-2">
+                    <FiCalendar className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    <input
+                      type="month"
+                      value={selectedMonth}
+                      onChange={handleMonthChange}
+                      className="border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                    />
+                  </div>
+                </div>
+
+                <div className="relative">
+                  <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 dark:text-gray-400" />
+                  <input
+                    type="text"
+                    value={searchText}
+                    onChange={handleSearch}
+                    placeholder="Search by date, day, or status..."
+                    className="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 w-full sm:w-64"
+                  />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Attendance Table */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+            >
+              <div
+                className="overflow-auto   [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+                transition-colors duration-300"
+              >
+                <table className="w-full">
+                  <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700">
+                    <tr>
+                      {[
+                        "S.L",
+                        "Date",
+                        "Day",
+                        "Check In/Out",
+                        "Hours",
+                        "Break",
+                        "Status",
+                        "Action",
+                      ].map((header, index) => (
+                        <th
+                          key={header}
+                          className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider"
+                        >
+                          {header}
+                        </th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    <AnimatePresence>
+                      {displayedData.map((item, index) => (
+                        <motion.tr
+                          key={item.sl}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: index * 0.05 }}
+                          className="hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-colors"
+                        >
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex items-center justify-center w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full text-sm font-medium text-gray-600 dark:text-gray-300">
+                              {String(item.sl).padStart(2, "0")}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                              {item.date}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="text-sm text-gray-600 dark:text-gray-400">
+                              {item.day}
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <div className="flex flex-col gap-1">
+                              <div className="flex items-center gap-2 text-xs">
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                  {item.logInTime}
+                                </span>
+                                <span className="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full"></span>
+                                <span className="font-semibold text-red-600 dark:text-red-400">
+                                  {item.logOutTime}
+                                </span>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                              {item.hoursWorked || "N/A"}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              {item.totalBreak}
+                            </span>
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {renderStatusBadge(item.status)}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap">
+                            {(item.status === "Absent" ||
+                              item.status === "Holiday") && (
+                              <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => openMissedPunchModal(item)}
+                                className="inline-flex items-center gap-2 px-3 py-1.5 border border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-lg text-xs font-medium transition-colors"
+                              >
+                                <FiClock className="w-3 h-3" />
+                                Request
+                              </motion.button>
+                            )}
+                          </td>
+                        </motion.tr>
+                      ))}
+                    </AnimatePresence>
+                  </tbody>
+                </table>
+
+                {displayedData.length === 0 && (
+                  <div className="text-center py-12">
+                    <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <FiSearch className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+                    </div>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
+                      No records found
+                    </h3>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      Try adjusting your search or filters
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
+                  <div className="text-sm text-gray-700 dark:text-gray-300">
+                    Showing {startIndex + 1}-{Math.min(endIndex, totalEntries)}{" "}
+                    of {totalEntries} results
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => goToPage(safeCurrentPage - 1)}
+                      disabled={safeCurrentPage === 1}
+                      className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <FiChevronLeft className="w-4 h-4" />
+                    </motion.button>
+
+                    <div className="flex items-center gap-1">
+                      {Array.from(
+                        { length: Math.min(5, totalPages) },
+                        (_, i) => {
+                          const page = i + 1;
+                          return (
+                            <motion.button
+                              key={page}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => goToPage(page)}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                                page === safeCurrentPage
+                                  ? "bg-blue-600 dark:bg-blue-500 text-white"
+                                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600"
+                              }`}
+                            >
+                              {page}
+                            </motion.button>
+                          );
+                        }
+                      )}
+                    </div>
+
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => goToPage(safeCurrentPage + 1)}
+                      disabled={safeCurrentPage === totalPages}
+                      className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <FiChevronRight className="w-4 h-4" />
+                    </motion.button>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+
+            {/* KEEPING ORIGINAL PAYROLL SUMMARY TABLE */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6 mt-8"
+            >
+              <h2 className="font-semibold text-gray-700 dark:text-gray-200 mb-6 text-xl flex items-center gap-3">
+                <div className="w-8 h-8 bg-gradient-to-r from-emerald-500 to-green-500 rounded-lg flex items-center justify-center">
+                  <FiDollarSign className="w-4 h-4 text-white" />
+                </div>
+                Payroll Summary
+              </h2>
+
+              <div className="overflow-x-auto mb-6">
+                <table className="min-w-full text-sm">
+                  <thead>
+                    <tr className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 text-gray-600 dark:text-gray-300 rounded-lg">
+                      <th className="py-3 px-4 text-left font-semibold">
+                        Base Salary
+                      </th>
+                      <th className="py-3 px-4 text-left font-semibold">
+                        Standard Deductions
+                      </th>
+                      <th className="py-3 px-4 text-left font-semibold">
+                        Leaves (Unpaid)
+                      </th>
+                      <th className="py-3 px-4 text-left font-semibold">
+                        Remaining Paid Leaves
+                      </th>
+                      <th className="py-3 px-4 text-left font-semibold">
+                        Final Salary
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="border-t border-gray-200 dark:border-gray-600">
+                    <tr className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                      <td className="py-4 px-4 font-semibold text-gray-800 dark:text-gray-200">
+                        ₹ {numericBaseSalary.toFixed(2)}
+                      </td>
+                      <td className="py-4 px-4 font-semibold text-red-600 dark:text-red-400">
+                        {deduction}
+                      </td>
+                      <td className="py-4 px-4 font-semibold text-orange-600 dark:text-orange-400">
+                        {leaves}
+                      </td>
+                      <td className="py-4 px-4 font-semibold text-blue-600 dark:text-blue-400">
+                        {remainingPaidLeaves}
+                      </td>
+                      <td className="py-4 px-4 font-bold text-emerald-600 dark:text-emerald-400 text-lg">
+                        {finalSalary}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Deductions breakdown - KEEPING ORIGINAL BREAKDOWN TABLE */}
+              {deductionsBreakdown && deductionsBreakdown.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="mt-6"
+                >
+                  <h3 className="text-gray-700 dark:text-gray-200 font-semibold mb-4 flex items-center gap-2">
+                    <FiTrendingUp className="w-4 h-4 text-blue-500" />
+                    Deductions Breakdown
+                  </h3>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full text-sm">
+                      <thead>
+                        <tr className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 text-gray-600 dark:text-gray-300">
+                          <th className="py-3 px-4 text-left font-semibold">
+                            Deduction Name
+                          </th>
+                          <th className="py-3 px-4 text-left font-semibold">
+                            Percentage
+                          </th>
+                          <th className="py-3 px-4 text-left font-semibold">
+                            Amount
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="border-t border-gray-200 dark:border-gray-600 divide-y divide-gray-200 dark:divide-gray-600">
+                        {deductionsBreakdown.map((d, i) => (
+                          <motion.tr
+                            key={i}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.1 * i }}
+                            className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                          >
+                            <td className="py-3 px-4 font-medium text-gray-800 dark:text-gray-200">
+                              {d.name}
+                            </td>
+                            <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
+                              {d.percentage}
+                            </td>
+                            <td className="py-3 px-4 font-semibold text-red-600 dark:text-red-400">
+                              ₹ {d.amount.toFixed(2)}
+                            </td>
+                          </motion.tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </motion.div>
+              )}
+            </motion.div>
           </div>
-        )}
-        {missedPunchModalOpen && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-    <div className="bg-white dark:bg-gray-800 p-4 rounded shadow w-full max-w-md">
-      <h2 className="text-lg font-semibold mb-4">
-        Request Missed Punch for: {selectedDateForPunch?.date}
-      </h2>
-
-      {/* Punch In Time (Fancy TimePicker) */}
-      <label className="block mb-2 text-sm font-medium">Punch In Time</label>
-      <TimePicker
-        onChange={(timeVal) => setPunchInTime(timeVal)}
-        value={punchInTime}
-        disableClock
-        clearIcon={null}
-        format="hh:mm a"  // 12-hour format with AM/PM
-        className="w-full mb-4 border border-gray-300 dark:border-gray-600 
-             rounded p-2 bg-white dark:bg-gray-800 text-gray-800 
-             dark:text-gray-100"
-      />
-
-      {/* Punch Out Time (Fancy TimePicker) */}
-      <label className="block mb-2 text-sm font-medium">Punch Out Time</label>
-      <TimePicker
-        onChange={(timeVal) => setPunchOutTime(timeVal)}
-        value={punchOutTime}
-        disableClock
-        clearIcon={null}
-        format="hh:mm a"
-        className="w-full mb-4 border border-gray-300 dark:border-gray-600 
-             rounded p-2 bg-white dark:bg-gray-800 text-gray-800 
-             dark:text-gray-100"
-      />
-
-      {/* Reason Textarea */}
-      <label className="block mb-2 text-sm font-medium">Reason/Message</label>
-      <textarea
-        className="w-full h-20 mb-4 border border-gray-300 dark:border-gray-600 rounded p-2"
-        placeholder="Brief reason for missed punch..." onChange={(e) => setPunchReason(e.target.value)}
-      />
-
-      <div className="flex justify-end space-x-3">
-        <button
-          onClick={() => {
-            // Reset or keep times as you wish
-            setPunchInTime("");
-            setPunchOutTime("");
-            setMissedPunchModalOpen(false);
-          }}
-          className="px-3 py-1 bg-gray-300 dark:bg-gray-700 rounded"
-        >
-          Cancel
-        </button>
-        <button
-  onClick={async () => {
-    try {
-      // Call your missed-punch request API
-      await axiosInstance.post("/attendance-user/missed-punch-request", {
-        date: selectedDateForPunch?.date,      // e.g. "2023-08-15"
-        punchIn: punchInTime,                  // e.g. "09:00 AM"
-        punchOut: punchOutTime,               // e.g. "05:30 PM"
-        reason: punchReason,
-      });
-      toast.success("Missed Punch request submitted!");
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to submit missed punch request.");
-    } finally {
-      // Clean up and close modal
-      setPunchInTime("");
-      setPunchOutTime("");
-     setPunchReason("");
-      setMissedPunchModalOpen(false);
-    }
-  }}
-  className="px-3 py-1 bg-blue-600 text-white rounded"
->
-  Submit
-</button>
-
+        </main>
       </div>
-    </div>
-  </div>
-)}
 
+      <AnimatePresence>
+        {missedPunchModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-gray-700"
+            >
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center">
+                      <FiClock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                        Missed Punch Request
+                      </h2>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        Date: {selectedDateForPunch?.date}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setPunchInTime("");
+                      setPunchOutTime("");
+                      setPunchReason("");
+                      setMissedPunchModalOpen(false);
+                    }}
+                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                  >
+                    <FiX className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                  </button>
+                </div>
+              </div>
 
+              <div className="p-6 space-y-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Punch In Time
+                  </label>
+                  <TimePicker
+                    onChange={(timeVal) => setPunchInTime(timeVal)}
+                    value={punchInTime}
+                    disableClock
+                    clearIcon={null}
+                    format="hh:mm a"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                  />
+                </div>
 
-        {/* SHIFT TIMING TABLE */}
-        <div className="mt-6">
-          <h3 className="text-gray-700 dark:text-gray-200 font-semibold mb-2">
-            Shift Timings
-          </h3>
-          {shiftTimingDetails ? (
-            <table className="min-w-max text-sm w-full border dark:border-gray-700">
-              <tbody>
-                <tr className="border-b dark:border-gray-700">
-                  <th className="px-4 py-2 text-left bg-gray-50 dark:bg-gray-700 w-40">
-                    Shift Name
-                  </th>
-                  <td className="px-4 py-2">{shiftTimingDetails.name}</td>
-                </tr>
-                <tr className="border-b dark:border-gray-700">
-                  <th className="px-4 py-2 text-left bg-gray-50 dark:bg-gray-700">
-                    Start Time
-                  </th>
-                  <td className="px-4 py-2">{shiftTimingDetails.startTime}</td>
-                </tr>
-                <tr>
-                  <th className="px-4 py-2 text-left bg-gray-50 dark:bg-gray-700">
-                    End Time
-                  </th>
-                  <td className="px-4 py-2">{shiftTimingDetails.endTime}</td>
-                </tr>
-              </tbody>
-            </table>
-          ) : (
-            <p className="text-sm">No shift timing details available.</p>
-          )}
-        </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Punch Out Time
+                  </label>
+                  <TimePicker
+                    onChange={(timeVal) => setPunchOutTime(timeVal)}
+                    value={punchOutTime}
+                    disableClock
+                    clearIcon={null}
+                    format="hh:mm a"
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                  />
+                </div>
 
-        {/* Next Payroll Date */}
-        <div className="mt-6">
-          <h3 className="text-gray-700 dark:text-gray-200 font-semibold mb-2">
-            Next Payroll Date
-          </h3>
-          <p className="text-sm">{formattedNextPayrollDate}</p>
-        </div>
-      </motion.div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Reason for Missed Punch
+                  </label>
+                  <textarea
+                    value={punchReason}
+                    onChange={(e) => setPunchReason(e.target.value)}
+                    placeholder="Please provide a brief explanation..."
+                    rows={4}
+                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 resize-none"
+                  />
+                </div>
+              </div>
 
-      {/* Confirmation Dialog */}
+              <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    setPunchInTime("");
+                    setPunchOutTime("");
+                    setPunchReason("");
+                    setMissedPunchModalOpen(false);
+                  }}
+                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                >
+                  Cancel
+                </motion.button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={async () => {
+                    try {
+                      await axiosInstance.post(
+                        "/attendance-user/missed-punch-request",
+                        {
+                          date: selectedDateForPunch?.date,
+                          punchIn: punchInTime,
+                          punchOut: punchOutTime,
+                          reason: punchReason,
+                        }
+                      );
+                      toast.success(
+                        "Missed Punch request submitted successfully!"
+                      );
+                    } catch (error) {
+                      console.error(error);
+                      toast.error("Failed to submit missed punch request.");
+                    } finally {
+                      setPunchInTime("");
+                      setPunchOutTime("");
+                      setPunchReason("");
+                      setMissedPunchModalOpen(false);
+                    }
+                  }}
+                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <FiCheckCircle className="w-4 h-4" />
+                  Submit Request
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <ConfirmationDialog
         open={confirmDialogOpen}
-        title="Download PDF?"
-        message="Are you sure you want to download the payslip PDF?"
+        title="Download Payslip PDF"
+        message="Are you sure you want to download the payslip PDF for this month?"
         onConfirm={onConfirmPDF}
         onCancel={onCancelPDF}
-        confirmText="Yes"
-        cancelText="No"
+        confirmText="Download"
+        cancelText="Cancel"
       />
-    </motion.div>
+    </div>
   );
 }
-
-
-

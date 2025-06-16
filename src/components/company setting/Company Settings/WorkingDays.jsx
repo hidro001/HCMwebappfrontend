@@ -2,51 +2,52 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import useCompanySettingsStore from "../../../store/useCompanySettingsStore";
-import LeaveSystemModal from "./models/LeaveSystemModal";
+import WorkingDaySystemModal from "./models/WorkingDaySystemModal";
 
-export default function LeaveSystems() {
+export default function WorkingDays() {
   const {
-    leaveSystems,
-    fetchLeaveSystems,
-    addOrUpdateLeaveSystem,
+    workingDaySystem,
+    fetchWorkingDaySystems,
+    addOrUpdateWorkingDaySystem,
     deleteLeaveSystem,
   } = useCompanySettingsStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sysName, setSysName] = useState("");
-  const [workingDays, setWorkingDays] = useState("");
+  const [workingDays, setWorkingDays] = useState([]);
   const [monthlyLeaves, setMonthlyLeaves] = useState("");
   const [editId, setEditId] = useState(null);
 
   useEffect(() => {
-    fetchLeaveSystems();
-  }, [fetchLeaveSystems]);
+    fetchWorkingDaySystems();
+  }, [fetchWorkingDaySystems]);
 
   const handleSave = () => {
-    if (!sysName || !workingDays || monthlyLeaves === "") {
-      toast.error("Please fill out all fields for leave system.");
+    if (!sysName || workingDays.length === 0 || monthlyLeaves === "") {
+      toast.error("Please fill out all fields for Working Day system.");
       return;
     }
 
     const payload = {
       id: editId,
       name: sysName,
-      workingDays,
+      workingDays: workingDays.join(", "), 
       monthlyPaidLeaves: monthlyLeaves,
     };
-    addOrUpdateLeaveSystem(payload);
 
-    setIsModalOpen(false);
-    setSysName("");
-    setWorkingDays("");
-    setMonthlyLeaves("");
-    setEditId(null);
+    addOrUpdateWorkingDaySystem(payload);
+    handleCloseModal();
   };
 
   const handleEdit = (ls) => {
     setEditId(ls.id);
     setSysName(ls.name);
-    setWorkingDays(ls.workingDays);
+    const daysArray =
+      typeof ls.workingDays === "string"
+        ? ls.workingDays.split(",").map((d) => d.trim())
+        : ls.workingDays;
+
+    setWorkingDays(daysArray);
     setMonthlyLeaves(ls.monthlyPaidLeaves);
     setIsModalOpen(true);
   };
@@ -58,7 +59,7 @@ export default function LeaveSystems() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSysName("");
-    setWorkingDays("");
+    setWorkingDays([]);
     setMonthlyLeaves("");
     setEditId(null);
   };
@@ -67,15 +68,16 @@ export default function LeaveSystems() {
     <div className="bg-white dark:bg-gray-800 shadow rounded p-6">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100">
-          Leave Systems
+          Working Days
         </h2>
         <button
           onClick={() => setIsModalOpen(true)}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
-          Add Leave System
+          Add Working Days
         </button>
       </div>
+
       <table className="min-w-full text-left border dark:border-gray-700">
         <thead className="bg-gray-100 dark:bg-gray-700 border-b dark:border-gray-700">
           <tr>
@@ -88,7 +90,7 @@ export default function LeaveSystems() {
           </tr>
         </thead>
         <tbody>
-          {leaveSystems.map((ls) => (
+          {workingDaySystem.map((ls) => (
             <tr key={ls.id} className="border-b dark:border-gray-700">
               <td className="p-2 text-gray-700 dark:text-gray-200">{ls.name}</td>
               <td className="p-2 text-gray-700 dark:text-gray-200">
@@ -117,14 +119,15 @@ export default function LeaveSystems() {
           ))}
         </tbody>
       </table>
-      <LeaveSystemModal
+
+      <WorkingDaySystemModal
         isOpen={isModalOpen}
         editId={editId}
         sysName={sysName}
         workingDays={workingDays}
         monthlyLeaves={monthlyLeaves}
         onSysNameChange={(e) => setSysName(e.target.value)}
-        onWorkingDaysChange={(e) => setWorkingDays(e.target.value)}
+        onWorkingDaysChange={setWorkingDays}
         onMonthlyLeavesChange={(e) => setMonthlyLeaves(e.target.value)}
         onClose={handleCloseModal}
         onSave={handleSave}
