@@ -165,6 +165,9 @@ importers:
       react-modal:
         specifier: ^3.16.3
         version: 3.16.3(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      react-organization-chart:
+        specifier: ^0.0.5
+        version: 0.0.5
       react-organizational-chart:
         specifier: ^2.2.1
         version: 2.2.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -3160,6 +3163,9 @@ packages:
     peerDependencies:
       react: 18.2.0
       react-dom: 18.2.0
+
+  react-organization-chart@0.0.5:
+    resolution: {integrity: sha512-f8Y6aR1Yi8VLqwqjSxD2YNxX9Et6WRnQH/qHyQ9v3DVGFtjyEeWWeB5yxeRLabRMrkNRHkqIlitc3rueqtC2rg==}
 
   react-organizational-chart@2.2.1:
     resolution: {integrity: sha512-JORmpLeYzCVtztdqCHsnKL8H3WiLRPHjohgh/PxQoszLuaQ+l3F8YefKSfpcBPZJhHwy3SlqjFjPC28a3Hh3QQ==}
@@ -7087,6 +7093,11 @@ snapshots:
       react-dom: 18.2.0(react@18.2.0)
       react-lifecycles-compat: 3.0.4
       warning: 4.0.3
+
+  react-organization-chart@0.0.5:
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
 
   react-organizational-chart@2.2.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0):
     dependencies:
