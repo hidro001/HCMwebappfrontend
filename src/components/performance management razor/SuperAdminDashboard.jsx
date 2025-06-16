@@ -534,7 +534,7 @@ export default function SuperAdminDashboard() {
                 </motion.div>
                 <div>
                   <h1 className="text-lg lg:text-xl font-bold bg-gradient-to-r from-gray-900 via-gray-700 to-gray-600 dark:from-white dark:via-gray-200 dark:to-gray-400 bg-clip-text text-transparent">
-                    Team Performance Dashboard
+                    All Emplopyee Performance Dashboard
                   </h1>
                   <p className="text-gray-600 dark:text-gray-400 text-xs">
                     Advanced analytics and insights for team performance
@@ -582,7 +582,7 @@ export default function SuperAdminDashboard() {
           <div className="mb-4 space-y-3">
             {/* Team Filters */}
             <FilterSection
-              title="Team Configuration"
+              title="Employee Configuration"
               icon={<HiOutlineUserGroup className="w-4 h-4 text-white" />}
               description="Filter by department and designation"
             >
