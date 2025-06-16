@@ -1021,7 +1021,7 @@ export default function OwnFullAttendance() {
                 `}
         >
           <div className="p-6 h-screen  bg-white/95 dark:bg-gray-800/95 ">
-            <div className="flex items-center justify-between mb-6 border">
+            <div className="flex items-center justify-between mb-6 ">
               <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Overview</h2>
               <button
                 onClick={() => setSidebarOpen(false)}
