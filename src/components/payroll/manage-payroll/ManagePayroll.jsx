@@ -10,14 +10,15 @@ import {
   FaCalendarAlt,
   FaFileAlt,
   FaSpinner,
+  FaUpload,
 } from "react-icons/fa";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
 // Import your custom components
 import ManagePayrollView from "./ManagePayrollView";
 import ManagePayrollEdit from "./ManagePayrollEdit";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
-import ExportButtons from "../../common/PdfExcel"; 
-
+import ExportButtons from "../../common/PdfExcel";
+import BulkUploadModal from "./BulkUploadModal";
 // Service calls
 import {
   fetchAllPayroll,
@@ -52,6 +53,7 @@ export default function ManagePayroll() {
   const today = new Date();
   const currentMonth = today.getMonth() + 1;
   const currentYear = today.getFullYear();
+  const [isBulkModalOpen, setIsBulkModalOpen] = useState(false);
 
   // States for month/year
   const [month, setMonth] = useState(currentMonth);
@@ -292,6 +294,13 @@ export default function ManagePayroll() {
           </div>
         </div>
 
+        <button
+          onClick={() => setIsBulkModalOpen(true)}
+          className="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-md flex items-center gap-2"
+        >
+          <FaUpload /> Bulk Upload
+        </button>
+
         {/* Total Unpaid Salary */}
         {/* <div className="rounded-lg bg-purple-50 dark:bg-purple-900 p-4 border border-purple-100 dark:border-purple-800">
         <div className="text-sm text-purple-700 dark:text-purple-300 font-semibold">
@@ -452,13 +461,15 @@ export default function ManagePayroll() {
                 <td className="px-4 py-2">
                   {(currentPage - 1) * pageSize + (index + 1)}
                 </td>
-             
-                <td className="px-4 py-2">{entry.firstName} {entry.lastName}</td>
+
+                <td className="px-4 py-2">
+                  {entry.firstName} {entry.lastName}
+                </td>
                 <td className="px-4 py-2 text-blue-600 dark:text-blue-400 font-medium">
-  <Link to={`/dashboard/payroll/employee/${entry.employeeId}`}>
-    {entry.employeeId}
-  </Link>
-</td>
+                  <Link to={`/dashboard/payroll/employee/${entry.employeeId}`}>
+                    {entry.employeeId}
+                  </Link>
+                </td>
                 <td className="px-4 py-2">{entry.department}</td>
 
                 <td className="px-4 py-2">{entry.month}</td>
@@ -565,6 +576,13 @@ export default function ManagePayroll() {
         cancelText="No"
         onConfirm={handleConfirmProcessPayroll}
         onCancel={handleCancelProcessPayroll}
+      />
+      <BulkUploadModal
+        open={isBulkModalOpen}
+        onClose={() => setIsBulkModalOpen(false)}
+        month={month}
+        year={year}
+        onUploaded={() => fetchAllPayroll(month, year).then(setPayrollList)}
       />
 
       {/* ConfirmationDialog for Delete */}

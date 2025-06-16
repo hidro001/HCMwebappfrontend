@@ -4759,8 +4759,6 @@
 //   );
 // }
 
-
-
 // import { useState, useEffect, useCallback } from "react";
 // import { motion, AnimatePresence } from "framer-motion";
 // import {
@@ -5540,7 +5538,7 @@
 //                                   "First Task",
 //                                   "Total Tasks",
 //                                   "Date",
-                               
+
 //                                   "Actions",
 //                                 ].map((header) => (
 //                                   <th
@@ -5623,7 +5621,6 @@
 //                                       </span>
 //                                     )}
 //                                   </td>
-                           
 
 //                                   <td className="px-6 py-4">
 //                                     <div className="flex items-center space-x-2">
@@ -5824,8 +5821,6 @@
 //     </div>
 //   );
 // }
-
-
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -6177,18 +6172,18 @@ export default function UpdateTask() {
             >
               <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
                 {/* Search */}
-<div className="relative flex-grow lg:max-w-md backdrop-blur-sm">
-  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
-    <FiSearch className="h-5 w-5 text-gray-400" />
-  </div>
-  <input
-    type="text"
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    placeholder="Search your tasks..."
-    className="block w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-700/50 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-  />
-</div>
+                <div className="relative flex-grow lg:max-w-md backdrop-blur-sm">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none z-10">
+                    <FiSearch className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search your tasks..."
+                    className="block w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-700/50 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  />
+                </div>
 
                 {/* Date Filter & Actions */}
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
