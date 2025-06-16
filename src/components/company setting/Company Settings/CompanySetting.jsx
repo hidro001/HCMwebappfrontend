@@ -14,6 +14,7 @@ import Deductions from "./Deductions";
 import PayrollCycles from "./PayrollCycles";
 import WorkingDays from "./WorkingDays";
 import EmploymentTypes from "./EmploymentTypes";
+import LeavesTypes from "./LeavesTypes";
 
 export default function CompanySetting() {
   const [activeTab, setActiveTab] = useState(0);
@@ -26,6 +27,7 @@ export default function CompanySetting() {
     { name: "Payroll Cycles", icon: <FaMoneyBill />, component: <PayrollCycles /> },
     { name: "Working Days", icon: <FaSun />, component: <WorkingDays /> },
     { name: "Employment Types", icon: <FaUserCog />, component: <EmploymentTypes /> },
+    { name: "Leaves Types", icon: <FaUserCog />, component: <LeavesTypes /> },
   ];
 
   return (

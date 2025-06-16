@@ -1,29 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  FiPrinter, 
-  FiDownload, 
-  FiSearch, 
-  FiBriefcase,
-  FiCalendar,
-  FiAlertTriangle,
-  FiSun,
-  FiMoon,
-  FiCheckCircle,
-  FiLogOut,
-  FiClock,
-  FiX,
-  FiChevronLeft,
-  FiChevronRight,
-  FiFilter,
-  FiRefreshCw,
-  FiUser,
-  FiDollarSign,
-  FiTrendingUp,
-  FiMenu,
-  FiEye,
-  FiEyeOff
-} from "react-icons/fi";
+import { FiPrinter, FiDownload, FiSearch, FiBriefcase, FiCalendar, FiAlertTriangle, FiSun, FiMoon, FiCheckCircle,
+ FiLogOut, FiClock, FiX, FiChevronLeft, FiChevronRight, FiFilter, FiRefreshCw, FiUser, FiDollarSign, FiTrendingUp,
+ FiMenu, FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import ConfirmationDialog from "../common/ConfirmationDialog";
 import 'react-clock/dist/Clock.css';
@@ -34,12 +13,6 @@ import { useOwnFullAttendanceStore } from "../../store/useOwnFullAttendanceStore
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 
-/* 
-  --------------------------------------------------------------------------------------
-  HELPER FUNCTIONS (no TypeScript, purely JS) - KEEPING ALL ORIGINAL FUNCTIONS
-  --------------------------------------------------------------------------------------
-*/
-// Returns all days of a given (year, month) pinned around noon to avoid TZ shift:
 function getAllDaysInMonth(year, month) {
   const days = [];
   let date = new Date(year, month - 1, 1, 12);
@@ -50,7 +23,6 @@ function getAllDaysInMonth(year, month) {
   return days;
 }
 
-// Convert "hh:mm:ss AM/PM" → "HH:mm:ss" in 24-hour format
 function convertTo24Hour(timeString) {
   if (!timeString) return null;
   const [timePart, ampm] = timeString.split(" ");
@@ -76,39 +48,33 @@ function convertTo24Hour(timeString) {
   );
 }
 
-// Calculate hours difference between login/logout
 function getHoursWorked(login, logout) {
   if (!login || !logout) return 0;
   const login24 = convertTo24Hour(login);
   const logout24 = convertTo24Hour(logout);
   if (!login24 || !logout24) return 0;
 
-  // FIX: Use the converted 24-hour format instead of original 12-hour format
   const loginDate = new Date("1970-01-01T" + login24);
   const logoutDate = new Date("1970-01-01T" + logout24);
   const diffMs = logoutDate - loginDate;
   return diffMs > 0 ? diffMs / (1000 * 60 * 60) : 0;
 }
 
-// IMPROVED: Better formatting for hours worked display
 function formatHoursWorked(hoursWorked) {
   if (hoursWorked === 0) return "0h 0m";
   
   const totalMinutes = hoursWorked * 60;
   
-  // If less than 1 minute, show seconds
   if (totalMinutes < 1) {
     const seconds = Math.round(hoursWorked * 3600);
     return `${seconds}s`;
   }
   
-  // If less than 60 minutes, show minutes
   if (totalMinutes < 60) {
     const minutes = Math.round(totalMinutes);
     return `${minutes}m`;
   }
   
-  // Otherwise show hours and minutes
   const wholeHours = Math.floor(hoursWorked);
   const remainingMinutes = Math.round((hoursWorked - wholeHours) * 60);
   
@@ -119,7 +85,6 @@ function formatHoursWorked(hoursWorked) {
   return `${wholeHours}h ${remainingMinutes}m`;
 }
 
-// If your breaks contain either durations in minutes or start/end times:
 function getTotalBreakTime(breaks = []) {
   let totalMinutes = 0;
   for (const br of breaks) {
@@ -138,7 +103,6 @@ function getTotalBreakTime(breaks = []) {
   return `${hours}h ${minutes}m`;
 }
 
-// Return only unique dates from attendance to avoid duplicates
 function getUniqueAttendanceData(attendanceData = []) {
   const unique = [];
   const seen = new Set();
@@ -151,7 +115,6 @@ function getUniqueAttendanceData(attendanceData = []) {
   return unique;
 }
 
-// total shifts (old snippet logic)
 function calculateTotalShifts(attendanceData, year, month) {
   return attendanceData.filter((rec) => {
     const d = new Date(rec.date);
@@ -164,7 +127,6 @@ function calculateTotalShifts(attendanceData, year, month) {
   }).length;
 }
 
-// total leaves (excluding approved, ignoring holidays, etc.)
 function calculateTotalLeaves({
   attendanceData,
   approvedLeaves,
@@ -219,7 +181,6 @@ function calculateTotalLeaves({
   return totalLeaves;
 }
 
-// total half days
 function calculateTotalHalfDays(
   attendanceData,
   year,
@@ -243,7 +204,6 @@ function calculateTotalHalfDays(
   return count;
 }
 
-// not even half day
 function calculateNotEvenHalfDays(attendanceData, year, month) {
   let count = 0;
   for (const rec of attendanceData) {
@@ -260,7 +220,6 @@ function calculateNotEvenHalfDays(attendanceData, year, month) {
   return count;
 }
 
-// completed days (≥ attendancePolicies.fullDayHours or 9 default)
 function calculateTotalCompletedDays(
   attendanceData,
   year,
@@ -283,7 +242,6 @@ function calculateTotalCompletedDays(
   return count;
 }
 
-// total lates
 function calculateTotalLates(
   attendanceData,
   year,
@@ -316,7 +274,6 @@ function calculateTotalLates(
   return count;
 }
 
-// not logged out
 function calculateNotLoggedOut(attendanceData, year, month) {
   const today = new Date();
   return attendanceData.filter((rec) => {
@@ -331,7 +288,6 @@ function calculateNotLoggedOut(attendanceData, year, month) {
   }).length;
 }
 
-// get total working days
 function getTotalWorkingDays(
   leaveSystemDetails,
   companySettings,
@@ -368,7 +324,6 @@ function getTotalWorkingDays(
   return workingDays.length;
 }
 
-// next payroll date
 function getPayrollPeriodDates({
   year,
   month,
@@ -413,7 +368,6 @@ function getPayrollPeriodDates({
   return { startDate, endDate, nextPayrollDate };
 }
 
-// parse shift timing (e.g., "Saket (09:00 - 07:00)")
 function parseShiftTiming(shiftString) {
   if (!shiftString) return null;
   const regex = /(.+?)\s*\((\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})\)/;
@@ -423,7 +377,6 @@ function parseShiftTiming(shiftString) {
   return { name: name.trim(), startTime: start.trim(), endTime: end.trim() };
 }
 
-// old snippet approach to final salary
 function calculateFinalSalary({
   baseSalary,
   attendanceData,
@@ -436,7 +389,6 @@ function calculateFinalSalary({
   year,
   month,
 }) {
-  // If baseSalary is 0 or missing, bail out
   if (!baseSalary || !attendancePolicies || baseSalary <= 0) {
     return {
       finalSalary: "₹ 0.00",
@@ -451,7 +403,6 @@ function calculateFinalSalary({
   const calcMethod = attendancePolicies.calcSalaryBasedOn || "WORKING_DAYS";
   const totalPaidLeaves = userProfileData?.no_of_Paid_Leave || 0;
 
-  // determine denominator
   const denom =
     calcMethod === "CALENDAR_DAYS"
       ? new Date(year, month, 0).getDate()
@@ -477,7 +428,6 @@ function calculateFinalSalary({
         )
     : denom;
 
-  // total leaves
   const totalLeaves = calculateTotalLeaves({
     attendanceData,
     approvedLeaves,
@@ -506,7 +456,6 @@ function calculateFinalSalary({
   }
   const unpaidLeaves = Math.max(totalUnpaidLeaves - paidLeavesUsed, 0);
 
-  // standard deductions from employmentType
   const deductionIds = employmentTypeDetails?.deductions || [];
   const allDeductions = companySettings?.deductions || [];
   const deductionDetails = deductionIds
@@ -531,11 +480,9 @@ function calculateFinalSalary({
     baseSalary - totalDeductionsAmount
   );
 
-  // fraction of the month
   const fractionOfMonthWorked = daysUpToToday / denom;
   const payForDaysUpToToday = leftoverAfterDeductions * fractionOfMonthWorked;
 
-  // daily rate
   const dailyRate = leftoverAfterDeductions / denom;
   const leavesDeduction = unpaidLeaves * dailyRate;
   breakdown.push({
@@ -544,7 +491,6 @@ function calculateFinalSalary({
     amount: leavesDeduction,
   });
 
-  // final
   const finalSalaryAmount = Math.max(0, payForDaysUpToToday - leavesDeduction);
 
   return {
@@ -557,7 +503,6 @@ function calculateFinalSalary({
   };
 }
 
-// monthName
 function monthName(m) {
   const months = [
     "January",
@@ -576,71 +521,44 @@ function monthName(m) {
   return months[m - 1] || "Unknown";
 }
 
-// DEBUGGING FUNCTIONS - NEW
 function debugAttendanceData(attendanceDataRaw, year, month) {
-  console.log("=== DEBUGGING ATTENDANCE DATA ===");
-  console.log("Raw attendance data count:", attendanceDataRaw?.length || 0);
   
   if (!attendanceDataRaw || attendanceDataRaw.length === 0) {
-    console.log("❌ No attendance data found");
     return;
   }
   
-  // Show sample of raw data
-  console.log("Sample raw data:", attendanceDataRaw.slice(0, 2));
-  
-  // Filter for current month
   const currentMonthData = attendanceDataRaw.filter(rec => {
     const d = new Date(rec.date);
     return d.getFullYear() === year && d.getMonth() + 1 === month;
   });
   
-  console.log("Current month data count:", currentMonthData.length);
-  console.log("Target year/month:", year, month);
-  
   if (currentMonthData.length === 0) {
-    console.log("❌ No data for current month");
-    console.log("Available dates:", attendanceDataRaw.map(r => r.date));
     return;
   }
   
   // Check each record
   currentMonthData.forEach((record, index) => {
-    console.log(`\n--- Record ${index + 1} ---`);
-    console.log("Date:", record.date);
-    console.log("Login:", record.login);
-    console.log("Logout:", record.logout);
-    console.log("Status:", record.status);
     
     if (record.login && record.logout) {
       const hoursWorked = getHoursWorked(record.login, record.logout);
-      console.log("Hours worked:", hoursWorked);
-      console.log("Formatted:", formatHoursWorked(hoursWorked));
     }
   });
-  
   return currentMonthData;
 }
 
 function checkFilteringIssues(finalAttendanceData, searchText) {
-  console.log("=== CHECKING FILTERING ISSUES ===");
-  console.log("Total processed records:", finalAttendanceData.length);
   
   const recordsWithData = finalAttendanceData.filter(item => 
     item.logInTime !== "------" || item.logOutTime !== "------"
   );
-  console.log("Records with actual data:", recordsWithData.length);
   
   if (searchText) {
-    console.log("Search text:", searchText);
     const filteredCount = finalAttendanceData.filter((item) => {
       const combined = (item.date + " " + item.day + " " + item.status).toLowerCase().trim();
       return combined.includes(searchText.toLowerCase().trim());
     }).length;
-    console.log("Records after search filter:", filteredCount);
   }
   
-  // Show sample of records with data
   if (recordsWithData.length > 0) {
     console.log("\nSample records with data:");
     recordsWithData.slice(0, 3).forEach(record => {
@@ -650,6 +568,7 @@ function checkFilteringIssues(finalAttendanceData, searchText) {
 }
 
 export default function OwnFullAttendance() {
+
   const [punchReason, setPunchReason] = useState("");
   const [missedPunchModalOpen, setMissedPunchModalOpen] = useState(false);
   const [selectedDateForPunch, setSelectedDateForPunch] = useState(null);
@@ -657,7 +576,6 @@ export default function OwnFullAttendance() {
   const [punchOutTime, setPunchOutTime] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Handle initial sidebar state for desktop
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 1024) {
@@ -667,18 +585,14 @@ export default function OwnFullAttendance() {
       }
     };
 
-    // Set initial state
     handleResize();
 
-    // Add event listener
     window.addEventListener('resize', handleResize);
 
-    // Cleanup
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  const [showPayrollDetails, setShowPayrollDetails] = useState(false);
 
-  // Store hooks - KEEPING ALL ORIGINAL STORE CONNECTIONS
+  const [showPayrollDetails, setShowPayrollDetails] = useState(false);
   const fetchAttendanceData = useOwnFullAttendanceStore((s) => s.fetchAttendanceData);
   const attendanceDataRaw = useOwnFullAttendanceStore((s) => s.attendanceData);
   const approvedLeaves = useOwnFullAttendanceStore((s) => s.approvedLeaves);
@@ -689,15 +603,12 @@ export default function OwnFullAttendance() {
   const generatePDF = useOwnFullAttendanceStore((s) => s.generatePDF);
   const attendanceError = useOwnFullAttendanceStore((s) => s.error);
   const leaveSystemDetails = useOwnFullAttendanceStore((s) => s.leaveSystemDetails);
-
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
-  // Date controls - KEEPING ALL ORIGINAL STATE
   const today = new Date();
   const defaultMonthString = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0");
   const [selectedMonth, setSelectedMonth] = useState(defaultMonthString);
 
-  // Search & pagination - KEEPING ALL ORIGINAL STATE
   const [searchText, setSearchText] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
@@ -706,35 +617,24 @@ export default function OwnFullAttendance() {
     fetchAttendanceData();
   }, [fetchAttendanceData]);
 
-  // parse year & month - KEEPING ORIGINAL LOGIC
   const parts = selectedMonth.split("-");
   const year = parseInt(parts[0], 10);
   const month = parseInt(parts[1], 10);
 
-  // Make sure we have unique attendance records - KEEPING ORIGINAL LOGIC
   const attendanceData = getUniqueAttendanceData(attendanceDataRaw || []);
 
-  // DEBUGGING - NEW: Add comprehensive debugging
+  const attendancePolicy = companySettings.attendancePolicies
+
   useEffect(() => {
-    console.log("=== ATTENDANCE COMPONENT DEBUG ===");
-    console.log("Selected year/month:", year, month);
-    console.log("Raw attendance data:", attendanceDataRaw);
-    console.log("Unique attendance data:", attendanceData);
-    console.log("Leave system details:", leaveSystemDetails);
-    console.log("Company settings:", companySettings);
-    
     if (attendanceDataRaw) {
       debugAttendanceData(attendanceDataRaw, year, month);
     }
   }, [attendanceDataRaw, year, month, leaveSystemDetails, companySettings]);
 
-  // SHIFT TIMING - KEEPING ORIGINAL LOGIC
   const shiftTimingDetails = parseShiftTiming(userProfileData?.shift_Timing || "");
 
-  // Build daily table - KEEPING ALL ORIGINAL LOGIC BUT WITH IMPROVED DEBUGGING
   const allDaysInMonth = getAllDaysInMonth(year, month);
 
-  // set of approved leaves - KEEPING ORIGINAL LOGIC
   const approvedLeaveDates = new Set();
   if (approvedLeaves) {
     for (const lv of approvedLeaves) {
@@ -750,6 +650,7 @@ export default function OwnFullAttendance() {
   const finalAttendanceData = allDaysInMonth.map((dateObj, idx) => {
     const formatted = dateObj.toISOString().split("T")[0];
     const dayName = dateObj.toLocaleDateString("en-US", { weekday: "short" });
+
     let row = {
       sl: idx + 1,
       date: formatted,
@@ -760,22 +661,11 @@ export default function OwnFullAttendance() {
       status: "------",
     };
 
-    // Check if holiday or not working or an approved leave - KEEPING ORIGINAL LOGIC
     const isHoliday = companySettings?.holidays?.some(
       (h) => new Date(h.date).toISOString().split("T")[0] === formatted
     );
     const isWorkingDay = leaveSystemDetails?.workingDays?.includes(dayName) || false;
     const isApprovedLeave = approvedLeaveDates.has(formatted);
-
-    // DEBUGGING - Add logging for working days
-    if (formatted === "2025-06-13") {
-      console.log(`=== DEBUGGING ${formatted} ===`);
-      console.log("Day name:", dayName);
-      console.log("Is working day:", isWorkingDay);
-      console.log("Working days config:", leaveSystemDetails?.workingDays);
-      console.log("Is holiday:", isHoliday);
-      console.log("Is approved leave:", isApprovedLeave);
-    }
 
     if (isApprovedLeave) {
       row.status = "Holiday";
@@ -786,57 +676,38 @@ export default function OwnFullAttendance() {
       return row;
     }
 
-    // find attendance record - KEEPING ORIGINAL LOGIC
     const record = attendanceData.find((r) => r.date === formatted);
-    
-    // DEBUGGING - Add logging for record finding
-    if (formatted === "2025-06-13") {
-      console.log("Found record:", !!record);
-      console.log("Record details:", record);
-    }
     
     if (!record) {
       row.status = dateObj < todayObj ? "Absent" : "------";
       return row;
     }
 
-    // fill in login/logout - KEEPING ORIGINAL LOGIC
     if (record.login) row.logInTime = record.login;
     if (record.logout) row.logOutTime = record.logout;
 
-    // breaks - KEEPING ORIGINAL LOGIC
     if (record.breaks && record.breaks.length > 0) {
       row.totalBreak = getTotalBreakTime(record.breaks);
     }
 
-    // if no logout in the past => absent - KEEPING ORIGINAL LOGIC
     if (!record.logout) {
       row.status = dateObj < todayObj ? "Absent" : "------";
       return row;
     }
 
-    // Calculate total hours worked - IMPROVED WITH BETTER FORMATTING
     const hoursWorked = getHoursWorked(record.login, record.logout);
-    row.hoursWorked = formatHoursWorked(hoursWorked); // IMPROVED: Use better formatting
+    row.hoursWorked = formatHoursWorked(hoursWorked); 
 
-    // DEBUGGING - Add logging for hours calculation
-    if (formatted === "2025-06-13") {
-      console.log("Hours worked:", hoursWorked);
-      console.log("Formatted hours:", row.hoursWorked);
-    }
-
-    // IMPROVED: Better status logic
-    if (hoursWorked >= 9) {
+    if (hoursWorked >= attendancePolicy.fullDayHours) {
       row.status = "Present";
-    } else if (hoursWorked >= 4.5) {
+    } else if (hoursWorked >= attendancePolicy.halfDayHours) {
       row.status = hoursWorked <= 5 ? "Half Day" : "Present";
-    } else if (hoursWorked > 0) {
+    } else if (hoursWorked > 0 && hoursWorked < attendancePolicy.halfDayHours) {
       row.status = "Not Even Half Day";
     } else {
       row.status = "Absent";
     }
     
-    // DEBUGGING - Add logging for status calculation
     if (formatted === "2025-06-13") {
       console.log("Final status:", row.status);
     }
@@ -844,20 +715,17 @@ export default function OwnFullAttendance() {
     return row;
   });
 
-  // DEBUGGING - Add comprehensive debugging for final data
   useEffect(() => {
     if (finalAttendanceData.length > 0) {
       checkFilteringIssues(finalAttendanceData, searchText);
     }
   }, [finalAttendanceData, searchText]);
 
-  // filter by search - KEEPING ORIGINAL LOGIC
   const filteredData = finalAttendanceData.filter((item) => {
     const combined = (item.date + " " + item.day + " " + item.status).toLowerCase().trim();
     return combined.includes(searchText.toLowerCase().trim());
   });
 
-  // pagination - KEEPING ORIGINAL LOGIC
   const totalEntries = filteredData.length;
   const totalPages = Math.ceil(totalEntries / rowsPerPage);
   const safeCurrentPage = Math.max(1, Math.min(currentPage, totalPages || 1));
@@ -969,7 +837,6 @@ export default function OwnFullAttendance() {
     toast("PDF download cancelled", { icon: "❌" });
   }
 
-  // Error handling - KEEPING ORIGINAL ERROR HANDLING
   if (attendanceError) {
     return (
       <motion.div
@@ -997,7 +864,6 @@ export default function OwnFullAttendance() {
   const empName = (userProfileData?.first_Name || "") + " " + (userProfileData?.last_Name || "");
   const empCode = userProfileData?.employee_Id || "N/A";
 
-  // Status badge renderer with dark mode support
   const renderStatusBadge = (status) => {
     const badgeConfig = {
       Present: {
@@ -1061,7 +927,6 @@ export default function OwnFullAttendance() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900/20 dark:to-indigo-900/20">
-      {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
         {sidebarOpen && (
           <motion.div
@@ -1074,7 +939,6 @@ export default function OwnFullAttendance() {
         )}
       </AnimatePresence>
 
-      {/* Header */}
       <motion.header
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -1123,15 +987,13 @@ export default function OwnFullAttendance() {
       </motion.header>
 
       <div className="flex flex-row-reverse ">
-        {/* Sidebar - moved to right side */}
         <motion.aside
-          className={`w-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border-l border-gray-200 dark:border-gray-700 overflow-y-auto ${
-            sidebarOpen 
-              ? 'fixed top-0 right-0 bottom-0 z-40 lg:relative lg:z-auto' 
-              : 'hidden lg:block lg:relative'
-          }`}
+          className={`w-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border-l border-gray-200 dark:border-gray-700 overflow-y-auto 
+            ${sidebarOpen 
+                ? 'fixed top-0 right-0 bottom-0 z-40 lg:relative lg:z-auto' 
+                : 'hidden lg:block lg:relative'}`}
         >
-          <div className="p-6 ">
+          <div className="p-6">
             <div className="flex items-center justify-between mb-6 lg:hidden border">
               <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Overview</h2>
               <button
@@ -1142,7 +1004,6 @@ export default function OwnFullAttendance() {
               </button>
             </div>
 
-            {/* Employee Stats */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1186,7 +1047,6 @@ export default function OwnFullAttendance() {
               </div>
             </motion.div>
 
-            {/* Payroll Summary */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1251,7 +1111,6 @@ export default function OwnFullAttendance() {
 
             </motion.div>
 
-            {/* Shift Timing Details - KEEPING ORIGINAL SHIFT TIMING TABLE */}
             {shiftTimingDetails && (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -1288,10 +1147,8 @@ export default function OwnFullAttendance() {
           </div>
         </motion.aside>
 
-        {/* Main Content */}
         <main className="flex-1 lg:ml-0 w-full">
           <div className="p-4 sm:p-6 lg:p-8">
-            {/* Controls */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1563,7 +1420,6 @@ export default function OwnFullAttendance() {
         </main>
       </div>
 
-      {/* Missed Punch Modal - KEEPING ALL ORIGINAL MODAL FUNCTIONALITY */}
       <AnimatePresence>
         {missedPunchModalOpen && (
           <motion.div
@@ -1697,7 +1553,6 @@ export default function OwnFullAttendance() {
         )}
       </AnimatePresence>
 
-      {/* Confirmation Dialog - KEEPING ORIGINAL CONFIRMATION DIALOG */}
       <ConfirmationDialog
         open={confirmDialogOpen}
         title="Download Payslip PDF"
