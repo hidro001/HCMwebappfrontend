@@ -121,9 +121,9 @@ export default function AttendancePolicies() {
             className="mt-1 w-full border border-gray-300 dark:border-gray-700 rounded p-2 bg-white dark:bg-gray-700"
           />
         </div>
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-            Grace Period (Minutes)
+            Grace  (Minutes)
           </label>
           <input
             type="number"
@@ -133,7 +133,7 @@ export default function AttendancePolicies() {
             }
             className="mt-1 w-full border border-gray-300 dark:border-gray-700 rounded p-2 bg-white dark:bg-gray-700"
           />
-        </div>
+        </div> */}
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
             Calculate Salary Based On
