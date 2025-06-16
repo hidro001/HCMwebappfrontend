@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiPrinter, FiDownload, FiSearch, FiBriefcase, FiCalendar, FiAlertTriangle, FiSun, FiMoon, FiCheckCircle,
  FiLogOut, FiClock, FiX, FiChevronLeft, FiChevronRight, FiFilter, FiRefreshCw, FiUser, FiDollarSign, FiTrendingUp,
@@ -187,6 +187,7 @@ function calculateTotalHalfDays(
   month,
   attendancePolicies
 ) {
+  const fullDayHours = attendancePolicies?.fullDayHours || 9;
   const halfDayHours = attendancePolicies?.halfDayHours || 5;
   const minWork = attendancePolicies?.minimumWorkingHours || 4.5;
   let count = 0;
@@ -195,7 +196,7 @@ function calculateTotalHalfDays(
     if (d.getFullYear() === year && d.getMonth() + 1 === month) {
       if (rec.login && rec.logout) {
         const hoursWorked = getHoursWorked(rec.login, rec.logout);
-        if (hoursWorked > minWork && hoursWorked <= halfDayHours) {
+        if ( hoursWorked < fullDayHours && hoursWorked > minWork && hoursWorked >= halfDayHours) {
           count++;
         }
       }
@@ -582,21 +583,18 @@ export default function OwnFullAttendance() {
   const [punchOutTime, setPunchOutTime] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setSidebarOpen(true);
-      } else {
-        setSidebarOpen(false);
-      }
-    };
-
-    handleResize();
-
-    window.addEventListener('resize', handleResize);
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     if (window.innerWidth >= 1024) {
+  //       setSidebarOpen(true);
+  //     } else {
+  //       setSidebarOpen(false);
+  //     }
+  //   };
+  //   handleResize();
+  //   window.addEventListener('resize', handleResize);
+  //   return () => window.removeEventListener('resize', handleResize);
+  // }, []);
 
   const [showPayrollDetails, setShowPayrollDetails] = useState(false);
   const fetchAttendanceData = useOwnFullAttendanceStore((s) => s.fetchAttendanceData);
@@ -633,8 +631,6 @@ export default function OwnFullAttendance() {
   const month = parseInt(parts[1], 10);
 
   const attendanceData = getUniqueAttendanceData(attendanceDataRaw || []);
-
-  const attendancePolicy = companySettings.attendancePolicies
 
   useEffect(() => {
     if (attendanceDataRaw) {
@@ -714,20 +710,18 @@ export default function OwnFullAttendance() {
     const hoursWorked = getHoursWorked(record.login, record.logout);
     row.hoursWorked = formatHoursWorked(hoursWorked); 
 
-    if (hoursWorked >= attendancePolicy.fullDayHours) {
+    if (hoursWorked >= attendancePolicies.fullDayHours) {
       row.status = "Present";
-    } else if (hoursWorked >= attendancePolicy.halfDayHours) {
-      row.status = hoursWorked <= 5 ? "Half Day" : "Present";
-    } else if (hoursWorked > 0 && hoursWorked < attendancePolicy.halfDayHours) {
+    } else if (hoursWorked <= attendancePolicies.fullDayHours) {
+      row.status = hoursWorked >= attendancePolicies.halfDayHours ? "Half Day" : "Absent";
+    } else if (hoursWorked > 0 && hoursWorked < attendancePolicies.halfDayHours) {
       row.status = "Not Even Half Day";
     } else {
       row.status = "Absent";
     }
-    
     if (formatted === "2025-06-13") {
       console.log("Final status:", row.status);
     }
-
     return row;
   });
 
@@ -751,7 +745,6 @@ export default function OwnFullAttendance() {
   const endIndex = startIndex + rowsPerPage;
   const displayedData = filteredData.slice(startIndex, endIndex);
 
-  // "Old snippet" stats - KEEPING ALL ORIGINAL CALCULATIONS
   const totalShifts = calculateTotalShifts(attendanceData, year, month);
   const totalLates = calculateTotalLates(
     attendanceData,
@@ -966,7 +959,7 @@ export default function OwnFullAttendance() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 "
             onClick={() => setSidebarOpen(false)}
           />
         )}
@@ -1019,18 +1012,17 @@ export default function OwnFullAttendance() {
         </div>
       </motion.header>
 
-      <div className="flex flex-row-reverse ">
+     <div className="flex flex-row-reverse h-screen ">
         <motion.aside
-          className={`w-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border-l border-gray-200 dark:border-gray-700 overflow-y-auto 
+          className={` bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border-l border-gray-200 dark:border-gray-700   
             ${sidebarOpen 
-                ? 'fixed top-0 right-0 bottom-0 z-40 lg:relative lg:z-auto' 
-                : 'hidden lg:block lg:relative'}`}
+                ? 'fixed top-0 right-0 bottom-0 z-40 w-full lg:w-[30%]  h-full' 
+                : 'hidden '}
+                `}
         >
-          <div className="p-6">
-            <div className="flex items-center justify-between mb-6 lg:hidden border">
-              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                Overview
-              </h2>
+          <div className="p-6 h-screen  bg-white/95 dark:bg-gray-800/95 ">
+            <div className="flex items-center justify-between mb-6 border">
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Overview</h2>
               <button
                 onClick={() => setSidebarOpen(false)}
                 className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -1043,9 +1035,9 @@ export default function OwnFullAttendance() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 mb-6 border border-blue-100 dark:border-blue-800 min-w-56"
+              className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-2xl p-6 mb-6 border border-blue-100 dark:border-blue-800 "
             >
-              <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-3 mb-4  bg-white/95 dark:bg-gray-800/95 ">
                 <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center">
                   <FiUser className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
@@ -1059,7 +1051,7 @@ export default function OwnFullAttendance() {
                 </div>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-4  bg-white/95 dark:bg-gray-800/95 ">
                 {[
                   {
                     label: "Total Shifts",

@@ -1,10 +1,8 @@
-
 import { create } from "zustand";
 import { toast } from "react-hot-toast";
-import axiosInstance from "../service/axiosInstance"; // Adjust the path as needed
+import axiosInstance from "../service/axiosInstance"; 
 
 const useAttendanceStore = create((set, get) => ({
-  // ---- State ----
   subordinates: [],
   departments: [],
   stats: null,
@@ -14,8 +12,6 @@ const useAttendanceStore = create((set, get) => ({
   todayPunches: [],
   todayLateIn: [],
   todayAttendance: [],
-
-  // ---- Actions ----
 
   // Fetch subordinates for a given userId
   fetchSubordinates: async (userId) => {
@@ -151,7 +147,7 @@ const useAttendanceStore = create((set, get) => ({
     }
   },
 
-   fetchTodaysLateIn: async () => {
+  fetchTodaysLateIn: async () => {
     set({ loading: true, error: null });
     try {
       const response = await axiosInstance.get("/attendance/late-in-today");
@@ -177,8 +173,6 @@ const useAttendanceStore = create((set, get) => ({
       const response = await axiosInstance.get("/attendance/attendance-status-today");
       const data = response.data;
 
-      console.log(data.data, 'gsdf')
-
       if (data.success) {
         set({ todayAttendance: data.data });
       } else {
@@ -192,7 +186,6 @@ const useAttendanceStore = create((set, get) => ({
       set({ loading: false });
     }
   }
-  
 }));
 
 export default useAttendanceStore;

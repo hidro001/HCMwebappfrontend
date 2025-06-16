@@ -75,26 +75,24 @@ const Dashboard = () => {
       }))
     : [];
 
-    const {totalEmployees, presentCount, absentCount} = todayAttendance
+    const {totalEmployees, presentCount, absentCount} = attendanceData
 
     const percentageCount = (total, data) => {
-      return (data/total)*100
+      return ((data / total) * 100).toFixed(2);
     }
 
     useEffect(() => {
       handleDapertmentAttendance()
     }, [date, departmentId])
 
-     const handleDapertmentAttendance = async (e) => {  
+    const handleDapertmentAttendance = async (e) => {  
         try {
           const res  = await axiosInstance.get(`/attendance/department-attendance?department=${encodeURIComponent(departmentId)}&date=${date}`);
           setAttendanceData(res.data.data);
         } catch (error) {
           toast.error(error.response?.data?.message || "Failed to Get Department Attendance.");
-        } finally {
-          
-        }
-      };
+        } 
+    };
 
     const festivals = [
       {
@@ -198,48 +196,49 @@ const Dashboard = () => {
             </ul>
           
         </div>
-     </div>
-
-     {/* 3rd Section */} 
-     <div className='w-full flex justify-center gap-2 mt-4 mb-6'>
-       <div className='w-full'>
-        <GaugeCard title="Attendance Percentage" value={percentageCount(totalEmployees,presentCount)} scheme="blue"  label1='present'/>
-      </div> 
-      <div className='w-full'>
-        <GaugeCard title="Absent Percentage"     value={percentageCount(totalEmployees, absentCount)} scheme="greyOnBlue" label1='absent' />
-      </div> 
-      <div className='w-full'>
-        <LineCard /> </div>
-     </div>
-
-    {/* 4th section Table */}
-     <div className="bg-white dark:bg-gray-800  rounded-lg shadow p-6">
-        <h2 className="text-lg font-semibold mb-4">Late In Today</h2>
-      <div className="flex gap-2 mb-6 overflow-x-auto">
-        { departmentTabs?.length > 0 && departmentTabs.map((tab) => (
-          <button
-            key={tab._id}
-            onClick={() => setActiveTab(tab.department)}
-            className={`relative px-4 py-2 rounded transition
-              ${activeTab === tab.department
-                ? "text-white bg-gradient-to-r from-blue-500 to-indigo-500"
-                : "text-gray-700 dark:text-white bg-gray-100 dark:bg-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700"}`}
-          >
-            {tab.department}
- 
-            
-            {activeTab === tab.department && (
-              <motion.span
-                layoutId="pill"
-                className="absolute inset-0 rounded"
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
-              />
-            )}
-          </button>
-        ))}
       </div>
-       <LateInToday data={TodaylateIn} activeTab={activeTab} />
-     </div>
+
+      {/* 3rd Section */} 
+      <div className='w-full flex justify-center gap-2 mt-4 mb-6'>
+        <div className='w-full'>
+          <GaugeCard title="Attendance Percentage" value={percentageCount(totalEmployees, presentCount)} scheme="blue"  label1='present'/>
+        </div> 
+        <div className='w-full'>
+          <GaugeCard title="Absent Percentage" value={percentageCount(totalEmployees, absentCount)} scheme="greyOnBlue" label1='absent' />
+        </div> 
+        <div className='w-full'>
+          <LineCard /> 
+        </div>
+      </div>
+
+      {/* 4th section Table */}
+      <div className="bg-white dark:bg-gray-800  rounded-lg shadow p-6">
+          <h2 className="text-lg font-semibold mb-4">Late In Today</h2>
+        <div className="flex gap-2 mb-6 overflow-x-auto">
+          { departmentTabs?.length > 0 && departmentTabs.map((tab) => (
+            <button
+              key={tab._id}
+              onClick={() => setActiveTab(tab.department)}
+              className={`relative px-4 py-2 rounded transition
+                ${activeTab === tab.department
+                  ? "text-white bg-gradient-to-r from-blue-500 to-indigo-500"
+                  : "text-gray-700 dark:text-white bg-gray-100 dark:bg-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700"}`}
+            >
+              {tab.department}
+  
+              
+              {activeTab === tab.department && (
+                <motion.span
+                  layoutId="pill"
+                  className="absolute inset-0 rounded"
+                  transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                />
+              )}
+            </button>
+          ))}
+        </div>
+        <LateInToday data={TodaylateIn} activeTab={activeTab} />
+      </div>
     </div>
   );
 };
