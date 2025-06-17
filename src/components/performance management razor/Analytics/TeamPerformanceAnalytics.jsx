@@ -1,5 +1,7 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ResponsiveTable from "./ResponsiveTable";
+
 import {
   ResponsiveContainer,
   LineChart,
@@ -584,142 +586,145 @@ const StatCard = ({
   </motion.div>
 );
 
-const ResponsiveTable = ({
-  headers,
-  rows,
-  rowRenderer,
-  searchable = false,
-}) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [viewMode, setViewMode] = useState("table"); // table or cards
+// const ResponsiveTable = ({
+//   headers,
+//   rows,
+//   rowRenderer,
+//   searchable = false,
+// }) => {
+//   const [searchTerm, setSearchTerm] = useState("");
+//   const [viewMode, setViewMode] = useState("table"); // table or cards
 
-  const filteredRows = useMemo(() => {
-    if (!searchTerm) return rows;
-    return rows.filter((row) =>
-      rowRenderer(row).some((cell) =>
-        String(cell).toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    );
-  }, [rows, searchTerm, rowRenderer]);
+//   const filteredRows = useMemo(() => {
+//     if (!searchTerm) return rows;
+//     return rows.filter((row) =>
+//       rowRenderer(row).some((cell) =>
+//         String(cell).toLowerCase().includes(searchTerm.toLowerCase())
+//       )
+//     );
+//   }, [rows, searchTerm, rowRenderer]);
 
-  return (
-    <div className="space-y-4">
-      {searchable && (
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div className="relative flex-1 max-w-md">
-            <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            />
-          </div>
-          <div className="flex items-center space-x-2">
-            <motion.button
-              variants={buttonVariants}
-              whileHover="hover"
-              whileTap="tap"
-              onClick={() => setViewMode("table")}
-              className={`p-2 rounded-lg ${
-                viewMode === "table"
-                  ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400"
-                  : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
-              }`}
-            >
-              <HiOutlineViewList className="w-5 h-5" />
-            </motion.button>
-            <motion.button
-              variants={buttonVariants}
-              whileHover="hover"
-              whileTap="tap"
-              onClick={() => setViewMode("cards")}
-              className={`p-2 rounded-lg ${
-                viewMode === "cards"
-                  ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400"
-                  : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
-              }`}
-            >
-              <HiOutlineViewGrid className="w-5 h-5" />
-            </motion.button>
-          </div>
-        </div>
-      )}
+//   return (
+//     <div className="space-y-4">
+//       {searchable && (
+//         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+//           <div className="relative flex-1 max-w-md">
+//             <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+//             <input
+//               type="text"
+//               placeholder="Search..."
+//               value={searchTerm}
+//               onChange={(e) => setSearchTerm(e.target.value)}
+//               className="w-full pl-10 pr-4 py-2 border border-gray-200 dark:border-gray-700 rounded-xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+//             />
+//           </div>
+//           <div className="flex items-center space-x-2">
+//             <motion.button
+//               variants={buttonVariants}
+//               whileHover="hover"
+//               whileTap="tap"
+//               onClick={() => setViewMode("table")}
+//               className={`p-2 rounded-lg ${
+//                 viewMode === "table"
+//                   ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400"
+//                   : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+//               }`}
+//             >
+//               <HiOutlineViewList className="w-5 h-5" />
+//             </motion.button>
+//             <motion.button
+//               variants={buttonVariants}
+//               whileHover="hover"
+//               whileTap="tap"
+//               onClick={() => setViewMode("cards")}
+//               className={`p-2 rounded-lg ${
+//                 viewMode === "cards"
+//                   ? "bg-indigo-100 text-indigo-600 dark:bg-indigo-900/50 dark:text-indigo-400"
+//                   : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
+//               }`}
+//             >
+//               <HiOutlineViewGrid className="w-5 h-5" />
+//             </motion.button>
+//           </div>
+//         </div>
+//       )}
 
-      {viewMode === "table" ? (
-        <div className="overflow-x-auto rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
-          <table className="min-w-full divide-y divide-gray-200/50 dark:divide-gray-700/50">
-            <thead className="bg-gray-50/80 dark:bg-gray-800/80 backdrop-blur-sm">
-              <tr>
-                {headers.map((header, idx) => (
-                  <th
-                    key={idx}
-                    className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-                  >
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm divide-y divide-gray-200/50 dark:divide-gray-700/50">
-              <AnimatePresence>
-                {filteredRows.map((row, rowIdx) => (
-                  <motion.tr
-                    key={rowIdx}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    transition={{ delay: rowIdx * 0.05 }}
-                    className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors"
-                  >
-                    {rowRenderer(row).map((cell, cellIdx) => (
-                      <td
-                        key={cellIdx}
-                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
-                      >
-                        {cell}
-                      </td>
-                    ))}
-                  </motion.tr>
-                ))}
-              </AnimatePresence>
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <AnimatePresence>
-            {filteredRows.map((row, rowIdx) => {
-              const cells = rowRenderer(row);
-              return (
-                <motion.div
-                  key={rowIdx}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ delay: rowIdx * 0.05 }}
-                  className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 dark:border-gray-700/50"
-                >
-                  {headers.map((header, idx) => (
-                    <div key={idx} className="mb-2 last:mb-0">
-                      <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        {header}:
-                      </span>
-                      <div className="text-sm font-medium text-gray-900 dark:text-white mt-1">
-                        {cells[idx]}
-                      </div>
-                    </div>
-                  ))}
-                </motion.div>
-              );
-            })}
-          </AnimatePresence>
-        </div>
-      )}
-    </div>
-  );
-};
+//       {viewMode === "table" ? (
+//         <div className="overflow-x-auto rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
+//           <table className="min-w-full divide-y divide-gray-200/50 dark:divide-gray-700/50">
+//             <thead className="bg-gray-50/80 dark:bg-gray-800/80 backdrop-blur-sm">
+//               <tr>
+//                 {headers.map((header, idx) => (
+//                   <th
+//                     key={idx}
+//                     className="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+//                   >
+//                     {header}
+//                   </th>
+//                 ))}
+//               </tr>
+//             </thead>
+//             <tbody className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm divide-y divide-gray-200/50 dark:divide-gray-700/50">
+//               <AnimatePresence>
+//                 {filteredRows.map((row, rowIdx) => (
+//                   <motion.tr
+//                     key={rowIdx}
+//                     initial={{ opacity: 0, x: -20 }}
+//                     animate={{ opacity: 1, x: 0 }}
+//                     exit={{ opacity: 0, x: -20 }}
+//                     transition={{ delay: rowIdx * 0.05 }}
+//                     className="hover:bg-gray-50/50 dark:hover:bg-gray-800/50 transition-colors"
+//                   >
+//                     {rowRenderer(row).map((cell, cellIdx) => (
+//                       <td
+//                         key={cellIdx}
+//                         className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100"
+//                       >
+//                         {cell}
+//                       </td>
+//                     ))}
+//                   </motion.tr>
+//                 ))}
+//               </AnimatePresence>
+//             </tbody>
+//           </table>
+//         </div>
+//       ) : (
+//         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+//           <AnimatePresence>
+//             {filteredRows.map((row, rowIdx) => {
+//               const cells = rowRenderer(row);
+//               return (
+//                 <motion.div
+//                   key={rowIdx}
+//                   initial={{ opacity: 0, scale: 0.9 }}
+//                   animate={{ opacity: 1, scale: 1 }}
+//                   exit={{ opacity: 0, scale: 0.9 }}
+//                   transition={{ delay: rowIdx * 0.05 }}
+//                   className="bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl p-4 border border-gray-200/50 dark:border-gray-700/50"
+//                 >
+//                   {headers.map((header, idx) => (
+//                     <div key={idx} className="mb-2 last:mb-0">
+//                       <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+//                         {header}:
+//                       </span>
+//                       <div className="text-sm font-medium text-gray-900 dark:text-white mt-1">
+//                         {cells[idx]}
+//                       </div>
+//                     </div>
+//                   ))}
+//                 </motion.div>
+//               );
+//             })}
+//           </AnimatePresence>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+
+
 
 export default function PerformanceAnalytics({ data, onRefresh }) {
   const {
@@ -827,11 +832,14 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
 
   // Enhanced summary calculations
   const totalScore = chart.reduce((s, c) => s + (c.totalScore || 0), 0);
-  const avgPerf = chart.length
-    ? Math.round(
-        chart.reduce((s, c) => s + (c.percentOfTarget || 0), 0) / chart.length
-      )
-    : 0;
+  const avgPerf = chart.length > 0
+      ? Math.round(
+          (chart.reduce((sum, c) => sum + (c.percentOfTarget || 0), 0) /
+            chart.length) *
+           10
+       ) / 10
+      : 0; // average percentOfTarget, rounded to 1 decimal
+ 
   const best = chart.reduce(
     (b, c) => (c.percentOfTarget > (b.percentOfTarget || 0) ? c : b),
     {}
@@ -916,7 +924,7 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                 whileTap="tap"
                 className="p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-200 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
               >
-                <FiEye className="w-4 h-4" />
+                {/* <FiEye className="w-4 h-4" /> */}
               </motion.button>
             }
           >
@@ -2060,8 +2068,14 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
             </div>
             <div className="p-6">
               <ResponsiveTable
-                headers={["Employee", "Avg Rating", "Rating Count", "Category"]}
-                rows={sortedEmployees}
+  sortable
+  headers={[
+    { key: "employee",      label: "Employee"     },
+    { key: "averageRating", label: "Avg Rating"   },
+    { key: "ratingCount",   label: "Rating Count" },
+    { key: "category",      label: "Category"     },
+  ]}
+  rows={sortedEmployees}
                 rowRenderer={(e) => [
                   <div className="flex items-center space-x-3">
                     <div className="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-medium">
@@ -2133,8 +2147,13 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
                 transition-colors duration-300">
                 <ResponsiveTable
-                  headers={["Employee", "Rating", "Category"]}
-                  rows={top}
+                sortable
+  headers={[
+    { key: "employee",      label: "Employee" },
+    { key: "averageRating", label: "Rating"   },
+    { key: "category",      label: "Category" },
+  ]}
+  rows={top}
                   rowRenderer={(p) => [
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
@@ -2195,8 +2214,13 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
                 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
                 transition-colors duration-300">
                 <ResponsiveTable
-                  headers={["Employee", "Rating", "Category"]}
-                  rows={bottom}
+                  sortable
+  headers={[
+    { key: "employee",      label: "Employee" },
+    { key: "averageRating", label: "Rating"   },
+    { key: "category",      label: "Category" },
+  ]}
+  rows={bottom}
                   rowRenderer={(p) => [
                     <div className="flex items-center space-x-3">
                       <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-pink-600 rounded-full flex items-center justify-center text-white text-sm font-bold">
