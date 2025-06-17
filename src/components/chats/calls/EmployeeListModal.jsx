@@ -1,9 +1,6 @@
-
-
-
 import React, { useEffect, useState } from "react";
-import useAuthStore from "../../../store/store"; 
-import axiosInstance from "../../../service/axiosInstance"; 
+import useAuthStore from "../../../store/store";
+import axiosInstance from "../../../service/axiosInstance";
 
 const EmployeeListModal = ({ onClose, onSelectEmployee }) => {
   const [employees, setEmployees] = useState([]);
@@ -11,14 +8,11 @@ const EmployeeListModal = ({ onClose, onSelectEmployee }) => {
 
   useEffect(() => {
     const fetchEmployees = async () => {
-      
-  
-
       try {
         // Fetch subordinates & managers in parallel using your custom axiosInstance
         const [subsResponse, managersResponse] = await Promise.all([
-          axiosInstance.get("/admin/subordinates"),
-          axiosInstance.get("/admin/both"),
+          axiosInstance.get("/user/get-all"),
+          axiosInstance.get("/user/get-all"),
         ]);
 
         const subs = subsResponse.data?.data || [];
@@ -49,7 +43,8 @@ const EmployeeListModal = ({ onClose, onSelectEmployee }) => {
                 onClose();
               }}
             >
-              {employee.first_Name} {employee.last_Name} ({employee.employee_Id})
+              {employee.first_Name} {employee.last_Name} ({employee.employee_Id}
+              )
             </li>
           ))}
         </ul>
