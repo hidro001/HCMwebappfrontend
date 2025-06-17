@@ -21,8 +21,10 @@ export function CallProvider({ children, currentUserId }) {
   const [incomingCall, setIncomingCall] = useState(null);
   const [call, setCall] = useState(null);
 
+  const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL;
+
   useEffect(() => {
-    socket.current = io("https://apiv2.humanmaximizer.com/chat", {
+    socket.current = io(SOCKET_SERVER_URL, {
       query: { userId: currentUserId },
     });
 

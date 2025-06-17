@@ -295,7 +295,7 @@ export const menuItems = [
         textAnimation: { x: 10 },
       },
       {
-        name: "Assigned Task",
+        name: "Assign Task",
         link: "/dashboard/assigned-task",
         permission: "task-assign-subordinates",
         textAnimation: { x: 10 },

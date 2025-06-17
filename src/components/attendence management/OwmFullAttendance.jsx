@@ -1,8 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiPrinter, FiDownload, FiSearch, FiBriefcase, FiCalendar, FiAlertTriangle, FiSun, FiMoon, FiCheckCircle,
- FiLogOut, FiClock, FiX, FiChevronLeft, FiChevronRight, FiFilter, FiRefreshCw, FiUser, FiDollarSign, FiTrendingUp,
- FiMenu, FiEye, FiEyeOff } from "react-icons/fi";
+import {
+  FiPrinter,
+  FiDownload,
+  FiSearch,
+  FiBriefcase,
+  FiCalendar,
+  FiAlertTriangle,
+  FiSun,
+  FiMoon,
+  FiCheckCircle,
+  FiLogOut,
+  FiClock,
+  FiX,
+  FiChevronLeft,
+  FiChevronRight,
+  FiFilter,
+  FiRefreshCw,
+  FiUser,
+  FiDollarSign,
+  FiTrendingUp,
+  FiMenu,
+  FiEye,
+  FiEyeOff,
+} from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import ConfirmationDialog from "../common/ConfirmationDialog";
 import "react-clock/dist/Clock.css";
@@ -64,17 +85,17 @@ function formatHoursWorked(hoursWorked) {
   if (hoursWorked === 0) return "0h 0m";
 
   const totalMinutes = hoursWorked * 60;
-  
+
   if (totalMinutes < 1) {
     const seconds = Math.round(hoursWorked * 3600);
     return `${seconds}s`;
   }
-  
+
   if (totalMinutes < 60) {
     const minutes = Math.round(totalMinutes);
     return `${minutes}m`;
   }
-  
+
   const wholeHours = Math.floor(hoursWorked);
   const remainingMinutes = Math.round((hoursWorked - wholeHours) * 60);
 
@@ -187,6 +208,7 @@ function calculateTotalHalfDays(
   month,
   attendancePolicies
 ) {
+  const fullDayHours = attendancePolicies?.fullDayHours || 9;
   const halfDayHours = attendancePolicies?.halfDayHours || 5;
   const minWork = attendancePolicies?.minimumWorkingHours || 4.5;
   let count = 0;
@@ -195,7 +217,11 @@ function calculateTotalHalfDays(
     if (d.getFullYear() === year && d.getMonth() + 1 === month) {
       if (rec.login && rec.logout) {
         const hoursWorked = getHoursWorked(rec.login, rec.logout);
-        if (hoursWorked > minWork && hoursWorked <= halfDayHours) {
+        if (
+          hoursWorked < fullDayHours &&
+          hoursWorked > minWork &&
+          hoursWorked >= halfDayHours
+        ) {
           count++;
         }
       }
@@ -522,23 +548,21 @@ function monthName(m) {
 }
 
 function debugAttendanceData(attendanceDataRaw, year, month) {
-  
   if (!attendanceDataRaw || attendanceDataRaw.length === 0) {
     return;
   }
-  
-  const currentMonthData = attendanceDataRaw.filter(rec => {
+
+  const currentMonthData = attendanceDataRaw.filter((rec) => {
     const d = new Date(rec.date);
     return d.getFullYear() === year && d.getMonth() + 1 === month;
   });
-  
+
   if (currentMonthData.length === 0) {
     return;
   }
 
   // Check each record
   currentMonthData.forEach((record, index) => {
-    
     if (record.login && record.logout) {
       const hoursWorked = getHoursWorked(record.login, record.logout);
     }
@@ -547,11 +571,10 @@ function debugAttendanceData(attendanceDataRaw, year, month) {
 }
 
 function checkFilteringIssues(finalAttendanceData, searchText) {
-  
-  const recordsWithData = finalAttendanceData.filter(item => 
-    item.logInTime !== "------" || item.logOutTime !== "------"
+  const recordsWithData = finalAttendanceData.filter(
+    (item) => item.logInTime !== "------" || item.logOutTime !== "------"
   );
-  
+
   if (searchText) {
     const filteredCount = finalAttendanceData.filter((item) => {
       const combined = (item.date + " " + item.day + " " + item.status)
@@ -560,7 +583,7 @@ function checkFilteringIssues(finalAttendanceData, searchText) {
       return combined.includes(searchText.toLowerCase().trim());
     }).length;
   }
-  
+
   if (recordsWithData.length > 0) {
     console.log("\nSample records with data:");
     recordsWithData.slice(0, 3).forEach((record) => {
@@ -574,7 +597,6 @@ function checkFilteringIssues(finalAttendanceData, searchText) {
 }
 
 export default function OwnFullAttendance() {
-
   const [punchReason, setPunchReason] = useState("");
   const [missedPunchModalOpen, setMissedPunchModalOpen] = useState(false);
   const [selectedDateForPunch, setSelectedDateForPunch] = useState(null);
@@ -593,13 +615,15 @@ export default function OwnFullAttendance() {
 
     handleResize();
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
-    return () => window.removeEventListener('resize', handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const [showPayrollDetails, setShowPayrollDetails] = useState(false);
-  const fetchAttendanceData = useOwnFullAttendanceStore((s) => s.fetchAttendanceData);
+  const fetchAttendanceData = useOwnFullAttendanceStore(
+    (s) => s.fetchAttendanceData
+  );
   const attendanceDataRaw = useOwnFullAttendanceStore((s) => s.attendanceData);
   const approvedLeaves = useOwnFullAttendanceStore((s) => s.approvedLeaves);
   const companySettings = useOwnFullAttendanceStore((s) => s.companySettings);
@@ -612,7 +636,9 @@ export default function OwnFullAttendance() {
   );
   const generatePDF = useOwnFullAttendanceStore((s) => s.generatePDF);
   const attendanceError = useOwnFullAttendanceStore((s) => s.error);
-  const leaveSystemDetails = useOwnFullAttendanceStore((s) => s.leaveSystemDetails);
+  const leaveSystemDetails = useOwnFullAttendanceStore(
+    (s) => s.leaveSystemDetails
+  );
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   const today = new Date();
@@ -634,7 +660,7 @@ export default function OwnFullAttendance() {
 
   const attendanceData = getUniqueAttendanceData(attendanceDataRaw || []);
 
-  const attendancePolicy = companySettings.attendancePolicies
+  const attendancePolicy = companySettings.attendancePolicies;
 
   useEffect(() => {
     if (attendanceDataRaw) {
@@ -642,7 +668,9 @@ export default function OwnFullAttendance() {
     }
   }, [attendanceDataRaw, year, month, leaveSystemDetails, companySettings]);
 
-  const shiftTimingDetails = parseShiftTiming(userProfileData?.shift_Timing || "");
+  const shiftTimingDetails = parseShiftTiming(
+    userProfileData?.shift_Timing || ""
+  );
 
   const allDaysInMonth = getAllDaysInMonth(year, month);
 
@@ -693,7 +721,7 @@ export default function OwnFullAttendance() {
     }
 
     const record = attendanceData.find((r) => r.date === formatted);
-    
+
     if (!record) {
       row.status = dateObj < todayObj ? "Absent" : "------";
       return row;
@@ -712,7 +740,7 @@ export default function OwnFullAttendance() {
     }
 
     const hoursWorked = getHoursWorked(record.login, record.logout);
-    row.hoursWorked = formatHoursWorked(hoursWorked); 
+    row.hoursWorked = formatHoursWorked(hoursWorked);
 
     if (hoursWorked >= attendancePolicy.fullDayHours) {
       row.status = "Present";
@@ -723,7 +751,7 @@ export default function OwnFullAttendance() {
     } else {
       row.status = "Absent";
     }
-    
+
     if (formatted === "2025-06-13") {
       console.log("Final status:", row.status);
     }
@@ -1022,9 +1050,11 @@ export default function OwnFullAttendance() {
       <div className="flex flex-row-reverse ">
         <motion.aside
           className={`w-full bg-white/95 dark:bg-gray-800/95 backdrop-blur-lg border-l border-gray-200 dark:border-gray-700 overflow-y-auto 
-            ${sidebarOpen 
-                ? 'fixed top-0 right-0 bottom-0 z-40 lg:relative lg:z-auto' 
-                : 'hidden lg:block lg:relative'}`}
+            ${
+              sidebarOpen
+                ? "fixed top-0 right-0 bottom-0 z-40 lg:relative lg:z-auto"
+                : "hidden lg:block lg:relative"
+            }`}
         >
           <div className="p-6">
             <div className="flex items-center justify-between mb-6 lg:hidden border">
