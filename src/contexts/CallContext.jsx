@@ -262,44 +262,63 @@ export function CallProvider({ children, currentUserId }) {
   // 5) high-level call controls
   // somewhere in your CallProvider:
 
+  // const initiateCall = async ({ callType, participants }) => {
+  //   const roomId = `room-${Date.now()}`;
+  //   roomIdRef.current = roomId;
+  //   socket.current.emit("initiate-call", { roomId, callType, participants });
+  //   await joinRoom(roomId);
+  //   await createSendTransport();
+  //   setCall({ roomId, callType, participants });
+  // };
+
   const initiateCall = async ({ callType, participants }) => {
-    const roomId = `room-${Date.now()}`;
-    roomIdRef.current = roomId;
-    socket.current.emit(
-      +"initiateCall", // 1️⃣ must match the server
-      {
-        callId: roomId, // 2️⃣ server reads callId, not roomId
-        caller: currentUserId, // 3️⃣ server stores/forwards caller id
-        callType,
-        participants, // array WITHOUT the caller
-      }
+    /* 1️⃣ Build a unique call / room id */
+    const callId = `room-${Date.now()}`;
+    roomIdRef.current = callId;
+
+    /* 2️⃣ Remove the caller if it was accidentally included */
+    const sanitizedParticipants = participants.filter(
+      (id) => id !== currentUserId
     );
-    await joinRoom(roomId);
+
+    /* 3️⃣ Notify the server – must match server‑side listener */
+    socket.current.emit("initiateCall", {
+      callId, // ← the id the server stores and forwards
+      caller: currentUserId, // ← so the callee knows who is ringing
+      callType, // 'audio' | 'video'
+      participants: sanitizedParticipants,
+    });
+
+    /* 4️⃣ Locally join the mediasoup room and start publishing */
+    await joinRoom(callId);
     await createSendTransport();
-    setCall({ roomId, callType, participants });
+
+    /* 5️⃣ Reflect the call in UI state */
+    setCall({ roomId: callId, callType, participants: sanitizedParticipants });
   };
 
   const answerCall = async () => {
     if (!incomingCall) return;
-    const { roomId } = incomingCall;
-    roomIdRef.current = roomId;
+
+    const { callId } = incomingCall;
+    roomIdRef.current = callId;
+
     socket.current.emit("answerCall", {
-      callId: roomId,
+      callId,
       userId: currentUserId,
     });
-    await joinRoom(roomId);
+
+    await joinRoom(callId);
     await createSendTransport();
     setCall(incomingCall);
     setIncomingCall(null);
   };
 
-  // NEW: allow rejecting an incoming call
   const rejectCall = () => {
     if (!incomingCall) return;
-    const { roomId } = incomingCall;
 
     socket.current.emit("rejectCall", {
-      callId: roomId,
+      callId: incomingCall.callId,
       userId: currentUserId,
     });
     setIncomingCall(null);
@@ -307,7 +326,16 @@ export function CallProvider({ children, currentUserId }) {
 
   const leaveCall = () => {
     if (!call) return;
+
+    /* Logical call shutdown (summaries, timers, etc.) */
+    socket.current.emit("leaveCall", {
+      callId: call.roomId,
+      userId: currentUserId,
+    });
+
+    /* Mediasoup clean‑up */
     socket.current.emit("leave-call", { roomId: call.roomId });
+
     setCall(null);
   };
 
