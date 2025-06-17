@@ -32,3 +32,5 @@ export function IncomingCallModal() {
     </div>
   );
 }
+
+export default IncomingCallModal;
