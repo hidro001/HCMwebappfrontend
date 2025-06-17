@@ -3,7 +3,7 @@ import axiosInstance from "./axiosInstance";
 
 export const fetchSubordinates = async () => {
   try {
-    const response = await axiosInstance.get("/admin/subordinates");
+    const response = await axiosInstance.get("/user/get-all");
     return response;
   } catch (error) {
     console.error("Error fetching subordinates:", error);
@@ -13,7 +13,7 @@ export const fetchSubordinates = async () => {
 
 export const fetchBoth = async () => {
   try {
-    const response = await axiosInstance.get("/admin/both");
+    const response = await axiosInstance.get("/user/get-all");
     return response;
   } catch (error) {
     console.error("Error fetching both:", error);
