@@ -290,8 +290,6 @@
 //   );
 // }
 
-
-
 import React, { useEffect, useState } from "react";
 import { Switch } from "@headlessui/react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -313,15 +311,14 @@ import {
   FaShieldAlt,
 } from "react-icons/fa";
 
-
-import { FaArrowTrendUp } from 'react-icons/fa6';
+import { FaArrowTrendUp } from "react-icons/fa6";
 import {
   HiClock,
   HiCalendar,
   HiCurrencyDollar,
   HiExclamation,
   HiCog,
-  HiTrendingUp
+  HiTrendingUp,
 } from "react-icons/hi";
 import useCompanySettingsStore from "../../../store/useCompanySettingsStore";
 
@@ -379,9 +376,9 @@ export default function AttendancePolicies() {
       y: 0,
       transition: {
         duration: 0.6,
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
@@ -389,8 +386,8 @@ export default function AttendancePolicies() {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.4 }
-    }
+      transition: { duration: 0.4 },
+    },
   };
 
   const inputFields = [
@@ -400,15 +397,15 @@ export default function AttendancePolicies() {
       icon: FaClock,
       color: "blue",
       placeholder: "8",
-      description: "Number of hours required for a full working day"
+      description: "Number of hours required for a full working day",
     },
     {
-      name: "halfDayHours", 
+      name: "halfDayHours",
       label: "Half Day Hours",
       icon: FaStopwatch,
       color: "green",
       placeholder: "4",
-      description: "Number of hours required for a half day"
+      description: "Number of hours required for a half day",
     },
     {
       name: "minimumWorkingHours",
@@ -416,7 +413,7 @@ export default function AttendancePolicies() {
       icon: FaUserClock,
       color: "purple",
       placeholder: "6",
-      description: "Minimum hours an employee must work"
+      description: "Minimum hours an employee must work",
     },
     {
       name: "maximumLeaveCarryover",
@@ -424,7 +421,7 @@ export default function AttendancePolicies() {
       icon: FaCalendarAlt,
       color: "indigo",
       placeholder: "10",
-      description: "Maximum leave days that can be carried over"
+      description: "Maximum leave days that can be carried over",
     },
     {
       name: "autoAbsenceThreshold",
@@ -432,26 +429,26 @@ export default function AttendancePolicies() {
       icon: FaExclamationTriangle,
       color: "red",
       placeholder: "2",
-      description: "Hours below which attendance is marked as absent"
-    }
+      description: "Hours below which attendance is marked as absent",
+    },
   ];
 
   const overtimeFields = [
     {
       name: "overtimeRate",
       label: "Overtime Rate Multiplier",
-      icon: FaArrowTrendUp ,
+      icon: FaArrowTrendUp,
       placeholder: "1.5",
       step: "0.1",
-      description: "Multiplier for overtime pay calculation"
+      description: "Multiplier for overtime pay calculation",
     },
     {
       name: "overtimeEligibilityHours",
       label: "Min Overtime Hours",
       icon: FaBusinessTime,
       placeholder: "10",
-      description: "Minimum hours to be eligible for overtime"
-    }
+      description: "Minimum hours to be eligible for overtime",
+    },
   ];
 
   const lateComingFields = [
@@ -460,22 +457,22 @@ export default function AttendancePolicies() {
       label: "Late Coming Grace Minutes",
       icon: FaClock,
       placeholder: "30",
-      description: "Grace period before marking as late"
+      description: "Grace period before marking as late",
     },
     {
       name: "lateComingPenaltyValue",
       label: "Late Coming Penalty Value",
       icon: FaMoneyBillWave,
       placeholder: "5",
-      description: "Penalty amount for late coming"
+      description: "Penalty amount for late coming",
     },
     {
       name: "maxMonthlyLatenessAllowed",
       label: "Max Monthly Lateness Allowed",
       icon: FaShieldAlt,
       placeholder: "3",
-      description: "Maximum late days allowed per month"
-    }
+      description: "Maximum late days allowed per month",
+    },
   ];
 
   return (
@@ -487,10 +484,7 @@ export default function AttendancePolicies() {
     >
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header Section */}
-        <motion.div
-          variants={itemVariants}
-          className="text-center space-y-4"
-        >
+        <motion.div variants={itemVariants} className="text-center space-y-4">
           <div className="flex items-center justify-center space-x-3">
             <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-xl">
               <FaCog className="text-blue-600 dark:text-blue-400 text-2xl" />
@@ -500,7 +494,8 @@ export default function AttendancePolicies() {
             </h1>
           </div>
           <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
-            Configure your company's attendance rules, overtime policies, and leave management settings
+            Configure your company's attendance rules, overtime policies, and
+            leave management settings
           </p>
         </motion.div>
 
@@ -532,15 +527,21 @@ export default function AttendancePolicies() {
                     className="space-y-3"
                   >
                     <label className="flex items-center space-x-2 font-medium text-gray-700 dark:text-gray-300">
-                      <div className={`p-2 bg-${field.color}-100 dark:bg-${field.color}-900/20 rounded-lg`}>
-                        <field.icon className={`text-${field.color}-600 dark:text-${field.color}-400`} />
+                      <div
+                        className={`p-2 bg-${field.color}-100 dark:bg-${field.color}-900/20 rounded-lg`}
+                      >
+                        <field.icon
+                          className={`text-${field.color}-600 dark:text-${field.color}-400`}
+                        />
                       </div>
                       <span>{field.label}</span>
                     </label>
                     <input
                       type="number"
                       value={localPolicies[field.name] ?? ""}
-                      onChange={(e) => handleChange(field.name, Number(e.target.value))}
+                      onChange={(e) =>
+                        handleChange(field.name, Number(e.target.value))
+                      }
                       placeholder={field.placeholder}
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:shadow-md"
                     />
@@ -551,10 +552,7 @@ export default function AttendancePolicies() {
                 ))}
 
                 {/* Months Between Hikes */}
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  className="space-y-3"
-                >
+                <motion.div whileHover={{ scale: 1.02 }} className="space-y-3">
                   <label className="flex items-center space-x-2 font-medium text-gray-700 dark:text-gray-300">
                     <div className="p-2 bg-orange-100 dark:bg-orange-900/20 rounded-lg">
                       <FaHistory className="text-orange-600 dark:text-orange-400" />
@@ -574,10 +572,7 @@ export default function AttendancePolicies() {
                 </motion.div>
 
                 {/* Salary Calculation */}
-                <motion.div
-                  whileHover={{ scale: 1.02 }}
-                  className="space-y-3"
-                >
+                <motion.div whileHover={{ scale: 1.02 }} className="space-y-3">
                   <label className="flex items-center space-x-2 font-medium text-gray-700 dark:text-gray-300">
                     <div className="p-2 bg-yellow-100 dark:bg-yellow-900/20 rounded-lg">
                       <HiCurrencyDollar className="text-yellow-600 dark:text-yellow-400" />
@@ -586,11 +581,17 @@ export default function AttendancePolicies() {
                   </label>
                   <select
                     value={localPolicies.calcSalaryBasedOn ?? "WORKING_DAYS"}
-                    onChange={(e) => handleChange("calcSalaryBasedOn", e.target.value)}
+                    onChange={(e) =>
+                      handleChange("calcSalaryBasedOn", e.target.value)
+                    }
                     className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all duration-200 hover:shadow-md"
                   >
-                    <option value="WORKING_DAYS">Working Days in the Month</option>
-                    <option value="CALENDAR_DAYS">Total Calendar Days in the Month</option>
+                    <option value="WORKING_DAYS">
+                      Working Days in the Month
+                    </option>
+                    <option value="CALENDAR_DAYS">
+                      Total Calendar Days in the Month
+                    </option>
                   </select>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     Basis for salary calculation
@@ -648,7 +649,9 @@ export default function AttendancePolicies() {
                   >
                     <span
                       className={`${
-                        localPolicies.enableOvertime ? "translate-x-6" : "translate-x-1"
+                        localPolicies.enableOvertime
+                          ? "translate-x-6"
+                          : "translate-x-1"
                       } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                     />
                   </Switch>
@@ -683,7 +686,9 @@ export default function AttendancePolicies() {
                   >
                     <span
                       className={`${
-                        localPolicies.enableLateComing ? "translate-x-6" : "translate-x-1"
+                        localPolicies.enableLateComing
+                          ? "translate-x-6"
+                          : "translate-x-1"
                       } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                     />
                   </Switch>
@@ -732,7 +737,9 @@ export default function AttendancePolicies() {
                           type="number"
                           step={field.step || "1"}
                           value={localPolicies[field.name] ?? ""}
-                          onChange={(e) => handleChange(field.name, Number(e.target.value))}
+                          onChange={(e) =>
+                            handleChange(field.name, Number(e.target.value))
+                          }
                           placeholder={field.placeholder}
                           className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:shadow-md"
                         />
@@ -786,7 +793,9 @@ export default function AttendancePolicies() {
                         <input
                           type="number"
                           value={localPolicies[field.name] ?? ""}
-                          onChange={(e) => handleChange(field.name, Number(e.target.value))}
+                          onChange={(e) =>
+                            handleChange(field.name, Number(e.target.value))
+                          }
                           placeholder={field.placeholder}
                           className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 hover:shadow-md"
                         />
@@ -809,7 +818,9 @@ export default function AttendancePolicies() {
                       </label>
                       <select
                         value={localPolicies.lateComingPenaltyType ?? "fixed"}
-                        onChange={(e) => handleChange("lateComingPenaltyType", e.target.value)}
+                        onChange={(e) =>
+                          handleChange("lateComingPenaltyType", e.target.value)
+                        }
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 hover:shadow-md"
                       >
                         <option value="percentage">Percentage</option>
