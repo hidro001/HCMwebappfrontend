@@ -265,7 +265,15 @@ export function CallProvider({ children, currentUserId }) {
   const initiateCall = async ({ callType, participants }) => {
     const roomId = `room-${Date.now()}`;
     roomIdRef.current = roomId;
-    socket.current.emit("initiate-call", { roomId, callType, participants });
+    socket.current.emit(
+      +"initiateCall", // 1️⃣ must match the server
+      {
+        callId: roomId, // 2️⃣ server reads callId, not roomId
+        caller: currentUserId, // 3️⃣ server stores/forwards caller id
+        callType,
+        participants, // array WITHOUT the caller
+      }
+    );
     await joinRoom(roomId);
     await createSendTransport();
     setCall({ roomId, callType, participants });
