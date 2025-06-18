@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import {useState, useEffect, useRef} from 'react';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Legend, Tooltip } from 'chart.js';
 import AttendanceChart from './DepartmentAttendance.jsx';
 import useDepartmentStore from "../../store/departmentStore.js";
@@ -11,6 +11,7 @@ import LineCard from "./Card/LineCard.jsx";
 import { toast } from "react-hot-toast";
 import axiosInstance from "../../service/axiosInstance.js";
 import { getMonthHolidays } from '../../service/holidayService.js';
+
 ChartJS.register(BarElement, CategoryScale, LinearScale, Legend, Tooltip);
 
 const Dashboard = () => {
@@ -24,18 +25,18 @@ const Dashboard = () => {
 
   const {todayLateIn, todayAttendance, fetchTodaysPunchTimes, fetchTodaysLateIn, fetchTodaysAttendanceStatus } = useAttendanceStore();
 
-  const {  departments,
+  const { departments,
     loading: departmentsLoading,
     error: departmentsError,
-    fetchDepartments, } = useDepartmentStore();
+    fetchDepartments } = useDepartmentStore();
 
   useEffect(() => {
      fetchTodaysPunchTimes();
       fetchTodaysLateIn();
       fetchTodaysAttendanceStatus()
       fetchHolidayData();
-   }, [fetchTodaysPunchTimes, fetchTodaysLateIn, fetchTodaysAttendanceStatus]);
- 
+  }, [fetchTodaysPunchTimes, fetchTodaysLateIn, fetchTodaysAttendanceStatus]);
+  
   const departmentTabs = [
     { department : "All Departments", _id : 'all'},
     ...departments
@@ -62,7 +63,7 @@ const Dashboard = () => {
     };
 
   const TodaylateIn = todayLateIn
-  ? todayLateIn.map((late, i) => ({
+   ? todayLateIn.map((late, i) => ({
         id: late._id ?? i,
         empID: late.employee_Id,
         name: `${late.first_Name} ${late.last_Name}`,
@@ -72,11 +73,10 @@ const Dashboard = () => {
         category: late.lateCategory,
         login : late.login,
         managerName: late.managerName
-      }))
+   }))
     : [];
 
     const {totalEmployees, presentCount, absentCount} = attendanceData
-
 
     const percentageCount = (total, data) => {
       return ((data / total) * 100).toFixed(2);
