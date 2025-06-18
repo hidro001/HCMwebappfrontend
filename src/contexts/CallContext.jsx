@@ -23,6 +23,36 @@ export function CallProvider({ children, currentUserId }) {
 
   const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL;
 
+  const cleanUpMedia = () => {
+    /* 1️⃣ Stop every local track */
+    localStream?.getTracks().forEach((t) => t.stop());
+
+    /* 2️⃣ Close the send transport */
+    if (sendTransport.current) {
+      try {
+        sendTransport.current.close();
+      } catch (_) {}
+      sendTransport.current = null;
+    }
+
+    /* 3️⃣ Close every recv transport */
+    recvTransports.current.forEach((t) => {
+      try {
+        t.close();
+      } catch (_) {}
+    });
+    recvTransports.current.clear();
+
+    /* 4️⃣ Dispose the Mediasoup Device */
+    device.current = null;
+
+    /* 5️⃣ Flush React state */
+    setLocalStream(null);
+    setRemoteStreams([]);
+    setCall(null);
+    setIncomingCall(null);
+  };
+
   useEffect(() => {
     socket.current = io(SOCKET_SERVER_URL, {
       query: { userId: currentUserId },
@@ -34,14 +64,10 @@ export function CallProvider({ children, currentUserId }) {
       createRecvTransport(producerId, userId);
     });
 
-    socket.current.on("call-ended", () => {
-      localStream?.getTracks().forEach((t) => t.stop());
-      setLocalStream(null);
-      setRemoteStreams([]);
-      setCall(null);
-    });
+    socket.current.on("endCall", cleanUpMedia);
 
     return () => socket.current.disconnect();
+    cleanUpMedia();
   }, [currentUserId]);
 
   const getLocalStream = async () => {
@@ -335,6 +361,8 @@ export function CallProvider({ children, currentUserId }) {
     setIncomingCall(null);
   };
 
+  // CallProvider.jsx  (add inside the component, above the return)
+
   const rejectCall = () => {
     if (!incomingCall) return;
 
@@ -357,7 +385,7 @@ export function CallProvider({ children, currentUserId }) {
     /* Mediasoup clean‑up */
     socket.current.emit("leave-call", { roomId: call.roomId });
 
-    setCall(null);
+    cleanUpMedia();
   };
 
   return (
