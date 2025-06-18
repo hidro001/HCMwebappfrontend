@@ -860,8 +860,8 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
         className="space-y-6 p-4 sm:p-6 lg:p-8"
       >
         {/* Enhanced Summary Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          <StatCard
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {/* <StatCard
             title="Total Score"
             value={totalScore.toLocaleString()}
             icon={FiTrendingUp}
@@ -875,7 +875,7 @@ export default function PerformanceAnalytics({ data, onRefresh }) {
             }
             trendValue={`${Math.abs(performanceTrend).toFixed(1)}%`}
             subtitle="Cumulative performance"
-          />
+          /> */}
           <StatCard
             title="Average Performance"
             value={`${avgPerf}%`}
