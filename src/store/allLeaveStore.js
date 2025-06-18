@@ -6,10 +6,6 @@ const allLeaveStore = create((set) => ({
   leaves: [],
   isLoading: false,
 
-  /**
-   * Fetch leaves from the API.
-   * If status is "all" then no query parameter is added.
-   */
   fetchLeaves: async (status = "approved") => {
     set({ isLoading: true });
     try {
