@@ -54,6 +54,27 @@ export function CallProvider({ children, currentUserId }) {
     return s;
   };
 
+  // CallProvider.jsx
+
+  const addParticipant = (participantId) => {
+    if (!call) return; // nothing to do if we are not in a call
+
+    /* 1️⃣  Tell the signalling server to invite the new user */
+    socket.current.emit("addParticipant", {
+      callId: call.roomId,
+      inviter: currentUserId,
+      participantId,
+    });
+
+    /* 2️⃣  Optimistically update our local UI state */
+    setCall((prev) => ({
+      ...prev,
+      participants: [
+        ...new Set([...(prev?.participants || []), participantId]),
+      ],
+    }));
+  };
+
   const joinRoom = (roomId) =>
     new Promise((res, rej) => {
       socket.current.emit(
@@ -349,6 +370,7 @@ export function CallProvider({ children, currentUserId }) {
         initiateCall,
         answerCall,
         leaveCall,
+        addParticipant,
       }}
     >
       {children}
