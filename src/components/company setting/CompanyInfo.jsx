@@ -1241,12 +1241,12 @@ import React, { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
-import { 
-  FaTrash, 
-  FaEdit, 
-  FaBuilding, 
-  FaPhone, 
-  FaEnvelope, 
+import {
+  FaTrash,
+  FaEdit,
+  FaBuilding,
+  FaPhone,
+  FaEnvelope,
   FaDollarSign,
   FaMapMarkerAlt,
   FaPlus,
@@ -1258,12 +1258,12 @@ import {
   FaChevronDown,
   FaChevronUp
 } from "react-icons/fa";
-import { 
+import {
   HiOfficeBuilding,
   HiLocationMarker,
   HiMail,
   HiPhone,
-  HiCurrencyDollar
+  HiCurrencyDollar,
 } from "react-icons/hi";
 import useCompanyStore from "../../store/companyStore";
 import FullScreenLoader from "../common/FullScreenLoader";
@@ -1339,7 +1339,10 @@ export default function CompanyInfo() {
     },
   });
 
-  const { fields, append, remove } = useFieldArray({ control, name: "offices" });
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "offices",
+  });
 
   useEffect(() => {
     fetchCompanies();
@@ -1392,7 +1395,10 @@ export default function CompanyInfo() {
     data.offices.forEach((office, index) => {
       formData.append(`addresses[${index}][address]`, office.address.trim());
       formData.append(`addresses[${index}][latitude]`, office.latitude.trim());
-      formData.append(`addresses[${index}][longitude]`, office.longitude.trim());
+      formData.append(
+        `addresses[${index}][longitude]`,
+        office.longitude.trim()
+      );
     });
 
     if (data.companyLogo && data.companyLogo[0]) {
