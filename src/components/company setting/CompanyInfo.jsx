@@ -1447,6 +1447,7 @@ export default function CompanyInfo() {
     setOpenConfirm(false);
     setCompanyToDelete(null);
   };
+  
 
   const handleCancelEdit = () => {
     reset({
