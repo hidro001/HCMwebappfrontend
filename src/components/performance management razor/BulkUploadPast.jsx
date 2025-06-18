@@ -1752,7 +1752,8 @@ function BulkUploadPast() {
     return (
       emp.first_Name.toLowerCase().includes(search) ||
       emp.last_Name.toLowerCase().includes(search) ||
-      emp.employee_Id.toLowerCase().includes(search)
+      emp.employee_Id.toLowerCase().includes(search) 
+    
     );
   }) || [];
 
@@ -2121,6 +2122,12 @@ function BulkUploadPast() {
                                   </p>
                                   <p className="text-sm text-gray-500 dark:text-gray-400">
                                     ID: {emp.employee_Id}
+                                  </p>
+                                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    Designation: {emp.designation}
+                                  </p>
+                                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    Department: {emp.department}
                                   </p>
                                 </div>
                               </div>
