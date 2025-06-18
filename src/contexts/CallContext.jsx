@@ -14,14 +14,55 @@ export function CallProvider({ children, currentUserId }) {
   const socket = useRef();
   const device = useRef();
   const sendTransport = useRef();
+  const screenProducer = useRef(null); // <—
+  const screenStream = useRef(null); // <—
   const roomIdRef = useRef(null);
   const recvTransports = useRef(new Map());
   const [localStream, setLocalStream] = useState(null);
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [incomingCall, setIncomingCall] = useState(null);
   const [call, setCall] = useState(null);
+  const [screenShareActive, setScreenShareActive] = useState(false); // ← NEW
 
   const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL;
+
+  // --------------------------------------------------
+  //  SCREEN‑SHARING HELPERS
+  // --------------------------------------------------
+  const startScreenShare = async () => {
+    if (screenProducer.current || !sendTransport.current) return;
+
+    try {
+      /* 1️⃣ Get the screen as a MediaStream */
+      const stream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+      });
+      screenStream.current = stream;
+
+      /* 2️⃣ Produce its first (and only) video track */
+      const track = stream.getVideoTracks()[0];
+      screenProducer.current = await sendTransport.current.produce({ track });
+      setScreenShareActive(true);
+
+      /* 3️⃣ If the user clicks “Stop sharing…” in the browser UI */
+      track.onended = stopScreenShare;
+    } catch (err) {
+      console.error("[screen] start failed:", err);
+    }
+  };
+
+  const stopScreenShare = () => {
+    if (!screenProducer.current) return;
+
+    try {
+      screenProducer.current.close();
+    } catch (_) {}
+    screenProducer.current = null;
+    setScreenShareActive(false);
+
+    screenStream.current?.getTracks().forEach((t) => t.stop());
+    screenStream.current = null;
+  };
 
   const cleanUpMedia = () => {
     /* 1️⃣ Stop every local track */
@@ -50,7 +91,9 @@ export function CallProvider({ children, currentUserId }) {
     setLocalStream(null);
     setRemoteStreams([]);
     setCall(null);
+
     setIncomingCall(null);
+    stopScreenShare();
   };
 
   useEffect(() => {
@@ -66,8 +109,10 @@ export function CallProvider({ children, currentUserId }) {
 
     socket.current.on("endCall", cleanUpMedia);
 
-    return () => socket.current.disconnect();
-    cleanUpMedia();
+    return () => {
+      socket.current.disconnect();
+      cleanUpMedia();
+    };
   }, [currentUserId]);
 
   const getLocalStream = async () => {
@@ -399,6 +444,9 @@ export function CallProvider({ children, currentUserId }) {
         answerCall,
         leaveCall,
         addParticipant,
+        startScreenShare,
+        stopScreenShare,
+        isScreenSharing: screenShareActive,
       }}
     >
       {children}
