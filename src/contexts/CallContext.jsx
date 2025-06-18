@@ -63,7 +63,7 @@ export function CallProvider({ children, currentUserId }) {
     socket.current.emit("addParticipant", {
       callId: call.roomId,
       inviter: currentUserId,
-      participantId,
+      newParticipant: participantId,
     });
 
     /* 2️⃣  Optimistically update our local UI state */
