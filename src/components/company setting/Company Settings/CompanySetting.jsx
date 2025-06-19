@@ -156,18 +156,18 @@ export default function CompanySetting() {
       description: "Set weekly working days"
     },
     { 
-      name: "Employment Types", 
-      icon: <HiUsers />, 
-      component: <EmploymentTypes />,
-      color: "indigo",
-      description: "Define employment categories"
-    },
-    { 
       name: "Leave Types", 
       icon: <FaUmbrellaBeach />, 
       component: <LeavesTypes />,
       color: "pink",
       description: "Manage leave categories"
+    },
+    { 
+      name: "Employment Types", 
+      icon: <HiUsers />, 
+      component: <EmploymentTypes />,
+      color: "indigo",
+      description: "Define employment categories"
     },
   ];
 
