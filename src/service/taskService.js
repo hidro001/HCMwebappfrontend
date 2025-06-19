@@ -81,7 +81,7 @@ export const fetchManagerTasks = async (taskDate) => {
     // Replace the base URL and path as needed.
     const response = await axiosInstance.get(`/task/manager-tasks?task_Date=${taskDate}`);
     if (response.data.success) {
-      return response.data.data;
+      return response.data;
     }
     return [];
   } catch (error) {

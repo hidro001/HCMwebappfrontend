@@ -1383,7 +1383,7 @@ const Navbar = () => {
           icon={<RiTimeLine size={20} />} 
           onClick={() => setShowBreakCard(!showBreakCard)}
           color="amber"
-          tooltip="Break Time"
+          tooltip="Punch & Break Status"
         />
         
         <IconButton 

@@ -6,10 +6,10 @@ import { CallProvider } from "./contexts/CallContext.jsx";
 import CallModal from "./components/chats/calls/CallModal.jsx";
 import CallWindow from "./components/chats/calls/CallWindow.jsx";
 import VideoCallModal from "./components/chats/calls/VideoCallModal.jsx";
+import IncomingCallModal from "./components/chats/calls/IncomingCallModal.jsx";
 import { onMessage } from "firebase/messaging";
 import { messaging } from "./firebase/firebase-config";
 import { toast } from "react-hot-toast";
-
 
 import { ChatProviderv2 } from "./contexts/ChatContextv2.jsx";
 
@@ -26,9 +26,6 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-
-
-
 const employee = localStorage.getItem("employeeId");
 // console.log("Employee ID:", employee);
 
@@ -36,6 +33,8 @@ createRoot(document.getElementById("root")).render(
   <ThemeProvider>
     <CallProvider currentUserId={employee}>
       <CallModal />
+      <IncomingCallModal />
+
       <CallWindow />
       <VideoCallModal />
       <ChatProviderv2>

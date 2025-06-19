@@ -21,12 +21,14 @@ export function CallProvider({ children, currentUserId }) {
   const [incomingCall, setIncomingCall] = useState(null);
   const [call, setCall] = useState(null);
 
+  const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL;
+
   useEffect(() => {
-    socket.current = io("https://apiv2.humanmaximizer.com/chat", {
+    socket.current = io(SOCKET_SERVER_URL, {
       query: { userId: currentUserId },
     });
 
-    socket.current.on("incoming-call", setIncomingCall);
+    socket.current.on("incomingCall", setIncomingCall);
 
     socket.current.on("new-producer", ({ producerId, userId }) => {
       createRecvTransport(producerId, userId);
@@ -273,10 +275,25 @@ export function CallProvider({ children, currentUserId }) {
     if (!incomingCall) return;
     const { roomId } = incomingCall;
     roomIdRef.current = roomId;
-    socket.current.emit("answer-call", { roomId });
+    socket.current.emit("answerCall", {
+      callId: roomId,
+      userId: currentUserId,
+    });
     await joinRoom(roomId);
     await createSendTransport();
     setCall(incomingCall);
+    setIncomingCall(null);
+  };
+
+  // NEW: allow rejecting an incoming call
+  const rejectCall = () => {
+    if (!incomingCall) return;
+    const { roomId } = incomingCall;
+
+    socket.current.emit("rejectCall", {
+      callId: roomId,
+      userId: currentUserId,
+    });
     setIncomingCall(null);
   };
 

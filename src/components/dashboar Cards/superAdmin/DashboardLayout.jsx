@@ -56,7 +56,7 @@ function SuperAdminDashboard() {
       animate="visible"
     >
       {/* Main Dashboard Content */}
-      <main className="px-4 sm:px-6 lg:px-8 py-8">
+      <main className="px-4 sm:px-6 lg:px-8 py-8 min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-10 rounded-2xl">
         <div className="max-w-8xl mx-auto">
           <div className="grid grid-cols-1 xl:grid-cols-4 gap-8">
             {/* Main Content Area - 3 columns on XL screens */}

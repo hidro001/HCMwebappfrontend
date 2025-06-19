@@ -1,13 +1,34 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FiPrinter, FiDownload, FiSearch, FiBriefcase, FiCalendar, FiAlertTriangle, FiSun, FiMoon, FiCheckCircle,
- FiLogOut, FiClock, FiX, FiChevronLeft, FiChevronRight, FiFilter, FiRefreshCw, FiUser, FiDollarSign, FiTrendingUp,
- FiMenu, FiEye, FiEyeOff } from "react-icons/fi";
+import {
+  FiPrinter,
+  FiDownload,
+  FiSearch,
+  FiBriefcase,
+  FiCalendar,
+  FiAlertTriangle,
+  FiSun,
+  FiMoon,
+  FiCheckCircle,
+  FiLogOut,
+  FiClock,
+  FiX,
+  FiChevronLeft,
+  FiChevronRight,
+  FiFilter,
+  FiRefreshCw,
+  FiUser,
+  FiDollarSign,
+  FiTrendingUp,
+  FiMenu,
+  FiEye,
+  FiEyeOff,
+} from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import ConfirmationDialog from "../common/ConfirmationDialog";
-import 'react-clock/dist/Clock.css';
-import 'react-time-picker/dist/TimePicker.css'; 
-import TimePicker from 'react-time-picker';
+import "react-clock/dist/Clock.css";
+import "react-time-picker/dist/TimePicker.css";
+import TimePicker from "react-time-picker";
 import axiosInstance from "../../service/axiosInstance";
 import { useOwnFullAttendanceStore } from "../../store/useOwnFullAttendanceStore";
 import jsPDF from "jspdf";
@@ -62,26 +83,26 @@ function getHoursWorked(login, logout) {
 
 function formatHoursWorked(hoursWorked) {
   if (hoursWorked === 0) return "0h 0m";
-  
+
   const totalMinutes = hoursWorked * 60;
-  
+
   if (totalMinutes < 1) {
     const seconds = Math.round(hoursWorked * 3600);
     return `${seconds}s`;
   }
-  
+
   if (totalMinutes < 60) {
     const minutes = Math.round(totalMinutes);
     return `${minutes}m`;
   }
-  
+
   const wholeHours = Math.floor(hoursWorked);
   const remainingMinutes = Math.round((hoursWorked - wholeHours) * 60);
-  
+
   if (remainingMinutes === 0) {
     return `${wholeHours}h`;
   }
-  
+
   return `${wholeHours}h ${remainingMinutes}m`;
 }
 
@@ -266,7 +287,7 @@ function calculateTotalLates(
       const login24 = convertTo24Hour(rec.login);
       if (!login24) continue;
       const loginDate = new Date("1970-01-01T" + login24);
-      
+
       if (loginDate > shiftDate) {
         count++;
       }
@@ -523,23 +544,21 @@ function monthName(m) {
 }
 
 function debugAttendanceData(attendanceDataRaw, year, month) {
-  
   if (!attendanceDataRaw || attendanceDataRaw.length === 0) {
     return;
   }
-  
-  const currentMonthData = attendanceDataRaw.filter(rec => {
+
+  const currentMonthData = attendanceDataRaw.filter((rec) => {
     const d = new Date(rec.date);
     return d.getFullYear() === year && d.getMonth() + 1 === month;
   });
-  
+
   if (currentMonthData.length === 0) {
     return;
   }
-  
+
   // Check each record
   currentMonthData.forEach((record, index) => {
-    
     if (record.login && record.logout) {
       const hoursWorked = getHoursWorked(record.login, record.logout);
     }
@@ -548,28 +567,32 @@ function debugAttendanceData(attendanceDataRaw, year, month) {
 }
 
 function checkFilteringIssues(finalAttendanceData, searchText) {
-  
-  const recordsWithData = finalAttendanceData.filter(item => 
-    item.logInTime !== "------" || item.logOutTime !== "------"
+  const recordsWithData = finalAttendanceData.filter(
+    (item) => item.logInTime !== "------" || item.logOutTime !== "------"
   );
-  
+
   if (searchText) {
     const filteredCount = finalAttendanceData.filter((item) => {
-      const combined = (item.date + " " + item.day + " " + item.status).toLowerCase().trim();
+      const combined = (item.date + " " + item.day + " " + item.status)
+        .toLowerCase()
+        .trim();
       return combined.includes(searchText.toLowerCase().trim());
     }).length;
   }
-  
+
   if (recordsWithData.length > 0) {
     console.log("\nSample records with data:");
-    recordsWithData.slice(0, 3).forEach(record => {
-      console.log(`${record.date}: ${record.logInTime} - ${record.logOutTime} (${record.status}) - ${record.hoursWorked || 'N/A'}`);
+    recordsWithData.slice(0, 3).forEach((record) => {
+      console.log(
+        `${record.date}: ${record.logInTime} - ${record.logOutTime} (${
+          record.status
+        }) - ${record.hoursWorked || "N/A"}`
+      );
     });
   }
 }
 
 export default function OwnFullAttendance() {
-
   const [punchReason, setPunchReason] = useState("");
   const [missedPunchModalOpen, setMissedPunchModalOpen] = useState(false);
   const [selectedDateForPunch, setSelectedDateForPunch] = useState(null);
@@ -591,20 +614,29 @@ export default function OwnFullAttendance() {
   // }, []);
 
   const [showPayrollDetails, setShowPayrollDetails] = useState(false);
-  const fetchAttendanceData = useOwnFullAttendanceStore((s) => s.fetchAttendanceData);
+  const fetchAttendanceData = useOwnFullAttendanceStore(
+    (s) => s.fetchAttendanceData
+  );
   const attendanceDataRaw = useOwnFullAttendanceStore((s) => s.attendanceData);
   const approvedLeaves = useOwnFullAttendanceStore((s) => s.approvedLeaves);
   const companySettings = useOwnFullAttendanceStore((s) => s.companySettings);
   const userProfileData = useOwnFullAttendanceStore((s) => s.userProfileData);
-  const attendancePolicies = useOwnFullAttendanceStore((s) => s.attendancePolicies);
-  const employmentTypeDetails = useOwnFullAttendanceStore((s) => s.employmentTypeDetails);
+  const attendancePolicies = useOwnFullAttendanceStore(
+    (s) => s.attendancePolicies
+  );
+  const employmentTypeDetails = useOwnFullAttendanceStore(
+    (s) => s.employmentTypeDetails
+  );
   const generatePDF = useOwnFullAttendanceStore((s) => s.generatePDF);
   const attendanceError = useOwnFullAttendanceStore((s) => s.error);
-  const leaveSystemDetails = useOwnFullAttendanceStore((s) => s.leaveSystemDetails);
+  const leaveSystemDetails = useOwnFullAttendanceStore(
+    (s) => s.leaveSystemDetails
+  );
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
 
   const today = new Date();
-  const defaultMonthString = today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0");
+  const defaultMonthString =
+    today.getFullYear() + "-" + String(today.getMonth() + 1).padStart(2, "0");
   const [selectedMonth, setSelectedMonth] = useState(defaultMonthString);
 
   const [searchText, setSearchText] = useState("");
@@ -627,7 +659,9 @@ export default function OwnFullAttendance() {
     }
   }, [attendanceDataRaw, year, month, leaveSystemDetails, companySettings]);
 
-  const shiftTimingDetails = parseShiftTiming(userProfileData?.shift_Timing || "");
+  const shiftTimingDetails = parseShiftTiming(
+    userProfileData?.shift_Timing || ""
+  );
 
   const allDaysInMonth = getAllDaysInMonth(year, month);
 
@@ -636,7 +670,11 @@ export default function OwnFullAttendance() {
     for (const lv of approvedLeaves) {
       const fromDate = new Date(lv.leave_From);
       const toDate = new Date(lv.leave_To);
-      for (let d = new Date(fromDate); d <= toDate; d.setDate(d.getDate() + 1)) {
+      for (
+        let d = new Date(fromDate);
+        d <= toDate;
+        d.setDate(d.getDate() + 1)
+      ) {
         approvedLeaveDates.add(d.toISOString().split("T")[0]);
       }
     }
@@ -660,7 +698,8 @@ export default function OwnFullAttendance() {
     const isHoliday = companySettings?.holidays?.some(
       (h) => new Date(h.date).toISOString().split("T")[0] === formatted
     );
-    const isWorkingDay = leaveSystemDetails?.workingDays?.includes(dayName) || false;
+    const isWorkingDay =
+      leaveSystemDetails?.workingDays?.includes(dayName) || false;
     const isApprovedLeave = approvedLeaveDates.has(formatted);
 
     if (isApprovedLeave) {
@@ -673,7 +712,7 @@ export default function OwnFullAttendance() {
     }
 
     const record = attendanceData.find((r) => r.date === formatted);
-    
+
     if (!record) {
       row.status = dateObj < todayObj ? "Absent" : "------";
       return row;
@@ -692,7 +731,7 @@ export default function OwnFullAttendance() {
     }
 
     const hoursWorked = getHoursWorked(record.login, record.logout);
-    row.hoursWorked = formatHoursWorked(hoursWorked); 
+    row.hoursWorked = formatHoursWorked(hoursWorked);
 
     if (hoursWorked >= attendancePolicies.fullDayHours) {
       row.status = "Present";
@@ -716,7 +755,9 @@ export default function OwnFullAttendance() {
   }, [finalAttendanceData, searchText]);
 
   const filteredData = finalAttendanceData.filter((item) => {
-    const combined = (item.date + " " + item.day + " " + item.status).toLowerCase().trim();
+    const combined = (item.date + " " + item.day + " " + item.status)
+      .toLowerCase()
+      .trim();
     return combined.includes(searchText.toLowerCase().trim());
   });
 
@@ -750,11 +791,17 @@ export default function OwnFullAttendance() {
     month,
     attendancePolicies
   );
-  const halfDays = calculateTotalHalfDays(attendanceData, year, month, attendancePolicies);
+  const halfDays = calculateTotalHalfDays(
+    attendanceData,
+    year,
+    month,
+    attendancePolicies
+  );
   const notEvenHalfDays = calculateNotEvenHalfDays(attendanceData, year, month);
 
   // final salary - KEEPING ORIGINAL LOGIC
-  const numericBaseSalary = parseFloat(userProfileData?.current_Base_Salary) || 0;
+  const numericBaseSalary =
+    parseFloat(userProfileData?.current_Base_Salary) || 0;
 
   const {
     finalSalary,
@@ -782,7 +829,9 @@ export default function OwnFullAttendance() {
     companySettings,
     employmentTypeDetails,
   });
-  const formattedNextPayrollDate = nextPayrollDate ? nextPayrollDate.toDateString() : "Not available";
+  const formattedNextPayrollDate = nextPayrollDate
+    ? nextPayrollDate.toDateString()
+    : "Not available";
 
   function openMissedPunchModal(dateRow) {
     setSelectedDateForPunch(dateRow);
@@ -839,8 +888,12 @@ export default function OwnFullAttendance() {
           <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
             <FiAlertTriangle className="w-8 h-8 text-red-500 dark:text-red-400" />
           </div>
-          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">Error Loading Data</h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">{attendanceError}</p>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+            Error Loading Data
+          </h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-4">
+            {attendanceError}
+          </p>
           <button
             onClick={() => window.location.reload()}
             className="bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors"
@@ -852,7 +905,10 @@ export default function OwnFullAttendance() {
     );
   }
 
-  const empName = (userProfileData?.first_Name || "") + " " + (userProfileData?.last_Name || "");
+  const empName =
+    (userProfileData?.first_Name || "") +
+    " " +
+    (userProfileData?.last_Name || "");
   const empCode = userProfileData?.employee_Id || "N/A";
 
   const renderStatusBadge = (status) => {
@@ -862,43 +918,43 @@ export default function OwnFullAttendance() {
         text: "text-green-700 dark:text-green-400",
         border: "border-green-200 dark:border-green-700",
         icon: FiCheckCircle,
-        iconColor: "text-green-500 dark:text-green-400"
+        iconColor: "text-green-500 dark:text-green-400",
       },
       Absent: {
         bg: "bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/20 dark:to-pink-900/20",
         text: "text-red-700 dark:text-red-400",
         border: "border-red-200 dark:border-red-700",
         icon: FiX,
-        iconColor: "text-red-500 dark:text-red-400"
+        iconColor: "text-red-500 dark:text-red-400",
       },
       "Half Day": {
         bg: "bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20",
         text: "text-yellow-700 dark:text-yellow-400",
         border: "border-yellow-200 dark:border-yellow-700",
         icon: FiSun,
-        iconColor: "text-yellow-500 dark:text-yellow-400"
+        iconColor: "text-yellow-500 dark:text-yellow-400",
       },
       "Not Even Half Day": {
         bg: "bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20",
         text: "text-purple-700 dark:text-purple-400",
         border: "border-purple-200 dark:border-purple-700",
         icon: FiMoon,
-        iconColor: "text-purple-500 dark:text-purple-400"
+        iconColor: "text-purple-500 dark:text-purple-400",
       },
       Holiday: {
         bg: "bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20",
         text: "text-blue-700 dark:text-blue-400",
         border: "border-blue-200 dark:border-blue-700",
         icon: FiCalendar,
-        iconColor: "text-blue-500 dark:text-blue-400"
+        iconColor: "text-blue-500 dark:text-blue-400",
       },
       Late: {
         bg: "bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20",
         text: "text-purple-700 dark:text-purple-400",
         border: "border-purple-200 dark:border-purple-700",
         icon: FiClock,
-        iconColor: "text-purple-500 dark:text-purple-400"
-      }
+        iconColor: "text-purple-500 dark:text-purple-400",
+      },
     };
 
     const config = badgeConfig[status] || badgeConfig.Holiday;
@@ -986,7 +1042,7 @@ export default function OwnFullAttendance() {
                 `}
         >
           <div className="p-6 h-screen  bg-white/95 dark:bg-gray-800/95 ">
-            <div className="flex items-center justify-between mb-6 border">
+            <div className="flex items-center justify-between mb-6 ">
               <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200">Overview</h2>
               <button
                 onClick={() => setSidebarOpen(false)}
@@ -1007,20 +1063,59 @@ export default function OwnFullAttendance() {
                   <FiUser className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-800 dark:text-gray-200">Employee Stats</h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Monthly Overview</p>
+                  <h3 className="font-semibold text-gray-800 dark:text-gray-200">
+                    Employee Stats
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    Monthly Overview
+                  </p>
                 </div>
               </div>
 
               <div className="space-y-4  bg-white/95 dark:bg-gray-800/95 ">
                 {[
-                  { label: "Total Shifts", value: totalShifts, icon: FiBriefcase, color: "blue" },
-                  { label: "Total Leaves", value: totalLeaves, icon: FiCalendar, color: "red" },
-                  { label: "Late Arrivals", value: totalLates, icon: FiAlertTriangle, color: "yellow" },
-                  { label: "Half Days", value: halfDays, icon: FiSun, color: "orange" },
-                  { label: "Incomplete Days", value: notEvenHalfDays, icon: FiMoon, color: "purple" },
-                  { label: "Completed Days", value: totalCompletedDays, icon: FiCheckCircle, color: "green" },
-                  { label: "Not Logged Out", value: notLoggedOut, icon: FiLogOut, color: "pink" }
+                  {
+                    label: "Total Shifts",
+                    value: totalShifts,
+                    icon: FiBriefcase,
+                    color: "blue",
+                  },
+                  {
+                    label: "Total Leaves",
+                    value: totalLeaves,
+                    icon: FiCalendar,
+                    color: "red",
+                  },
+                  {
+                    label: "Late Arrivals",
+                    value: totalLates,
+                    icon: FiAlertTriangle,
+                    color: "yellow",
+                  },
+                  {
+                    label: "Half Days",
+                    value: halfDays,
+                    icon: FiSun,
+                    color: "orange",
+                  },
+                  {
+                    label: "Incomplete Days",
+                    value: notEvenHalfDays,
+                    icon: FiMoon,
+                    color: "purple",
+                  },
+                  {
+                    label: "Completed Days",
+                    value: totalCompletedDays,
+                    icon: FiCheckCircle,
+                    color: "green",
+                  },
+                  {
+                    label: "Not Logged Out",
+                    value: notLoggedOut,
+                    icon: FiLogOut,
+                    color: "pink",
+                  },
                 ].map((stat, index) => (
                   <motion.div
                     key={stat.label}
@@ -1030,10 +1125,18 @@ export default function OwnFullAttendance() {
                     className="flex items-center justify-between p-3 bg-white/60 dark:bg-gray-700/60 rounded-xl border border-gray-200/50 dark:border-gray-600/50"
                   >
                     <div className="flex items-center gap-3">
-                      <stat.icon className={`w-4 h-4 text-${stat.color}-500 dark:text-${stat.color}-400`} />
-                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{stat.label}</span>
+                      <stat.icon
+                        className={`w-4 h-4 text-${stat.color}-500 dark:text-${stat.color}-400`}
+                      />
+                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {stat.label}
+                      </span>
                     </div>
-                    <span className={`text-sm font-bold text-${stat.color}-600 dark:text-${stat.color}-400`}>{stat.value}</span>
+                    <span
+                      className={`text-sm font-bold text-${stat.color}-600 dark:text-${stat.color}-400`}
+                    >
+                      {stat.value}
+                    </span>
                   </motion.div>
                 ))}
               </div>
@@ -1051,8 +1154,12 @@ export default function OwnFullAttendance() {
                     <FiDollarSign className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-800 dark:text-gray-200">Payroll</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Salary Summary</p>
+                    <h3 className="font-semibold text-gray-800 dark:text-gray-200">
+                      Payroll
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Salary Summary
+                    </p>
                   </div>
                 </div>
                 <button
@@ -1069,16 +1176,28 @@ export default function OwnFullAttendance() {
 
               <div className="space-y-3">
                 <div className="flex justify-between items-center p-3 bg-white/60 dark:bg-gray-700/60 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Base Salary</span>
-                  <span className="font-semibold text-gray-800 dark:text-gray-200">₹ {numericBaseSalary.toFixed(2)}</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    Base Salary
+                  </span>
+                  <span className="font-semibold text-gray-800 dark:text-gray-200">
+                    ₹ {numericBaseSalary.toFixed(2)}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-white/60 dark:bg-gray-700/60 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Deductions</span>
-                  <span className="font-semibold text-red-600 dark:text-red-400">{deduction}</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    Deductions
+                  </span>
+                  <span className="font-semibold text-red-600 dark:text-red-400">
+                    {deduction}
+                  </span>
                 </div>
                 <div className="flex justify-between items-center p-3 bg-white/60 dark:bg-gray-700/60 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
-                  <span className="text-sm text-gray-600 dark:text-gray-400">Final Salary</span>
-                  <span className="font-bold text-emerald-600 dark:text-emerald-400 text-lg">{finalSalary}</span>
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    Final Salary
+                  </span>
+                  <span className="font-bold text-emerald-600 dark:text-emerald-400 text-lg">
+                    {finalSalary}
+                  </span>
                 </div>
               </div>
 
@@ -1090,17 +1209,25 @@ export default function OwnFullAttendance() {
                     exit={{ height: 0, opacity: 0 }}
                     className="mt-4 space-y-2"
                   >
-                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">Breakdown:</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-400 mb-2">
+                      Breakdown:
+                    </div>
                     {deductionsBreakdown.map((breakdown, index) => (
-                      <div key={index} className="flex justify-between items-center p-2 bg-white/40 dark:bg-gray-700/40 rounded-lg text-xs border border-gray-200/30 dark:border-gray-600/30">
-                        <span className="text-gray-700 dark:text-gray-300">{breakdown.name}</span>
-                        <span className="font-medium text-gray-800 dark:text-gray-200">₹ {breakdown.amount.toFixed(2)}</span>
+                      <div
+                        key={index}
+                        className="flex justify-between items-center p-2 bg-white/40 dark:bg-gray-700/40 rounded-lg text-xs border border-gray-200/30 dark:border-gray-600/30"
+                      >
+                        <span className="text-gray-700 dark:text-gray-300">
+                          {breakdown.name}
+                        </span>
+                        <span className="font-medium text-gray-800 dark:text-gray-200">
+                          ₹ {breakdown.amount.toFixed(2)}
+                        </span>
                       </div>
                     ))}
                   </motion.div>
                 )}
               </AnimatePresence>
-
             </motion.div>
 
             {shiftTimingDetails && (
@@ -1115,23 +1242,39 @@ export default function OwnFullAttendance() {
                     <FiClock className="w-6 h-6 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-800 dark:text-gray-200">Shift Timing</h3>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">Working Hours</p>
+                    <h3 className="font-semibold text-gray-800 dark:text-gray-200">
+                      Shift Timing
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Working Hours
+                    </p>
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <div className="flex justify-between items-center p-3 bg-white/60 dark:bg-gray-700/60 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Shift Name</span>
-                    <span className="font-semibold text-gray-800 dark:text-gray-200">{shiftTimingDetails.name}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      Shift Name
+                    </span>
+                    <span className="font-semibold text-gray-800 dark:text-gray-200">
+                      {shiftTimingDetails.name}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-white/60 dark:bg-gray-700/60 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Start Time</span>
-                    <span className="font-semibold text-green-600 dark:text-green-400">{shiftTimingDetails.startTime}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      Start Time
+                    </span>
+                    <span className="font-semibold text-green-600 dark:text-green-400">
+                      {shiftTimingDetails.startTime}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-white/60 dark:bg-gray-700/60 rounded-xl border border-gray-200/50 dark:border-gray-600/50">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">End Time</span>
-                    <span className="font-semibold text-red-600 dark:text-red-400">{shiftTimingDetails.endTime}</span>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      End Time
+                    </span>
+                    <span className="font-semibold text-red-600 dark:text-red-400">
+                      {shiftTimingDetails.endTime}
+                    </span>
                   </div>
                 </div>
               </motion.div>
@@ -1193,11 +1336,27 @@ export default function OwnFullAttendance() {
               transition={{ delay: 0.1 }}
               className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
             >
-              <div className="overflow-x-auto">
+              <div
+                className="overflow-auto   [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+                transition-colors duration-300"
+              >
                 <table className="w-full">
                   <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700">
                     <tr>
-                      {["S.L", "Date", "Day", "Check In/Out", "Hours", "Break", "Status", "Action"].map((header, index) => (
+                      {[
+                        "S.L",
+                        "Date",
+                        "Day",
+                        "Check In/Out",
+                        "Hours",
+                        "Break",
+                        "Status",
+                        "Action",
+                      ].map((header, index) => (
                         <th
                           key={header}
                           className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider"
@@ -1223,17 +1382,25 @@ export default function OwnFullAttendance() {
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.date}</div>
+                            <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                              {item.date}
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-600 dark:text-gray-400">{item.day}</div>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">
+                              {item.day}
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex flex-col gap-1">
                               <div className="flex items-center gap-2 text-xs">
-                                <span className="font-semibold text-blue-600 dark:text-blue-400">{item.logInTime}</span>
+                                <span className="font-semibold text-blue-600 dark:text-blue-400">
+                                  {item.logInTime}
+                                </span>
                                 <span className="w-1 h-1 bg-gray-400 dark:bg-gray-500 rounded-full"></span>
-                                <span className="font-semibold text-red-600 dark:text-red-400">{item.logOutTime}</span>
+                                <span className="font-semibold text-red-600 dark:text-red-400">
+                                  {item.logOutTime}
+                                </span>
                               </div>
                             </div>
                           </td>
@@ -1243,13 +1410,16 @@ export default function OwnFullAttendance() {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-600 dark:text-gray-400">{item.totalBreak}</span>
+                            <span className="text-sm text-gray-600 dark:text-gray-400">
+                              {item.totalBreak}
+                            </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             {renderStatusBadge(item.status)}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            {(item.status === "Absent" || item.status === "Holiday") && (
+                            {(item.status === "Absent" ||
+                              item.status === "Holiday") && (
                               <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
@@ -1272,8 +1442,12 @@ export default function OwnFullAttendance() {
                     <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                       <FiSearch className="w-8 h-8 text-gray-400 dark:text-gray-500" />
                     </div>
-                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">No records found</h3>
-                    <p className="text-gray-500 dark:text-gray-400">Try adjusting your search or filters</p>
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">
+                      No records found
+                    </h3>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      Try adjusting your search or filters
+                    </p>
                   </div>
                 )}
               </div>
@@ -1282,7 +1456,8 @@ export default function OwnFullAttendance() {
               {totalPages > 1 && (
                 <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
                   <div className="text-sm text-gray-700 dark:text-gray-300">
-                    Showing {startIndex + 1}-{Math.min(endIndex, totalEntries)} of {totalEntries} results
+                    Showing {startIndex + 1}-{Math.min(endIndex, totalEntries)}{" "}
+                    of {totalEntries} results
                   </div>
                   <div className="flex items-center gap-2">
                     <motion.button
@@ -1294,26 +1469,29 @@ export default function OwnFullAttendance() {
                     >
                       <FiChevronLeft className="w-4 h-4" />
                     </motion.button>
-                    
+
                     <div className="flex items-center gap-1">
-                      {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                        const page = i + 1;
-                        return (
-                          <motion.button
-                            key={page}
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            onClick={() => goToPage(page)}
-                            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                              page === safeCurrentPage
-                                ? "bg-blue-600 dark:bg-blue-500 text-white"
-                                : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600"
-                            }`}
-                          >
-                            {page}
-                          </motion.button>
-                        );
-                      })}
+                      {Array.from(
+                        { length: Math.min(5, totalPages) },
+                        (_, i) => {
+                          const page = i + 1;
+                          return (
+                            <motion.button
+                              key={page}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              onClick={() => goToPage(page)}
+                              className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                                page === safeCurrentPage
+                                  ? "bg-blue-600 dark:bg-blue-500 text-white"
+                                  : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600"
+                              }`}
+                            >
+                              {page}
+                            </motion.button>
+                          );
+                        }
+                      )}
                     </div>
 
                     <motion.button
@@ -1343,25 +1521,45 @@ export default function OwnFullAttendance() {
                 </div>
                 Payroll Summary
               </h2>
-              
+
               <div className="overflow-x-auto mb-6">
                 <table className="min-w-full text-sm">
                   <thead>
                     <tr className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 text-gray-600 dark:text-gray-300 rounded-lg">
-                      <th className="py-3 px-4 text-left font-semibold">Base Salary</th>
-                      <th className="py-3 px-4 text-left font-semibold">Standard Deductions</th>
-                      <th className="py-3 px-4 text-left font-semibold">Leaves (Unpaid)</th>
-                      <th className="py-3 px-4 text-left font-semibold">Remaining Paid Leaves</th>
-                      <th className="py-3 px-4 text-left font-semibold">Final Salary</th>
+                      <th className="py-3 px-4 text-left font-semibold">
+                        Base Salary
+                      </th>
+                      <th className="py-3 px-4 text-left font-semibold">
+                        Standard Deductions
+                      </th>
+                      <th className="py-3 px-4 text-left font-semibold">
+                        Leaves (Unpaid)
+                      </th>
+                      <th className="py-3 px-4 text-left font-semibold">
+                        Remaining Paid Leaves
+                      </th>
+                      <th className="py-3 px-4 text-left font-semibold">
+                        Final Salary
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="border-t border-gray-200 dark:border-gray-600">
                     <tr className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                      <td className="py-4 px-4 font-semibold text-gray-800 dark:text-gray-200">₹ {numericBaseSalary.toFixed(2)}</td>
-                      <td className="py-4 px-4 font-semibold text-red-600 dark:text-red-400">{deduction}</td>
-                      <td className="py-4 px-4 font-semibold text-orange-600 dark:text-orange-400">{leaves}</td>
-                      <td className="py-4 px-4 font-semibold text-blue-600 dark:text-blue-400">{remainingPaidLeaves}</td>
-                      <td className="py-4 px-4 font-bold text-emerald-600 dark:text-emerald-400 text-lg">{finalSalary}</td>
+                      <td className="py-4 px-4 font-semibold text-gray-800 dark:text-gray-200">
+                        ₹ {numericBaseSalary.toFixed(2)}
+                      </td>
+                      <td className="py-4 px-4 font-semibold text-red-600 dark:text-red-400">
+                        {deduction}
+                      </td>
+                      <td className="py-4 px-4 font-semibold text-orange-600 dark:text-orange-400">
+                        {leaves}
+                      </td>
+                      <td className="py-4 px-4 font-semibold text-blue-600 dark:text-blue-400">
+                        {remainingPaidLeaves}
+                      </td>
+                      <td className="py-4 px-4 font-bold text-emerald-600 dark:text-emerald-400 text-lg">
+                        {finalSalary}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -1383,9 +1581,15 @@ export default function OwnFullAttendance() {
                     <table className="min-w-full text-sm">
                       <thead>
                         <tr className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-700 dark:to-gray-600 text-gray-600 dark:text-gray-300">
-                          <th className="py-3 px-4 text-left font-semibold">Deduction Name</th>
-                          <th className="py-3 px-4 text-left font-semibold">Percentage</th>
-                          <th className="py-3 px-4 text-left font-semibold">Amount</th>
+                          <th className="py-3 px-4 text-left font-semibold">
+                            Deduction Name
+                          </th>
+                          <th className="py-3 px-4 text-left font-semibold">
+                            Percentage
+                          </th>
+                          <th className="py-3 px-4 text-left font-semibold">
+                            Amount
+                          </th>
                         </tr>
                       </thead>
                       <tbody className="border-t border-gray-200 dark:border-gray-600 divide-y divide-gray-200 dark:divide-gray-600">
@@ -1397,9 +1601,15 @@ export default function OwnFullAttendance() {
                             transition={{ delay: 0.1 * i }}
                             className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
                           >
-                            <td className="py-3 px-4 font-medium text-gray-800 dark:text-gray-200">{d.name}</td>
-                            <td className="py-3 px-4 text-gray-600 dark:text-gray-400">{d.percentage}</td>
-                            <td className="py-3 px-4 font-semibold text-red-600 dark:text-red-400">₹ {d.amount.toFixed(2)}</td>
+                            <td className="py-3 px-4 font-medium text-gray-800 dark:text-gray-200">
+                              {d.name}
+                            </td>
+                            <td className="py-3 px-4 text-gray-600 dark:text-gray-400">
+                              {d.percentage}
+                            </td>
+                            <td className="py-3 px-4 font-semibold text-red-600 dark:text-red-400">
+                              ₹ {d.amount.toFixed(2)}
+                            </td>
                           </motion.tr>
                         ))}
                       </tbody>
@@ -1517,13 +1727,18 @@ export default function OwnFullAttendance() {
                   whileTap={{ scale: 0.98 }}
                   onClick={async () => {
                     try {
-                      await axiosInstance.post("/attendance-user/missed-punch-request", {
-                        date: selectedDateForPunch?.date,
-                        punchIn: punchInTime,
-                        punchOut: punchOutTime,
-                        reason: punchReason,
-                      });
-                      toast.success("Missed Punch request submitted successfully!");
+                      await axiosInstance.post(
+                        "/attendance-user/missed-punch-request",
+                        {
+                          date: selectedDateForPunch?.date,
+                          punchIn: punchInTime,
+                          punchOut: punchOutTime,
+                          reason: punchReason,
+                        }
+                      );
+                      toast.success(
+                        "Missed Punch request submitted successfully!"
+                      );
                     } catch (error) {
                       console.error(error);
                       toast.error("Failed to submit missed punch request.");
