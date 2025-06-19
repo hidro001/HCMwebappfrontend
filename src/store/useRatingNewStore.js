@@ -281,7 +281,7 @@ const useRatingStore = create((set, get) => ({
       const res = await axiosInstance.get(
         `/ratings/past-template?${queryParams}`,
         {
-          responseType: "arraybuffer", // important for Excel binary data
+          responseType: "blob", // important for Excel binary data
         }
       );
       set({ loading: false, error: null });
