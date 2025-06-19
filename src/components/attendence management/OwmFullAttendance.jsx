@@ -775,7 +775,6 @@ export default function OwnFullAttendance() {
     month,
   });
 
-  // next payroll date - KEEPING ORIGINAL LOGIC
   const { nextPayrollDate } = getPayrollPeriodDates({
     year,
     month,
@@ -785,7 +784,6 @@ export default function OwnFullAttendance() {
   });
   const formattedNextPayrollDate = nextPayrollDate ? nextPayrollDate.toDateString() : "Not available";
 
-  // event handlers - KEEPING ALL ORIGINAL HANDLERS
   function openMissedPunchModal(dateRow) {
     setSelectedDateForPunch(dateRow);
     setMissedPunchModalOpen(true);

@@ -1,26 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { 
-  FaChevronDown, 
-  FaChevronUp, 
-  FaCalendarAlt, 
-  FaUsers, 
-  FaFileAlt, 
-  FaClock, 
-  FaCheckCircle, 
-  FaExclamationCircle,
-  FaEdit,
-  FaTrash,
-  FaToggleOn,
-  FaToggleOff,
-  FaSpinner,
-  FaPlus
-} from 'react-icons/fa';
+import {  FaChevronDown,  FaChevronUp,  FaCalendarAlt,  FaUsers,  FaFileAlt,  FaClock,  FaCheckCircle,  FaExclamationCircle, FaEdit, FaTrash, FaToggleOn, FaToggleOff, FaSpinner, FaPlus} from 'react-icons/fa';
 import LeaveType from "./models/LeaveTypeModel";
 import leaveTypeStore from "../../../store/leaveTypeStore";
 import ConfirmationDialog from "../../common/ConfirmationDialog.jsx"
 
 export default function LeavesTypes() {
+
   const {
     leaveTypes,
     isLoading,

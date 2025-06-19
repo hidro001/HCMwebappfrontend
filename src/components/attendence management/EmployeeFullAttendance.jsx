@@ -1,14 +1,12 @@
-
 import React, { useEffect, useState, useMemo } from "react";
-import { motion } from "framer-motion";
-import { FiSearch } from "react-icons/fi";
+import { motion,AnimatePresence } from "framer-motion";
+import { FiSearch, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../../service/axiosInstance";
 import useAttendanceStore from "../../store/useFullAttendanceStore";
 import ExportButtons from "../../components/common/PdfExcel";
 import toast from "react-hot-toast";
 
-// Renders a small colored badge
 function renderStatusBadge(status) {
   let bgColor = "bg-gray-100 dark:bg-gray-700";
   let textColor = "text-gray-600 dark:text-gray-200";
@@ -50,18 +48,13 @@ function renderStatusBadge(status) {
 
 export default function EmployeeFullAttendance() {
   const [managerApprovalLoading, setManagerApprovalLoading] = useState(false);
-  // If you have empID in route param
+  
   const { empID } = useParams();
 
-  // Pull store data
   const {
     userProfileData,
     fetchAllData,
-
-    // This method returns all days of the month with statuses:
     getMonthlyAttendanceView,
-
-    // Summaries
     calculateTotalShifts,
     calculateTotalCompletedDays,
     calculateTotalLates,
@@ -72,16 +65,14 @@ export default function EmployeeFullAttendance() {
     isLoading,
   } = useAttendanceStore();
 
-  // On mount, fetch data for the given empID (or fallback)
   useEffect(() => {
     if (empID) {
       fetchAllData(empID);
     } else {
-      fetchAllData(""); // fallback example
+      fetchAllData(""); 
     }
   }, [empID, fetchAllData]);
 
-  // Controls
   const today = new Date();
   const defaultMonthString = `${today.getFullYear()}-${String(
     today.getMonth() + 1
@@ -109,12 +100,10 @@ export default function EmployeeFullAttendance() {
     }
   }
 
-  // Parse selectedMonth "YYYY-MM"
   const [yearStr, monthStr] = selectedMonth.split("-");
   const year = parseInt(yearStr, 10);
   const month = parseInt(monthStr, 10);
 
-  // *Key Fix* => build entire month table from store
   const finalTableData = useMemo(() => {
     if (!year || !month || isLoading) return [];
 
@@ -132,7 +121,6 @@ export default function EmployeeFullAttendance() {
     });
   }, [searchText, finalTableData]);
 
-  // Pagination
   const totalEntries = filteredData.length;
   const totalPages = Math.ceil(totalEntries / rowsPerPage);
   const safeCurrentPage = Math.min(Math.max(currentPage, 1), totalPages || 1);
@@ -140,7 +128,7 @@ export default function EmployeeFullAttendance() {
   const endIndex = startIndex + rowsPerPage;
   const displayedData = filteredData.slice(startIndex, endIndex);
 
-  // Summaries
+
   const parsedYear = parseInt(year, 10);
   const parsedMonth = parseInt(month, 10);
   const totalShifts = calculateTotalShifts(parsedYear, parsedMonth);
@@ -424,119 +412,157 @@ export default function EmployeeFullAttendance() {
       >
         {/* Table (3/4) */}
         <div className="lg:col-span-3">
-          <motion.div
-            className="overflow-x-auto bg-white dark:bg-gray-800 rounded-md shadow"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <table className="w-full text-left min-w-max">
-              <thead className="bg-gray-100 dark:bg-gray-700 border-b border-gray-200 dark:border-gray-600">
-                <tr className="text-sm font-medium text-gray-600 dark:text-gray-300">
-                  <th className="py-3 px-4">S.L</th>
-                  <th className="py-3 px-4">Date</th>
-                  <th className="py-3 px-4">Day</th>
-                  <th className="py-3 px-4">Log In Time</th>
-                  <th className="py-3 px-4">Log Out Time</th>
-                  <th className="py-3 px-4">Total Break</th>
-                  <th className="py-3 px-4">Status</th>
-                </tr>
-              </thead>
-              <tbody>
-                {displayedData.map((item) => (
-                  <tr
-                    key={item.sl}
-                    className="border-b border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 text-sm"
-                  >
-                    <td className="py-3 px-4">
-                      {String(item.sl).padStart(2, "0")}
-                    </td>
-                    <td className="py-3 px-4">{item.date}</td>
-                    <td className="py-3 px-4">{item.day}</td>
-                    <td className="py-3 px-4">{item.logInTime}</td>
-                    <td className="py-3 px-4">{item.logOutTime}</td>
-                    <td className="py-3 px-4">{item.totalBreak}</td>
-                    <td className="py-3 px-4">{renderStatusBadge(item.status)}</td>
-                     {/* If user has "attendance-view-subordinate" permission, show Approve/Reject */}
- {userProfileData?.permission?.includes("attendance-view-subordinate") && item.requestId && (
-   <div className="inline-flex ml-3 space-x-2">
-     <button
-       className="text-green-600 hover:underline"
-       onClick={() => handleApprovePunch(item)}
-       disabled={managerApprovalLoading}
-     >
-       Approve
-     </button>
-     <button
-       className="text-red-600 hover:underline"
-       onClick={() => handleRejectPunch(item)}
-       disabled={managerApprovalLoading}
-     >
-       Reject
-     </button>
-   </div>
- )}
-                  </tr>
-                ))}
-
-                {displayedData.length === 0 && (
-                  <tr>
-                    <td
-                      colSpan={7}
-                      className="py-4 text-center text-gray-500 dark:text-gray-400"
-                    >
-                      No records found.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </motion.div>
-
-          {/* Pagination */}
-          <motion.div
-            className="flex flex-col sm:flex-row items-center justify-between mt-3 text-sm 
-                       text-gray-500 dark:text-gray-400"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <p className="mb-2 sm:mb-0">
-              Showing {startIndex + 1} to {Math.min(endIndex, totalEntries)} of{" "}
-              {totalEntries} entries
-            </p>
-            <div className="space-x-1">
-              <button
-                onClick={() => goToPage(safeCurrentPage - 1)}
-                className="py-1 px-2 border border-gray-300 dark:border-gray-600 rounded 
-                           text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+  {/* Attendance Table */}
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay: 0.1 }}
+    className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-lg rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+  >
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700">
+          <tr>
+            {["S.L", "Date", "Day", "Log In Time", "Log Out Time", "Total Break", "Status"].map((header, index) => (
+              <th
+                key={header}
+                className="px-6 py-4 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider"
               >
-                &lt;
-              </button>
-              {Array.from({ length: totalPages }).map((_, i) => (
-                <button
-                  key={i}
-                  onClick={() => goToPage(i + 1)}
-                  className={`py-1 px-2 border border-gray-300 dark:border-gray-600 rounded 
-                    ${
-                      safeCurrentPage === i + 1
-                        ? "bg-blue-500 text-white"
-                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
-                    }`}
-                >
-                  {i + 1}
-                </button>
-              ))}
-              <button
-                onClick={() => goToPage(safeCurrentPage + 1)}
-                className="py-1 px-2 border border-gray-300 dark:border-gray-600 rounded 
-                           text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
+                {header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+          <AnimatePresence>
+            {displayedData.map((item, index) => (
+              <motion.tr
+                key={item.sl}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="hover:bg-blue-50/50 dark:hover:bg-blue-900/20 transition-colors"
               >
-                &gt;
-              </button>
-            </div>
-          </motion.div>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center justify-center w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full text-sm font-medium text-gray-600 dark:text-gray-300">
+                    {String(item.sl).padStart(2, "0")}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm font-medium text-gray-900 dark:text-gray-100">{item.date}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-600 dark:text-gray-400">{item.day}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm font-medium text-blue-600 dark:text-blue-400">{item.logInTime}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm font-medium text-red-600 dark:text-red-400">{item.logOutTime}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className="text-sm text-gray-600 dark:text-gray-400">{item.totalBreak}</span>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {renderStatusBadge(item.status)}
+                </td>
+                {/* <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center gap-2">
+                    {userProfileData?.permission?.includes("attendance-view-subordinate") && item.requestId && (
+                      <div className="inline-flex space-x-2">
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 border border-green-300 dark:border-green-600 text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/30 hover:bg-green-100 dark:hover:bg-green-900/50 rounded-lg text-xs font-medium transition-colors"
+                          onClick={() => handleApprovePunch(item)}
+                          disabled={managerApprovalLoading}
+                        >
+                          <FiCheck className="w-3 h-3" />
+                          Approve
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 border border-red-300 dark:border-red-600 text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-lg text-xs font-medium transition-colors"
+                          onClick={() => handleRejectPunch(item)}
+                          disabled={managerApprovalLoading}
+                        >
+                          <FiX className="w-3 h-3" />
+                          Reject
+                        </motion.button>
+                      </div>
+                    )}
+                  </div>
+                </td> */}
+              </motion.tr>
+            ))}
+          </AnimatePresence>
+        </tbody>
+      </table>
+
+      {displayedData.length === 0 && (
+        <div className="text-center py-12">
+          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+            <FiSearch className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">No records found</h3>
+          <p className="text-gray-500 dark:text-gray-400">Try adjusting your search or filters</p>
         </div>
+      )}
+    </div>
+
+    {/* Pagination */}
+    {totalPages > 1 && (
+      <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
+        <div className="text-sm text-gray-700 dark:text-gray-300">
+          Showing {startIndex + 1}-{Math.min(endIndex, totalEntries)} of {totalEntries} results
+        </div>
+        <div className="flex items-center gap-2">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => goToPage(safeCurrentPage - 1)}
+            disabled={safeCurrentPage === 1}
+            className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <FiChevronLeft className="w-4 h-4" />
+          </motion.button>
+          
+          <div className="flex items-center gap-1">
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const page = i + 1;
+              return (
+                <motion.button
+                  key={page}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => goToPage(page)}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    page === safeCurrentPage
+                      ? "bg-blue-600 dark:bg-blue-500 text-white"
+                      : "bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600 border border-gray-300 dark:border-gray-600"
+                  }`}
+                >
+                  {page}
+                </motion.button>
+              );
+            })}
+          </div>
+
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => goToPage(safeCurrentPage + 1)}
+            disabled={safeCurrentPage === totalPages}
+            className="p-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <FiChevronRight className="w-4 h-4" />
+          </motion.button>
+        </div>
+      </div>
+    )}
+  </motion.div>
+</div>
 
         {/* Side panel: Employee Overview (1/4) */}
         <motion.div
