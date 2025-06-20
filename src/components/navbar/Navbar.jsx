@@ -14,7 +14,6 @@
 // import ProfileSidebar from "./ProfileCard";
 // import BreakCard from "./BreakCard";
 
-
 // // Format seconds into HH:MM:SS
 // function formatHMS(totalSeconds) {
 //   const hrs = Math.floor(totalSeconds / 3600);
@@ -81,8 +80,6 @@
 //       fetchNotifications();
 //     }
 //   }, [authStore.isAuthenticated, fetchNotifications]);
-
-
 
 //   useEffect(() => {
 //     let intervalId;
@@ -161,7 +158,7 @@
 
 //   return (
 //     <nav className="fixed top-0 left-0 right-0 z-50 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 flex justify-between items-center pr-4 bg-white shadow-sm shadow-gray-100 w-full  navbar-shadow ">
-      
+
 //       <div className="flex gap-4">
 //         <button
 //             onClick={() => setCollapsed(!collapsed)}
@@ -174,7 +171,6 @@
 //         </Link>
 //       </div>
 
-     
 //       <div className="flex items-center gap-4">
 
 //       {/* Chat */}
@@ -194,8 +190,6 @@
 
 //          {/* Theme Toggle */}
 //         <ThemeToggleButton />
-         
-          
 
 //         {onBreak && (
 //           <span className="text-sm font-semibold text-green-600">Break: {navbarTimer}</span>
@@ -223,7 +217,6 @@
 //             )}
 //           </AnimatePresence>
 //         </div>
-
 
 //         {/* Notifications */}
 //        <div className="relative" ref={notificationDropdownRef}>
@@ -258,7 +251,7 @@
 //               className="h-9 w-9 rounded-full object-cover border border-gray-300"
 //             />
 //           </div>
-         
+
 //         </div>
 //       </div>
 //     <AnimatePresence>
@@ -303,17 +296,16 @@
 
 // export default Navbar;
 
-
 // import { useEffect, useState, useRef, useContext } from "react";
-// import { 
-//   RiNotification3Line, 
-//   RiLogoutBoxRLine, 
-//   RiMessage3Line, 
-//   RiUser3Line, 
+// import {
+//   RiNotification3Line,
+//   RiLogoutBoxRLine,
+//   RiMessage3Line,
+//   RiUser3Line,
 //   RiTimeLine,
 //   RiMenuFoldLine,
-//   RiMenuUnfoldLine, 
-//   RiSunLine, 
+//   RiMenuUnfoldLine,
+//   RiSunLine,
 //   RiMoonLine,
 //   RiDashboardLine
 // } from "react-icons/ri";
@@ -366,13 +358,13 @@
 //   const loading = useNotificationStore((state) => state.loading);
 //   const error = useNotificationStore((state) => state.error);
 
-//   const { 
-//     onBreak, 
-//     breakStartTime, 
-//     fetchAttendanceData, 
-//     fetchTargetCoordinates, 
-//     fetchUserBreakType, 
-//     getUserLocation 
+//   const {
+//     onBreak,
+//     breakStartTime,
+//     fetchAttendanceData,
+//     fetchTargetCoordinates,
+//     fetchUserBreakType,
+//     getUserLocation
 //   } = usePunchStore();
 
 //   const [navbarTimer, setNavbarTimer] = useState("00:00:00");
@@ -515,23 +507,22 @@
 //   );
 
 //   return (
-//     <motion.nav 
+//     <motion.nav
 //       initial={{ y: -100 }}
 //       animate={{ y: 0 }}
 //       transition={{ type: "spring", stiffness: 300, damping: 30 }}
 //       className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/80 dark:bg-gray-900/50 flex justify-between items-center px-4 py-1 shadow-lg dark:shadow-gray-900/30 border-b border-gray-100 dark:border-gray-800 transition-all duration-300`}
 //     >
 //       <div className="flex items-center gap-4">
-   
-        
+
 //         <Link to={getDashboardPath()} className="flex items-center">
-//           <motion.img 
+//           <motion.img
 //             whileHover={{ rotate: 5 }}
-//             className="h-10 object-contain" 
-//             src={logo} 
-//             alt="Company Logo" 
+//             className="h-10 object-contain"
+//             src={logo}
+//             alt="Company Logo"
 //           />
-//           <motion.span 
+//           <motion.span
 //             initial={{ opacity: 0, x: -20 }}
 //             animate={{ opacity: 1, x: 0 }}
 //             transition={{ delay: 0.2 }}
@@ -544,7 +535,7 @@
 
 //       <div className="flex items-center gap-1 sm:gap-3">
 //         {onBreak && (
-//           <motion.div 
+//           <motion.div
 //             initial={{ opacity: 0, scale: 0.8 }}
 //             animate={{ opacity: 1, scale: 1 }}
 //             className="flex items-center gap-2 bg-green-100 dark:bg-green-900/30 px-3 py-1.5 rounded-full"
@@ -556,44 +547,44 @@
 //           </motion.div>
 //         )}
 
-//         {/* <IconButton 
-//           icon={<RiDashboardLine size={20} />} 
+//         {/* <IconButton
+//           icon={<RiDashboardLine size={20} />}
 //           onClick={() => navigate(getDashboardPath())}
 //           color="indigo"
 //           tooltip="Dashboard"
 //         /> */}
 
-//         <IconButton 
-//           icon={<RiMessage3Line size={20} />} 
+//         <IconButton
+//           icon={<RiMessage3Line size={20} />}
 //           onClick={handleChatClick}
 //           notification={personsWithUnread}
 //           color="emerald"
 //           tooltip="Messages"
 //         />
-        
-//         <IconButton 
-//           icon={<RiTimeLine size={20} />} 
+
+//         <IconButton
+//           icon={<RiTimeLine size={20} />}
 //           onClick={() => setShowBreakCard(!showBreakCard)}
 //           color="amber"
 //           tooltip="Break Time"
 //         />
-        
-//         <IconButton 
-//           icon={<RiNotification3Line size={20} />} 
+
+//         <IconButton
+//           icon={<RiNotification3Line size={20} />}
 //           onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}
 //           notification={unreadCount}
 //           color="red"
 //           tooltip="Notifications"
 //         />
 
-//         <IconButton 
-//           icon={theme === 'dark' ? <RiSunLine size={20} /> : <RiMoonLine size={20} />} 
+//         <IconButton
+//           icon={theme === 'dark' ? <RiSunLine size={20} /> : <RiMoonLine size={20} />}
 //           onClick={toggleTheme}
 //           color="purple"
 //           tooltip={theme === 'dark' ? "Light Mode" : "Dark Mode"}
 //         />
-        
-//       <motion.div 
+
+//       <motion.div
 //           // variants={itemVariants}
 //           className="relative ml-1"
 //           whileHover={{ scale: 1.05 }}
@@ -617,10 +608,10 @@
 //                 alt="User"
 //                 className="h-9 w-9 rounded-full object-cover ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 ring-offset-white dark:ring-offset-gray-900"
 //               />
-//               <motion.div 
-//                 animate={{ scale: [1, 1.2, 1] }} 
+//               <motion.div
+//                 animate={{ scale: [1, 1.2, 1] }}
 //                 transition={{ repeat: Infinity, duration: 2 }}
-//                 className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900" 
+//                 className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900"
 //               />
 //             </motion.div>
 //           </motion.div>
@@ -689,15 +680,15 @@
 // export default Navbar;
 
 // import { useEffect, useState, useRef, useContext } from "react";
-// import { 
-//   RiNotification3Line, 
-//   RiLogoutBoxRLine, 
-//   RiMessage3Line, 
-//   RiUser3Line, 
+// import {
+//   RiNotification3Line,
+//   RiLogoutBoxRLine,
+//   RiMessage3Line,
+//   RiUser3Line,
 //   RiTimeLine,
 //   RiMenuFoldLine,
-//   RiMenuUnfoldLine, 
-//   RiSunLine, 
+//   RiMenuUnfoldLine,
+//   RiSunLine,
 //   RiMoonLine,
 //   RiDashboardLine
 // } from "react-icons/ri";
@@ -750,13 +741,13 @@
 //   const loading = useNotificationStore((state) => state.loading);
 //   const error = useNotificationStore((state) => state.error);
 
-//   const { 
-//     onBreak, 
-//     breakStartTime, 
-//     fetchAttendanceData, 
-//     fetchTargetCoordinates, 
-//     fetchUserBreakType, 
-//     getUserLocation 
+//   const {
+//     onBreak,
+//     breakStartTime,
+//     fetchAttendanceData,
+//     fetchTargetCoordinates,
+//     fetchUserBreakType,
+//     getUserLocation
 //   } = usePunchStore();
 
 //   const [navbarTimer, setNavbarTimer] = useState("00:00:00");
@@ -834,7 +825,7 @@
 //       if (profileButtonRef.current && profileButtonRef.current.contains(event.target)) {
 //         return;
 //       }
-      
+
 //       // Only close profile dropdown if click is outside both the dropdown and the button
 //       if (
 //         showProfileDropdown &&
@@ -843,7 +834,7 @@
 //       ) {
 //         setShowProfileDropdown(false);
 //       }
-      
+
 //       if (
 //         showNotificationDropdown &&
 //         notificationDropdownRef.current &&
@@ -851,7 +842,7 @@
 //       ) {
 //         setShowNotificationDropdown(false);
 //       }
-      
+
 //       if (
 //         showBreakCard &&
 //         breakCardRef.current &&
@@ -913,23 +904,22 @@
 //   );
 
 //   return (
-//     <motion.nav 
+//     <motion.nav
 //       initial={{ y: -100 }}
 //       animate={{ y: 0 }}
 //       transition={{ type: "spring", stiffness: 300, damping: 30 }}
 //       className={`fixed top-0 left-0 right-0 z-50 backdrop-blur-md bg-white/80 dark:bg-gray-900/50 flex justify-between items-center px-4 py-1 shadow-lg dark:shadow-gray-900/30 border-b border-gray-100 dark:border-gray-800 transition-all duration-300`}
 //     >
 //       <div className="flex items-center gap-4">
-   
-        
+
 //         <Link to={getDashboardPath()} className="flex items-center">
-//           <motion.img 
+//           <motion.img
 //             whileHover={{ rotate: 5 }}
-//             className="h-10 object-contain" 
-//             src={logo} 
-//             alt="Company Logo" 
+//             className="h-10 object-contain"
+//             src={logo}
+//             alt="Company Logo"
 //           />
-//           <motion.span 
+//           <motion.span
 //             initial={{ opacity: 0, x: -20 }}
 //             animate={{ opacity: 1, x: 0 }}
 //             transition={{ delay: 0.2 }}
@@ -942,7 +932,7 @@
 
 //       <div className="flex items-center gap-1 sm:gap-3">
 //         {onBreak && (
-//           <motion.div 
+//           <motion.div
 //             initial={{ opacity: 0, scale: 0.8 }}
 //             animate={{ opacity: 1, scale: 1 }}
 //             className="flex items-center gap-2 bg-green-100 dark:bg-green-900/30 px-3 py-1.5 rounded-full"
@@ -954,37 +944,37 @@
 //           </motion.div>
 //         )}
 
-//         <IconButton 
-//           icon={<RiMessage3Line size={20} />} 
+//         <IconButton
+//           icon={<RiMessage3Line size={20} />}
 //           onClick={handleChatClick}
 //           notification={personsWithUnread}
 //           color="emerald"
 //           tooltip="Messages"
 //         />
-        
-//         <IconButton 
-//           icon={<RiTimeLine size={20} />} 
+
+//         <IconButton
+//           icon={<RiTimeLine size={20} />}
 //           onClick={() => setShowBreakCard(!showBreakCard)}
 //           color="amber"
 //           tooltip="Break Time"
 //         />
-        
-//         <IconButton 
-//           icon={<RiNotification3Line size={20} />} 
+
+//         <IconButton
+//           icon={<RiNotification3Line size={20} />}
 //           onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}
 //           notification={unreadCount}
 //           color="red"
 //           tooltip="Notifications"
 //         />
 
-//         <IconButton 
-//           icon={theme === 'dark' ? <RiSunLine size={20} /> : <RiMoonLine size={20} />} 
+//         <IconButton
+//           icon={theme === 'dark' ? <RiSunLine size={20} /> : <RiMoonLine size={20} />}
 //           onClick={toggleTheme}
 //           color="purple"
 //           tooltip={theme === 'dark' ? "Light Mode" : "Dark Mode"}
 //         />
-        
-//       <motion.div 
+
+//       <motion.div
 //           className="relative ml-1"
 //           whileHover={{ scale: 1.05 }}
 //           ref={profileButtonRef}
@@ -1007,10 +997,10 @@
 //                 alt="User"
 //                 className="h-9 w-9 rounded-full object-cover ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 ring-offset-white dark:ring-offset-gray-900"
 //               />
-//               <motion.div 
-//                 animate={{ scale: [1, 1.2, 1] }} 
+//               <motion.div
+//                 animate={{ scale: [1, 1.2, 1] }}
 //                 transition={{ repeat: Infinity, duration: 2 }}
-//                 className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900" 
+//                 className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900"
 //               />
 //             </motion.div>
 //           </motion.div>
@@ -1078,23 +1068,22 @@
 
 // export default Navbar;
 
-
 import { useEffect, useState, useRef, useContext } from "react";
-import { 
-  RiNotification3Line, 
-  RiLogoutBoxRLine, 
-  RiMessage3Line, 
-  RiUser3Line, 
+import {
+  RiNotification3Line,
+  RiLogoutBoxRLine,
+  RiMessage3Line,
+  RiUser3Line,
   RiTimeLine,
   RiMenuFoldLine,
-  RiMenuUnfoldLine, 
-  RiSunLine, 
+  RiMenuUnfoldLine,
+  RiSunLine,
   RiMoonLine,
-  RiDashboardLine
+  RiDashboardLine,
 } from "react-icons/ri";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import logo from '../../assets/logo/logo-eye.webp';
+import logo from "../../assets/logo/logo-eye.webp";
 import useAuthStore from "../../store/store";
 import useNotificationStore from "../../store/notificationStore";
 import usePunchStore from "../../store/usePunchStore";
@@ -1117,10 +1106,11 @@ function formatHMS(totalSeconds) {
 
 const Navbar = () => {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
-  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
+  const [showNotificationDropdown, setShowNotificationDropdown] =
+    useState(false);
   const [showBreakCard, setShowBreakCard] = useState(false);
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('theme') || 'light';
+    return localStorage.getItem("theme") || "light";
   });
 
   const { unreadCounts = {} } = useContext(ChatContextv2);
@@ -1141,31 +1131,31 @@ const Navbar = () => {
   const loading = useNotificationStore((state) => state.loading);
   const error = useNotificationStore((state) => state.error);
 
-  const { 
-    onBreak, 
-    breakStartTime, 
-    fetchAttendanceData, 
-    fetchTargetCoordinates, 
-    fetchUserBreakType, 
-    getUserLocation 
+  const {
+    onBreak,
+    breakStartTime,
+    fetchAttendanceData,
+    fetchTargetCoordinates,
+    fetchUserBreakType,
+    getUserLocation,
   } = usePunchStore();
 
   const [navbarTimer, setNavbarTimer] = useState("00:00:00");
 
   // Toggle theme function
   const toggleTheme = () => {
-    const newTheme = theme === 'light' ? 'dark' : 'light';
+    const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
-    localStorage.setItem('theme', newTheme);
-    document.documentElement.classList.toggle('dark');
+    localStorage.setItem("theme", newTheme);
+    document.documentElement.classList.toggle("dark");
   };
 
   useEffect(() => {
     // Set initial theme
-    if (theme === 'dark') {
-      document.documentElement.classList.add('dark');
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
     } else {
-      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.remove("dark");
     }
   }, []);
 
@@ -1210,7 +1200,8 @@ const Navbar = () => {
     navigate("/dashboard/chats");
   };
 
-  const userAvatar = authStore.userAvatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png";
+  const userAvatar =
+    authStore.userAvatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png";
   const userName = authStore.userName || "John Doe";
   const userID = authStore.employeeId || "john.doe@example.com";
 
@@ -1221,12 +1212,12 @@ const Navbar = () => {
 
   useEffect(() => {
     function handleClickOutside(event) {
-      // Check if the click is on the profile button - if so, we'll handle it separately
-      if (profileButtonRef.current && profileButtonRef.current.contains(event.target)) {
+      if (
+        profileButtonRef.current &&
+        profileButtonRef.current.contains(event.target)
+      ) {
         return;
       }
-      
-      // Only close profile dropdown if click is outside both the dropdown and the button
       if (
         showProfileDropdown &&
         profileDropdownRef.current &&
@@ -1234,7 +1225,7 @@ const Navbar = () => {
       ) {
         setShowProfileDropdown(false);
       }
-      
+
       if (
         showNotificationDropdown &&
         notificationDropdownRef.current &&
@@ -1242,7 +1233,7 @@ const Navbar = () => {
       ) {
         setShowNotificationDropdown(false);
       }
-      
+
       if (
         showBreakCard &&
         breakCardRef.current &&
@@ -1257,10 +1248,8 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showProfileDropdown, showNotificationDropdown, showBreakCard]);
-
-  // Toggle function for profile dropdown
   const toggleProfileDropdown = () => {
-    setShowProfileDropdown(prevState => !prevState);
+    setShowProfileDropdown((prevState) => !prevState);
   };
 
   const getDashboardPath = () => {
@@ -1275,29 +1264,35 @@ const Navbar = () => {
   };
 
   // Fixed Icon button component with clean transparent background
-  const IconButton = ({ icon, onClick, notification = 0, color = "blue", tooltip }) => {
+  const IconButton = ({
+    icon,
+    onClick,
+    notification = 0,
+    color = "blue",
+    tooltip,
+  }) => {
     // Define color-specific classes to ensure Tailwind compiles them
     const colorClasses = {
       blue: {
         text: "text-blue-600 dark:text-blue-400",
-        hover: "hover:bg-blue-500/10 dark:hover:bg-blue-500/20"
+        hover: "hover:bg-blue-500/10 dark:hover:bg-blue-500/20",
       },
       emerald: {
         text: "text-emerald-600 dark:text-emerald-400",
-        hover: "hover:bg-emerald-500/10 dark:hover:bg-emerald-500/20"
+        hover: "hover:bg-emerald-500/10 dark:hover:bg-emerald-500/20",
       },
       amber: {
         text: "text-amber-600 dark:text-amber-400",
-        hover: "hover:bg-amber-500/10 dark:hover:bg-amber-500/20"
+        hover: "hover:bg-amber-500/10 dark:hover:bg-amber-500/20",
       },
       red: {
         text: "text-red-600 dark:text-red-400",
-        hover: "hover:bg-red-500/10 dark:hover:bg-red-500/20"
+        hover: "hover:bg-red-500/10 dark:hover:bg-red-500/20",
       },
       purple: {
         text: "text-purple-600 dark:text-purple-400",
-        hover: "hover:bg-purple-500/10 dark:hover:bg-purple-500/20"
-      }
+        hover: "hover:bg-purple-500/10 dark:hover:bg-purple-500/20",
+      },
     };
 
     const currentColor = colorClasses[color] || colorClasses.blue;
@@ -1332,7 +1327,7 @@ const Navbar = () => {
   };
 
   return (
-    <motion.nav 
+    <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 300, damping: 30 }}
@@ -1340,13 +1335,13 @@ const Navbar = () => {
     >
       <div className="flex items-center gap-4">
         <Link to={getDashboardPath()} className="flex items-center">
-          <motion.img 
+          <motion.img
             whileHover={{ rotate: 5 }}
-            className="h-10 object-contain" 
-            src={logo} 
-            alt="Company Logo" 
+            className="h-10 object-contain"
+            src={logo}
+            alt="Company Logo"
           />
-          <motion.span 
+          <motion.span
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.2 }}
@@ -1359,7 +1354,7 @@ const Navbar = () => {
 
       <div className="flex items-center gap-1 sm:gap-3">
         {onBreak && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             className="flex items-center gap-2 bg-green-100 dark:bg-green-900/30 px-3 py-1.5 rounded-full"
@@ -1371,37 +1366,43 @@ const Navbar = () => {
           </motion.div>
         )}
 
-        <IconButton 
-          icon={<RiMessage3Line size={20} />} 
+        <IconButton
+          icon={<RiMessage3Line size={20} />}
           onClick={handleChatClick}
           notification={personsWithUnread}
           color="emerald"
           tooltip="Messages"
         />
-        
-        <IconButton 
-          icon={<RiTimeLine size={20} />} 
+
+        <IconButton
+          icon={<RiTimeLine size={20} />}
           onClick={() => setShowBreakCard(!showBreakCard)}
           color="amber"
           tooltip="Punch & Break Status"
         />
-        
-        <IconButton 
-          icon={<RiNotification3Line size={20} />} 
+
+        <IconButton
+          icon={<RiNotification3Line size={20} />}
           onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}
           notification={unreadCount}
           color="red"
           tooltip="Notifications"
         />
 
-        <IconButton 
-          icon={theme === 'dark' ? <RiSunLine size={20} /> : <RiMoonLine size={20} />} 
+        <IconButton
+          icon={
+            theme === "dark" ? (
+              <RiSunLine size={20} />
+            ) : (
+              <RiMoonLine size={20} />
+            )
+          }
           onClick={toggleTheme}
           color="purple"
-          tooltip={theme === 'dark' ? "Light Mode" : "Dark Mode"}
+          tooltip={theme === "dark" ? "Light Mode" : "Dark Mode"}
         />
-        
-        <motion.div 
+
+        <motion.div
           className="relative ml-1"
           whileHover={{ scale: 1.05 }}
           ref={profileButtonRef}
@@ -1411,8 +1412,12 @@ const Navbar = () => {
             onClick={toggleProfileDropdown}
           >
             <div className="text-right hidden sm:block">
-              <p className="text-sm font-medium text-gray-800 dark:text-white">{userName}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">ID: {userID}</p>
+              <p className="text-sm font-medium text-gray-800 dark:text-white">
+                {userName}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                ID: {userID}
+              </p>
             </div>
             <motion.div
               whileHover={{ rotate: 5, scale: 1.1 }}
@@ -1424,10 +1429,10 @@ const Navbar = () => {
                 alt="User"
                 className="h-9 w-9 rounded-full object-cover ring-2 ring-blue-500 dark:ring-blue-400 ring-offset-2 ring-offset-white dark:ring-offset-gray-900"
               />
-              <motion.div 
-                animate={{ scale: [1, 1.2, 1] }} 
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
                 transition={{ repeat: Infinity, duration: 2 }}
-                className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900" 
+                className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-white dark:border-gray-900"
               />
             </motion.div>
           </motion.div>
