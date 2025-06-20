@@ -495,7 +495,7 @@ export const menuItems = [
 
   // ------------------------------ Analytics ------------------------------
   {
-    name: "Analytics",
+    name: "Company Analytics",
     tooltip:
       "Analyze RACI roles, operations, and business metrics all in one place for data-driven decisions",
     icon: <FaGlobe />,
