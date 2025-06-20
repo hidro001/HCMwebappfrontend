@@ -22,6 +22,7 @@ export function CallProvider({ children, currentUserId }) {
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [incomingCall, setIncomingCall] = useState(null);
   const [call, setCall] = useState(null);
+  const outgoingCall = useRef(null); // 🔹 NEW
 
   const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL;
 
@@ -280,6 +281,7 @@ export function CallProvider({ children, currentUserId }) {
                 {
                   consumerId: consumer.id,
                   kind: data.kind,
+                  userId,
                   stream: new MediaStream([consumer.track]),
                 },
               ]);
@@ -301,19 +303,43 @@ export function CallProvider({ children, currentUserId }) {
 
   // 5) high-level call controls
   // somewhere in your CallProvider:
+  const addParticipant = (id) => {
+    if (!call) return;
+    socket.current.emit("addParticipant", {
+      callId: call.roomId,
+      newParticipant: id,
+    });
+  };
 
   const initiateCall = async ({ callType, participants }) => {
-    const roomId = `room-${Date.now()}`;
-    roomIdRef.current = roomId;
+    const callId = `room-${Date.now()}`;
+    roomIdRef.current = callId;
+
+    /* 1️⃣ store a transient “dialling” state for the ring‑back UI */
+    outgoingCall.current = { callId, callType, participants };
+
+    /* 2️⃣ never send your own id inside participants */
+    const others = participants.filter((id) => id !== currentUserId);
+
+    /* 3️⃣ signal the server – must be EXACTLY what server listens for */
     socket.current.emit("initiateCall", {
-      callId, // ← the id the server stores and forwards
-      caller: currentUserId, // ← so the callee knows who is ringing
-      callType, // 'audio' | 'video'
-      participants: sanitizedParticipants,
+      callId,
+      caller: currentUserId,
+      callType, // 'voice' | 'video'
+      participants: others,
     });
-    await joinRoom(roomId);
+
+    /* 4️⃣ start the media plane */
+    await joinRoom(callId);
     await createSendTransport();
-    setCall({ roomId, callType, participants });
+
+    /* 5️⃣ show in‑call UI, clear “dialling” flag */
+    setCall({
+      roomId: callId,
+      callType,
+      participants: [currentUserId, ...others],
+    });
+    outgoingCall.current = null;
   };
 
   const answerCall = async () => {
@@ -360,7 +386,7 @@ export function CallProvider({ children, currentUserId }) {
         leaveCall,
         startScreenShare,
         stopScreenShare,
-        isScreenSharing,
+        isScreenSharing: screenShareActive,
       }}
     >
       {children}
