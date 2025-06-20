@@ -13,6 +13,8 @@ const CallContext = createContext();
 export function CallProvider({ children, currentUserId }) {
   const socket = useRef();
   const device = useRef();
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
+  const screenShareProducer = useRef(null);
   const sendTransport = useRef();
   const roomIdRef = useRef(null);
   const recvTransports = useRef(new Map());
@@ -52,6 +54,31 @@ export function CallProvider({ children, currentUserId }) {
     });
     setLocalStream(s);
     return s;
+  };
+
+  const startScreenShare = async () => {
+    if (isScreenSharing || !sendTransport.current) return;
+
+    try {
+      const displayStream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: false,
+      });
+
+      const track = displayStream.getVideoTracks()[0];
+
+      // Make sure the user can stop sharing via browser UI
+      track.addEventListener("ended", () => stopScreenShare());
+
+      console.log("[share] producing screen track");
+      screenShareProducer.current = await sendTransport.current.produce({
+        track,
+      });
+
+      setIsScreenSharing(true);
+    } catch (err) {
+      console.error("[share] start failed:", err);
+    }
   };
 
   const joinRoom = (roomId) =>
@@ -137,6 +164,19 @@ export function CallProvider({ children, currentUserId }) {
         }
       }
     );
+  };
+
+  const stopScreenShare = () => {
+    if (!isScreenSharing) return;
+
+    try {
+      screenShareProducer.current?.close();
+      screenShareProducer.current = null;
+      setIsScreenSharing(false);
+      console.log("[share] stopped");
+    } catch (err) {
+      console.error("[share] stop failed:", err);
+    }
   };
 
   const createRecvTransport = (producerId, userId) => {
@@ -313,6 +353,9 @@ export function CallProvider({ children, currentUserId }) {
         initiateCall,
         answerCall,
         leaveCall,
+        startScreenShare,
+        stopScreenShare,
+        isScreenSharing,
       }}
     >
       {children}
