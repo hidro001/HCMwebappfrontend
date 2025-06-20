@@ -31,7 +31,12 @@ export function CallProvider({ children, currentUserId }) {
       query: { userId: currentUserId },
     });
 
-    socket.current.on("incomingCall", setIncomingCall);
+    socket.current.emit("joinPersonalRoom", { employeeId: currentUserId });
+
+    socket.current.on("incomingCall", (payload) => {
+      // normalise the field so the rest of the code can rely on `.roomId`
+      setIncomingCall({ ...payload, roomId: payload.roomId ?? payload.callId });
+    });
 
     socket.current.on("new-producer", ({ producerId, userId }) => {
       createRecvTransport(producerId, userId);
@@ -325,6 +330,7 @@ export function CallProvider({ children, currentUserId }) {
     socket.current.emit("initiateCall", {
       callId,
       caller: currentUserId,
+      roomId: callId,
       callType, // 'voice' | 'video'
       participants: others,
     });
@@ -344,7 +350,7 @@ export function CallProvider({ children, currentUserId }) {
 
   const answerCall = async () => {
     if (!incomingCall) return;
-    const { roomId } = incomingCall;
+    const roomId = incomingCall.roomId ?? incomingCall.callId;
     roomIdRef.current = roomId;
     socket.current.emit("answerCall", {
       callId: roomId,
