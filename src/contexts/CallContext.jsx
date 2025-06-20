@@ -42,7 +42,7 @@ export function CallProvider({ children, currentUserId }) {
       createRecvTransport(producerId, userId);
     });
 
-    socket.current.on("call-ended", () => {
+    socket.current.on("endCall", () => {
       localStream?.getTracks().forEach((t) => t.stop());
       setLocalStream(null);
       setRemoteStreams([]);
@@ -365,7 +365,9 @@ export function CallProvider({ children, currentUserId }) {
   // NEW: allow rejecting an incoming call
   const rejectCall = () => {
     if (!incomingCall) return;
-    const { roomId } = incomingCall;
+    const roomId =
+      incomingCall.roomId ?? // ✅ works with new clients
+      incomingCall.callId;
 
     socket.current.emit("rejectCall", {
       callId: roomId,
@@ -381,6 +383,11 @@ export function CallProvider({ children, currentUserId }) {
       userId: currentUserId,
     });
     socket.current.emit("leave-call", { roomId: call.roomId }); // mediasoup cleanup
+    localStream?.getTracks().forEach((t) => t.stop());
+    setLocalStream(null);
+    setRemoteStreams([]);
+    recvTransports.current.forEach((t) => t.close());
+    recvTransports.current.clear();
     setCall(null);
   };
 
@@ -398,6 +405,7 @@ export function CallProvider({ children, currentUserId }) {
         stopScreenShare,
         isScreenSharing,
         addParticipant,
+        rejectCall,
       }}
     >
       {children}
