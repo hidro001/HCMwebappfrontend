@@ -1,332 +1,150 @@
-
-// import React, { useState, useMemo, useContext } from "react";
-// import { ChatContextv2 } from "../../../contexts/ChatContextv2";
-
-// export default function ConversationList() {
-//   const {
-//     employeeId,
-//     conversations,
-//     conversationsLoading,
-//     conversationsError,
-//     handleSelectConversation,
-//   } = useContext(ChatContextv2);
-
-//   // Add search state
-//   const [searchQuery, setSearchQuery] = useState("");
-
-//   // Filter conversations
-//   const filteredConversations = useMemo(() => {
-//     const lowerSearch = searchQuery.toLowerCase();
-//     return conversations.filter((item) => {
-//       const fullName = `${item.firstName} ${item.lastName}`.toLowerCase();
-//       const empId = (item.employeeId || "").toLowerCase();
-//       return fullName.includes(lowerSearch) || empId.includes(lowerSearch);
-//     });
-//   }, [conversations, searchQuery]);
-
-//   // Clicking a conversation triggers handleSelectConversation from context
-//   const handleConversationPress = (item) => {
-//     if (!employeeId) return;
-//     handleSelectConversation(item);
-//   };
-
-//   // Loading or error states
-//   if (conversationsLoading) {
-//     return (
-//       <div className="flex flex-col w-full h-full items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors">
-//         <p className="text-sm text-gray-600 dark:text-gray-200">
-//           Loading conversations...
-//         </p>
-//       </div>
-//     );
-//   }
-
-//   if (conversationsError) {
-//     return (
-//       <div className="flex flex-col w-full h-full items-center justify-center bg-gray-50 dark:bg-gray-900 transition-colors">
-//         <p className="text-sm text-red-600 dark:text-red-400">
-//           Error: {conversationsError}
-//         </p>
-//       </div>
-//     );
-//   }
-
-//   // Render each conversation
-//   const renderConversationItem = (item) => (
-//     <button
-//       key={item.employeeId}
-//       onClick={() => handleConversationPress(item)}
-//       className="
-//         flex flex-row items-center w-full p-2 mb-3
-//         rounded-lg shadow-md
-//         text-left transition-all
-//         bg-gradient-to-r from-white via-gray-50 to-white
-//         dark:from-gray-700 dark:via-gray-700 dark:to-gray-700
-//         hover:shadow-lg hover:scale-[1.01]
-//         cursor-pointer
-//       "
-//     >
-//       {item.userAvatar ? (
-//         <img
-//           src={item.userAvatar}
-//           alt="avatar"
-//           className="w-12 h-12 rounded-full mr-3 object-cover"
-//         />
-//       ) : (
-//         <div
-//           className="
-//             w-12 h-12 rounded-full mr-3
-//             flex items-center justify-center
-//             bg-blue-600
-//           "
-//         >
-//           <span className="text-white text-sm font-bold">
-//             {item.employeeId?.charAt(0)}
-//           </span>
-//         </div>
-//       )}
-
-//       <div className="flex-1">
-//         <div className="flex flex-row justify-between items-center">
-//           <span className="text-sm font-semibold text-gray-800 dark:text-gray-100">
-//             {item.firstName} {item.lastName}
-//           </span>
-//           {item.unreadCount > 0 && (
-//             <div className="bg-red-600 rounded-full px-2 py-1 ml-2">
-//               <span className="text-white text-xs font-bold">
-//                 {item.unreadCount}
-//               </span>
-//             </div>
-//           )}
-//         </div>
-//         <span className="block text-xs text-gray-500 dark:text-gray-300 mt-1">
-//           {item.employeeId}
-//         </span>
-//       </div>
-//     </button>
-//   );
-
-//   // Final render
-//   return (
-//     <div
-//       className="
-//         flex flex-col
-//         w-full h-full
-//         bg-gray-100 dark:bg-gray-800
-//         transition-colors p-3
-//         overflow-y-auto
-//       "
-//       style={{
-//         scrollbarColor: "#000 #2f2f2f",
-//         scrollbarWidth: "thin",
-//       }}
-//     >
-//       {/* Search Bar */}
-//       <input
-//         type="text"
-//         value={searchQuery}
-//         onChange={(e) => setSearchQuery(e.target.value)}
-//         placeholder="Search by Name or Employee ID"
-//         className="
-//           mb-4
-//           p-2
-//           rounded
-//           w-full
-//           text-sm
-//           text-gray-800 dark:text-gray-200
-//           bg-white dark:bg-gray-700
-//           placeholder-gray-400 dark:placeholder-gray-400
-//           focus:outline-none focus:ring-2 focus:ring-blue-500
-//           border border-gray-300 dark:border-gray-600
-//           transition-colors
-//         "
-//       />
-
-//       {filteredConversations.length === 0 ? (
-//         <div className="flex flex-col flex-1 items-center justify-center">
-//           <p className="text-sm text-gray-600 dark:text-gray-300">
-//             No matching conversations found
-//           </p>
-//         </div>
-//       ) : (
-//         <div className="flex flex-col">
-//           {filteredConversations.map(renderConversationItem)}
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-
-
-
-
-import React, { useState, useMemo, useContext } from "react";
+import React, { useState, useMemo, useContext, useCallback } from "react";
 import { ChatContextv2 } from "../../../contexts/ChatContextv2";
-import { FiSearch, FiMessageCircle, FiAlertCircle } from "react-icons/fi";
+import { formatDistanceToNow } from "date-fns";
 
-export default function ConversationList() {
+export default function ConversationList({ searchTerm }) {
   const {
-    employeeId,
     conversations,
+    userStatus,
     conversationsLoading,
     conversationsError,
-    handleSelectConversation,
+    selectUser,
+    employeeId,
   } = useContext(ChatContextv2);
 
-  // Add search state
-  const [searchQuery, setSearchQuery] = useState("");
-
-  // Filter conversations
   const filteredConversations = useMemo(() => {
-    const lowerSearch = searchQuery.toLowerCase();
-    return conversations.filter((item) => {
-      const fullName = `${item.firstName} ${item.lastName}`.toLowerCase();
-      const empId = (item.employeeId || "").toLowerCase();
-      return fullName.includes(lowerSearch) || empId.includes(lowerSearch);
+    const q = searchTerm.trim().toLowerCase();
+
+    const filtered = !q
+      ? conversations
+      : conversations.filter(({ firstName, lastName, employeeId: id }) => {
+          const fullName = `${firstName} ${lastName}`.toLowerCase();
+          return fullName.includes(q) || id.toLowerCase().includes(q);
+        });
+
+    return filtered.sort((a, b) => {
+      const aOnline = userStatus[a.employeeId] ? 1 : 0;
+      const bOnline = userStatus[b.employeeId] ? 1 : 0;
+      return bOnline - aOnline;
     });
-  }, [conversations, searchQuery]);
+  }, [conversations, userStatus, searchTerm]);
 
-  // Clicking a conversation triggers handleSelectConversation from context
-  const handleConversationPress = (item) => {
-    if (!employeeId) return;
-    handleSelectConversation(item);
-  };
+  const renderItem = useCallback(
+    (item) => {
+      const {
+        employeeId: id,
+        firstName,
+        lastName,
+        userAvatar,
+        unreadCount = 0,
+        lastMessage,
+        lastMessageTimestamp,
+        last_seen,
+      } = item;
 
-  // Loading state
-  if (conversationsLoading) {
-    return (
-      <div className="flex flex-col w-full h-full items-center justify-center">
-        <div className="animate-pulse flex flex-col items-center">
-          <div className="rounded-full bg-slate-700 h-12 w-12 mb-4"></div>
-          <div className="h-2 bg-slate-700 rounded w-24 mb-2.5"></div>
-          <div className="h-2 bg-slate-700 rounded w-16"></div>
-        </div>
-      </div>
-    );
-  }
+      const isOnline = userStatus[id];
+      const text = lastMessage?.message || "No messages yet";
+      const time = lastMessageTimestamp
+        ? new Date(lastMessageTimestamp).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
+        : "";
 
-  // Error state
-  if (conversationsError) {
-    return (
-      <div className="flex flex-col w-full h-full items-center justify-center">
-        <div className="bg-red-500/10 rounded-xl p-6 border border-red-500/20 backdrop-blur-sm">
-          <div className="text-red-500 text-xl mb-2 flex items-center">
-            <FiAlertCircle className="mr-2" />
-            Error
-          </div>
-          <p className="text-sm text-slate-300">
-            {conversationsError}
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  // Render each conversation
-  const renderConversationItem = (item) => (
-    <button
-      key={item.employeeId}
-      onClick={() => handleConversationPress(item)}
-      className="
-        flex flex-row items-center w-full p-3 mb-3
-        rounded-xl 
-        text-left transition-all
-        bg-slate-800/70 hover:bg-slate-700/90
-        backdrop-blur-sm
-        border border-slate-700/50 hover:border-blue-500/30
-        shadow-lg hover:shadow-blue-500/10
-        cursor-pointer group
-      "
-    >
-      {item.userAvatar ? (
-        <img
-          src={item.userAvatar}
-          alt="avatar"
-          className="w-12 h-12 rounded-full mr-3 object-cover ring-2 ring-blue-500/30 group-hover:ring-blue-500/50"
-        />
-      ) : (
-        <div
-          className="
-            w-12 h-12 rounded-full mr-3
-            flex items-center justify-center
-            bg-gradient-to-br from-blue-500 to-purple-600
-            group-hover:from-blue-400 group-hover:to-purple-500
-            transition-all
-          "
+      return (
+        <button
+          key={id}
+          onClick={() => selectUser(item)}
+          aria-label={`Conversation with ${firstName} ${lastName}`}
+          className="flex items-start w-full p-3 mb-2 mt-2 bg-white rounded-lg border border-gray-200 hover:border-blue-300 transition-shadow shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
-          <span className="text-white text-sm font-bold">
-            {item.firstName?.[0]}{item.lastName?.[0]}
-          </span>
-        </div>
-      )}
+          <div className="relative mr-3 w-12 h-12 flex-shrink-0">
+            {userAvatar ? (
+              <img
+                src={userAvatar}
+                alt={`${firstName} ${lastName}`}
+                className="w-12 h-12 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold">
+                {firstName?.[0]}
+                {lastName?.[0]}
+              </div>
+            )}
+            {isOnline && (
+              <span
+                className="absolute bottom-0 right-0 w-3 h-3 bg-[#2B85FF] rounded-full ring-2 ring-white"
+                title="Online"
+              />
+            )}
+          </div>
 
-      <div className="flex-1">
-        <div className="flex flex-row justify-between items-center">
-          <span className="text-sm font-semibold text-slate-100 group-hover:text-white">
-            {item.firstName} {item.lastName}
-          </span>
-          {item.unreadCount > 0 && (
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-full px-2 py-1 ml-2 shadow-lg shadow-blue-500/20">
-              <span className="text-white text-xs font-bold">
-                {item.unreadCount}
+          <div className="flex-1 overflow-hidden">
+            <div className="flex justify-between items-center mb-1">
+              <span className="font-semibold text-gray-800 truncate">
+                {firstName} {lastName}
               </span>
+              <span className="text-xs text-gray-400 ml-2">{time}</span>
             </div>
-          )}
-        </div>
-        <span className="block text-xs text-slate-400 group-hover:text-slate-300 mt-1">
-          {item.employeeId}
-        </span>
-      </div>
-    </button>
+
+            <div className="flex justify-between items-center">
+              <span className="text-sm text-gray-600 truncate">{text}</span>
+              {unreadCount > 0 ? (
+                <div className="ml-2 bg-blue-500 rounded-full px-2 py-0.5 shadow-md">
+                  <span className="text-white text-xs font-semibold">
+                    {unreadCount}
+                  </span>
+                </div>
+              ) : lastMessage?.sender === employeeId ? (
+                lastMessage?.isRead ? (
+                  <span className="ml-2 text-blue-500" title="Read">✓✓</span>
+                ) : (
+                  <span className="ml-2 text-gray-400" title="Sent">✓</span>
+                )
+              ) : null}
+            </div>
+
+            {!isOnline && last_seen && (
+              <p className="text-xs text-gray-400 mt-1">
+                Last seen {formatDistanceToNow(new Date(last_seen), { addSuffix: true })}
+              </p>
+            )}
+          </div>
+        </button>
+      );
+    },
+    [userStatus, selectUser]
   );
 
-  // Final render
-  return (
-    <div className="flex flex-col w-full h-full overflow-y-auto    [&::-webkit-scrollbar]:w-2
-                [&::-webkit-scrollbar-track]:rounded-full
-                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
-                [&::-webkit-scrollbar-thumb]:rounded-full
-                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
-                transition-colors duration-300">
-      {/* Search Bar */}
-      <div className="relative mb-4">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search conversations"
-          className="
-            p-2.5 pl-10
-            rounded-xl
-            w-full
-            text-sm
-            text-slate-200
-            bg-slate-800/70
-            placeholder-slate-400
-            focus:outline-none focus:ring-2 focus:ring-blue-500/50
-            border border-slate-700/50 focus:border-blue-500/50
-            transition-all
-            backdrop-blur-sm
-          "
-        />
-        <FiSearch className="absolute left-3 top-3 text-slate-400" />
+  if (conversationsLoading) {
+    return (
+      <div className="flex items-center justify-center h-full w-full">
+        <div className="animate-pulse text-gray-400">Loading conversations…</div>
       </div>
+    );
+  }
 
+  if (conversationsError) {
+    return (
+      <div className="flex items-center justify-center h-full w-full">
+        <div className="bg-red-50 p-6 rounded-lg text-red-600">
+          {conversationsError}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-full w-full">
       {filteredConversations.length === 0 ? (
-        <div className="flex flex-col flex-1 items-center justify-center">
-          <div className="p-6 bg-slate-800/40 rounded-xl border border-slate-700/30 backdrop-blur-sm">
-            <div className="flex items-center justify-center mb-3 text-2xl text-slate-400">
-              <FiMessageCircle />
-            </div>
-            <p className="text-sm text-slate-400 text-center">
-              No matching conversations found
-            </p>
+        <div className="flex flex-col items-center justify-center flex-1">
+          <div className="p-6 text-gray-500 text-center">
+            No conversations found
           </div>
         </div>
       ) : (
-        <div className="flex flex-col space-y-1">
-          {filteredConversations.map(renderConversationItem)}
+        <div role="list" className="overflow-y-auto px-2 space-y-1 h-full">
+          {filteredConversations.map(renderItem)}
         </div>
       )}
     </div>
