@@ -66,7 +66,7 @@ function SuperAdminDashboard() {
                 variants={slideUpVariants}
                 initial="hidden"
                 animate="visible"
-                className="relative bg-gradient-to-r from-blue-500/10 via-cyan-500/10 to-teal-500/10 dark:from-blue-900/20 dark:via-cyan-900/20 dark:to-teal-900/20 rounded-2xl p-6 border border-blue-200/30 dark:border-blue-700/30 backdrop-blur-sm"
+                className="relative rounded-2xl p-6 bg-bg-primary border border-white/20 dark:border-gray-700/50 "
               >
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-3 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl shadow-lg">
@@ -86,7 +86,7 @@ function SuperAdminDashboard() {
               </section>
 
               {/* Charts Grid Section */}
-              <section className="bg-gradient-to-r from-green-500/10 via-emerald-500/10 to-teal-500/10 dark:from-green-900/20 dark:via-emerald-900/20 dark:to-teal-900/20 rounded-2xl p-6 border border-green-200/30 dark:border-green-700/30 backdrop-blur-sm">
+              <section className=" rounded-2xl p-6 border border-white/20 dark:border-gray-700/50 backdrop-blur-sm">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-3 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl shadow-lg">
                     <FiTrendingUp className="h-6 w-6 text-white" />

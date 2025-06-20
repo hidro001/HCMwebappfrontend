@@ -6,24 +6,24 @@
 :root {
   --bg-primary: #f3f4f6;
   --bg-secondary: #fafafa;
+  --bg-tertiary: #ffffff;
   --text-primary: #333333;
-  --bg-sidebar:#f4f4f4
+  --text-secondary: #666666;
 }
 
 /* Dark mode overrides */
 .dark {
   --bg-primary: #111827;
-  --bg-secondary: #1f2937 ;
-  /* --bg-secondary: black !important; */
-  --text-primary: #ffffff;
+  --bg-secondary: #1f2937;
+  --bg-tertiary: #37415380;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
 }
-
 
 html,
 body {
   margin: 0;
   padding: 0;
-  
 }
 
 @layer utility {
@@ -57,8 +57,6 @@ body {
   scrollbar-width: none; /* Firefox */
 }
 
-
-
 .hide-horizontal-scrollbar::-webkit-scrollbar {
   /* Hide scrollbars in WebKit-based browsers (Chrome, Safari) */
   display: none;
@@ -80,25 +78,24 @@ html {
 
 /* e.g. in your global styles or a CSS module */
 .dark #orgchart-container > svg {
-  background-color: #111827  !important;
+  background-color: #111827 !important;
 }
 
+/* #f4f4f4 !important; */
 
- /* #f4f4f4 !important; */
+/* bo-shadow: 4px 0pc 6.5px 0px rgba(0,0,0,0.12) */
 
- /* bo-shadow: 4px 0pc 6.5px 0px rgba(0,0,0,0.12) */
-
- /* navar shadow: 0px 2px 2.5px 0px rgba(0,0,0,0.25) */
- /* icon bg-borde : D2FFE9 
+/* navar shadow: 0px 2px 2.5px 0px rgba(0,0,0,0.25) */
+/* icon bg-borde : D2FFE9 
     color-bg: 1E211E */
 /* For light mode */
 .light #orgchart-container > svg {
-  background-color: #F3F4F6 !important;
+  background-color: #f3f4f6 !important;
 }
 
 /* Dark node fill override (if you want nodes to be different in dark mode) */
 .dark #orgchart-container [data-n-id] rect {
-  fill: #333333 !important;  /* dark nodes */
+  fill: #333333 !important; /* dark nodes */
 }
 
 /* Or text color for node labels */
@@ -106,36 +103,34 @@ html {
   fill: #dddddd !important;
 }
 
-.sidebar-shadow{
-  box-shadow: 4px 0pc 6.5px 0px rgba(0,0,0,0.12);
+.sidebar-shadow {
+  box-shadow: 4px 0pc 6.5px 0px rgba(0, 0, 0, 0.12);
 }
 
-.navbar-shadow{
-  box-shadow: 0px 2px 2.5px 0px rgba(0,0,0,0.25);
+.navbar-shadow {
+  box-shadow: 0px 2px 2.5px 0px rgba(0, 0, 0, 0.25);
 }
 
 .sidebar-scrollbar {
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: #00000020 transparent; 
+  scrollbar-color: #00000020 transparent;
 }
 
 .sidebar-scrollbar::-webkit-scrollbar {
-  width: 6px; 
+  width: 6px;
 }
 
 .sidebar-scrollbar::-webkit-scrollbar-track {
-  background: transparent; 
+  background: transparent;
 }
 
 .sidebar-scrollbar::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.6);
   border-radius: 10px;
-  margin-block: 20px; 
+  margin-block: 20px;
 }
 
-.box-shadow-attendance{
+.box-shadow-attendance {
   box-shadow: 0px 0px 12.2px 1.5px rgba(0, 0, 0, 0.13) inset;
 }
-
-

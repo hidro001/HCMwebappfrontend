@@ -943,13 +943,13 @@ const AssignedTaskListCard = () => {
   ];
 
   return (
-    <div className="w-full h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-2xl">
+    <div className="w-full h-full bg-bg-secondary  text-gray-900 dark:text-gray-100 rounded-2xl">
       {/* Modern Card Container */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="h-full flex flex-col  bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-2xl "
+        className="h-full flex flex-col  bg-bg-tertiary text-gray-900 dark:text-gray-100 rounded-2xl "
       >
         {/* Futuristic Header */}
         <div className="relative p-4 sm:p-6 border-b border-slate-200/50 dark:border-slate-700/50 ">
@@ -1021,7 +1021,7 @@ const AssignedTaskListCard = () => {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="overflow-hidden   bg-white dark:bg-slate-900 border border-slate-200/50 dark:border-slate-700/50"
+            className="overflow-hidden   bg-white dark:bg-slate-800 border border-slate-200/50 dark:border-slate-700/50"
           >
             <div className="p-4 sm:p-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3">

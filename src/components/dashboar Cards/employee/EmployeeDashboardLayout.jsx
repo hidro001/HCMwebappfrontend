@@ -1,18 +1,16 @@
-
-
 import React from "react";
 import { motion } from "framer-motion";
-import { 
-  FiGrid, 
-  FiUsers, 
-  FiCalendar, 
-  FiBell, 
-  FiTrendingUp, 
+import {
+  FiGrid,
+  FiUsers,
+  FiCalendar,
+  FiBell,
+  FiTrendingUp,
   FiAward,
   FiCheckCircle,
   FiClock,
   FiStar,
-  FiTarget
+  FiTarget,
 } from "react-icons/fi";
 
 import DashboardStatCards from "./DashboardStatCards";
@@ -22,25 +20,25 @@ import AssignedTaskListCard from "./AssignedTaskListCard";
 import UpcomingHolidaysCard from "./UpcomingHolidaysCard";
 import PerformanceCard from "./PerformanceCard";
 import TopPerformerCard from "./TopPerformerCard";
-import { registerFcmToken } from "../../../utils/registerFcmToken"; 
+import { registerFcmToken } from "../../../utils/registerFcmToken";
 import { useEffect } from "react";
 
 // Simplified animation variants
 const fadeInVariants = {
   hidden: { opacity: 0 },
-  visible: { 
+  visible: {
     opacity: 1,
-    transition: { duration: 0.3 }
-  }
+    transition: { duration: 0.3 },
+  },
 };
 
 const slideUpVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
-    transition: { duration: 0.3, ease: "easeOut" }
-  }
+    transition: { duration: 0.3, ease: "easeOut" },
+  },
 };
 
 function EmployeeDashboardLayout() {
@@ -56,16 +54,13 @@ function EmployeeDashboardLayout() {
       animate="visible"
     >
       {/* Main Dashboard Content */}
-      <main className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-10 rounded-2xl">
-        
+      <main className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-bg-primary  rounded-2xl ">
         {/* Main Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          
           {/* Left Column - Main Content */}
           <div className="lg:col-span-8 space-y-8">
-            
             {/* Stats Overview - Left Side */}
-            <motion.section 
+            <motion.section
               variants={slideUpVariants}
               initial="hidden"
               animate="visible"
@@ -76,10 +71,10 @@ function EmployeeDashboardLayout() {
                     <FiGrid className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-xl font-bold text-text-primary">
                       Quick Overview
                     </h2>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-text-secondary">
                       Your key metrics at a glance
                     </p>
                   </div>
@@ -87,9 +82,11 @@ function EmployeeDashboardLayout() {
                 <DashboardStatCards />
               </div>
             </motion.section>
-            
+
             {/* Tasks Section */}
-            <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">
+            <section
+              className="bg-bg-secondary backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 "
+            >
               <div className="p-6">
                 <AssignedTaskListCard />
               </div>
@@ -97,7 +94,6 @@ function EmployeeDashboardLayout() {
 
             {/* Bottom Row - Performance & Holidays */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              
               {/* Performance Card */}
               <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">
                 <div className="p-6 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/10 dark:to-red-900/10 border-b border-gray-200/50 dark:border-gray-700/50">
@@ -146,10 +142,9 @@ function EmployeeDashboardLayout() {
 
           {/* Right Sidebar */}
           <div className="lg:col-span-4 space-y-6">
-            
             {/* Attendance Card */}
-            <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">
-              <div className="p-6 bg-gradient-to-r from-indigo-50 to-blue-50 dark:from-indigo-900/10 dark:to-blue-900/10 border-b border-gray-200/50 dark:border-gray-700/50">
+            <section className="bg-bg-secondary  rounded-2xl  border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">
+              <div className="p-6  border-b border-gray-200/50 dark:border-gray-700/50">
                 <div className="flex items-center gap-3">
                   <div className="p-3 bg-gradient-to-r from-indigo-500 to-blue-500 rounded-xl shadow-lg">
                     <FiClock className="w-6 h-6 text-white" />
