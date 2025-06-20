@@ -1,5 +1,3 @@
-
-
 import React, {
   createContext,
   useContext,
@@ -8,10 +6,10 @@ import React, {
   useRef,
   useCallback
 } from "react";
-import io from "socket.io-client";
 import { toast } from "react-hot-toast";
 import * as mediasoupClient from 'mediasoup-client';
-const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL;
+import { getsocket } from "../service/socketService";
+
 
 // Use your TURN server configuration here.
 const ICE_SERVERS = [
@@ -46,26 +44,12 @@ export const CallProvider = ({ children }) => {
   // 3) Local camera/mic stream
   // ----------------------------
   const [stream, setStream] = useState(null);
-
-  /**
-   * Store remote streams as an array:
-   *   [
-   *     { userId, stream, type: "camera" | "screen" },
-   *     ...
-   *   ]
-   */
   const [remoteStreams, setRemoteStreams] = useState([]);
 
-  // ----------------------------
-  // 4) Refs
-  // ----------------------------
   const localStreamRef = useRef(null);
   const peersRef = useRef({});
   const socketRef = useRef();
 
-  // ----------------------------
-  // On mount, load currentUser from storage
-  // ----------------------------
   useEffect(() => {
     const storedEmployeeId = localStorage.getItem("employeeId");
     if (storedEmployeeId) {
@@ -80,26 +64,19 @@ export const CallProvider = ({ children }) => {
   // Once we have currentUser, connect to Socket.io
   // ----------------------------
   useEffect(() => {
-    if (!currentUser) return; // don't connect until we have an ID
+    if (!currentUser) return; 
+    socketRef.current = getsocket();
+    if (!socketRef.current) { 
+      console.error("Socket connection failed");
+      return; 
+    }
 
-    socketRef.current = io(SOCKET_SERVER_URL, {
-      query: { userId: currentUser },
-      transports: ["websocket", "polling"],
-      reconnectionAttempts: 5,
-      timeout: 10000,
-    });
-
-    // Attach event listeners
     socketRef.current.on("incomingCall", handleIncomingCall);
     socketRef.current.on("participantJoined", handleParticipantJoined);
     socketRef.current.on("participantLeft", handleParticipantLeft);
     socketRef.current.on("callRejected", handleCallRejected);
     socketRef.current.on("endCall", handleEndCall);
 
-    // WebRTC signaling events
-    // socketRef.current.on("offer", handleOffer);
-    // socketRef.current.on("answer", handleAnswer);
-    // socketRef.current.on("candidate", handleCandidate);
 
     return () => {
       socketRef.current.disconnect();
@@ -131,7 +108,6 @@ export const CallProvider = ({ children }) => {
       peersRef.current[data.userId].peer.close();
       delete peersRef.current[data.userId];
     }
-    // Remove all streams from that user
     setRemoteStreams((prev) => prev.filter((s) => s.userId !== data.userId));
 
     if (call && call.callId === data.callId) {

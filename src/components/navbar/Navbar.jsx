@@ -830,12 +830,9 @@ const Navbar = () => {
 
   useEffect(() => {
     function handleClickOutside(event) {
-      // Check if the click is on the profile button - if so, we'll handle it separately
       if (profileButtonRef.current && profileButtonRef.current.contains(event.target)) {
         return;
       }
-      
-      // Only close profile dropdown if click is outside both the dropdown and the button
       if (
         showProfileDropdown &&
         profileDropdownRef.current &&
@@ -866,8 +863,6 @@ const Navbar = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showProfileDropdown, showNotificationDropdown, showBreakCard]);
-
-  // Toggle function for profile dropdown
   const toggleProfileDropdown = () => {
     setShowProfileDropdown(prevState => !prevState);
   };
@@ -883,7 +878,6 @@ const Navbar = () => {
     }
   };
 
-  // Icon button component for reusability
   const IconButton = ({ icon, onClick, notification = 0, color = "blue", tooltip }) => (
     <div className="relative">
       <motion.button

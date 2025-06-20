@@ -1,7 +1,7 @@
 // src/context/SocketContext.js
 import  { createContext, useContext, useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
 import useAuthStore from '../store/store'; // Adjust the path as needed
+import { getsocket } from '../service/socketService';
 
 const SocketContext = createContext();
 
@@ -12,16 +12,11 @@ export const useSocket = () => {
 export const SocketProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const user = useAuthStore((state) => state);
-  const token = localStorage.getItem('accessToken'); // Assuming JWT is stored here
 
   useEffect(() => {
     if (token) {
-      const newSocket = io(import.meta.env.VITE_API_BASE_URL , {
-        auth: {
-          token,
-        },
-        transports: ['websocket'], // Optional: Specify transports
-      });
+      const newSocket = getsocket();
+      console.log(`Socket instance: ${newSocket}`);
 
       setSocket(newSocket);
 
@@ -45,7 +40,7 @@ export const SocketProvider = ({ children }) => {
   }, [token]);
 
   return (
-    <SocketContext.Provider value={socket}>
+    <SocketContext.Provider value={{ socket, user }}>
       {children}
     </SocketContext.Provider>
   );

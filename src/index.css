@@ -56,6 +56,9 @@ body {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
 }
+.chats-section::-webkit-scrollbar{
+  width: 0px; /* Hide scrollbar for WebKit browsers */
+}
 
 
 
@@ -132,4 +135,7 @@ html {
   background-color: rgba(0, 0, 0, 0.6);
   border-radius: 10px;
   margin-block: 20px; 
+}
+.no-scrollbar::-webkit-scrollbar{
+  width: 0px;
 }

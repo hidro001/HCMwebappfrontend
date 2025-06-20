@@ -3,72 +3,70 @@ import { messaging } from "../firebase/firebase-config";
 import axiosInstance from "../service/axiosInstance";
 import platform from "platform";
 import { toast } from "react-hot-toast";
-import BraveNotificationToast from "./BraveNotificationToast"; // Custom styled toast
+import BraveNotificationToast from "./BraveNotificationToast";
 
 const FCM_CACHE_KEY = "fcm_token";
+let braveSupported = null;
 
-const isBrave = async () => {
-  return !!(navigator.brave && (await navigator.brave.isBrave()));
-};
+async function checkIsBrave() {
+  if (braveSupported !== null) return braveSupported;
+  braveSupported = Boolean(navigator.brave && await navigator.brave.isBrave());
+  return braveSupported;
+}
 
-export const registerFcmToken = async () => {
+export async function registerFcmToken() {
   try {
     const permission = await Notification.requestPermission();
-    if (permission !== "granted") {
-      toast.error("Notification permission denied.");
-      return;
+    if (permission !== 'granted') {
+      toast.error('Notification permission denied.');
+      return null;
     }
 
-    const registration = await navigator.serviceWorker.getRegistration("/firebase-messaging-sw.js");
+    const registration = await navigator.serviceWorker.ready;
     if (!registration) {
-      toast.error("Service worker not found.");
-      return;
+      toast.error('Service worker not available.');
+      return null;
     }
 
-    const currentToken = await getToken(messaging, {
-      vapidKey: "BBykmU7Dhx_RslCY4uwxEm_csewzyq-KFJitYAutqyAyTmfOsMA80EqarmKvlK6C66i-rjVj2InFgeGGHUmgHjU",
+    const token = await getToken(messaging, {
+      vapidKey: import.meta.env.VITE_FIREBASE_VAPID_KEY,
       serviceWorkerRegistration: registration,
     });
-
-    if (!currentToken) {
-      toast.error("⚠️ Failed to generate FCM token.");
-      return;
+    if (!token) {
+      toast.error('Unable to generate FCM token.');
+      return null;
     }
 
-    const cachedToken = localStorage.getItem(FCM_CACHE_KEY);
-    if (cachedToken === currentToken) {
-      console.log("✅ FCM token unchanged, not re-sending.");
-      return;
+    const previous = localStorage.getItem(FCM_CACHE_KEY);
+    if (previous === token) {
+      console.log('FCM token unchanged.');
+      return token;
     }
 
     const deviceInfo = `${platform.name} ${platform.version} on ${platform.os?.family}`;
-    await axiosInstance.post("/user-management/update-fcm-token", {
-      token: currentToken,
-      platform: "web",
+    await axiosInstance.post('/user-management/update-fcm-token', {
+      token,
+      platform: 'web',
       deviceInfo,
     });
+    localStorage.setItem(FCM_CACHE_KEY, token);
 
-    localStorage.setItem(FCM_CACHE_KEY, currentToken);
-
-    console.log("✅ FCM token sent to backend and cached locally.");
+    console.log('FCM token registered.');
+    return token;
   } catch (err) {
-    console.error("❌ Error registering FCM token:", err);
-
-    if (err.name === "AbortError" && (await isBrave())) {
+    console.error('FCM registration error:', err);
+    if (err.name === 'AbortError' && await checkIsBrave()) {
       toast.custom(
-        (t) => (
-          <div className={`${t.visible ? "animate-enter" : "animate-leave"}`}>
+        t => (
+          <div className={t.visible ? 'animate-enter' : 'animate-leave'}>
             <BraveNotificationToast />
           </div>
         ),
-        {
-          duration: 15000,
-          position: "bottom-center",
-          id: "brave-notification-error",
-        }
+        { duration: 15000, position: 'bottom-center', id: 'brave-notification' }
       );
     } else {
-      toast.error("An error occurred during FCM setup.");
+      toast.error('Error setting up notifications.');
     }
+    return null;
   }
-};
+}
