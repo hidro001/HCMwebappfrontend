@@ -23,6 +23,7 @@ export function CallProvider({ children, currentUserId }) {
   const [incomingCall, setIncomingCall] = useState(null);
   const [call, setCall] = useState(null);
   const outgoingCall = useRef(null); // 🔹 NEW
+  const [screenShareActive, setScreenShareActive] = useState(false);
 
   const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL;
 
@@ -370,7 +371,11 @@ export function CallProvider({ children, currentUserId }) {
 
   const leaveCall = () => {
     if (!call) return;
-    socket.current.emit("leave-call", { roomId: call.roomId });
+    socket.current.emit("leaveCall", {
+      callId: call.roomId,
+      userId: currentUserId,
+    });
+    socket.current.emit("leave-call", { roomId: call.roomId }); // mediasoup cleanup
     setCall(null);
   };
 
