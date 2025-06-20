@@ -387,6 +387,7 @@ export function CallProvider({ children, currentUserId }) {
         startScreenShare,
         stopScreenShare,
         isScreenSharing: screenShareActive,
+        addParticipant,
       }}
     >
       {children}
