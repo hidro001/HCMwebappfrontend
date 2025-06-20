@@ -10,15 +10,17 @@ let braveSupported = null;
 
 async function checkIsBrave() {
   if (braveSupported !== null) return braveSupported;
-  braveSupported = Boolean(navigator.brave && await navigator.brave.isBrave());
+  braveSupported = Boolean(
+    navigator.brave && (await navigator.brave.isBrave())
+  );
   return braveSupported;
 }
 
 export async function registerFcmToken() {
   try {
     const permission = await Notification.requestPermission();
-    if (permission !== 'granted') {
-      toast.error('Notification permission denied.');
+    if (permission !== "granted") {
+      toast.error("Notification permission denied.");
       return null;
     }
 
@@ -26,7 +28,7 @@ export async function registerFcmToken() {
       "/firebase-messaging-sw.js"
     );
     if (!registration) {
-      toast.error('Service worker not available.');
+      toast.error("Service worker not available.");
       return null;
     }
 
@@ -36,43 +38,39 @@ export async function registerFcmToken() {
       serviceWorkerRegistration: registration,
     });
     if (!token) {
-      toast.error('Unable to generate FCM token.');
+      toast.error("Unable to generate FCM token.");
       return null;
     }
 
     const previous = localStorage.getItem(FCM_CACHE_KEY);
     if (previous === token) {
-      console.log('FCM token unchanged.');
+      console.log("FCM token unchanged.");
       return token;
     }
 
     const deviceInfo = `${platform.name} ${platform.version} on ${platform.os?.family}`;
-    await axiosInstance.post('/user-management/update-fcm-token', {
+    await axiosInstance.post("/user-management/update-fcm-token", {
       token,
-      platform: 'web',
+      platform: "web",
       deviceInfo,
     });
     localStorage.setItem(FCM_CACHE_KEY, token);
 
-    console.log('FCM token registered.');
+    console.log("FCM token registered.");
     return token;
   } catch (err) {
-    console.error('FCM registration error:', err);
-    if (err.name === 'AbortError' && await checkIsBrave()) {
+    console.error("FCM registration error:", err);
+    if (err.name === "AbortError" && (await checkIsBrave())) {
       toast.custom(
-        t => (
-          <div className={t.visible ? 'animate-enter' : 'animate-leave'}>
+        (t) => (
+          <div className={t.visible ? "animate-enter" : "animate-leave"}>
             <BraveNotificationToast />
           </div>
         ),
-        { duration: 15000, position: 'bottom-center', id: 'brave-notification' }
+        { duration: 15000, position: "bottom-center", id: "brave-notification" }
       );
     } else {
-<<<<<<< HEAD
-      console.log("An error occurred during FCM setup.");
-=======
-      toast.error('Error setting up notifications.');
->>>>>>> origin/rohitv2
+      toast.error("Error setting up notifications.");
     }
     return null;
   }
