@@ -12,6 +12,8 @@ export default function ConversationList({ searchTerm }) {
     employeeId,
   } = useContext(ChatContextv2);
 
+  console.log(`conversations`, conversations);
+
   const filteredConversations = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
 
@@ -97,16 +99,21 @@ export default function ConversationList({ searchTerm }) {
                 </div>
               ) : lastMessage?.sender === employeeId ? (
                 lastMessage?.isRead ? (
-                  <span className="ml-2 text-blue-500" title="Read">✓✓</span>
+                  <span className="ml-2 text-blue-500" title="Read">
+                    ✓✓
+                  </span>
                 ) : (
-                  <span className="ml-2 text-gray-400" title="Sent">✓</span>
+                  <span className="ml-2 text-gray-400" title="Sent">
+                    ✓
+                  </span>
                 )
               ) : null}
             </div>
 
             {!isOnline && last_seen && (
               <p className="text-xs text-gray-400 mt-1">
-                Last seen {formatDistanceToNow(new Date(last_seen), { addSuffix: true })}
+                Last seen{" "}
+                {formatDistanceToNow(new Date(last_seen), { addSuffix: true })}
               </p>
             )}
           </div>
@@ -119,7 +126,9 @@ export default function ConversationList({ searchTerm }) {
   if (conversationsLoading) {
     return (
       <div className="flex items-center justify-center h-full w-full">
-        <div className="animate-pulse text-gray-400">Loading conversations…</div>
+        <div className="animate-pulse text-gray-400">
+          Loading conversations…
+        </div>
       </div>
     );
   }
