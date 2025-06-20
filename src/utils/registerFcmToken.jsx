@@ -70,7 +70,7 @@ export async function registerFcmToken() {
         { duration: 15000, position: "bottom-center", id: "brave-notification" }
       );
     } else {
-      toast.error("Error setting up notifications.");
+      console.log("An error occurred during FCM setup.");
     }
     return null;
   }
