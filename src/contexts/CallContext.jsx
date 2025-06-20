@@ -306,10 +306,10 @@ export function CallProvider({ children, currentUserId }) {
     const roomId = `room-${Date.now()}`;
     roomIdRef.current = roomId;
     socket.current.emit("initiateCall", {
-      callId: roomId, // <— must match what the server expects
-      caller: currentUserId,
-      callType,
-      participants, // array WITHOUT the caller
+      callId, // ← the id the server stores and forwards
+      caller: currentUserId, // ← so the callee knows who is ringing
+      callType, // 'audio' | 'video'
+      participants: sanitizedParticipants,
     });
     await joinRoom(roomId);
     await createSendTransport();
