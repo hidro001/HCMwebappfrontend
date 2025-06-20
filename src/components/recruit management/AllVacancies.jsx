@@ -2308,7 +2308,7 @@ export default function AllVacancies() {
                   <HiX className="h-5 w-5 text-gray-600 dark:text-gray-400" />
                 </motion.button>
               </div>
-              <div className="p-6 overflow-y-auto h-[calc(100vh-80px)]">
+              <div className="p-6 overflow-y-auto h-[calc(100vh-300px)]">
                 <FilterPanel
                   filters={filters}
                   handleFilterClick={handleFilterClick}

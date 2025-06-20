@@ -238,7 +238,7 @@ function FilterPanel({ filters, handleFilterClick, handleClearAll }) {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="h-full flex flex-col"
+      className="h-[58vh] flex flex-col "
     >
       {/* Header */}
       <div className="flex-shrink-0 mb-6">
@@ -320,7 +320,12 @@ function FilterPanel({ filters, handleFilterClick, handleClearAll }) {
 
       {/* Filter Sections */}
       <div 
-        className="flex-1 overflow-y-auto pr-2 space-y-6"
+        className="flex-1 overflow-y-auto pr-2 space-y-6    [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+                transition-colors duration-300"
         style={{ maxHeight: 'calc(80vh - 200px)' }}
       >
         <AnimatePresence>

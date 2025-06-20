@@ -1426,23 +1426,7 @@ export default function LeavesTypes() {
       className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 lg:p-8"
     >
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header Section */}
-        <motion.div
-          variants={itemVariants}
-          className="text-center space-y-4"
-        >
-          <div className="flex items-center justify-center space-x-3">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-xl">
-              <HiCalendar className="text-blue-600 dark:text-blue-400 text-2xl" />
-            </div>
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white">
-              Leave Types Management
-            </h1>
-          </div>
-          <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
-            Configure and manage all available leave types, policies, and requirements for your organization
-          </p>
-        </motion.div>
+    
 
         {/* Error Display */}
         {error && (
