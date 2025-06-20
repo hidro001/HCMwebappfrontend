@@ -23,7 +23,6 @@ export function CallProvider({ children, currentUserId }) {
   const [incomingCall, setIncomingCall] = useState(null);
   const [call, setCall] = useState(null);
   const outgoingCall = useRef(null); // 🔹 NEW
-  const [screenShareActive, setScreenShareActive] = useState(false);
 
   const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL;
 
@@ -391,7 +390,7 @@ export function CallProvider({ children, currentUserId }) {
         leaveCall,
         startScreenShare,
         stopScreenShare,
-        isScreenSharing: screenShareActive,
+        isScreenSharing,
         addParticipant,
       }}
     >
