@@ -700,7 +700,7 @@ export default function CreateVacancy() {
         initial="hidden"
         animate="visible"
         variants={containerVariants}
-        className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 lg:p-8"
+        className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 lg:p-8 rounded-2xl"
       >
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}

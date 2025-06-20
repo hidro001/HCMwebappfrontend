@@ -1802,7 +1802,7 @@ export default function AllVacancies() {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 lg:p-8"
+      className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 lg:p-8  rounded-2xl"
     >
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Section */}
@@ -1846,7 +1846,7 @@ export default function AllVacancies() {
         >
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
             {/* Tab Navigation */}
-            <div className="flex space-x-2 overflow-x-auto pb-2 lg:pb-0">
+            <div className="flex space-x-2  pb-2 lg:pb-0">
               {["ALL", "OPEN", "COMPLETED", "DRAFT"].map((tab) => {
                 const TabIcon = getTabIcon(tab);
                 const count = tab === "ALL" ? vacanciesData.length : 

@@ -170,7 +170,7 @@ export default function CompaniesList({ companies, onSelectCompany }) {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="space-y-6"
+      className="space-y-6 "
     >
       {/* Header Section */}
       <div className="text-center space-y-4">

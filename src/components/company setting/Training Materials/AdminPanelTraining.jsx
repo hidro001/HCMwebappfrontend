@@ -981,7 +981,7 @@ export default function AdminPanelTraining() {
       initial="hidden"
       animate="visible"
       exit="exit"
-      className="space-y-6"
+      className="space-y-6 "
     >
       {/* Add new company */}
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-200 dark:border-gray-700 p-6">
@@ -1487,7 +1487,7 @@ export default function AdminPanelTraining() {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 lg:p-8"
+      className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 lg:p-8 rounded-2xl"
     >
       {loading && <FullScreenLoader />}
 

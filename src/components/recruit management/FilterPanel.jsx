@@ -238,7 +238,7 @@ function FilterPanel({ filters, handleFilterClick, handleClearAll }) {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="h-[58vh] flex flex-col "
+      className="h-[calc(100vh-300px)] flex flex-col "
     >
       {/* Header */}
       <div className="flex-shrink-0 mb-6">
