@@ -535,29 +535,7 @@ const Industry = ({ setScore }) => {
           </AnimatePresence>
         </div>
 
-        {/* Performance Metrics */}
-        <motion.div
-          variants={itemVariants}
-          className="mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10 rounded-xl p-6 border border-blue-200 dark:border-blue-800"
-        >
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-              <FaChartLine className="text-blue-600 dark:text-blue-400" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Performance Summary
-            </h3>
-          </div>
-          
-          <KeyPerformanceMetrics
-            performanceData={[
-              {
-                category: "INDUSTRY",
-                percentage: +averagePercentage,
-              },
-            ]}
-          />
-        </motion.div>
+
       </div>
     </motion.div>
   );

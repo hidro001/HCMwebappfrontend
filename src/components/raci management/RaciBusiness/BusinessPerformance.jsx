@@ -599,29 +599,7 @@ const BusinessPerformance = ({ setScore }) => {
           </AnimatePresence>
         </div>
 
-        {/* Performance Metrics */}
-        <motion.div
-          variants={itemVariants}
-          className="mt-8 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/10 dark:to-emerald-900/10 rounded-xl p-6 border border-green-200 dark:border-green-800"
-        >
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
-              <HiCurrencyDollar className="text-green-600 dark:text-green-400" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Performance Summary
-            </h3>
-          </div>
-          
-          <KeyPerformanceMetrics
-            performanceData={[
-              {
-                category: "BUSINESS PERFORMANCE",
-                percentage: +averagePercentage,
-              },
-            ]}
-          />
-        </motion.div>
+ 
       </div>
     </motion.div>
   );

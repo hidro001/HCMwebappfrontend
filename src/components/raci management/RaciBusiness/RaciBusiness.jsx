@@ -471,7 +471,7 @@ const RaciBusiness = () => {
       variants={containerVariants}
       className="min-h-screen bg-gray-50 dark:bg-gray-900"
     >
-      <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto space-y-8">
+      <div className="p-4 md:p-6 lg:p-8  mx-auto space-y-8">
         {/* Header Section */}
         <motion.div
           variants={itemVariants}

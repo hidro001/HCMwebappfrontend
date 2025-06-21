@@ -721,29 +721,7 @@ const BusinessRisk = ({ setScore }) => {
           </AnimatePresence>
         </div>
 
-        {/* Risk Assessment Summary */}
-        <motion.div
-          variants={itemVariants}
-          className="mt-8 bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-900/10 dark:to-orange-900/10 rounded-xl p-6 border border-red-200 dark:border-red-800"
-        >
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="p-2 bg-red-100 dark:bg-red-900/20 rounded-lg">
-              <FaChartLine className="text-red-600 dark:text-red-400" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              Risk Assessment Summary
-            </h3>
-          </div>
-          
-          <KeyPerformanceMetrics
-            performanceData={[
-              {
-                category: "BUSINESS RISK",
-                percentage: +averagePercentage,
-              },
-            ]}
-          />
-        </motion.div>
+ 
       </div>
     </motion.div>
   );
