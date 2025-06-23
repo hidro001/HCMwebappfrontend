@@ -88,9 +88,15 @@ export function ChatProviderv2({ children }) {
     }
   }, []);
 
-  useEffect(() => {
-    loadMembers();
-  }, [loadMembers]);
+  // useEffect(() => {
+  //   loadMembers();
+  // }, [loadMembers]);
+
+   useEffect(() => {
+   // Don’t call fetchMembers until we have a valid storeEmployeeId
+   if (!storedId) return;
+   loadMembers();
+ }, [loadMembers, storedId]);
 
   useEffect(() => {
     if (!employeeId) return;
@@ -123,6 +129,7 @@ export function ChatProviderv2({ children }) {
         setConversationsError(data.message);
         return;
       }
+      console.log("All room IDs:", data.data);
       const list = data.data.map((item) => ({
         ...item,
         employeeId: item.employee_Id,
@@ -134,6 +141,8 @@ export function ChatProviderv2({ children }) {
         last_seen: item.last_seen || null,
         isOnline: userStatus[item.employee_Id] || false,
       }));
+
+      console.log("Fetched conversations:", list);
       setConversations(list);
     });
 
