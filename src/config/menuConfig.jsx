@@ -56,26 +56,26 @@ export const menuItems = [
   },
 
   // ------------------------------ Announcements ------------------------------
-  {
-    name: "Announcements",
-    tooltip:
-      "Stay up to date! Click here to view important news and announcements",
-    icon: <FaBullhorn />,
-    color: "text-yellow-400",
-    iconAnimation: { x: 7 },
-    options: [
-      {
-        name: "Create Announcement",
-        link: "/dashboard/add-announcement",
-        permission: "announcement-create",
-      },
-      {
-        name: "View Announcement",
-        link: "/dashboard/view-announcement",
-        permission: "announcement-view",
-      },
-    ],
-  },
+  // {
+  //   name: "Announcements",
+  //   tooltip:
+  //     "Stay up to date! Click here to view important news and announcements",
+  //   icon: <FaBullhorn />,
+  //   color: "text-yellow-400",
+  //   iconAnimation: { x: 7 },
+  //   options: [
+  //     {
+  //       name: "Create Announcement",
+  //       link: "/dashboard/add-announcement",
+  //       permission: "announcement-create",
+  //     },
+  //     {
+  //       name: "View Announcement",
+  //       link: "/dashboard/view-announcement",
+  //       permission: "announcement-view",
+  //     },
+  //   ],
+  // },
 
   // ------------------------------ Synergy (Engagement) ------------------------------
   {

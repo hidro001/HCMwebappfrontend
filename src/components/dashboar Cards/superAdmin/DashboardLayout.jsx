@@ -138,7 +138,7 @@ function SuperAdminDashboard() {
               </div>
 
               {/* Quick Actions Panel */}
-              <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-800 dark:via-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-slate-200/50 dark:border-slate-700/50 shadow-lg backdrop-blur-sm">
+              {/* <div className="bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-800 dark:via-blue-900/20 dark:to-indigo-900/20 rounded-xl p-6 border border-slate-200/50 dark:border-slate-700/50 shadow-lg backdrop-blur-sm">
                 <div className="flex items-center gap-2 mb-4">
                   <div className="p-2 bg-gradient-to-r from-slate-600 to-blue-600 rounded-lg shadow-md">
                     <FiCalendar className="h-4 w-4 text-white" />
@@ -158,7 +158,7 @@ function SuperAdminDashboard() {
                     🎯 Strategic Goal Setting
                   </button>
                 </div>
-              </div>
+              </div> */}
             </aside>
           </div>
         </div>
