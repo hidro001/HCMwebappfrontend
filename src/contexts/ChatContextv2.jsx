@@ -88,9 +88,15 @@ export function ChatProviderv2({ children }) {
     }
   }, []);
 
-  useEffect(() => {
-    loadMembers();
-  }, [loadMembers]);
+  // useEffect(() => {
+  //   loadMembers();
+  // }, [loadMembers]);
+
+   useEffect(() => {
+   // Don’t call fetchMembers until we have a valid storeEmployeeId
+   if (!storedId) return;
+   loadMembers();
+ }, [loadMembers, storedId]);
 
   useEffect(() => {
     if (!employeeId) return;
