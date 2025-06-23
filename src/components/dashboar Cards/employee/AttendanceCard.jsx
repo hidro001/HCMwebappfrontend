@@ -151,10 +151,10 @@ const AttendanceCard = () => {
         scale: 1.02,
         transition: { duration: 0.2 }
       }}
-      className="w-full h-full min-h-[280px] sm:min-h-[300px] md:min-h-[320px] lg:min-h-[280px] xl:min-h-[300px] 2xl:min-h-[320px] p-3 sm:p-4 md:p-5 lg:p-6 xl:p-7 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 border border-slate-200 dark:border-slate-700 shadow-xl hover:shadow-2xl transition-all duration-300 backdrop-blur-sm relative overflow-hidden"
+      className="w-full h-full min-h-[280px] sm:min-h-[300px] md:min-h-[320px] lg:min-h-[280px] xl:min-h-[300px] 2xl:min-h-[320px] p-3 sm:p-4 md:p-5 lg:p-6 xl:p-7 rounded-xl sm:rounded-2xl  border border-slate-200 dark:border-slate-700 shadow-xl hover:shadow-2xl transition-all duration-300 backdrop-blur-sm relative overflow-hidden"
     >
       {/* Background Decoration - Responsive */}
-      <div className="absolute top-0 right-0 w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32 bg-gradient-to-bl from-indigo-100 to-transparent dark:from-indigo-900/20 rounded-full -translate-y-8 translate-x-8 sm:-translate-y-12 sm:translate-x-12 md:-translate-y-14 md:translate-x-14 lg:-translate-y-16 lg:translate-x-16" />
+      <div className="absolute top-0 right-0 w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 lg:w-32 lg:h-32  rounded-full -translate-y-8 translate-x-8 sm:-translate-y-12 sm:translate-x-12 md:-translate-y-14 md:translate-x-14 lg:-translate-y-16 lg:translate-x-16" />
       <div className="absolute bottom-0 left-0 w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 bg-gradient-to-tr from-purple-100 to-transparent dark:from-purple-900/20 rounded-full translate-y-6 -translate-x-6 sm:translate-y-8 sm:-translate-x-8 md:translate-y-10 md:-translate-x-10 lg:translate-y-12 lg:-translate-x-12" />
       
       {/* Header - Fully Responsive */}

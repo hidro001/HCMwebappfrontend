@@ -118,56 +118,56 @@ export default function CompanySetting() {
       icon: <HiCog />, 
       component: <AttendancePolicies />,
       color: "blue",
-      description: "Configure attendance rules and policies"
+      description: "Configure your company's attendance rules, overtime policies, and leave management settings"
     },
     { 
       name: "Shift Timings", 
       icon: <HiClock />, 
       component: <ShiftTimings />,
       color: "green",
-      description: "Manage work shift schedules"
+      description: "Manage your organization's work shift schedules and timings"
     },
     { 
       name: "Holidays", 
       icon: <HiCalendar />, 
       component: <Holidays />,
       color: "purple",
-      description: "Declare company holidays"
+      description: "Manage your organization's holiday calendar and celebrations"
     },
     { 
       name: "Deductions", 
       icon: <FaMoneyBill />, 
       component: <Deductions />,
       color: "red",
-      description: "Setup salary deductions"
+      description: "Manage payroll deductions and tax components"
     },
     { 
       name: "Payroll Cycles", 
       icon: <HiCash />, 
       component: <PayrollCycles />,
       color: "yellow",
-      description: "Configure payroll frequencies"
+      description: "Manage payroll processing schedules and payment cycles"
     },
     { 
       name: "Working Days", 
       icon: <HiSun />, 
       component: <WorkingDays />,
       color: "orange",
-      description: "Set weekly working days"
+      description: "Configure working schedules and leave policies for your organization"
     },
     { 
       name: "Leave Types", 
       icon: <FaUmbrellaBeach />, 
       component: <LeavesTypes />,
       color: "pink",
-      description: "Manage leave categories"
+      description: "Configure and manage all available leave types, policies, and requirements for your organization"
     },
     { 
       name: "Employment Types", 
       icon: <HiUsers />, 
       component: <EmploymentTypes />,
       color: "indigo",
-      description: "Define employment categories"
+      description: "Configure employment categories with specific policies and benefits"
     },
   ];
 
@@ -216,9 +216,9 @@ export default function CompanySetting() {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="min-h-screen bg-gray-50 dark:bg-gray-900"
+      className="h-[calc(100vh-250px)] bg-gray-50 dark:bg-gray-900 rounded-2xl "
     >
-      <div className="flex h-screen overflow-hidden">
+      <div className="flex h-[calc(100vh-180px)] overflow-hidden rounded-2xl">
         {/* Sidebar */}
         <motion.div
           variants={sidebarVariants}
@@ -265,7 +265,12 @@ export default function CompanySetting() {
           </div>
 
           {/* Navigation Items */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          <div className="flex-1 overflow-y-auto p-4 space-y-2    [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+                transition-colors duration-300">
             {tabItems.map((tab, index) => {
               const isActive = activeTab === index;
               const colorClasses = {
@@ -414,7 +419,12 @@ export default function CompanySetting() {
           </motion.div>
 
           {/* Content Area */}
-          <div className="flex-1 overflow-auto">
+          <div className="flex-1 overflow-auto    [&::-webkit-scrollbar]:w-2
+                [&::-webkit-scrollbar-track]:rounded-full
+                [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+                [&::-webkit-scrollbar-thumb]:rounded-full
+                [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+                transition-colors duration-300">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
