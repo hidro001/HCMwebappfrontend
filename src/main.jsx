@@ -31,15 +31,15 @@ const employee = localStorage.getItem("employeeId");
 
 createRoot(document.getElementById("root")).render(
   <ThemeProvider>
-    <CallProvider currentUserId={employee}>
-      <CallModal />
-      <IncomingCallModal />
+    {/* <CallProvider currentUserId={employee}> */}
+      {/* <CallModal /> */}
+      {/* <IncomingCallModal /> */}
 
-      <CallWindow />
-      <VideoCallModal />
-      <ChatProviderv2>
+      {/* <CallWindow /> */}
+      {/* <VideoCallModal /> */}
+      {/* <ChatProviderv2> */}
         <App />
-      </ChatProviderv2>
-    </CallProvider>
+      {/* </ChatProviderv2> */}
+    {/* </CallProvider> */}
   </ThemeProvider>
 );
