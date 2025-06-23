@@ -392,7 +392,6 @@ import { HiOutlineSpeakerphone } from "react-icons/hi";
 import { toast } from "react-hot-toast";
 import useNotificationStore from "../../store/notificationStore";
 import { useNavigate } from "react-router-dom";
-import { IoClose } from "react-icons/io5";
 
 const NotificationDropdown = ({ notifications, loading, error, onClose }) => {
   const { markAsRead } = useNotificationStore();
