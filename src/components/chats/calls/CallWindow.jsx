@@ -1,9 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { useCall } from '../../../contexts/CallContext';
-import EmployeeListModal from './EmployeeListModal';
+import React, { useEffect, useState, useRef } from "react";
+import { useCall } from "../../../contexts/CallContext";
+import EmployeeListModal from "./EmployeeListModal";
 
-const currentUserId = localStorage.getItem('employeeId');
-const currentUserName = localStorage.getItem('userName');
+const currentUserId = localStorage.getItem("employeeId");
+const currentUserName = localStorage.getItem("userName");
 
 const AudioPlayer = ({ stream }) => {
   const ref = useRef(null);
@@ -14,21 +14,31 @@ const AudioPlayer = ({ stream }) => {
 };
 
 const CallWindow = () => {
-  const { call, outgoingCall, stream, remoteStreams, leaveCall, addParticipant } = useCall();
+  const {
+    call,
+    outgoingCall,
+    stream,
+    remoteStreams,
+    leaveCall,
+    addParticipant,
+  } = useCall();
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [showEmployeeModal, setShowEmployeeModal] = useState(false);
 
   useEffect(() => {
-    if (stream) stream.getAudioTracks().forEach(track => track.enabled = audioEnabled);
+    if (stream)
+      stream
+        .getAudioTracks()
+        .forEach((track) => (track.enabled = audioEnabled));
   }, [stream, audioEnabled]);
 
   if (outgoingCall && !call) {
-    if (outgoingCall.callType === 'video') return null;
+    if (outgoingCall.callType === "video") return null;
     return (
       <div className="fixed top-5 right-5 z-[2000]">
         <div className="w-64 rounded-xl bg-white shadow-lg flex flex-col items-center py-5 px-4">
           <h3 className="text-center text-sm">
-            Voice Call: Calling {outgoingCall.participants.join(', ')}...
+            Voice Call: Calling {outgoingCall.participants.join(", ")}...
           </h3>
           <div className="mt-2 w-8 h-8 border-4 border-gray-300 border-t-[#6B73FF] rounded-full animate-spin" />
         </div>
@@ -38,15 +48,15 @@ const CallWindow = () => {
   if (!call) return null;
 
   const participants = call.participants || [];
-  const callTypeLabel = call.callType === 'video' ? 'Video Call' : 'Voice Call';
-  const remoteUserIds = participants.filter(p => p !== currentUserId);
+  const callTypeLabel = call.callType === "video" ? "Video Call" : "Voice Call";
+  const remoteUserIds = participants.filter((p) => p !== currentUserId);
   const remoteUserLabel = remoteUserIds.length
-    ? `Connected with ${remoteUserIds.join(', ')}`
-    : 'Waiting for participant...';
+    ? `Connected with ${remoteUserIds.join(", ")}`
+    : "Waiting for participant...";
 
   const toggleAudio = () => {
     if (!stream) return;
-    stream.getAudioTracks().forEach(track => track.enabled = !audioEnabled);
+    stream.getAudioTracks().forEach((track) => (track.enabled = !audioEnabled));
     setAudioEnabled(!audioEnabled);
   };
 
@@ -92,14 +102,16 @@ const CallWindow = () => {
             onClick={toggleAudio}
             className="bg-green-600 rounded-full w-12 h-12 text-white flex items-center justify-center hover:bg-green-700 transition"
           >
-            {audioEnabled ? 'Mute' : 'Unmute'}
+            {audioEnabled ? "Mute" : "Unmute"}
           </button>
         </div>
       </div>
       {showEmployeeModal && (
         <EmployeeListModal
           onClose={() => setShowEmployeeModal(false)}
-          onSelectEmployee={id => { addParticipant(id); }}
+          onSelectEmployee={(id) => {
+            addParticipant(id);
+          }}
         />
       )}
     </div>

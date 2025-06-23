@@ -1,26 +1,35 @@
 import io from 'socket.io-client';
 import { toast } from 'react-hot-toast';
+import useAuthStore from '../store/store';
 
-let socket;
+let connectedsocket;
 
-export const initSocket = (serverUrl, employeeId,token) => {
-  socket = io(serverUrl, {
+
+
+const server_url = import.meta.env.VITE_SOCKET_URL;
+
+
+let socket = null;
+
+export const initSocket = (employeeId , token) => {
+  if (socket) return socket;
+
+  socket = io(server_url, {
     transports: ['websocket', 'polling'],
     reconnectionAttempts: 5,
     timeout: 10000,
     auth: {
       token: token,
     },
+    query: { userId: employeeId }
   });
 
   socket.on('connect', () => {
     if (employeeId) {
-      // Join a self-room (if needed for active chat)
       socket.emit('joinRoom', {
         sender: employeeId,
         receiver: employeeId,
       });
-      // Join personal room for notifications
       socket.emit('joinPersonalRoom', { employeeId });
     }
   });
@@ -36,8 +45,15 @@ export const initSocket = (serverUrl, employeeId,token) => {
     }
   });
 
+  connectedsocket = socket
+
   return socket;
+
 };
+
+console.log(`socket only :-${connectedsocket}`)
+
+export const getsocket = () => connectedsocket;
 
 export const joinRoom = (socket, sender, receiver) => {
   if (socket) {
@@ -138,5 +154,8 @@ export const subscribeToMessages = (
 export const disconnectSocket = () => {
   if (socket) {
     socket.disconnect();
+    socket = null;
+    connectedsocket = null;
   }
 };
+

@@ -13,106 +13,43 @@ const CallContext = createContext();
 export function CallProvider({ children, currentUserId }) {
   const socket = useRef();
   const device = useRef();
+  const [isScreenSharing, setIsScreenSharing] = useState(false);
+  const screenShareProducer = useRef(null);
   const sendTransport = useRef();
-  const screenProducer = useRef(null); // <—
-  const screenStream = useRef(null); // <—
   const roomIdRef = useRef(null);
   const recvTransports = useRef(new Map());
   const [localStream, setLocalStream] = useState(null);
   const [remoteStreams, setRemoteStreams] = useState([]);
   const [incomingCall, setIncomingCall] = useState(null);
   const [call, setCall] = useState(null);
-  const [screenShareActive, setScreenShareActive] = useState(false); // ← NEW
+  const outgoingCall = useRef(null); // 🔹 NEW
 
   const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_URL;
-
-  // --------------------------------------------------
-  //  SCREEN‑SHARING HELPERS
-  // --------------------------------------------------
-  const startScreenShare = async () => {
-    if (screenProducer.current || !sendTransport.current) return;
-
-    try {
-      /* 1️⃣ Get the screen as a MediaStream */
-      const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
-      });
-      screenStream.current = stream;
-
-      /* 2️⃣ Produce its first (and only) video track */
-      const track = stream.getVideoTracks()[0];
-      screenProducer.current = await sendTransport.current.produce({ track });
-      setScreenShareActive(true);
-
-      /* 3️⃣ If the user clicks “Stop sharing…” in the browser UI */
-      track.onended = stopScreenShare;
-    } catch (err) {
-      console.error("[screen] start failed:", err);
-    }
-  };
-
-  const stopScreenShare = () => {
-    if (!screenProducer.current) return;
-
-    try {
-      screenProducer.current.close();
-    } catch (_) {}
-    screenProducer.current = null;
-    setScreenShareActive(false);
-
-    screenStream.current?.getTracks().forEach((t) => t.stop());
-    screenStream.current = null;
-  };
-
-  const cleanUpMedia = () => {
-    /* 1️⃣ Stop every local track */
-    localStream?.getTracks().forEach((t) => t.stop());
-
-    /* 2️⃣ Close the send transport */
-    if (sendTransport.current) {
-      try {
-        sendTransport.current.close();
-      } catch (_) {}
-      sendTransport.current = null;
-    }
-
-    /* 3️⃣ Close every recv transport */
-    recvTransports.current.forEach((t) => {
-      try {
-        t.close();
-      } catch (_) {}
-    });
-    recvTransports.current.clear();
-
-    /* 4️⃣ Dispose the Mediasoup Device */
-    device.current = null;
-
-    /* 5️⃣ Flush React state */
-    setLocalStream(null);
-    setRemoteStreams([]);
-    setCall(null);
-
-    setIncomingCall(null);
-    stopScreenShare();
-  };
 
   useEffect(() => {
     socket.current = io(SOCKET_SERVER_URL, {
       query: { userId: currentUserId },
     });
 
-    socket.current.on("incomingCall", setIncomingCall);
+    socket.current.emit("joinPersonalRoom", { employeeId: currentUserId });
+
+    socket.current.on("incomingCall", (payload) => {
+      // normalise the field so the rest of the code can rely on `.roomId`
+      setIncomingCall({ ...payload, roomId: payload.roomId ?? payload.callId });
+    });
 
     socket.current.on("new-producer", ({ producerId, userId }) => {
       createRecvTransport(producerId, userId);
     });
 
-    socket.current.on("endCall", cleanUpMedia);
+    socket.current.on("endCall", () => {
+      localStream?.getTracks().forEach((t) => t.stop());
+      setLocalStream(null);
+      setRemoteStreams([]);
+      setCall(null);
+    });
 
-    return () => {
-      socket.current.disconnect();
-      cleanUpMedia();
-    };
+    return () => socket.current.disconnect();
   }, [currentUserId]);
 
   const getLocalStream = async () => {
@@ -125,25 +62,29 @@ export function CallProvider({ children, currentUserId }) {
     return s;
   };
 
-  // CallProvider.jsx
+  const startScreenShare = async () => {
+    if (isScreenSharing || !sendTransport.current) return;
 
-  const addParticipant = (participantId) => {
-    if (!call) return; // nothing to do if we are not in a call
+    try {
+      const displayStream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: false,
+      });
 
-    /* 1️⃣  Tell the signalling server to invite the new user */
-    socket.current.emit("addParticipant", {
-      callId: call.roomId,
-      inviter: currentUserId,
-      newParticipant: participantId,
-    });
+      const track = displayStream.getVideoTracks()[0];
 
-    /* 2️⃣  Optimistically update our local UI state */
-    setCall((prev) => ({
-      ...prev,
-      participants: [
-        ...new Set([...(prev?.participants || []), participantId]),
-      ],
-    }));
+      // Make sure the user can stop sharing via browser UI
+      track.addEventListener("ended", () => stopScreenShare());
+
+      console.log("[share] producing screen track");
+      screenShareProducer.current = await sendTransport.current.produce({
+        track,
+      });
+
+      setIsScreenSharing(true);
+    } catch (err) {
+      console.error("[share] start failed:", err);
+    }
   };
 
   const joinRoom = (roomId) =>
@@ -229,6 +170,19 @@ export function CallProvider({ children, currentUserId }) {
         }
       }
     );
+  };
+
+  const stopScreenShare = () => {
+    if (!isScreenSharing) return;
+
+    try {
+      screenShareProducer.current?.close();
+      screenShareProducer.current = null;
+      setIsScreenSharing(false);
+      console.log("[share] stopped");
+    } catch (err) {
+      console.error("[share] stop failed:", err);
+    }
   };
 
   const createRecvTransport = (producerId, userId) => {
@@ -332,6 +286,7 @@ export function CallProvider({ children, currentUserId }) {
                 {
                   consumerId: consumer.id,
                   kind: data.kind,
+                  userId,
                   stream: new MediaStream([consumer.track]),
                 },
               ]);
@@ -353,66 +308,69 @@ export function CallProvider({ children, currentUserId }) {
 
   // 5) high-level call controls
   // somewhere in your CallProvider:
-
-  // const initiateCall = async ({ callType, participants }) => {
-  //   const roomId = `room-${Date.now()}`;
-  //   roomIdRef.current = roomId;
-  //   socket.current.emit("initiate-call", { roomId, callType, participants });
-  //   await joinRoom(roomId);
-  //   await createSendTransport();
-  //   setCall({ roomId, callType, participants });
-  // };
+  const addParticipant = (id) => {
+    if (!call) return;
+    socket.current.emit("addParticipant", {
+      callId: call.roomId,
+      newParticipant: id,
+    });
+  };
 
   const initiateCall = async ({ callType, participants }) => {
-    /* 1️⃣ Build a unique call / room id */
     const callId = `room-${Date.now()}`;
     roomIdRef.current = callId;
 
-    /* 2️⃣ Remove the caller if it was accidentally included */
-    const sanitizedParticipants = participants.filter(
-      (id) => id !== currentUserId
-    );
+    /* 1️⃣ store a transient “dialling” state for the ring‑back UI */
+    outgoingCall.current = { callId, callType, participants };
 
-    /* 3️⃣ Notify the server – must match server‑side listener */
+    /* 2️⃣ never send your own id inside participants */
+    const others = participants.filter((id) => id !== currentUserId);
+
+    /* 3️⃣ signal the server – must be EXACTLY what server listens for */
     socket.current.emit("initiateCall", {
-      callId, // ← the id the server stores and forwards
-      caller: currentUserId, // ← so the callee knows who is ringing
-      callType, // 'audio' | 'video'
-      participants: sanitizedParticipants,
+      callId,
+      caller: currentUserId,
+      roomId: callId,
+      callType, // 'voice' | 'video'
+      participants: others,
     });
 
-    /* 4️⃣ Locally join the mediasoup room and start publishing */
+    /* 4️⃣ start the media plane */
     await joinRoom(callId);
     await createSendTransport();
 
-    /* 5️⃣ Reflect the call in UI state */
-    setCall({ roomId: callId, callType, participants: sanitizedParticipants });
+    /* 5️⃣ show in‑call UI, clear “dialling” flag */
+    setCall({
+      roomId: callId,
+      callType,
+      participants: [currentUserId, ...others],
+    });
+    outgoingCall.current = null;
   };
 
   const answerCall = async () => {
     if (!incomingCall) return;
-
-    const { callId } = incomingCall;
-    roomIdRef.current = callId;
-
+    const roomId = incomingCall.roomId ?? incomingCall.callId;
+    roomIdRef.current = roomId;
     socket.current.emit("answerCall", {
-      callId,
+      callId: roomId,
       userId: currentUserId,
     });
-
-    await joinRoom(callId);
+    await joinRoom(roomId);
     await createSendTransport();
     setCall(incomingCall);
     setIncomingCall(null);
   };
 
-  // CallProvider.jsx  (add inside the component, above the return)
-
+  // NEW: allow rejecting an incoming call
   const rejectCall = () => {
     if (!incomingCall) return;
+    const roomId =
+      incomingCall.roomId ?? // ✅ works with new clients
+      incomingCall.callId;
 
     socket.current.emit("rejectCall", {
-      callId: incomingCall.callId,
+      callId: roomId,
       userId: currentUserId,
     });
     setIncomingCall(null);
@@ -420,17 +378,17 @@ export function CallProvider({ children, currentUserId }) {
 
   const leaveCall = () => {
     if (!call) return;
-
-    /* Logical call shutdown (summaries, timers, etc.) */
     socket.current.emit("leaveCall", {
       callId: call.roomId,
       userId: currentUserId,
     });
-
-    /* Mediasoup clean‑up */
-    socket.current.emit("leave-call", { roomId: call.roomId });
-
-    cleanUpMedia();
+    socket.current.emit("leave-call", { roomId: call.roomId }); // mediasoup cleanup
+    localStream?.getTracks().forEach((t) => t.stop());
+    setLocalStream(null);
+    setRemoteStreams([]);
+    recvTransports.current.forEach((t) => t.close());
+    recvTransports.current.clear();
+    setCall(null);
   };
 
   return (
@@ -443,10 +401,11 @@ export function CallProvider({ children, currentUserId }) {
         initiateCall,
         answerCall,
         leaveCall,
-        addParticipant,
         startScreenShare,
         stopScreenShare,
-        isScreenSharing: screenShareActive,
+        isScreenSharing,
+        addParticipant,
+        rejectCall,
       }}
     >
       {children}

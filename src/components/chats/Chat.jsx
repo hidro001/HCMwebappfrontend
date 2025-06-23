@@ -1,9 +1,11 @@
-import Chatv2 from './chatv2/Chatv2'
+import Chatsv2 from './chatv2/Chatsv2'
+
 
 export default function Chat() {
   return (
    <>
-   <Chatv2/>
+
+    <Chatsv2/>
    </>
   )
 }
