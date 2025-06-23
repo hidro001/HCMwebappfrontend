@@ -151,7 +151,7 @@
 //     return (
 //       <div className="bg-bg-secondary ">
 //         <Toaster />
-//         <div className="max-w-7xl mx-auto px-4 mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+//         <div className="max-w-8xl mx-auto px-4 mt-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 //           {Array.from({ length: 8 }).map((_, index) => (
 //             <SkeletonCard key={index} />
 //           ))}
@@ -222,7 +222,7 @@
 //           </button>
 //         )} */}
 //       </div>
-//       <div className="max-w-7xl mx-auto px-4 mt-6">
+//       <div className="max-w-8xl mx-auto px-4 mt-6">
 //         <h2 className="mb-4 text-lg font-bold dark:text-white">
 //           Supordinates Employees: {totalEmployeeCount}
 //         </h2>
@@ -736,7 +736,7 @@
 //     return (
 //       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6">
 //         <Toaster />
-//         <div className="max-w-7xl mx-auto">
+//         <div className="max-w-8xl mx-auto">
 //           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 //             {Array.from({ length: 8 }).map((_, index) => (
 //               <SkeletonCard key={index} />
@@ -767,7 +767,7 @@
 //       <Toaster />
       
 //       {/* Header */}
-//       <div className="max-w-7xl mx-auto mb-8">
+//       <div className="max-w-8xl mx-auto mb-8">
 //         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-6">
 //           <div>
 //             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center space-x-2">
@@ -1357,7 +1357,7 @@ function SubordinatesEmployees() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6">
         <Toaster />
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-8xl mx-auto">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {Array.from({ length: 8 }).map((_, index) => (
               <SkeletonCard key={index} />
@@ -1388,7 +1388,7 @@ function SubordinatesEmployees() {
       <Toaster />
       
       {/* Header */}
-      <div className="max-w-7xl mx-auto mb-8">
+      <div className="max-w-8xl mx-auto mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0 mb-6">
           <div>
             <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center space-x-2">

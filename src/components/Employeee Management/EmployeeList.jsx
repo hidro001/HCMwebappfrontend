@@ -563,11 +563,9 @@ import {
 import useEmployeesStore from "../../store/useAllEmployeesStore";
 import ConfirmationDialog from "../common/ConfirmationDialog";
 import departmentStore from "../../store/departmentStore";
+import { useNavigate } from "react-router-dom";
 
-// Mock navigation function (replace with actual useNavigate in your app)
-const navigate = (path) => {
-  console.log(`Navigate to: ${path}`);
-};
+
 
 // Skeleton Components
 const StatCardSkeleton = () => (
@@ -641,6 +639,8 @@ export default function EmployeeList() {
     toggleEmployeeStatus,
   } = useEmployeesStore();
 
+
+
   const { departments } = departmentStore();
 
   const [pageSize, setPageSize] = useState(12);
@@ -649,7 +649,7 @@ export default function EmployeeList() {
   const [searchText, setSearchText] = useState("");
   const [viewMode, setViewMode] = useState("table"); // table or card
   const [isAutoToggle, setIsAutoToggle] = useState(true);
-
+  const navigate = useNavigate();
   // State for ConfirmationDialog
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
