@@ -484,21 +484,7 @@ export default function AttendancePolicies() {
     >
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Header Section */}
-        <motion.div variants={itemVariants} className="text-center space-y-4">
-          <div className="flex items-center justify-center space-x-3">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-xl">
-              <FaCog className="text-blue-600 dark:text-blue-400 text-2xl" />
-            </div>
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white">
-              Attendance Policies
-            </h1>
-          </div>
-          <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
-            Configure your company's attendance rules, overtime policies, and
-            leave management settings
-          </p>
-        </motion.div>
-
+    
         {/* Main Content */}
         <div className="space-y-8">
           {/* Basic Policies Section */}

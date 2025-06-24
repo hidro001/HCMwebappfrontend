@@ -20,9 +20,10 @@ export default {
       colors: {
         "bg-primary": "var(--bg-primary)",
         "bg-secondary": "var(--bg-secondary)",
+        "bg-tertiary": "var(--bg-tertiary)",
         "text-primary": "var(--text-primary)",
-        "bg-sidebar" : "var(--bg-sidebar)",
-        // ...
+        "text-secondary": "var(--text-secondary)",
+      
       },
     },
   },

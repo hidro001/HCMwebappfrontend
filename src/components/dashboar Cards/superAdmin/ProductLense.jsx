@@ -194,7 +194,7 @@ const EmployeeBreakStatsTable = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950 p-3 md:p-4 rounded-2xl">
+    <div className="min-h-screen border border-white/20 dark:border-gray-700/50 p-3 md:p-4 rounded-2xl">
       <motion.div
         className="max-w-7xl mx-auto"
         initial="hidden"
@@ -209,13 +209,9 @@ const EmployeeBreakStatsTable = () => {
           {/* Compact Header */}
           <motion.div
             variants={headerVariants}
-            className="relative px-4 py-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-600 dark:from-indigo-800 dark:via-purple-800 dark:to-blue-800"
+            className="relative px-4 py-4 bg-bg-tertiary"
           >
-            {/* Simplified background elements */}
-            <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute -top-2 -right-2 w-16 h-16 bg-white/10 rounded-full blur-xl animate-pulse"></div>
-              <div className="absolute bottom-2 right-1/3 w-8 h-8 bg-white/10 rounded-full blur-md animate-ping"></div>
-            </div>
+      
 
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-3">

@@ -1466,7 +1466,7 @@ export default function CompanyInfo() {
   return (
     <>
       {loading && <FullScreenLoader />}
-      <div className="p-6 space-y-8 bg-gray-50 dark:bg-gray-900 min-h-screen">
+      <div className="p-6 space-y-8 bg-gray-50 dark:bg-gray-900 min-h-screen rounded-2xl">
         <div className="max-w-7xl mx-auto">
           
           {/* Header */}

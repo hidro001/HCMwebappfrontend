@@ -414,23 +414,7 @@ export default function EmploymentTypes() {
       className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 lg:p-8"
     >
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header Section */}
-        <motion.div
-          variants={itemVariants}
-          className="text-center space-y-4"
-        >
-          <div className="flex items-center justify-center space-x-3">
-            <div className="p-3 bg-indigo-100 dark:bg-indigo-900/20 rounded-xl">
-              <HiUsers className="text-indigo-600 dark:text-indigo-400 text-2xl" />
-            </div>
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white">
-              Employment Types
-            </h1>
-          </div>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
-            Configure employment categories with specific policies and benefits
-          </p>
-        </motion.div>
+   
 
         {/* Stats Cards */}
         <motion.div
