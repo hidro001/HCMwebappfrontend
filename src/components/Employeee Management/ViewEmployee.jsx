@@ -933,7 +933,9 @@
 // export default ViewEmployee;
 
 
+
 import { useEffect, useState } from "react";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { 
   FaArrowLeft, 
@@ -955,29 +957,22 @@ import {
   FaFileAlt,
   FaGraduationCap,
   FaBriefcase,
-  FaBank,
-  FaShieldAlt,
-  FaLanguage,
-  FaLinkedin,
-  FaGithub,
   FaCoffee,
   FaMedkit,
   FaUserShield,
-  FaChevronRight
+  FaChevronRight,
+  FaUniversity,
+  FaShieldAlt,
+  FaLanguage,
+  FaLinkedin,
+  FaGithub
 } from "react-icons/fa";
 import useEmployeeDetailsStore from "../../store/useAllEmployeesStore";
 import ConfirmationDialog from "../common/ConfirmationDialog";
 
-// Mock navigation and params functions (replace with actual useNavigate and useParams in your app)
-const navigate = (path) => {
-  console.log(`Navigate to: ${path}`);
-};
-
-const useParams = () => ({ id: "sample-employee-id" });
-
 function ViewEmployee() {
+  const navigate = useNavigate();
   const { id } = useParams();
- 
   const { employee, loading, error, fetchEmployeeById } = useEmployeeDetailsStore();
 
   const [activeTab, setActiveTab] = useState("personal");
@@ -1101,7 +1096,7 @@ function ViewEmployee() {
   const tabs = [
     { id: "personal", label: "Personal Details", icon: FaUser },
     { id: "employment", label: "Employment Info", icon: FaBriefcase },
-    { id: "bankpf", label: "Bank & PF Details", icon: FaBank },
+    { id: "bankpf", label: "Bank & PF Details", icon: FaUniversity },
     { id: "experience_qualifications", label: "Experience & Education", icon: FaGraduationCap },
     { id: "documents", label: "Documents", icon: FaFileAlt },
     { id: "additional", label: "Additional Info", icon: FaShieldAlt },
@@ -1139,7 +1134,7 @@ function ViewEmployee() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 sm:p-6 transition-colors duration-200">
-      <Toaster />
+      {/* <Toaster /> */}
       
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -1210,7 +1205,7 @@ function ViewEmployee() {
                 </div>
 
                 {/* Quick Info */}
-                <div className="space-y-3 mb-6">
+                {/* <div className="space-y-3 mb-6">
                   <InfoRow 
                     icon={FaIdCard}
                     label="Employee ID"
@@ -1239,19 +1234,19 @@ function ViewEmployee() {
                   <InfoRow 
                     icon={FaDollarSign}
                     label="Salary"
-                    value={`₹${employee.salary ?? 0}`}
+                    value={`₹${employee.current_Base_Salary ?? 0}`}
                   />
-                </div>
+                </div> */}
 
                 {/* Action Buttons */}
                 <div className="space-y-3">
-                  <ActionButton
-                    onClick={() => navigate(`/dashboard/payroll/employee/${employee.employee_Id}`)}
-                    icon={FaDollarSign}
-                    variant="primary"
+                  <Link
+                    to={`/dashboard/payroll/employee/${employee.employee_Id}`}
+                    className="w-full flex items-center justify-center space-x-2 px-4 py-3 rounded-lg font-medium transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl bg-blue-600 hover:bg-blue-700 text-white"
                   >
-                    View Payroll
-                  </ActionButton>
+                    <FaDollarSign className="w-4 h-4" />
+                    <span>View Payroll</span>
+                  </Link>
                   
                   <ActionButton
                     onClick={() => navigate(`/dashboard/employee-particular-tasks/${employee.employee_Id}`)}
@@ -1407,7 +1402,7 @@ function ViewEmployee() {
                   <div className="space-y-6">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center space-x-2">
-                        <FaBank className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        <FaUniversity className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                         <span>Bank Details</span>
                       </h3>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
