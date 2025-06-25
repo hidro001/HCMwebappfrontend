@@ -30,6 +30,7 @@ const tableRowVariants = {
   visible: { opacity: 1, y: 0 },
 };
 
+
 export default function EmployeeLeaveHistory() {
   const {
     leaves,
@@ -41,7 +42,6 @@ export default function EmployeeLeaveHistory() {
     userProfile,
   } = useLeaveStore();
 
-  // Local states for search text, month filter, pagination, etc.
   const [searchText, setSearchText] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
   const [pageSize, setPageSize] = useState(10);
@@ -49,21 +49,17 @@ export default function EmployeeLeaveHistory() {
   const [selectedLeave, setSelectedLeave] = useState(null);
   const [showApplyModal, setShowApplyModal] = useState(false);
 
-  // New state to store the leave count stats returned from the API
   const [leaveCount, setLeaveCount] = useState({
     remainingPaidLeaves: 0,
     totalLeavesTaken: 0,
-    approvedLeaves: 0,
+    totalApprovedLeaveDays: 0,
   });
 
-  // On mount (and whenever activeStatus changes) initialize and fetch data.
   useEffect(() => {
     initializeData();
     fetchLeaves(activeStatus);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeStatus]);
 
-  // Fetch the employee leave count stats when the component mounts.
   useEffect(() => {
     async function fetchLeaveCount() {
       try {
@@ -78,21 +74,13 @@ export default function EmployeeLeaveHistory() {
     fetchLeaveCount();
   }, []);
 
-  // Updated client-side filtering logic to correctly handle "all" status
   const filteredData = useMemo(() => {
     return leaves.filter((item) => {
       const matchSearch =
-        item.leave_Type.toLowerCase().includes(searchText.toLowerCase()) ||
-        new Date(item.leave_From)
-          .toLocaleDateString()
-          .toLowerCase()
-          .includes(searchText.toLowerCase()) ||
-        new Date(item.leave_To)
-          .toLocaleDateString()
-          .toLowerCase()
-          .includes(searchText.toLowerCase());
+        item.leaveType?.name?.toLowerCase().includes(searchText.toLowerCase()) ||
+        new Date(item.leave_From).toLocaleDateString().toLowerCase().includes(searchText.toLowerCase()) ||
+        new Date(item.leave_To).toLocaleDateString().toLowerCase().includes(searchText.toLowerCase());
 
-      // When activeStatus is "all", we want to include all items.
       const matchStatus =
         activeStatus.toLowerCase() === "all"
           ? true
@@ -118,16 +106,15 @@ export default function EmployeeLeaveHistory() {
 
   const totalPages = Math.ceil(filteredData.length / pageSize);
 
-  // Flatten the paginatedData for exporting
   const exportData = paginatedData.map((entry, index) => {
     const serialNo = (currentPage - 1) * pageSize + (index + 1);
     return {
       sl: serialNo,
-      leaveType: entry.leave_Type,
+      leaveType: entry.leaveType?.name || "N/A",
       from: new Date(entry.leave_From).toLocaleDateString(),
       to: new Date(entry.leave_To).toLocaleDateString(),
       days: entry.no_Of_Days,
-      reasonForLeave: entry.reason_For_Leave,
+      reasonForLeave: entry.reason_For_Leave || "N/A",
       leaveCategory:
         entry.is_Paid === null ? "Pending" : entry.is_Paid ? "Paid" : "Unpaid",
       processedBy:
@@ -137,13 +124,13 @@ export default function EmployeeLeaveHistory() {
           ? `Rejected by ${entry.rejected_By.first_Name} ${entry.rejected_By.last_Name}`
           : "Pending",
       reasonForReject: entry.reason_For_Reject || "N/A",
-      status:
-        entry.leave_Status.charAt(0).toUpperCase() +
-        entry.leave_Status.slice(1),
+      emergencyContact: entry.emergencyContact || "N/A",
+      workHandover: entry.workHandover || "N/A",
+      halfDay: entry.is_Half_Day ? "Yes" : "No",
+      status: entry.leave_Status.charAt(0).toUpperCase() + entry.leave_Status.slice(1),
     };
   });
 
-  // Define columns for PDF/Excel/CSV
   const columns = [
     { header: "S.L", dataKey: "sl" },
     { header: "Leave Type", dataKey: "leaveType" },
@@ -154,6 +141,9 @@ export default function EmployeeLeaveHistory() {
     { header: "Leave Category", dataKey: "leaveCategory" },
     { header: "Processed By", dataKey: "processedBy" },
     { header: "Reason For Reject", dataKey: "reasonForReject" },
+    { header: "Emergency Contact", dataKey: "emergencyContact" },
+    { header: "Work Handover", dataKey: "workHandover" },
+    { header: "Half Day", dataKey: "halfDay" },
     { header: "Status", dataKey: "status" },
   ];
 
@@ -164,27 +154,21 @@ export default function EmployeeLeaveHistory() {
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow relative overflow-hidden">
           <div className="flex flex-col">
             <span className="text-xl font-bold">Remaining Paid Leaves</span>
-            <span className="text-3xl font-extrabold mt-2">
-              {leaveCount.remainingPaidLeaves}
-            </span>
+            <span className="text-3xl font-extrabold mt-2">{leaveCount.remainingPaidLeaves}</span>
           </div>
           <FaUserAlt className="text-4xl text-gray-300 absolute top-4 right-4" />
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow relative overflow-hidden">
           <div className="flex flex-col">
-            <span className="text-xl font-bold">Total Leaves Taken</span>
-            <span className="text-3xl font-extrabold mt-2">
-              {leaveCount.totalLeavesTaken}
-            </span>
+            <span className="text-xl font-bold">Total Leaves Asked</span>
+            <span className="text-3xl font-extrabold mt-2">{leaveCount.totalLeavesTaken}</span>
           </div>
           <FaCalendarAlt className="text-4xl text-gray-300 absolute top-4 right-4" />
         </div>
         <div className="bg-white dark:bg-gray-800 p-4 rounded-md shadow relative overflow-hidden">
           <div className="flex flex-col">
             <span className="text-xl font-bold">Approved Leaves</span>
-            <span className="text-3xl font-extrabold mt-2">
-              {leaveCount.approvedLeaves}
-            </span>
+            <span className="text-3xl font-extrabold mt-2">{leaveCount.totalApprovedLeaveDays}</span>
           </div>
           <FaCheckCircle className="text-4xl text-gray-300 absolute top-4 right-4" />
         </div>
@@ -205,43 +189,33 @@ export default function EmployeeLeaveHistory() {
             }}
           >
             {[5, 10, 25, 50].map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
+              <option key={size} value={size}>{size}</option>
             ))}
           </select>
           <span className="text-sm font-medium">entries</span>
         </div>
 
-        <div className="flex-1 max-w-sm">
-          <input
-            type="text"
-            placeholder="Search"
-            className="w-full border rounded px-3 py-2 text-sm bg-white dark:bg-gray-700"
-            value={searchText}
-            onChange={(e) => {
-              setSearchText(e.target.value);
-              setCurrentPage(1);
-            }}
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Search"
+          className="w-full max-w-sm border rounded px-3 py-2 text-sm bg-white dark:bg-gray-700"
+          value={searchText}
+          onChange={(e) => {
+            setSearchText(e.target.value);
+            setCurrentPage(1);
+          }}
+        />
 
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <FaCalendarAlt className="absolute top-1/2 -translate-y-1/2 left-2 text-gray-400" />
-            <input
-              type="month"
-              className="pl-8 pr-4 py-1 border rounded text-sm bg-white dark:bg-gray-700"
-              value={selectedMonth}
-              onChange={(e) => {
-                setSelectedMonth(e.target.value);
-                setCurrentPage(1);
-              }}
-            />
-          </div>
-        </div>
+        <input
+          type="month"
+          className="pl-8 pr-4 py-1 border rounded text-sm bg-white dark:bg-gray-700"
+          value={selectedMonth}
+          onChange={(e) => {
+            setSelectedMonth(e.target.value);
+            setCurrentPage(1);
+          }}
+        />
 
-        {/* Status filter now uses the store’s activeStatus */}
         <select
           className="border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700"
           value={activeStatus}
@@ -256,13 +230,7 @@ export default function EmployeeLeaveHistory() {
           <option value="rejected">Rejected</option>
         </select>
 
-        <div className="flex items-center gap-2">
-          <ExportButtons
-            data={exportData}
-            columns={columns}
-            filename="EmployeeLeaveHistory"
-          />
-        </div>
+        <ExportButtons data={exportData} columns={columns} filename="EmployeeLeaveHistory" />
 
         <button
           onClick={() => setShowApplyModal(true)}
@@ -274,70 +242,40 @@ export default function EmployeeLeaveHistory() {
 
       {/* Table */}
       {isLoading ? (
-        <div
-          className="flex justify-center items-center"
-          style={{ height: "200px" }}
-        >
+        <div className="flex justify-center items-center" style={{ height: "200px" }}>
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
         </div>
       ) : filteredData.length > 0 ? (
-        <motion.div
-          className="bg-bg-secondary rounded-md shadow overflow-x-auto"
-          variants={tableContainerVariants}
-          initial="hidden"
-          animate="visible"
-        >
+        <motion.div className="bg-bg-secondary rounded-md shadow overflow-x-auto">
           <motion.table className="w-full text-left border-collapse min-w-max">
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th className="p-3 text-sm font-semibold">S.L</th>
-                <th className="p-3 text-sm font-semibold">Leave Type</th>
-                <th className="p-3 text-sm font-semibold">From</th>
-                <th className="p-3 text-sm font-semibold">To</th>
-                <th className="p-3 text-sm font-semibold">Days</th>
-                <th className="p-3 text-sm font-semibold">Reason for Leave</th>
-                <th className="p-3 text-sm font-semibold">Leave Category</th>
-                <th className="p-3 text-sm font-semibold">Processed By</th>
-                <th className="p-3 text-sm font-semibold">Reason For Reject</th>
-                <th className="p-3 text-sm font-semibold">Status</th>
+                {columns.map((col) => (
+                  <th key={col.dataKey} className="p-3 text-sm font-semibold">{col.header}</th>
+                ))}
               </tr>
             </thead>
             <tbody>
               {paginatedData.map((entry, index) => (
                 <motion.tr
                   key={entry._id || entry.id}
-                  variants={tableRowVariants}
                   onClick={() => setSelectedLeave(entry)}
                   className="cursor-pointer border-b last:border-b-0 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
                 >
-                  <td className="p-3 text-sm">
-                    {(currentPage - 1) * pageSize + index + 1}
-                  </td>
-                  <td className="p-3 text-sm">{entry.leave_Type}</td>
-                  <td className="p-3 text-sm">
-                    {new Date(entry.leave_From).toLocaleDateString()}
-                  </td>
-                  <td className="p-3 text-sm">
-                    {new Date(entry.leave_To).toLocaleDateString()}
-                  </td>
+                  <td className="p-3 text-sm">{(currentPage - 1) * pageSize + index + 1}</td>
+                  <td className="p-3 text-sm">{entry.leaveType?.name || "N/A"}</td>
+                  <td className="p-3 text-sm">{new Date(entry.leave_From).toLocaleDateString()}</td>
+                  <td className="p-3 text-sm">{new Date(entry.leave_To).toLocaleDateString()}</td>
                   <td className="p-3 text-sm">{entry.no_Of_Days}</td>
                   <td className="p-3 text-sm">
-                    {entry.reason_For_Leave &&
-                    entry.reason_For_Leave.split(" ").length > 3
-                      ? entry.reason_For_Leave
-                          .split(" ")
-                          .slice(0, 3)
-                          .join(" ") + "..."
+                    {entry.reason_For_Leave?.split(" ").length > 3
+                      ? entry.reason_For_Leave.split(" ").slice(0, 3).join(" ") + "..."
                       : entry.reason_For_Leave}
                   </td>
                   <td className="p-3 text-sm">
-                    {entry.is_Paid === null
-                      ? "Pending"
-                      : entry.is_Paid
-                      ? "Paid"
-                      : "Unpaid"}
+                    {entry.is_Paid === null ? "Pending" : entry.is_Paid ? "Paid" : "Unpaid"}
                   </td>
                   <td className="p-3 text-sm">
                     {entry.leave_Status === "approved" && entry.approved_By
@@ -346,9 +284,10 @@ export default function EmployeeLeaveHistory() {
                       ? `Rejected by ${entry.rejected_By.first_Name} ${entry.rejected_By.last_Name}`
                       : "Pending"}
                   </td>
-                  <td className="p-3 text-sm">
-                    {entry.reason_For_Reject || "N/A"}
-                  </td>
+                  <td className="p-3 text-sm">{entry.reason_For_Reject || "N/A"}</td>
+                  <td className="p-3 text-sm">{entry.emergencyContact || "N/A"}</td>
+                  <td className="p-3 text-sm">{entry.workHandover || "N/A"}</td>
+                  <td className="p-3 text-sm">{entry.is_Half_Day ? "Yes" : "No"}</td>
                   <td className="p-3 text-sm">
                     <span
                       className={`px-2 py-1 text-xs font-semibold rounded ${
@@ -359,19 +298,15 @@ export default function EmployeeLeaveHistory() {
                           : "bg-red-50 text-red-700"
                       }`}
                     >
-                      {entry.leave_Status.charAt(0).toUpperCase() +
-                        entry.leave_Status.slice(1)}
+                      {entry.leave_Status.charAt(0).toUpperCase() + entry.leave_Status.slice(1)}
                     </span>
                   </td>
                 </motion.tr>
               ))}
             </tbody>
           </motion.table>
-
           <div className="flex justify-between items-center p-3 gap-2 text-sm">
-            <div>
-              Showing {paginatedData.length} of {filteredData.length} entries
-            </div>
+            <div>Showing {paginatedData.length} of {filteredData.length} entries</div>
             <div className="flex items-center space-x-1">
               {Array.from({ length: totalPages }, (_, i) => (
                 <button
@@ -395,14 +330,8 @@ export default function EmployeeLeaveHistory() {
         </div>
       )}
 
-      <LeaveDetailsModal
-        leave={selectedLeave}
-        onClose={() => setSelectedLeave(null)}
-      />
-      <ApplyLeaveModal
-        show={showApplyModal}
-        onClose={() => setShowApplyModal(false)}
-      />
+      <LeaveDetailsModal leave={selectedLeave} onClose={() => setSelectedLeave(null)} />
+      <ApplyLeaveModal show={showApplyModal} onClose={() => setShowApplyModal(false)} totalPaidLeaves={leaveCount.remainingPaidLeaves} />
     </div>
   );
 }

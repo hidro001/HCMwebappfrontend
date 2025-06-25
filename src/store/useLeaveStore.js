@@ -28,10 +28,11 @@ const useLeaveStore = create((set, get) => ({
   },
 
   // Handle (approve/reject) a leave request
-  handleLeaveRequest: async (leaveId, action, extraData) => {
+  handleLeaveRequest: async (leaveId, action, reason_For_Reject) => {
     set({ isLoading: true });
+    console.log(reason_For_Reject)
     try {
-      const data = { action, ...extraData };
+      const data = { action, reason_For_Reject };
       await axiosInstance.put(`/leaves/handle-leave/${leaveId}`, data);
       toast.success(`Leave request ${action} successfully`);
       // Refresh leaves after the update

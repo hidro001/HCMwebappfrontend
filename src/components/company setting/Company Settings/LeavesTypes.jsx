@@ -1216,6 +1216,7 @@
 
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   FaChevronDown, 
   FaChevronUp, 
@@ -1230,14 +1231,30 @@ import {
   FaToggleOn,
   FaToggleOff,
   FaSpinner,
-  FaPlus
+  FaPlus,
+  FaSearch,
+  FaFilter,
+  FaUmbrellaBeach,
+  FaListAlt,
+  FaEye,
+  FaEyeSlash
 } from 'react-icons/fa';
+import {
+  HiCalendar,
+  HiPlus,
+  HiPencil,
+  HiTrash,
+  HiSearch,
+  HiFilter,
+  HiEye,
+  HiEyeOff
+} from 'react-icons/hi';
+import { LuToggleLeft } from 'react-icons/lu';
 import LeaveType from "./models/LeaveTypeModel";
 import leaveTypeStore from "../../../store/leaveTypeStore";
 import ConfirmationDialog from "../../common/ConfirmationDialog.jsx";
 
 export default function LeavesTypes() {
-
   const {
     leaveTypes,
     isLoading,

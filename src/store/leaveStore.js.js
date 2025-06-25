@@ -4,6 +4,7 @@ import axiosInstance from "../service/axiosInstance";
 import toast from "react-hot-toast";
 
 const useLeaveStore = create((set, get) => ({
+  
   // State variables
   leaves: [],
   isLoading: false,

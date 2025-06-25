@@ -106,7 +106,6 @@ function mapEmployeeToFormDefaults(employeeData) {
     designation: employeeData.designation || "",
     employee_Type: employeeData.employee_Type || "",
     departmentAllocated: employeeData.department || "",
-    no_of_Paid_Leave: employeeData.no_of_Paid_Leave || 0,
     employee_Id: employeeData.employee_Id || "",
     mobile_No: employeeData.mobile_No || "",
     personal_Email_Id: employeeData.personal_Email_Id || "",

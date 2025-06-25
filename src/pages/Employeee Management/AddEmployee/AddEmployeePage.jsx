@@ -56,6 +56,7 @@ export default function AddEmployeePage() {
     loadBreakRecords,
     loadPermissionRoles,
     loadDesignations,
+    loadLeaveTypes,
   } = useEmployeeStore();
 
   // 2) On mount, load the store-based dropdown data
@@ -66,6 +67,7 @@ export default function AddEmployeePage() {
     loadBreakRecords();
     loadPermissionRoles();
     loadDesignations();
+    loadLeaveTypes();
   }, [
     loadDepartments,
     loadShiftTimings,
@@ -73,6 +75,7 @@ export default function AddEmployeePage() {
     loadBreakRecords,
     loadPermissionRoles,
     loadDesignations,
+    loadLeaveTypes,
   ]);
 
   // 3) Excel columns (the first row in the final sheet)
@@ -97,7 +100,7 @@ export default function AddEmployeePage() {
     "salary",
     "current_Base_Salary",
     "otp",
-    "no_of_Paid_Leave",
+    "assigned_leaves",
     "employee_Type", // dropdown
     "office_address",
     "latitude",

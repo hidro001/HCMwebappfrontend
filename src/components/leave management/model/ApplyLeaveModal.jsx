@@ -1,331 +1,38 @@
-// import React, { useEffect, useState } from "react";
-// import BaseModal from "../../common/BaseModal";
-// import { useForm } from "react-hook-form";
-// import useLeaveStore from "../../../store/leaveStore.js";
-// import ConfirmationDialog from "../../common/ConfirmationDialog";
-// import toast from "react-hot-toast";
-
-// export default function ApplyLeaveModal({ show, onClose }) {
-//   const { applyLeave, userProfile, leaveTypes } = useLeaveStore();
-//   const {
-//     register,
-//     handleSubmit,
-//     watch,
-//     setValue,
-//     reset,
-//     formState: { errors },
-//   } = useForm({
-//     defaultValues: {
-//       leave_Type: "",
-//       leave_From: "",
-//       leave_To: "",
-//       no_Of_Days: 0,
-//       reason_For_Leave: "",
-//       half_Day_Session: "",
-//       leave_HalfDay: false,
-//     },
-//   });
-
-//   const leave_From = watch("leave_From");
-//   const leave_To = watch("leave_To");
-//   const leave_HalfDay = watch("leave_HalfDay");
-
-//   useEffect(() => {
-//     if (leave_HalfDay && leave_To) {
-//       setValue("leave_From", leave_To);
-//     }
-//   }, [leave_HalfDay, leave_To, setValue]);
-
-//   useEffect(() => {
-//     if (leave_From) {
-//       const fromDate = new Date(leave_From);
-//       const toDate = leave_To ? new Date(leave_To) : fromDate;
-//       let diff =
-//         Math.ceil((toDate.getTime() - fromDate.getTime()) / (1000 * 3600 * 24)) + 1;
-//       if (diff < 1) diff = 1;
-//       if (leave_HalfDay) {
-//         // If half-day and single day, use 0.5; else subtract 0.5 from multi-day leaves
-//         setValue("no_Of_Days", diff === 1 ? 0.5 : diff - 0.5);
-//       } else {
-//         setValue("no_Of_Days", diff);
-//       }
-//     } else {
-//       setValue("no_Of_Days", 0);
-//     }
-//   }, [leave_From, leave_To, leave_HalfDay, setValue]);
-
-//   const [confirmOpen, setConfirmOpen] = useState(false);
-//   const [formData, setFormData] = useState(null);
-
-//   const onSubmit = (data) => {
-//     // Additional validations
-//     if (data.leave_HalfDay && data.no_Of_Days > 0.5) {
-//       toast.error("For half-day leaves, the number of days cannot exceed 0.5.");
-//       return;
-//     }
-//     if (new Date(data.leave_From) > new Date(data.leave_To)) {
-//       toast.error("From date cannot be after To date");
-//       return;
-//     }
-//     if (data.leave_HalfDay && !data.half_Day_Session) {
-//       toast.error("Please select a session for half-day leave.");
-//       return;
-//     }
-//     setFormData(data);
-//     setConfirmOpen(true);
-//   };
-
-//   const handleConfirm = async () => {
-//     setConfirmOpen(false);
-//     try {
-//       await applyLeave(formData);
-//       reset();
-//       onClose();
-//     } catch (error) {
-//       // Error is already handled in the store
-//     }
-//   };
-
-//   const handleCancel = () => {
-//     setConfirmOpen(false);
-//   };
-
-//   return (
-//     <>
-//       <BaseModal isOpen={show} onClose={onClose}>
-//         <div className="bg-white dark:bg-gray-800 p-6 rounded-md w-11/12 md:w-1/2 relative">
-//           <h3 className="text-xl font-bold mb-4">Apply for Leave</h3>
-//           <div className="mb-4">
-//             <strong>Paid Leave: </strong>{" "}
-//             {userProfile ? userProfile.no_of_Paid_Leave : 0}
-//           </div>
-//           <form onSubmit={handleSubmit(onSubmit)}>
-//             {/* Leave Type */}
-//             <div className="mb-4">
-//               <label className="block text-sm font-semibold mb-1">
-//                 Leave Type
-//               </label>
-//               <select
-//                 {...register("leave_Type", { required: true })}
-//                 className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-//               >
-//                 <option value="">Select Leave Type</option>
-//                 {leaveTypes &&
-//                   leaveTypes.map((type, index) => (
-//                     <option key={index} value={type}>
-//                       {type}
-//                     </option>
-//                   ))}
-//               </select>
-//               {errors.leave_Type && (
-//                 <span className="text-red-500 text-sm">
-//                   This field is required
-//                 </span>
-//               )}
-//             </div>
-
-//             {/* Half Day Toggle */}
-//             <div className="mb-4 flex items-center gap-2">
-//               <label className="text-sm font-semibold">Half Day</label>
-//               <input type="checkbox" {...register("leave_HalfDay")} />
-//             </div>
-
-//             {/* If NOT half-day */}
-//             {!leave_HalfDay && (
-//               <>
-//                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-//                   <div>
-//                     <label className="block text-sm font-semibold mb-1">
-//                       From Date
-//                     </label>
-//                     <input
-//                       type="date"
-//                       {...register("leave_From", { required: true })}
-//                       className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-//                       min={new Date().toISOString().split("T")[0]}
-//                     />
-//                     {errors.leave_From && (
-//                       <span className="text-red-500 text-sm">Required</span>
-//                     )}
-//                   </div>
-//                   <div>
-//                     <label className="block text-sm font-semibold mb-1">
-//                       To Date
-//                     </label>
-//                     <input
-//                       type="date"
-//                       {...register("leave_To", { required: true })}
-//                       className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-//                       min={leave_From || new Date().toISOString().split("T")[0]}
-//                     />
-//                     {errors.leave_To && (
-//                       <span className="text-red-500 text-sm">Required</span>
-//                     )}
-//                   </div>
-//                   <div>
-//                     <label className="block text-sm font-semibold mb-1">
-//                       Number of Days
-//                     </label>
-//                     <input
-//                       type="number"
-//                       {...register("no_Of_Days")}
-//                       className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-//                       disabled
-//                     />
-//                   </div>
-//                 </div>
-//                 <div className="mb-4">
-//                   <label className="block text-sm font-semibold mb-1">
-//                     Reason for Leave
-//                   </label>
-//                   <textarea
-//                     {...register("reason_For_Leave", { required: true })}
-//                     className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-//                     rows="4"
-//                   ></textarea>
-//                   {errors.reason_For_Leave && (
-//                     <span className="text-red-500 text-sm">Required</span>
-//                   )}
-//                 </div>
-//               </>
-//             )}
-
-//             {/* If half-day */}
-//             {leave_HalfDay && (
-//               <div className="grid grid-cols-1 gap-4 mb-4">
-//                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-//                   <div>
-//                     <label className="block text-sm font-semibold mb-1">
-//                       Half-Day Session
-//                     </label>
-//                     <select
-//                       {...register("half_Day_Session", { required: leave_HalfDay })}
-//                       className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-//                     >
-//                       <option value="">Select Session</option>
-//                       <option value="morning">Morning</option>
-//                       <option value="afternoon">Afternoon</option>
-//                     </select>
-//                     {errors.half_Day_Session && (
-//                       <span className="text-red-500 text-sm">Required</span>
-//                     )}
-//                   </div>
-//                   <div>
-//                     <label className="block text-sm font-semibold mb-1">
-//                       To Date
-//                     </label>
-//                     <input
-//                       type="date"
-//                       {...register("leave_To", { required: leave_HalfDay })}
-//                       className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-//                       min={new Date().toISOString().split("T")[0]}
-//                     />
-//                     {errors.leave_To && (
-//                       <span className="text-red-500 text-sm">Required</span>
-//                     )}
-//                   </div>
-//                 </div>
-//                 <div>
-//                   <label className="block text-sm font-semibold mb-1">
-//                     Reason for Leave
-//                   </label>
-//                   <textarea
-//                     {...register("reason_For_Leave", { required: true })}
-//                     className="w-full border rounded px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-//                     rows="4"
-//                   ></textarea>
-//                   {errors.reason_For_Leave && (
-//                     <span className="text-red-500 text-sm">Required</span>
-//                   )}
-//                 </div>
-//               </div>
-//             )}
-
-//             <div className="flex justify-end gap-2">
-//               <button
-//                 type="button"
-//                 onClick={onClose}
-//                 className="px-4 py-2 border rounded text-orange-500 hover:bg-orange-50"
-//               >
-//                 Cancel
-//               </button>
-//               <button
-//                 type="submit"
-//                 className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-500"
-//               >
-//                 Apply Leave
-//               </button>
-//             </div>
-//           </form>
-//         </div>
-//       </BaseModal>
-//       <ConfirmationDialog
-//         open={confirmOpen}
-//         title="Confirm Leave Application"
-//         message={
-//           <>
-//             <p>
-//               <strong>Leave Type:</strong> {formData?.leave_Type}
-//             </p>
-//             <p>
-//               <strong>Half-Day:</strong>{" "}
-//               {formData?.leave_HalfDay ? "Yes" : "No"}
-//             </p>
-//             {formData?.leave_HalfDay && (
-//               <p>
-//                 <strong>Session:</strong> {formData?.half_Day_Session}
-//               </p>
-//             )}
-//             <p>
-//               <strong>From:</strong> {formData?.leave_From}
-//             </p>
-//             <p>
-//               <strong>To:</strong> {formData?.leave_To}
-//             </p>
-//             <p>
-//               <strong>Number of Days:</strong> {formData?.no_Of_Days}
-//             </p>
-//             <p>
-//               <strong>Reason:</strong> {formData?.reason_For_Leave}
-//             </p>
-//           </>
-//         }
-//         onConfirm={handleConfirm}
-//         onCancel={handleCancel}
-//         confirmText="Yes, Apply"
-//         cancelText="Cancel"
-//       />
-//     </>
-//   );
-// }
-
-
 import React, { useState, useEffect } from 'react';
-import { 
-  FaCalendarAlt, 
-  FaUser, 
-  FaFileUpload, 
-  FaPaperPlane, 
-  FaTimes, 
-  FaInfoCircle,
-  FaCheckCircle,
-  FaExclamationTriangle,
-  FaClock,
-  FaFileAlt,
-  FaSpinner,
-  FaChevronLeft,
-  FaChevronRight
-} from 'react-icons/fa';
+import {  FaCalendarAlt,  FaUser,  FaFileUpload,  FaPaperPlane,  FaTimes,  FaInfoCircle, FaCheckCircle, FaExclamationTriangle, FaClock, FaFileAlt, FaSpinner, FaChevronLeft, FaChevronRight, FaMoon, FaSun} from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
+import useAuthStore from "../../../store/store";
 import BaseModal from '../../common/BaseModal';
+import leaveTypeStore from "../../../store/leaveTypeStore";
+import useLeaveStore from '../../../store/leaveStore.js';
 
-export default function ApplyLeaveModal({ show, onClose }) {
-  const [leaveTypes, setLeaveTypes] = useState([]);
-  const [isLoadingLeaveTypes, setIsLoadingLeaveTypes] = useState(true);
+
+const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
+
+  const {
+    assignedLeaveTypes,
+    isLoading,
+    error,
+    fetchAssignedLeaveTypeById
+  } = leaveTypeStore();
+
+  const {
+    applyLeave
+  } = useLeaveStore()
+
+   const authStore = useAuthStore();
+   const userEmplId = authStore.employeeId
+
   const [formData, setFormData] = useState({
     leaveType: '',
-    startDate: '',
-    endDate: '',
-    reason: '',
+    leave_From: '',
+    leave_To: '',
+    no_Of_Days: '',
+    Unpaid_Days: '',
+    isHalfDay: false,
+    halfDayPeriod: '', 
+    halfDayPosition: 'end', 
+    reason_For_Leave: '',
     documents: null,
     emergencyContact: '',
     workHandover: ''
@@ -339,125 +46,43 @@ export default function ApplyLeaveModal({ show, onClose }) {
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectingStartDate, setSelectingStartDate] = useState(true);
+  const [manualDaysEntry, setManualDaysEntry] = useState(false);
 
-  // Fetch leave types on component mount
   useEffect(() => {
-    fetchLeaveTypes();
-  }, []);
+    fetchAssignedLeaveTypeById(userEmplId)
+  }, [ fetchAssignedLeaveTypeById]);
 
-  const fetchLeaveTypes = async () => {
-    setIsLoadingLeaveTypes(true);
-    try {
-      // Replace with your actual API endpoint
-      // const response = await fetch('/api/leave-types');
-      // const data = await response.json();
-      
-      // Mock data for demonstration - replace with actual API call
-      const mockData = [
-        {
-          _id: '1',
-          name: 'Annual Leave',
-          description: 'Yearly vacation entitlement for rest and recreation',
-          category: 'paid',
-          maxDays: 21,
-          isActive: true,
-          documentsRequired: 'Not Required',
-          advanceNotice: '7 days minimum',
-          eligibility: 'All permanent employees after probation period',
-          color: 'bg-green-500',
-          policies: [
-            'Must be taken within calendar year',
-            'Cannot exceed 5 consecutive days without senior approval',
-            'Minimum 2 days notice for single day leave'
-          ]
-        },
-        {
-          _id: '2',
-          name: 'Sick Leave',
-          description: 'Medical leave for health-related absences',
-          category: 'paid',
-          maxDays: 10,
-          isActive: true,
-          documentsRequired: 'Medical Certificate (for 3+ consecutive days)',
-          advanceNotice: 'Immediate notification required',
-          eligibility: 'All employees from day one',
-          color: 'bg-red-500',
-          policies: [
-            'Medical certificate required for 3+ consecutive days',
-            'Must notify supervisor within 2 hours of shift start',
-            'Can be taken without advance notice in emergencies'
-          ]
-        },
-        {
-          _id: '3',
-          name: 'Maternity Leave',
-          description: 'Extended leave for new mothers',
-          category: 'paid',
-          maxDays: 90,
-          isActive: true,
-          documentsRequired: 'Medical Certificate and Pregnancy Confirmation',
-          advanceNotice: '30 days before expected date',
-          eligibility: 'Female employees with 6+ months tenure',
-          color: 'bg-pink-500',
-          policies: [
-            'Medical certificate mandatory',
-            '30 days advance notice required',
-            'Can be extended with medical recommendation'
-          ]
-        },
-        {
-          _id: '4',
-          name: 'Personal Leave',
-          description: 'Unpaid leave for personal matters',
-          category: 'unpaid',
-          maxDays: 5,
-          isActive: true,
-          documentsRequired: 'Written justification letter',
-          advanceNotice: '14 days minimum',
-          eligibility: 'Employees with 1+ year tenure',
-          color: 'bg-blue-500',
-          policies: [
-            '14 days advance notice required',
-            'Subject to manager and HR approval',
-            'Cannot be taken during peak business periods'
-          ]
-        },
-        {
-          _id: '5',
-          name: 'Emergency Leave',
-          description: 'Immediate leave for family emergencies',
-          category: 'mixed',
-          maxDays: 3,
-          isActive: true,
-          documentsRequired: 'Emergency documentation (hospital records, etc.)',
-          advanceNotice: 'Immediate notification',
-          eligibility: 'All employees',
-          color: 'bg-orange-500',
-          policies: [
-            'Must provide documentation within 48 hours',
-            'First day paid, subsequent days unpaid',
-            'Can be converted to other leave types if available'
-          ]
-        }
-      ];
 
-      // Filter only active leave types
-      const activeLeaveTypes = mockData.filter(lt => lt.isActive);
-      setLeaveTypes(activeLeaveTypes);
-    } catch (error) {
-      console.error('Error fetching leave types:', error);
-      setErrors({ api: 'Failed to load leave types. Please refresh the page.' });
-    } finally {
-      setIsLoadingLeaveTypes(false);
+  // Check if documents are required based on leave type and days
+  const getDocumentRequirement = () => {
+    if (!selectedLeaveType) return { required: false, reason: '' };
+    
+    // For sick leave, check if days exceed policy limit
+    if (selectedLeaveType.name === 'Sick Leave' && selectedLeaveType.noDocumentLimit) {
+      const requestedDays = parseFloat(formData.no_Of_Days) || calculatedDays;
+      if (requestedDays > selectedLeaveType.noDocumentLimit) {
+        return { 
+          required: true, 
+          reason: `Medical certificate required for more than ${selectedLeaveType.noDocumentLimit} days` 
+        };
+      }
+      return { required: false, reason: 'No documents required for this duration' };
     }
+    
+    // For other leave types, use the standard requirement
+    return { 
+      required: selectedLeaveType.documentsRequired !== 'Not Required',
+      reason: selectedLeaveType.documentsRequired 
+    };
   };
 
-  // Calculate working days between two dates (excluding weekends)
-  const calculateWorkingDays = (startDate, endDate) => {
-    if (!startDate || !endDate) return 0;
+  const documentRequirement = getDocumentRequirement();
+
+  const calculateWorkingDays = (leave_From, leave_To) => {
+    if (!leave_From || !leave_To) return 0;
     
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+    const start = new Date(leave_From);
+    const end = new Date(leave_To);
     let count = 0;
     
     const current = new Date(start);
@@ -474,38 +99,48 @@ export default function ApplyLeaveModal({ show, onClose }) {
 
   // Update calculated days when dates change
   useEffect(() => {
-    if (formData.startDate && formData.endDate) {
-      const days = calculateWorkingDays(formData.startDate, formData.endDate);
-      setCalculatedDays(days);
-    } else {
-      setCalculatedDays(0);
-    }
-  }, [formData.startDate, formData.endDate]);
+    if (formData.leave_From && !manualDaysEntry) {
+      let days;
+      if (formData.leave_To) {
+        days = calculateWorkingDays(formData.leave_From, formData.leave_To);
+        
+        if (formData.isHalfDay) {
+          days = days - 0.5;
+        }
+      } else if (formData.isHalfDay && formData.leave_From) {
 
-  // Extract days from advance notice text
+        days = 0.5;
+      } else if (formData.leave_From) {
+
+        days = 1;
+      }
+      
+      if (days !== undefined) {
+        setCalculatedDays(days);
+        setFormData(prev => ({ ...prev, no_Of_Days: days.toString() }));
+      }
+    }
+  }, [formData.leave_From, formData.leave_To, formData.isHalfDay, manualDaysEntry]);
+
   const extractDaysFromAdvanceNotice = (advanceNotice) => {
     if (!advanceNotice) return 0;
     
-    const lowerNotice = advanceNotice.toLowerCase();
+    const lowerNotice = advanceNotice?.toLowerCase();
     
-    // Handle immediate cases
     if (lowerNotice.includes('immediate') || lowerNotice.includes('same day')) {
       return 0;
     }
     
-    // Extract number followed by "day" or "days"
     const dayMatch = lowerNotice.match(/(\d+)\s*days?/);
     if (dayMatch) {
       return parseInt(dayMatch[1], 10);
     }
     
-    // Extract number followed by "week" or "weeks"
     const weekMatch = lowerNotice.match(/(\d+)\s*weeks?/);
     if (weekMatch) {
       return parseInt(weekMatch[1], 10) * 7;
     }
     
-    // Extract number followed by "month" or "months"
     const monthMatch = lowerNotice.match(/(\d+)\s*months?/);
     if (monthMatch) {
       return parseInt(monthMatch[1], 10) * 30;
@@ -514,7 +149,6 @@ export default function ApplyLeaveModal({ show, onClose }) {
     return 0;
   };
 
-  // Get minimum date based on advance notice
   const getMinDate = () => {
     const today = new Date();
     if (selectedLeaveType && selectedLeaveType.advanceNotice) {
@@ -524,7 +158,6 @@ export default function ApplyLeaveModal({ show, onClose }) {
     return today.toISOString().split('T')[0];
   };
 
-  // Get advance notice information
   const getAdvanceNoticeInfo = () => {
     if (!selectedLeaveType) return null;
     
@@ -539,20 +172,23 @@ export default function ApplyLeaveModal({ show, onClose }) {
     };
   };
 
-  // Check if documents are required
-  const documentsRequired = selectedLeaveType && selectedLeaveType.documentsRequired !== 'Not Required';
-
   // Handle leave type selection
   const handleLeaveTypeChange = (leaveTypeId) => {
-    const leaveType = leaveTypes.find(lt => lt._id === leaveTypeId);
+    const leaveType = assignedLeaveTypes.find(lt => lt._id === leaveTypeId);
     setSelectedLeaveType(leaveType);
     setFormData(prev => ({
       ...prev,
       leaveType: leaveTypeId,
-      startDate: '',
-      endDate: '',
+      leave_From: '',
+      leave_To: '',
+      no_Of_Days: '',
+      isHalfDay: false,
+      halfDayPeriod: '',
+      halfDayPosition: 'end',
       documents: null
     }));
+    setCalculatedDays(0);
+    setManualDaysEntry(false);
     setErrors({});
   };
 
@@ -562,6 +198,27 @@ export default function ApplyLeaveModal({ show, onClose }) {
       ...prev,
       [field]: value
     }));
+    
+    if (field === 'no_Of_Days') {
+      setManualDaysEntry(true);
+      const numDays = parseFloat(value);
+      if (!isNaN(numDays)) {
+        setCalculatedDays(numDays);
+      }
+    }
+    
+    if (field === 'isHalfDay') {
+      if (!value) {
+        // If disabling half day, clear half day related fields
+        setFormData(prev => ({ 
+          ...prev, 
+          halfDayPeriod: '', 
+          halfDayPosition: 'end'
+        }));
+      }
+      // Don't automatically set days or disable manual entry when half day is toggled
+      setManualDaysEntry(false);
+    }
     
     // Clear specific field errors
     if (errors[field]) {
@@ -576,7 +233,6 @@ export default function ApplyLeaveModal({ show, onClose }) {
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
-      // Check file size (5MB limit)
       if (file.size > 5 * 1024 * 1024) {
         setErrors(prev => ({
           ...prev,
@@ -585,7 +241,6 @@ export default function ApplyLeaveModal({ show, onClose }) {
         return;
       }
       
-      // Check file type
       const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
       if (!allowedTypes.includes(file.type)) {
         setErrors(prev => ({
@@ -615,7 +270,6 @@ export default function ApplyLeaveModal({ show, onClose }) {
       ...prev,
       documents: null
     }));
-    // Reset file input
     const fileInput = document.getElementById('documents');
     if (fileInput) fileInput.value = '';
   };
@@ -628,25 +282,45 @@ export default function ApplyLeaveModal({ show, onClose }) {
       newErrors.leaveType = 'Please select a leave type';
     }
 
-    if (!formData.startDate) {
-      newErrors.startDate = 'Please select start date';
+    if (!formData.no_Of_Days) {
+      newErrors.no_Of_Days = 'Please specify number of days';
+    } else {
+      const days = parseFloat(formData.no_Of_Days);
+      if (isNaN(days) || days <= 0) {
+        newErrors.no_Of_Days = 'Please enter a valid number of days';
+      } else if (days > 365) {
+        newErrors.no_Of_Days = 'Cannot exceed 365 days';
+      }
     }
 
-    if (!formData.endDate) {
-      newErrors.endDate = 'Please select end date';
+    if (!formData.leave_From) {
+      newErrors.leave_From = 'Please select start date';
     }
 
-    if (formData.startDate && formData.endDate) {
-      const start = new Date(formData.startDate);
-      const end = new Date(formData.endDate);
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+    // For multi-day leaves or when end date is needed
+    if (!formData.isHalfDay || (formData.isHalfDay && parseFloat(formData.no_Of_Days) > 0.5)) {
+      if (!formData.leave_To && !manualDaysEntry) {
+        newErrors.leave_To = 'Please select end date or enter days manually';
+      }
+    }
+
+    if (formData.isHalfDay) {
+      if (!formData.halfDayPeriod) {
+        newErrors.halfDayPeriod = 'Please select first half or second half';
+      }
+      if (!formData.halfDayPosition) {
+        newErrors.halfDayPosition = 'Please specify which day is the half day';
+      }
+    }
+
+    if (formData.leave_From && formData.leave_To) {
+      const start = new Date(formData.leave_From);
+      const end = new Date(formData.leave_To);
       
       if (end < start) {
-        newErrors.endDate = 'End date cannot be before start date';
+        newErrors.leave_To = 'End date cannot be before start date';
       }
       
-      // Check advance notice requirement
       if (selectedLeaveType) {
         const advanceNoticeDays = extractDaysFromAdvanceNotice(selectedLeaveType.advanceNotice);
         const minAllowedDate = new Date();
@@ -654,24 +328,18 @@ export default function ApplyLeaveModal({ show, onClose }) {
         minAllowedDate.setHours(0, 0, 0, 0);
         
         if (start < minAllowedDate) {
-          newErrors.startDate = `Start date must be at least ${advanceNoticeDays} days from today (${selectedLeaveType.advanceNotice})`;
+          newErrors.leave_From = `Start date must be at least ${advanceNoticeDays} days from today (${selectedLeaveType.advanceNotice})`;
         }
       }
-      
-      if (selectedLeaveType && calculatedDays > selectedLeaveType.maxDays) {
-        newErrors.endDate = `Cannot exceed ${selectedLeaveType.maxDays} days for ${selectedLeaveType.name}`;
-      }
     }
 
-    if (!formData.reason.trim()) {
-      newErrors.reason = 'Please provide a reason for leave';
-    } else if (formData.reason.trim().length < 10) {
-      newErrors.reason = 'Reason must be at least 10 characters';
+    if (!formData.reason_For_Leave.trim()) {
+      newErrors.reason_For_Leave = 'Please provide a reason for leave';
+    } else if (formData.reason_For_Leave.trim().length < 10) {
+      newErrors.reason_For_Leave = 'Reason must be at least 10 characters';
     }
 
-    if (selectedLeaveType && 
-        selectedLeaveType.documentsRequired !== 'Not Required' && 
-        !formData.documents) {
+    if (documentRequirement.required && !formData.documents) {
       newErrors.documents = 'Required document must be uploaded';
     }
 
@@ -694,49 +362,30 @@ export default function ApplyLeaveModal({ show, onClose }) {
     setIsSubmitting(true);
     
     try {
-      // Create FormData for file upload
       const submitData = new FormData();
       submitData.append('leaveType', formData.leaveType);
-      submitData.append('startDate', formData.startDate);
-      submitData.append('endDate', formData.endDate);
-      submitData.append('reason', formData.reason);
+      submitData.append('leave_From', formData.leave_From);
+      submitData.append('leave_To', formData.leave_To || formData.leave_From);
+      submitData.append('no_Of_Days', formData.no_Of_Days);
+      submitData.append('isHalfDay', formData.isHalfDay);
+      if (formData.isHalfDay) {
+        submitData.append('halfDayPeriod', formData.halfDayPeriod);
+        submitData.append('halfDayPosition', formData.halfDayPosition);
+      }
+      submitData.append('reason_For_Leave', formData.reason_For_Leave);
       submitData.append('emergencyContact', formData.emergencyContact);
       submitData.append('workHandover', formData.workHandover);
-      submitData.append('totalDays', calculatedDays);
       
       if (formData.documents) {
         submitData.append('documents', formData.documents);
       }
 
-      // Replace with your actual API endpoint
-      // const response = await fetch('/api/leave-applications', {
-      //   method: 'POST',
-      //   body: submitData
-      // });
-      
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+       const result = await applyLeave(submitData); 
+        if(result){
       setShowSuccess(true);
-      
-      // Reset form after success
-      setTimeout(() => {
-        setFormData({
-          leaveType: '',
-          startDate: '',
-          endDate: '',
-          reason: '',
-          documents: null,
-          emergencyContact: '',
-          workHandover: ''
-        });
-        setSelectedLeaveType(null);
-        setCalculatedDays(0);
-        setShowSuccess(false);
-        // Reset file input
-        const fileInput = document.getElementById('documents');
-        if (fileInput) fileInput.value = '';
-      }, 3000);
+        }
+     
       
     } catch (error) {
       console.error('Submission error:', error);
@@ -746,55 +395,35 @@ export default function ApplyLeaveModal({ show, onClose }) {
     }
   };
 
-  // // Get minimum date based on advance notice
-  // const getMinDate = () => {
-  //   const today = new Date();
-  //   if (selectedLeaveType && selectedLeaveType.advanceNotice) {
-  //     const advanceNoticeDays = extractDaysFromAdvanceNotice(selectedLeaveType.advanceNotice);
-  //     today.setDate(today.getDate() + advanceNoticeDays);
-  //   }
-  //   return today.toISOString().split('T')[0];
-  // };
-
-  // // Extract days from advance notice text
-  // const extractDaysFromAdvanceNotice = (advanceNotice) => {
-  //   if (!advanceNotice) return 0;
-    
-  //   const lowerNotice = advanceNotice.toLowerCase();
-    
-  //   // Handle immediate cases
-  //   if (lowerNotice.includes('immediate') || lowerNotice.includes('same day')) {
-  //     return 0;
-  //   }
-    
-  //   // Extract number followed by "day" or "days"
-  //   const dayMatch = lowerNotice.match(/(\d+)\s*days?/);
-  //   if (dayMatch) {
-  //     return parseInt(dayMatch[1], 10);
-  //   }
-    
-  //   // Extract number followed by "week" or "weeks"
-  //   const weekMatch = lowerNotice.match(/(\d+)\s*weeks?/);
-  //   if (weekMatch) {
-  //     return parseInt(weekMatch[1], 10) * 7;
-  //   }
-    
-  //   // Extract number followed by "month" or "months"
-  //   const monthMatch = lowerNotice.match(/(\d+)\s*months?/);
-  //   if (monthMatch) {
-  //     return parseInt(monthMatch[1], 10) * 30;
-  //   }
-    
-  //   return 0;
-  // };
+  const resetForm = () => {
+    setFormData({
+      leaveType: '',
+      leave_From: '',
+      leave_To: '',
+      no_Of_Days: '',
+      isHalfDay: false,
+      halfDayPeriod: '',
+      halfDayPosition: 'end',
+      reason_For_Leave: '',
+      documents: null,
+      emergencyContact: '',
+      workHandover: ''
+    });
+    setSelectedLeaveType(null);
+    setCalculatedDays(0);
+    setManualDaysEntry(false);
+    setErrors({});
+    const fileInput = document.getElementById('documents');
+    if (fileInput) fileInput.value = '';
+  };
 
   // Get category color
   const getCategoryColor = (category) => {
     switch(category) {
-      case 'paid': return 'text-green-600 bg-green-100 border-green-200';
-      case 'unpaid': return 'text-red-600 bg-red-100 border-red-200';
-      case 'mixed': return 'text-blue-600 bg-blue-100 border-blue-200';
-      default: return 'text-gray-600 bg-gray-100 border-gray-200';
+      case 'paid': return 'text-green-600 bg-green-100 border-green-200 dark:text-green-300 dark:bg-green-900/40 dark:border-green-500/50';
+      case 'unpaid': return 'text-red-600 bg-red-100 border-red-200 dark:text-red-300 dark:bg-red-900/40 dark:border-red-500/50';
+      case 'mixed': return 'text-blue-600 bg-blue-100 border-blue-200 dark:text-blue-300 dark:bg-blue-900/40 dark:border-blue-500/50';
+      default: return 'text-gray-600 bg-gray-100 border-gray-200 dark:text-gray-300 dark:bg-gray-700/50 dark:border-gray-500/50';
     }
   };
 
@@ -819,15 +448,11 @@ export default function ApplyLeaveModal({ show, onClose }) {
       const dateObj = new Date(date);
       const dayOfWeek = dateObj.getDay();
       
-      // Disable weekends
       if (dayOfWeek === 0 || dayOfWeek === 6) return true;
-      
-      // Disable dates before minimum allowed date
       if (dateObj < minSelectableDate) return true;
       
-      // If selecting end date, disable dates before start date
-      if (!selectingStartDate && formData.startDate) {
-        if (dateObj < new Date(formData.startDate)) return true;
+      if (!selectingStartDate && formData.leave_From) {
+        if (dateObj < new Date(formData.leave_From)) return true;
       }
       
       return false;
@@ -835,14 +460,14 @@ export default function ApplyLeaveModal({ show, onClose }) {
 
     const isDateSelected = (date) => {
       const dateStr = formatDate(date);
-      return dateStr === formData.startDate || dateStr === formData.endDate;
+      return dateStr === formData.leave_From || dateStr === formData.leave_To;
     };
 
     const isDateInRange = (date) => {
-      if (!formData.startDate || !formData.endDate) return false;
+      if (!formData.leave_From || !formData.leave_To) return false;
       const dateObj = new Date(date);
-      const start = new Date(formData.startDate);
-      const end = new Date(formData.endDate);
+      const start = new Date(formData.leave_From);
+      const end = new Date(formData.leave_To);
       return dateObj > start && dateObj < end;
     };
 
@@ -852,14 +477,13 @@ export default function ApplyLeaveModal({ show, onClose }) {
       if (isDateDisabled(date)) return;
 
       if (selectingStartDate) {
-        setFormData(prev => ({ ...prev, startDate: dateStr, endDate: '' }));
+        setFormData(prev => ({ ...prev, leave_From: dateStr, leave_To: '' }));
         setSelectingStartDate(false);
       } else {
-        if (new Date(dateStr) < new Date(formData.startDate)) {
-          // If clicked date is before start date, make it the new start date
-          setFormData(prev => ({ ...prev, startDate: dateStr, endDate: '' }));
+        if (new Date(dateStr) < new Date(formData.leave_From)) {
+          setFormData(prev => ({ ...prev, leave_From: dateStr, leave_To: '' }));
         } else {
-          setFormData(prev => ({ ...prev, endDate: dateStr }));
+          setFormData(prev => ({ ...prev, leave_To: dateStr }));
           setShowCalendar(false);
         }
       }
@@ -878,12 +502,10 @@ export default function ApplyLeaveModal({ show, onClose }) {
       const firstDay = getFirstDayOfMonth(currentMonth);
       const days = [];
 
-      // Empty cells for days before the first day of the month
       for (let i = 0; i < firstDay; i++) {
         days.push(<div key={`empty-${i}`} className="h-10"></div>);
       }
 
-      // Days of the month
       for (let day = 1; day <= daysInMonth; day++) {
         const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
         const isDisabled = isDateDisabled(date);
@@ -929,13 +551,12 @@ export default function ApplyLeaveModal({ show, onClose }) {
     };
 
     return (
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-600 p-6 max-w-md mx-auto">
-        {/* Calendar Header */}
+      <div className="rounded-xl shadow-xl border p-6 max-w-md mx-auto transition-all duration-300 bg-white border-gray-200 dark:bg-gray-800 dark:border-gray-600">
         <div className="flex items-center justify-between mb-6">
           <button
             type="button"
             onClick={() => navigateMonth(-1)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
+            className="p-2 rounded-lg transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             <FaChevronLeft className="w-4 h-4 text-gray-600 dark:text-gray-400" />
           </button>
@@ -947,25 +568,23 @@ export default function ApplyLeaveModal({ show, onClose }) {
           <button
             type="button"
             onClick={() => navigateMonth(1)}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
+            className="p-2 rounded-lg transition-colors duration-200 hover:bg-gray-100 dark:hover:bg-gray-700"
           >
             <FaChevronRight className="w-4 h-4 text-gray-600 dark:text-gray-400" />
           </button>
         </div>
 
-        {/* Selection Indicator */}
-        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+        <div className="mb-4 p-3 rounded-lg border transition-all duration-300 bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800">
           <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
             {selectingStartDate ? 'Select start date' : 'Select end date'}
           </p>
-          {formData.startDate && (
-            <p className="text-xs text-blue-600 dark:text-blue-400 mt-1">
-              Start: {new Date(formData.startDate).toLocaleDateString()}
+          {formData.leave_From && (
+            <p className="text-xs mt-1 text-blue-600 dark:text-blue-400">
+              Start: {new Date(formData.leave_From).toLocaleDateString()}
             </p>
           )}
         </div>
 
-        {/* Day Headers */}
         <div className="grid grid-cols-7 gap-1 mb-2">
           {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
             <div key={day} className="h-10 flex items-center justify-center text-xs font-medium text-gray-500 dark:text-gray-400">
@@ -974,38 +593,35 @@ export default function ApplyLeaveModal({ show, onClose }) {
           ))}
         </div>
 
-        {/* Calendar Grid */}
         <div className="grid grid-cols-7 gap-1 mb-4">
           {renderCalendarDays()}
         </div>
 
-        {/* Legend */}
-        <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
+        <div className="border-t pt-4 border-gray-200 dark:border-gray-600">
           <div className="flex flex-wrap gap-4 text-xs">
             <div className="flex items-center">
               <div className="w-3 h-3 bg-blue-600 rounded mr-2"></div>
               <span className="text-gray-600 dark:text-gray-400">Selected</span>
             </div>
             <div className="flex items-center">
-              <div className="w-3 h-3 bg-blue-100 dark:bg-blue-900/20 rounded mr-2"></div>
+              <div className="w-3 h-3 rounded mr-2 bg-blue-100 dark:bg-blue-900/20"></div>
               <span className="text-gray-600 dark:text-gray-400">In Range</span>
             </div>
             <div className="flex items-center">
-              <div className="w-3 h-3 bg-gray-200 dark:bg-gray-700 rounded mr-2"></div>
+              <div className="w-3 h-3 rounded mr-2 bg-gray-200 dark:bg-gray-700"></div>
               <span className="text-gray-600 dark:text-gray-400">Disabled</span>
             </div>
           </div>
         </div>
 
-        {/* Calendar Actions */}
         <div className="flex gap-3 mt-4">
           <button
             type="button"
             onClick={() => {
-              setFormData(prev => ({ ...prev, startDate: '', endDate: '' }));
+              setFormData(prev => ({ ...prev, leave_From: '', leave_To: '' }));
               setSelectingStartDate(true);
             }}
-            className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200"
+            className="flex-1 px-4 py-2 border rounded-lg transition-colors duration-200 border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
           >
             Clear
           </button>
@@ -1021,537 +637,699 @@ export default function ApplyLeaveModal({ show, onClose }) {
     );
   };
 
+  const handleCancel = () => {
+    resetForm();
+    onClose();
+  };
+
+  if (!show) return null;
+
   return (
-    <BaseModal isOpen={show} onClose={onClose}>
-    <div className="h-[90vh] overflow-y-auto bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            Leave Application
-          </h1>
-          <p className="text-gray-600 dark:text-gray-300 text-lg">
-            Submit your leave request with all required details
-          </p>
-        </div>
-
-        {/* API Error */}
-        {errors.api && (
-          <div className="mb-8 p-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-            <div className="flex items-center">
-              <FaExclamationTriangle className="w-6 h-6 text-red-600 dark:text-red-400 mr-3" />
-              <p className="text-red-800 dark:text-red-300">{errors.api}</p>
-            </div>
-          </div>
-        )}
-
-        {/* Success Message */}
-        {showSuccess && (
-          <div className="mb-8 p-6 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl backdrop-blur-sm animate-pulse">
-            <div className="flex items-center">
-              <FaCheckCircle className="w-6 h-6 text-green-600 dark:text-green-400 mr-3" />
-              <div>
-                <h3 className="text-green-800 dark:text-green-300 font-semibold text-lg">Application Submitted Successfully!</h3>
-                <p className="text-green-600 dark:text-green-400">Your leave application has been sent for approval.</p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Loading State */}
-        {isLoadingLeaveTypes ? (
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 p-12">
-            <div className="flex items-center justify-center">
-              <FaSpinner className="w-8 h-8 animate-spin text-blue-500 dark:text-blue-400 mr-4" />
-              <span className="text-gray-600 dark:text-gray-300 text-lg">Loading leave types...</span>
-            </div>
-          </div>
-        ) : (
-          /* Main Form */
-          <form onSubmit={handleSubmit} className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
-            
-            {/* Leave Type Selection */}
-            <div className="p-8 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700 border-b border-gray-200 dark:border-gray-600">
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 flex items-center">
-                <FaUser className="w-6 h-6 mr-3 text-blue-600 dark:text-blue-400" />
-                Select Leave Type
-              </h2>
-              
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {leaveTypes.map(leaveType => (
-                  <div
-                    key={leaveType._id}
-                    onClick={() => handleLeaveTypeChange(leaveType._id)}
-                    className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 hover:scale-105 ${
-                      formData.leaveType === leaveType._id
-                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30 shadow-lg'
-                        : 'border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-500'
-                    }`}
+     <BaseModal isOpen={show} onClose={handleCancel}>
+      <div className="">
+        <div className="h-[90vh] overflow-y-auto rounded-2xl shadow-2xl max-w-4xl w-full transition-all duration-300 bg-gradient-to-br from-blue-50 via-white to-purple-50 border border-gray-200 dark:bg-gray-700 dark:border-gray-700">
+          <div className="py-8 px-4 dark:bg-gray-700">
+            <div className="max-w-4xl mx-auto">
+              {/* Header */}
+              <div className="text-center mb-8">
+                <div className="flex items-center justify-between mb-4">
+                  <div></div>
+                  <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent drop-shadow-sm">
+                    Leave Application
+                  </h1>
+                  <button
+                    onClick={handleCancel}
+                    className="p-2 rounded-full transition-all duration-200 hover:bg-gray-200 text-gray-600 hover:text-gray-800 border border-gray-300 hover:border-gray-400 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-white dark:border-gray-600 dark:hover:border-gray-500"
                   >
-                    <div className="flex items-center mb-3">
-                      <div className={`w-4 h-4 rounded-full ${leaveType.color} mr-3`}></div>
-                      <h3 className="font-bold text-gray-800 dark:text-gray-100">{leaveType.name}</h3>
-                    </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-300 mb-3">{leaveType.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase border ${getCategoryColor(leaveType.category)}`}>
-                        {leaveType.category}
-                      </span>
-                      <span className="text-lg font-bold text-gray-800 dark:text-gray-100">{leaveType.maxDays} days</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              
-              {errors.leaveType && (
-                <p className="text-red-600 dark:text-red-400 text-sm mt-2 flex items-center">
-                  <FaExclamationTriangle className="w-4 h-4 mr-2" />
-                  {errors.leaveType}
+                    <FaTimes size={20} />
+                  </button>
+                </div>
+                <p className="text-lg text-gray-600 dark:text-gray-300">
+                  Submit your leave request with all required details
                 </p>
-              )}
-            </div>
-
-            {/* Leave Details */}
-            {selectedLeaveType && (
-              <div className="p-8 border-b border-gray-200 dark:border-gray-600">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 flex items-center">
-                  <FaInfoCircle className="w-6 h-6 mr-3 text-green-600 dark:text-green-400" />
-                  Leave Type Information
-                </h2>
-                
-                <div className="grid md:grid-cols-2 gap-6 mb-6">
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
-                    <h4 className="font-bold text-gray-800 dark:text-gray-100 mb-4">Requirements</h4>
-                    <div className="space-y-3">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-300">Advance Notice:</span>
-                        <span className="font-semibold text-gray-800 dark:text-gray-100">{selectedLeaveType.advanceNotice}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-300">Documents:</span>
-                        <span className={`font-semibold ${documentsRequired ? 'text-orange-600 dark:text-orange-400' : 'text-green-600 dark:text-green-400'}`}>
-                          {selectedLeaveType.documentsRequired}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 dark:text-gray-300">Max Days:</span>
-                        <span className="font-semibold text-gray-800 dark:text-gray-100">{selectedLeaveType.maxDays}</span>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6">
-                    <h4 className="font-bold text-gray-800 dark:text-gray-100 mb-4">Eligibility</h4>
-                    <p className="text-gray-600 dark:text-gray-300">{selectedLeaveType.eligibility}</p>
-                  </div>
-                </div>
-
-                {selectedLeaveType.policies && selectedLeaveType.policies.length > 0 && (
-                  <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-6 border border-blue-200 dark:border-blue-800">
-                    <h4 className="font-bold text-blue-800 dark:text-blue-300 mb-4 flex items-center">
-                      <FaFileAlt className="w-4 h-4 mr-2" />
-                      Policies & Guidelines
-                    </h4>
-                    <ul className="space-y-2">
-                      {selectedLeaveType.policies.map((policy, index) => (
-                        <li key={index} className="flex items-start text-blue-700 dark:text-blue-300">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
-                          <span className="text-sm">{policy}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
               </div>
-            )}
 
-            {/* Date Selection */}
-            {selectedLeaveType && (
-              <div className="p-8 border-b border-gray-200 dark:border-gray-600">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 flex items-center">
-                  <FaCalendarAlt className="w-6 h-6 mr-3 text-purple-600 dark:text-purple-400" />
-                  Select Dates
-                </h2>
-
-                {/* Advance Notice Warning */}
-                {getAdvanceNoticeInfo() && getAdvanceNoticeInfo().days > 0 && (
-                  <div className="mb-6 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl border border-orange-200 dark:border-orange-800">
-                    <div className="flex items-center">
-                      <FaExclamationTriangle className="w-5 h-5 text-orange-600 dark:text-orange-400 mr-3" />
-                      <div>
-                        <p className="text-orange-800 dark:text-orange-300 font-semibold">
-                          Advance Notice Required: {getAdvanceNoticeInfo().notice}
-                        </p>
-                        <p className="text-orange-700 dark:text-orange-400 text-sm">
-                          Earliest selectable date: {getAdvanceNoticeInfo().earliestDate}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                {/* Date Input Fields */}
-                <div className="grid md:grid-cols-2 gap-6 mb-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Start Date
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={formData.startDate ? new Date(formData.startDate).toLocaleDateString() : ''}
-                        placeholder="Select start date"
-                        readOnly
-                        onClick={() => {
-                          setShowCalendar(true);
-                          setSelectingStartDate(true);
-                        }}
-                        className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 transition-all duration-300 cursor-pointer ${
-                          errors.startDate ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                      />
-                      <FaCalendarAlt className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
-                    </div>
-                    {errors.startDate && (
-                      <p className="text-red-600 dark:text-red-400 text-sm mt-1 flex items-center">
-                        <FaExclamationTriangle className="w-4 h-4 mr-1" />
-                        {errors.startDate}
-                      </p>
-                    )}
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      End Date
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={formData.endDate ? new Date(formData.endDate).toLocaleDateString() : ''}
-                        placeholder="Select end date"
-                        readOnly
-                        onClick={() => {
-                          if (formData.startDate) {
-                            setShowCalendar(true);
-                            setSelectingStartDate(false);
-                          }
-                        }}
-                        disabled={!formData.startDate}
-                        className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 transition-all duration-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 ${
-                          errors.endDate ? 'border-red-500' : 'border-gray-300'
-                        }`}
-                      />
-                      <FaCalendarAlt className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5 pointer-events-none" />
-                    </div>
-                    {errors.endDate && (
-                      <p className="text-red-600 dark:text-red-400 text-sm mt-1 flex items-center">
-                        <FaExclamationTriangle className="w-4 h-4 mr-1" />
-                        {errors.endDate}
-                      </p>
-                    )}
-                  </div>
-                </div>
-
-                {/* Calendar Modal */}
-                {showCalendar && (
-                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                    <div className="relative">
-                      <button
-                        type="button"
-                        onClick={() => setShowCalendar(false)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors duration-200 z-10"
-                      >
-                        <FaTimes className="w-4 h-4" />
-                      </button>
-                      <ModernCalendar />
-                    </div>
-                  </div>
-                )}
-
-                {calculatedDays > 0 && (
-                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-                    <div className="flex items-center justify-between">
-                      <span className="text-blue-700 dark:text-blue-300 font-semibold">Total Working Days:</span>
-                      <span className="text-2xl font-bold text-blue-800 dark:text-blue-200">{calculatedDays}</span>
-                    </div>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-blue-600 dark:text-blue-400 text-sm">Remaining Days:</span>
-                      <span className={`font-bold text-sm ${calculatedDays <= selectedLeaveType.maxDays ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
-                        {selectedLeaveType.maxDays - calculatedDays}
-                      </span>
-                    </div>
-                    {formData.startDate && formData.endDate && (
-                      <div className="mt-3 text-sm text-blue-600 dark:text-blue-400">
-                        <strong>Selected Period:</strong> {new Date(formData.startDate).toLocaleDateString()} - {new Date(formData.endDate).toLocaleDateString()}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Application Details */}
-            {selectedLeaveType && (
-              <div className="p-8 border-b border-gray-200 dark:border-gray-600">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 flex items-center">
-                  <FaFileAlt className="w-6 h-6 mr-3 text-orange-600 dark:text-orange-400" />
-                  Application Details
-                </h2>
-                
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Reason for Leave *
-                    </label>
-                    <textarea
-                      value={formData.reason}
-                      onChange={(e) => handleInputChange('reason', e.target.value)}
-                      rows={4}
-                      placeholder="Please provide a detailed reason for your leave request..."
-                      className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 transition-all duration-300 resize-none ${
-                        errors.reason ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                    />
-                    {errors.reason && (
-                      <p className="text-red-600 dark:text-red-400 text-sm mt-1 flex items-center">
-                        <FaExclamationTriangle className="w-4 h-4 mr-1" />
-                        {errors.reason}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Emergency Contact *
-                    </label>
-                    <input
-                      type="text"
-                      value={formData.emergencyContact}
-                      onChange={(e) => handleInputChange('emergencyContact', e.target.value)}
-                      placeholder="Emergency contact person and phone number"
-                      className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 transition-all duration-300 ${
-                        errors.emergencyContact ? 'border-red-500' : 'border-gray-300'
-                      }`}
-                    />
-                    {errors.emergencyContact && (
-                      <p className="text-red-600 dark:text-red-400 text-sm mt-1 flex items-center">
-                        <FaExclamationTriangle className="w-4 h-4 mr-1" />
-                        {errors.emergencyContact}
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Work Handover Details
-                    </label>
-                    <textarea
-                      value={formData.workHandover}
-                      onChange={(e) => handleInputChange('workHandover', e.target.value)}
-                      rows={3}
-                      placeholder="Describe how your work will be handled during your absence..."
-                      className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-100 transition-all duration-300 resize-none"
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Document Upload */}
-            {selectedLeaveType && documentsRequired && (
-              <div className="p-8 border-b border-gray-200 dark:border-gray-600">
-                <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-6 flex items-center">
-                  <FaFileUpload className="w-6 h-6 mr-3 text-red-600 dark:text-red-400" />
-                  Required Documents *
-                </h2>
-                
-                <div className="mb-4 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl border border-orange-200 dark:border-orange-800">
+              {/* Success Message */}
+              {showSuccess && (
+                <div className="mb-8 p-6 rounded-xl border backdrop-blur-sm animate-pulse transition-all duration-300 bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800">
                   <div className="flex items-center">
-                    <FaInfoCircle className="w-5 h-5 text-orange-600 dark:text-orange-400 mr-3" />
+                    <FaCheckCircle className="w-6 h-6 mr-3 text-green-600 dark:text-green-400" />
                     <div>
-                      <p className="text-orange-800 dark:text-orange-300 font-semibold">Required Document:</p>
-                      <p className="text-orange-700 dark:text-orange-400 text-sm">{selectedLeaveType.documentsRequired}</p>
+                      <h3 className="font-semibold text-lg text-green-800 dark:text-green-300">
+                        Application Submitted Successfully!
+                      </h3>
+                      <p className="text-green-600 dark:text-green-400">
+                        Your leave application has been sent for approval.
+                      </p>
                     </div>
                   </div>
                 </div>
+              )}
 
-                <div className="space-y-4">
-                  {!formData.documents ? (
-                    <div className="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 text-center hover:border-blue-400 dark:hover:border-blue-500 transition-colors duration-300">
-                      <FaFileUpload className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-4" />
-                      <p className="text-gray-600 dark:text-gray-300 mb-4">
-                        Drag and drop your file here, or
-                      </p>
-                      <label className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl cursor-pointer transition-colors duration-300 inline-flex items-center">
-                        <FaFileUpload className="w-4 h-4 mr-2" />
-                        Choose File
-                        <input
-                          type="file"
-                          id="documents"
-                          onChange={handleFileUpload}
-                          accept=".pdf,.jpg,.jpeg,.png"
-                          className="hidden"
-                        />
-                      </label>
-                      <p className="text-gray-500 dark:text-gray-400 text-sm mt-2">
-                        Supported formats: PDF, JPG, PNG (Max 5MB)
-                      </p>
+              {/* Main Form */}
+              <form onSubmit={handleSubmit} className="rounded-2xl shadow-2xl border overflow-hidden transition-all duration-300 bg-white border-gray-200 shadow-gray-300/30 dark:bg-gray-800 dark:border-gray-600 dark:shadow-gray-900/50">
+                
+                {/* Leave Type Selection */}
+                <div className="p-8 border-b transition-all duration-300 bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200 dark:bg-gradient-to-r dark:from-gray-800 dark:via-gray-800 dark:to-gray-700 dark:border-gray-600">
+                  <div className='flex justify-between items-center'>
+                    <h2 className="text-2xl font-bold mb-6 flex items-center text-gray-800 dark:text-gray-100">
+                      <FaUser className="w-6 h-6 mr-3 text-blue-600 dark:text-blue-400" />
+                      Select Leave Type
+                    </h2>
+                    <div className='flex items-center'> 
+                      <p className="font-bold pr-3 text-gray-800 dark:text-gray-200">Total Paid Leaves</p>
+                      <span className="font-bold pr-3 text-xl text-gray-900 dark:text-gray-100">{totalPaidLeaves}</span>
                     </div>
-                  ) : (
-                    <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <FaCheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 mr-3" />
-                          <div>
-                            <p className="text-green-800 dark:text-green-300 font-semibold">
-                              {formData.documents.name}
-                            </p>
-                            <p className="text-green-600 dark:text-green-400 text-sm">
-                              {(formData.documents.size / 1024 / 1024).toFixed(2)} MB
-                            </p>
-                          </div>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={removeFile}
-                          className="text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 p-2 rounded-full hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors duration-300"
-                        >
-                          <FaTimes className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  )}
+                  </div>
                   
-                  {errors.documents && (
-                    <p className="text-red-600 dark:text-red-400 text-sm flex items-center">
+                  <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-4">
+                    {assignedLeaveTypes.map(leaveType => (
+                      <div
+                        key={leaveType._id}
+                        onClick={() => handleLeaveTypeChange(leaveType._id)}
+                        className={`p-6 rounded-xl border-2 cursor-pointer transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                          formData.leaveType === leaveType._id
+                            ? 'border-blue-500 bg-blue-50 shadow-lg shadow-blue-500/20 dark:border-blue-400 dark:bg-blue-900/40 dark:shadow-lg dark:shadow-blue-900/30 dark:ring-1 dark:ring-blue-400/50' 
+                            : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-md dark:border-gray-600 dark:bg-gray-700/50 dark:hover:border-gray-500 dark:hover:bg-gray-700/80'
+                        }`}
+                      >
+                        <div className="flex items-center mb-3">
+                          <div className={`w-4 h-4 rounded-full ${leaveType.color} mr-3`}></div>
+                          <h3 className="font-bold text-gray-800 dark:text-gray-100">
+                            {leaveType.name}
+                          </h3>
+                        </div>
+                        <p className="text-sm mb-3 text-gray-600 dark:text-gray-300">
+                          {leaveType.description}
+                        </p>
+                        <div className="flex items-center justify-between">
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase border ${getCategoryColor(leaveType.category)}`}>
+                            {leaveType.category}
+                          </span>
+                          <span className="text-lg font-bold text-gray-800 dark:text-gray-100">
+                            {leaveType.maxDays} days max
+                          </span>
+                        </div>
+                        {/* Show sick leave policy */}
+                        {leaveType.name === 'Sick Leave' && leaveType.noDocumentLimit && (
+                          <div className="mt-2 text-xs text-orange-600 dark:text-orange-400">
+                            No documents required for ≤{leaveType.noDocumentLimit} days
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {errors.leaveType && (
+                    <p className="text-red-600 dark:text-red-400 text-sm mt-2 flex items-center">
                       <FaExclamationTriangle className="w-4 h-4 mr-2" />
-                      {errors.documents}
+                      {errors.leaveType}
                     </p>
                   )}
                 </div>
-              </div>
-            )}
 
-            {/* Submit Button */}
-            {selectedLeaveType && (
-              <div className="p-8 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700">
-                {errors.submit && (
-                  <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-                    <div className="flex items-center">
-                      <FaExclamationTriangle className="w-5 h-5 text-red-600 dark:text-red-400 mr-3" />
-                      <p className="text-red-800 dark:text-red-300">{errors.submit}</p>
+                {/* Leave Details */}
+                {selectedLeaveType && (
+                  <div className="p-8 border-b transition-all duration-300 border-gray-200 dark:border-gray-600">
+                    <h2 className="text-2xl font-bold mb-6 flex items-center text-gray-800 dark:text-gray-100">
+                      <FaInfoCircle className="w-6 h-6 mr-3 text-green-600 dark:text-green-400" />
+                      Leave Type Information
+                    </h2>
+                    
+                    <div className="grid md:grid-cols-2 gap-6 mb-6">
+                      <div className="rounded-xl p-6 transition-all duration-300 bg-gray-50 dark:bg-gray-700/60 dark:border dark:border-gray-600/50">
+                        <h4 className="font-bold mb-4 text-gray-800 dark:text-gray-100">Requirements</h4>
+                        <div className="space-y-3">
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 dark:text-gray-300">Advance Notice:</span>
+                            <span className="font-semibold text-gray-800 dark:text-gray-100">
+                              {selectedLeaveType.advanceNotice}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 dark:text-gray-300">Documents:</span>
+                            <span className={`font-semibold ${
+                              documentRequirement.required 
+                                ? 'text-orange-600 dark:text-orange-400'
+                                : 'text-green-600 dark:text-green-400'
+                            }`}>
+                              {documentRequirement.reason || selectedLeaveType.documentsRequired}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-gray-600 dark:text-gray-300">Max Days:</span>
+                            <span className="font-semibold text-gray-800 dark:text-gray-100">
+                              {selectedLeaveType.maxDays}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="rounded-xl p-6 transition-all duration-300 bg-gray-50 dark:bg-gray-700/60 dark:border dark:border-gray-600/50">
+                        <h4 className="font-bold mb-4 text-gray-800 dark:text-gray-100">Eligibility</h4>
+                        <p className="text-gray-600 dark:text-gray-300">{selectedLeaveType.eligibility}</p>
+                      </div>
+                    </div>
+
+                    {selectedLeaveType.policies && selectedLeaveType.policies.length > 0 && (
+                      <div className="rounded-xl p-6 border transition-all duration-300 bg-blue-50 border-blue-200 dark:bg-blue-900/30 dark:border-blue-500/50 dark:shadow-lg dark:shadow-blue-900/20">
+                        <h4 className="font-bold mb-4 flex items-center text-blue-800 dark:text-blue-300">
+                          <FaFileAlt className="w-4 h-4 mr-2" />
+                          Policies & Guidelines
+                        </h4>
+                        <ul className="space-y-2">
+                          {selectedLeaveType.policies.map((policy, index) => (
+                            <li key={index} className="flex items-start text-blue-700 dark:text-blue-300">
+                              <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                              <span className="text-sm">{policy}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Days and Date Selection */}
+                {selectedLeaveType && (
+                  <div className="p-8 border-b transition-all duration-300 border-gray-200 dark:border-gray-600">
+                    <h2 className="text-2xl font-bold mb-6 flex items-center text-gray-800 dark:text-gray-100">
+                      <FaCalendarAlt className="w-6 h-6 mr-3 text-purple-600 dark:text-purple-400" />
+                      Leave Duration & Dates
+                    </h2>
+
+                    {/* Half Day Toggle */}
+                    <div className="mb-6">
+                      <label className="flex items-center space-x-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={formData.isHalfDay}
+                          onChange={(e) => handleInputChange('isHalfDay', e.target.checked)}
+                          className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:focus:ring-blue-400"
+                        />
+                        <span className="font-medium text-gray-700 dark:text-gray-200">
+                          This is a half-day leave
+                        </span>
+                      </label>
+                    </div>
+
+                    {/* Half Day Period Selection */}
+                    {formData.isHalfDay && (
+                      <div className="mb-6 space-y-4">
+                        <div>
+                          <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">
+                            Select Half Day Period *
+                          </label>
+                          <div className="grid grid-cols-2 gap-4">
+                            <button
+                              type="button"
+                              onClick={() => handleInputChange('halfDayPeriod', 'morning')}
+                              className={`p-3 rounded-lg border-2 transition-all duration-300 ${
+                                formData.halfDayPeriod === 'morning'
+                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                                  : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
+                              }`}
+                            >
+                              <div className="flex items-center justify-center mb-1">
+                                <FaSun className={`w-5 h-5 mr-2 ${formData.halfDayPeriod === 'morning' ? 'text-blue-600' : 'text-gray-500 dark:text-gray-400'}`} />
+                                <div className="font-semibold text-gray-800 dark:text-gray-200">First Half</div>
+                              </div>
+                              <div className="text-sm text-gray-600 dark:text-gray-400">Morning (9 AM - 1 PM)</div>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleInputChange('halfDayPeriod', 'afternoon')}
+                              className={`p-3 rounded-lg border-2 transition-all duration-300 ${
+                                formData.halfDayPeriod === 'afternoon'
+                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/30'
+                                  : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
+                              }`}
+                            >
+                              <div className="flex items-center justify-center mb-1">
+                                <FaMoon className={`w-5 h-5 mr-2 ${formData.halfDayPeriod === 'afternoon' ? 'text-blue-600' : 'text-gray-500 dark:text-gray-400'}`} />
+                                <div className="font-semibold text-gray-800 dark:text-gray-200">Second Half</div>
+                              </div>
+                              <div className="text-sm text-gray-600 dark:text-gray-400">Afternoon (1 PM - 6 PM)</div>
+                            </button>
+                          </div>
+                          {errors.halfDayPeriod && (
+                            <p className="text-red-600 dark:text-red-400 text-sm mt-1 flex items-center">
+                              <FaExclamationTriangle className="w-4 h-4 mr-1" />
+                              {errors.halfDayPeriod}
+                            </p>
+                          )}
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">
+                            Half Day Position *
+                          </label>
+                          <div className="grid grid-cols-2 gap-4">
+                            <button
+                              type="button"
+                              onClick={() => handleInputChange('halfDayPosition', 'start')}
+                              className={`p-3 rounded-lg border-2 transition-all duration-300 ${
+                                formData.halfDayPosition === 'start'
+                                  ? 'border-green-500 bg-green-50 dark:bg-green-900/30'
+                                  : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
+                              }`}
+                            >
+                              <div className="font-semibold text-gray-800 dark:text-gray-200">First Day</div>
+                              <div className="text-sm text-gray-600 dark:text-gray-400">Half day on start date</div>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleInputChange('halfDayPosition', 'end')}
+                              className={`p-3 rounded-lg border-2 transition-all duration-300 ${
+                                formData.halfDayPosition === 'end'
+                                  ? 'border-green-500 bg-green-50 dark:bg-green-900/30'
+                                  : 'border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500'
+                              }`}
+                            >
+                              <div className="font-semibold text-gray-800 dark:text-gray-200">Last Day</div>
+                              <div className="text-sm text-gray-600 dark:text-gray-400">Half day on end date</div>
+                            </button>
+                          </div>
+                          {errors.halfDayPosition && (
+                            <p className="text-red-600 dark:text-red-400 text-sm mt-1 flex items-center">
+                              <FaExclamationTriangle className="w-4 h-4 mr-1" />
+                              {errors.halfDayPosition}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Number of Days Input */}
+                    <div className="mb-6">
+                      <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">
+                        Number of Days *
+                      </label>
+                      <input
+                        type="number"
+                        step="0.5"
+                        min="0.5"
+                        max="365"
+                        value={formData.no_Of_Days}
+                        onChange={(e) => handleInputChange('no_Of_Days', e.target.value)}
+                        placeholder="Enter number of days (e.g., 2.5 for 2.5 days)"
+                        className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 dark:bg-gray-700/50 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400 dark:focus:bg-gray-700 dark:focus:border-blue-400 ${
+                          errors.no_Of_Days ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
+                        }`}
+                      />
+                      {errors.no_Of_Days && (
+                        <p className="text-red-600 dark:text-red-400 text-sm mt-1 flex items-center">
+                          <FaExclamationTriangle className="w-4 h-4 mr-1" />
+                          {errors.no_Of_Days}
+                        </p>
+                      )}
+                      <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">
+                        {formData.isHalfDay 
+                          ? 'When half-day is enabled, 0.5 will be deducted from your total (e.g., 5 days becomes 4.5 days)'
+                          : 'You can enter decimal values like 0.5, 1.5, 2.5, etc. for half days'
+                        }
+                      </p>
+                    </div>
+
+                    {/* Advance Notice Warning */}
+                    {getAdvanceNoticeInfo() && getAdvanceNoticeInfo().days > 0 && (
+                      <div className="mb-6 p-4 rounded-xl border transition-all duration-300 bg-orange-50 border-orange-200 dark:bg-orange-900/30 dark:border-orange-500/50 dark:shadow-lg dark:shadow-orange-900/20">
+                        <div className="flex items-center">
+                          <FaExclamationTriangle className="w-5 h-5 mr-3 text-orange-600 dark:text-orange-400" />
+                          <div>
+                            <p className="font-semibold text-orange-800 dark:text-orange-300">
+                              Advance Notice Required: {getAdvanceNoticeInfo().notice}
+                            </p>
+                            <p className="text-sm text-orange-700 dark:text-orange-400">
+                              Earliest selectable date: {getAdvanceNoticeInfo().earliestDate}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Date Input Fields */}
+                    <div className="grid grid-cols-2 gap-6 mb-6">
+                      <div>
+                        <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">
+                          Start Date *
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={formData.leave_From ? new Date(formData.leave_From).toLocaleDateString() : ''}
+                            placeholder="Select start date"
+                            readOnly
+                            onClick={() => {
+                              setShowCalendar(true);
+                              setSelectingStartDate(true);
+                            }}
+                            className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 cursor-pointer bg-white border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 ${
+                              errors.leave_From ? 'border-red-500' : ''
+                            }`}
+                          />
+                          <FaCalendarAlt className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 pointer-events-none text-gray-400" />
+                        </div>
+                        {errors.leave_From && (
+                          <p className="text-red-600 dark:text-red-400 text-sm mt-1 flex items-center">
+                            <FaExclamationTriangle className="w-4 h-4 mr-1" />
+                            {errors.leave_From}
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">
+                          End Date {!manualDaysEntry && '*'}
+                        </label>
+                        <div className="relative">
+                          <input
+                            type="text"
+                            value={formData.leave_To ? new Date(formData.leave_To).toLocaleDateString() : ''}
+                            placeholder="Select end date (or same as start for single day)"
+                            readOnly
+                            onClick={() => {
+                              if (formData.leave_From) {
+                                setShowCalendar(true);
+                                setSelectingStartDate(false);
+                              }
+                            }}
+                            disabled={!formData.leave_From || manualDaysEntry}
+                            className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50 bg-white border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 ${
+                              errors.leave_To ? 'border-red-500' : ''
+                            }`}
+                          />
+                          <FaCalendarAlt className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 pointer-events-none text-gray-400" />
+                        </div>
+                        {errors.leave_To && (
+                          <p className="text-red-600 dark:text-red-400 text-sm mt-1 flex items-center">
+                            <FaExclamationTriangle className="w-4 h-4 mr-1" />
+                            {errors.leave_To}
+                          </p>
+                        )}
+                        {manualDaysEntry && (
+                          <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">
+                            End date will be calculated automatically based on days entered
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Calendar Modal */}
+                    {showCalendar && (
+                      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                        <div className="relative">
+                          <button
+                            type="button"
+                            onClick={() => setShowCalendar(false)}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors duration-200 z-10"
+                          >
+                            <FaTimes className="w-4 h-4" />
+                          </button>
+                          <ModernCalendar />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Days Summary */}
+                    {parseFloat(formData.no_Of_Days) > 0 && (
+                      <div className="p-4 rounded-xl border transition-all duration-300 bg-blue-50 border-blue-200 dark:bg-blue-900/30 dark:border-blue-500/50 dark:shadow-lg dark:shadow-blue-900/20">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="font-semibold text-blue-700 dark:text-blue-300">
+                            Total Days Requested:
+                          </span>
+                          <span className="text-2xl font-bold text-blue-800 dark:text-blue-200">
+                            {formData.no_Of_Days}
+                          </span>
+                        </div>
+                        {formData.isHalfDay && formData.halfDayPeriod && formData.halfDayPosition && (
+                          <div className="text-sm text-blue-600 dark:text-blue-400">
+                            <strong>Half Day:</strong> {formData.halfDayPeriod === 'morning' ? 'First Half (Morning)' : 'Second Half (Afternoon)'} 
+                            {' '}on {formData.halfDayPosition === 'start' ? 'first day' : 'last day'}
+                          </div>
+                        )}
+                        {formData.leave_From && (
+                          <div className="mt-2 text-sm text-blue-600 dark:text-blue-400">
+                            <strong>Date(s):</strong> {new Date(formData.leave_From).toLocaleDateString()}
+                            {formData.leave_To && formData.leave_To !== formData.leave_From && 
+                              ` - ${new Date(formData.leave_To).toLocaleDateString()}`
+                            }
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Application Details */}
+                {selectedLeaveType && (
+                  <div className="p-8 border-b transition-all duration-300 border-gray-200 dark:border-gray-600">
+                    <h2 className="text-2xl font-bold mb-6 flex items-center text-gray-800 dark:text-gray-100">
+                      <FaFileAlt className="w-6 h-6 mr-3 text-orange-600 dark:text-orange-400" />
+                      Application Details
+                    </h2>
+                    
+                    <div className="space-y-6">
+                      <div>
+                        <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">
+                          Reason for Leave *
+                        </label>
+                        <textarea
+                          value={formData.reason_For_Leave}
+                          onChange={(e) => handleInputChange('reason_For_Leave', e.target.value)}
+                          rows={4}
+                          placeholder="Please provide a detailed reason for your leave request..."
+                          className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 resize-none bg-white border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 ${
+                            errors.reason_For_Leave ? 'border-red-500' : ''
+                          }`}
+                        />
+                        {errors.reason_For_Leave && (
+                          <p className="text-red-600 dark:text-red-400 text-sm mt-1 flex items-center">
+                            <FaExclamationTriangle className="w-4 h-4 mr-1" />
+                            {errors.reason_For_Leave}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">
+                          Emergency Contact *
+                        </label>
+                        <input
+                          type="text"
+                          value={formData.emergencyContact}
+                          onChange={(e) => handleInputChange('emergencyContact', e.target.value)}
+                          placeholder="Emergency contact person and phone number"
+                          className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 bg-white border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 ${
+                            errors.emergencyContact ? 'border-red-500' : ''
+                          }`}
+                        />
+                        {errors.emergencyContact && (
+                          <p className="text-red-600 dark:text-red-400 text-sm mt-1 flex items-center">
+                            <FaExclamationTriangle className="w-4 h-4 mr-1" />
+                            {errors.emergencyContact}
+                          </p>
+                        )}
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">
+                          Work Handover Details
+                        </label>
+                        <textarea
+                          value={formData.workHandover}
+                          onChange={(e) => handleInputChange('workHandover', e.target.value)}
+                          rows={3}
+                          placeholder="Describe how your work will be handled during your absence..."
+                          className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 resize-none bg-white border-gray-300 text-gray-900 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100"
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
 
-                <div className="flex flex-col sm:flex-row gap-4 justify-end">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFormData({
-                        leaveType: '',
-                        startDate: '',
-                        endDate: '',
-                        reason: '',
-                        documents: null,
-                        emergencyContact: '',
-                        workHandover: ''
-                      });
-                      setSelectedLeaveType(null);
-                      setCalculatedDays(0);
-                      setErrors({});
-                      const fileInput = document.getElementById('documents');
-                      if (fileInput) fileInput.value = '';
-                    }}
-                    disabled={isSubmitting}
-                    className="px-8 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-300 disabled:opacity-50"
-                  >
-                    Reset Form
-                  </button>
-                  
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 font-semibold disabled:opacity-50 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none min-w-[200px]"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <FaSpinner className="w-5 h-5 animate-spin" />
-                        Submitting...
-                      </>
-                    ) : (
-                      <>
-                        <FaPaperPlane className="w-5 h-5" />
-                        Submit Application
-                      </>
-                    )}
-                  </button>
-                </div>
+                {/* Document Upload */}
+                {selectedLeaveType && documentRequirement.required && (
+                  <div className='p-8 border-b transition-colors dark:border-gray-600 border-gray-200'>
+                    <h2 className='text-2xl font-bold mb-6 flex items-center dark:text-gray-100 text-gray-800'>
+                      <FaFileUpload className='w-6 h-6 mr-3 dark:text-red-400 text-red-600' />
+                      Required Documents *
+                    </h2>
+                    
+                    <div className='mb-4 p-4 rounded-xl border transition-colors dark:bg-orange-900/20 dark:border-orange-800 bg-orange-50 border-orange-200'>
+                      <div className="flex items-center">
+                        <FaInfoCircle className='w-5 h-5 mr-3 dark:text-orange-400 text-orange-600' />
+                        <div>
+                          <p className='font-semibold dark:text-orange-300 text-orange-800'>
+                            Required Document:
+                          </p>
+                          <p className='text-sm dark:text-orange-400 text-orange-700'>
+                            {documentRequirement.reason}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
 
-                {selectedLeaveType && (
-                  <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
-                    <h4 className="font-semibold text-blue-800 dark:text-blue-300 mb-2 flex items-center">
-                      <FaClock className="w-4 h-4 mr-2" />
-                      Application Summary
-                    </h4>
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <span className="text-blue-600 dark:text-blue-400">Leave Type:</span>
-                        <span className="ml-2 font-semibold text-blue-800 dark:text-blue-200">{selectedLeaveType.name}</span>
-                      </div>
-                      <div>
-                        <span className="text-blue-600 dark:text-blue-400">Category:</span>
-                        <span className="ml-2 font-semibold text-blue-800 dark:text-blue-200 capitalize">{selectedLeaveType.category}</span>
-                      </div>
-                      {formData.startDate && formData.endDate && (
-                        <>
-                          <div>
-                            <span className="text-blue-600 dark:text-blue-400">Duration:</span>
-                            <span className="ml-2 font-semibold text-blue-800 dark:text-blue-200">{calculatedDays} working days</span>
+                    <div className="space-y-4">
+                      {!formData.documents ? (
+                        <div className='border-2 border-dashed rounded-xl p-8 text-center transition-colors hover:border-blue-400 dark:hover:border-blue-500 dark:border-gray-600 border-gray-300'>
+                          <FaFileUpload className={`w-12 h-12 mx-auto mb-4 dark:text-gray-500' : 'text-gray-400'}`} />
+                          <p className={`mb-4 dark:text-gray-300' : 'text-gray-600'}`}>
+                            Drag and drop your file here, or
+                          </p>
+                          <label className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl cursor-pointer transition-colors duration-300 inline-flex items-center">
+                            <FaFileUpload className="w-4 h-4 mr-2" />
+                            Choose File
+                            <input
+                              type="file"
+                              id="documents"
+                              onChange={handleFileUpload}
+                              accept=".pdf,.jpg,.jpeg,.png"
+                              className="hidden"
+                            />
+                          </label>
+                          <p className={`text-sm mt-2 dark:text-gray-400' : 'text-gray-500'}`}>
+                            Supported formats: PDF, JPG, PNG (Max 5MB)
+                          </p>
+                        </div>
+                      ) : (
+                        <div className='border rounded-xl p-4 transition-colors dark:bg-green-900/20 border-green-800 bg-green-50 border-green-200'>
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center">
+                              <FaCheckCircle className={`w-5 h-5 mr-3 dark:text-green-400' : 'text-green-600'}`} />
+                              <div>
+                                <p className={`font-semibold dark:text-green-300' : 'text-green-800'}`}>
+                                  {formData.documents.name}
+                                </p>
+                                <p className={`text-sm dark:text-green-400' : 'text-green-600'}`}>
+                                  {(formData.documents.size / 1024 / 1024).toFixed(2)} MB
+                                </p>
+                              </div>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={removeFile}
+                              className='p-2 rounded-full transition-colors 
+                                  dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/30
+                                  text-red-600 hover:text-red-700 hover:bg-red-100'
+                              
+                            >
+                              <FaTimes className="w-4 h-4" />
+                            </button>
                           </div>
-                          <div>
-                            <span className="text-blue-600 dark:text-blue-400">Period:</span>
-                            <span className="ml-2 font-semibold text-blue-800 dark:text-blue-200">
-                              {new Date(formData.startDate).toLocaleDateString()} - {new Date(formData.endDate).toLocaleDateString()}
-                            </span>
-                          </div>
-                        </>
+                        </div>
+                      )}
+                      
+                      {errors.documents && (
+                        <p className="text-red-600 dark:text-red-400 text-sm flex items-center">
+                          <FaExclamationTriangle className="w-4 h-4 mr-2" />
+                          {errors.documents}
+                        </p>
                       )}
                     </div>
                   </div>
                 )}
-              </div>
-            )}
-          </form>
-        )}
 
-        {/* Help Section */}
-        {/* {!isLoadingLeaveTypes && (
-          <div className="mt-8 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 dark:from-blue-500 dark:via-purple-500 dark:to-blue-700 rounded-2xl p-8 text-white shadow-2xl border border-blue-300 dark:border-blue-600 relative overflow-hidden">
-            <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
-            <div className="relative">
-              <h3 className="text-2xl font-bold mb-4 flex items-center">
-                <FaInfoCircle className="w-6 h-6 mr-3" />
-                Need Help?
-              </h3>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-semibold mb-2">Contact Information</h4>
-                  <p className="text-blue-100 dark:text-blue-200 text-sm leading-relaxed">
-                    For assistance with your leave application, contact HR at hr@company.com or call +1 (555) 123-4567
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-2">Processing Time</h4>
-                  <p className="text-blue-100 dark:text-blue-200 text-sm leading-relaxed">
-                    Leave applications are typically processed within 2-3 business days. You'll receive email notifications about status updates.
-                  </p>
-                </div>
-              </div>
+                {/* Submit Button */}
+                {selectedLeaveType && (
+                  <div className="p-8 transition-all duration-300 bg-gradient-to-r from-gray-50 to-gray-100 dark:bg-gradient-to-r dark:from-gray-800 dark:via-gray-800 dark:to-gray-700">
+                    {errors.submit && (
+                      <div className="mb-6 p-4 rounded-xl border transition-all duration-300 bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800">
+                        <div className="flex items-center">
+                          <FaExclamationTriangle className="w-5 h-5 mr-3 text-red-600 dark:text-red-400" />
+                          <p className="text-red-800 dark:text-red-300">{errors.submit}</p>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="flex flex-col sm:flex-row gap-4 justify-end">
+                      <button
+                        type="button"
+                        onClick={resetForm}
+                        disabled={isSubmitting}
+                        className="px-8 py-3 border rounded-xl transition-colors duration-300 disabled:opacity-50 border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                      >
+                        Reset Form
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleCancel}
+                        disabled={isSubmitting}
+                        className="px-8 py-3 border rounded-xl transition-colors duration-300 disabled:opacity-50 border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-8 py-3 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 font-semibold disabled:opacity-50 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:transform-none min-w-[200px] shadow-blue-500/30 hover:shadow-blue-500/50 dark:shadow-blue-900/40 dark:hover:shadow-blue-900/60"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <FaSpinner className="w-5 h-5 animate-spin" />
+                            Submitting...
+                          </>
+                        ) : (
+                          <>
+                            <FaPaperPlane className="w-5 h-5" />
+                            Submit Application
+                          </>
+                        )}
+                      </button>
+                    </div>
+
+                    {selectedLeaveType && (
+                      <div className="mt-6 p-4 rounded-xl border transition-all duration-300 bg-blue-50 border-blue-200 dark:bg-blue-900/30 dark:border-blue-500/50 dark:shadow-lg dark:shadow-blue-900/20">
+                        <h4 className="font-semibold mb-2 flex items-center text-blue-800 dark:text-blue-300">
+                          <FaClock className="w-4 h-4 mr-2" />
+                          Application Summary
+                        </h4>
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                          <div>
+                            <span className="text-blue-600 dark:text-blue-400">Leave Type:</span>
+                            <span className="ml-2 font-semibold text-blue-800 dark:text-blue-200">
+                              {selectedLeaveType.name}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-blue-600 dark:text-blue-400">Category:</span>
+                            <span className="ml-2 font-semibold capitalize text-blue-800 dark:text-blue-200">
+                              {selectedLeaveType.category}
+                            </span>
+                          </div>
+                          {formData.no_Of_Days && (
+                            <>
+                              <div>
+                                <span className="text-blue-600 dark:text-blue-400">Duration:</span>
+                                <span className="ml-2 font-semibold text-blue-800 dark:text-blue-200">
+                                  {formData.no_Of_Days} {parseFloat(formData.no_Of_Days) === 1 ? 'day' : 'days'}
+                                  {formData.isHalfDay && ` (includes half day)`}
+                                </span>
+                              </div>
+                              <div>
+                                <span className="text-blue-600 dark:text-blue-400">Documents:</span>
+                                <span className={`ml-2 font-semibold ${
+                                  documentRequirement.required 
+                                    ? 'text-orange-600 dark:text-orange-400'
+                                    : 'text-green-600 dark:text-green-400'
+                                }`}>
+                                  {documentRequirement.required ? 'Required' : 'Not Required'}
+                                </span>
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </form>
             </div>
           </div>
-        )} */}
+        </div>
       </div>
-    </div></BaseModal>
+    </BaseModal>
   );
-}
+};
+
+export default ApplyLeaveModal;

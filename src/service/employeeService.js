@@ -58,6 +58,12 @@ export async function fetchDesignations() {
   return response.data?.data || [];
 }
 
+export async function fetchLeaveTypes() {
+  const response = await axiosInstance.get("/leaves-types/leave-type");
+  return response.data?.data || [];
+}
+
+
 /**
  * Final Create Employee call (POST) with FormData
  */
