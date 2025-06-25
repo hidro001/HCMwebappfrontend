@@ -1,352 +1,280 @@
-
-
-// ChatProviderv2.jsx
 import React, {
   createContext,
   useState,
   useEffect,
   useRef,
-  useMemo,
   useCallback,
+  useMemo,
 } from "react";
-import { toast } from "react-hot-toast";
-import axios from "axios";
-import io from "socket.io-client";
-
-// 1) Your custom service calls & store:
 import { fetchChatHistory, fetchAllMember } from "../service/chatService";
 import useAuthStore from "../store/store";
+import { initSocket } from "../service/socketService.js";
+import axios from "axios";
 
-// 2) Provide the context
 export const ChatContextv2 = createContext();
 
-// --- IMPORT THE GROUP SETTINGS MODAL HERE ---
-import GroupSettingsModal from "../components/chats/chatv2/GroupSettingsModal";
-
 export function ChatProviderv2({ children }) {
-  //----------------------------------------------------------------
-  // 1) Basic user info from your store
-  //----------------------------------------------------------------
-  const { employeeId: storeEmployeeId, userName: storeUserName } = useAuthStore();
+  const { employeeId: storedId, userName: storedName } = useAuthStore();
   const [employeeId, setEmployeeId] = useState("");
   const [username, setUsername] = useState("");
+  const [token, setToken] = useState(localStorage.getItem("accessToken"));
 
   useEffect(() => {
-    if (storeEmployeeId) setEmployeeId(storeEmployeeId);
-    if (storeUserName) setUsername(storeUserName);
-  }, [storeEmployeeId, storeUserName]);
+    if (storedId) setEmployeeId(storedId);
+    if (storedName) setUsername(storedName);
+  }, [storedId, storedName]);
 
-  //----------------------------------------------------------------
-  // 2) Member list: fetch from REST API
-  //----------------------------------------------------------------
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const newToken = localStorage.getItem("accessToken");
+      if (newToken !== token) setToken(newToken);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [token]);
+
+  const [userStatus, setUserStatus] = useState({});
   const [members, setMembers] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [memberCount, setMemberCount] = useState(0);
+  const [loadingMembers, setLoadingMembers] = useState(false);
+  const [membersError, setMembersError] = useState(null);
+  const [conversations, setConversations] = useState([]);
+  const [message, setMessage] = useState("");
+  const [loadingConversations, setLoadingConversations] = useState(false);
+  const [conversationsError, setConversationsError] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedConversation, setSelectedConversation] = useState(null);
+  const [groupsLoading, setGroupsLoading] = useState(false);
+  const [groupsError, setGroupsError] = useState(null);
+  const [groups, setGroups] = useState([]);
 
-  const fetchMembers = useCallback(async () => {
+  const activeConversation = selectedUser || selectedConversation;
+  const [messages, setMessages] = useState([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+
+  const socketRef = useRef(null);
+  const messageIds = useRef(new Set());
+  const userRef = useRef(employeeId);
+  const chatRef = useRef(activeConversation?.employeeId);
+
+  useEffect(() => {
+    userRef.current = employeeId;
+  }, [employeeId]);
+  useEffect(() => {
+    chatRef.current = activeConversation?.employeeId;
+  }, [activeConversation]);
+
+  const MAX_FILE_SIZE_MB = 20;
+  const MAX_FILES = 10;
+
+  const loadMembers = useCallback(async () => {
+    setLoadingMembers(true);
+    setMembersError(null);
     try {
-      setLoading(true);
-      setError(null);
       const { success, count, data } = await fetchAllMember();
-      if (success) {
-        const normalized = data.map((m) => ({
-          ...m,
-          employeeId: m.employee_Id,
-          userAvatar: m.user_Avatar,
-          firstName: m.first_Name,
-          lastName: m.last_Name,
-        }));
-        setMembers(normalized);
-        setTotalCount(count);
-      } else {
-        setError("Failed to fetch members from server.");
-      }
+      if (!success) throw new Error("Fetch failed");
+      const normalized = data.map((m) => ({
+        ...m,
+        employeeId: m.employee_Id,
+        firstName: m.first_Name,
+        lastName: m.last_Name,
+        userAvatar: m.user_Avatar,
+      }));
+      setMembers(normalized);
+      setMemberCount(count);
     } catch (err) {
-      console.error("Error fetching members:", err);
-      setError("Error fetching members. Please try again later.");
+      setMembersError("Unable to load members.");
     } finally {
-      setLoading(false);
+      setLoadingMembers(false);
     }
   }, []);
 
   // useEffect(() => {
-  //   fetchMembers();
-  // }, [fetchMembers]);
+  //   loadMembers();
+  // }, [loadMembers]);
 
- useEffect(() => {
+   useEffect(() => {
    // Don’t call fetchMembers until we have a valid storeEmployeeId
-   if (!storeEmployeeId) return;
-   fetchMembers();
- }, [fetchMembers, storeEmployeeId]);
+   if (!storedId) return;
+   loadMembers();
+ }, [loadMembers, storedId]);
 
-  //----------------------------------------------------------------
-  // 3) One-to-one conversations
-  //----------------------------------------------------------------
-  const [conversations, setConversations] = useState([]);
-  const [conversationsLoading, setConversationsLoading] = useState(false);
-  const [conversationsError, setConversationsError] = useState(null);
-
-  // "selectedUser" means you clicked from the UserList
-  const [selectedUser, setSelectedUser] = useState(null);
-
-  // "selectedConversation" means you clicked an existing conversation
-  const [selectedConversation, setSelectedConversation] = useState(null);
-
-  // We'll unify them in a single "activeConversation" for your 1-to-1 chat window
-  const activeConversation = useMemo(() => {
-    return selectedUser || selectedConversation || null;
-  }, [selectedUser, selectedConversation]);
-
-  //----------------------------------------------------------------
-  // 4) Chat messages & input
-  //----------------------------------------------------------------
-  const [messages, setMessages] = useState([]);
-  const [messagesLoading, setMessagesLoading] = useState(false);
-  const [message, setMessage] = useState("");
-
-  //----------------------------------------------------------------
-  // 5) Socket references and initialization
-  //----------------------------------------------------------------
-  const socketRef = useRef(null);
-  const token = localStorage.getItem("accessToken");
-  const baseUrlSocket = import.meta.env.VITE_SOCKET_URL;
-
-  // Keep track of current user & active conversation in Refs (for socket callbacks)
-  const employeeIdRef = useRef("");
-  const activeConversationIdRef = useRef("");
-
-  useEffect(() => {
-    employeeIdRef.current = employeeId;
-  }, [employeeId]);
-
-  useEffect(() => {
-    activeConversationIdRef.current = activeConversation?.employeeId || "";
-  }, [activeConversation]);
-
-  // Connect the socket when we have an employeeId
   useEffect(() => {
     if (!employeeId) return;
-
-    // 1) Connect
-    const socket = io(baseUrlSocket, {
-      transports: ["websocket", "polling"],
-      reconnectionAttempts: 5,
-      timeout: 10000,
-      auth: { token },
-    });
+    const socket = initSocket(employeeId, token);
     socketRef.current = socket;
 
-    // 2) On connect, fetch conversation list
     socket.on("connect", () => {
-      // If needed, we can join personal room
       socket.emit("joinPersonalRoom", { employeeId });
-      // fetch conversation list
-      setConversationsLoading(true);
-      setConversationsError(null);
+      setLoadingConversations(true);
       socket.emit("getAllConverationUser", employeeId);
     });
 
-    // 3) On "allRoomIds" => update conversation list
-    const handleAllRoomIds = (data) => {
-      setConversationsLoading(false);
+    socket.on("user-online", ({ userId, online }) => {
+      setUserStatus((prev) => ({ ...prev, [userId]: online }));
+    });
+
+    socket.on("online-users", (onlineUserIds) => {
+      setUserStatus((prev) => {
+        const updated = { ...prev };
+        onlineUserIds.forEach((id) => {
+          updated[id] = true;
+        });
+        return updated;
+      });
+    });
+
+    socket.on("allRoomIds", (data) => {
+      setLoadingConversations(false);
       if (!data.success) {
-        setConversationsError(data.message || "Error fetching conversations");
+        setConversationsError(data.message);
         return;
       }
-      const normalized = data.data.map((item) => ({
+      console.log("All room IDs:", data.data);
+      const list = data.data.map((item) => ({
         ...item,
         employeeId: item.employee_Id,
         firstName: item.first_Name,
         lastName: item.last_Name,
         userAvatar: item.user_Avatar,
         unreadCount: item.unreadCount || 0,
+        lastMessage: item.lastMessage || null,
+        last_seen: item.last_seen || null,
+        isOnline: userStatus[item.employee_Id] || false,
       }));
-      setConversations(normalized);
-    };
-    socket.on("allRoomIds", handleAllRoomIds);
 
-    // 4) On receiveMessage => handle new messages
-    const handleNewMessage = (data) => {
-      // 1) Filter out system or unknown messages
-      if (!data.sender || data.sender === "system" || data.sender === "Unknown") {
-        // simply ignore them so they don't appear as a phantom user
-        return;
+      console.log("Fetched conversations:", list);
+      setConversations(list);
+    });
+
+    socket.on("receiveMessage", (msg) => {
+      const { sender, receiver } = msg;
+      if (!sender || sender === "system") return;
+      const fromSelf = sender === userRef.current;
+      const partner = fromSelf ? receiver : sender;
+
+      if (!messageIds.current.has(msg._id)) {
+        messageIds.current.add(msg._id);
+        if (partner === chatRef.current) {
+          setMessages((prev) => [...prev, msg]);
+        } else if (!fromSelf) {
+          setConversations((prev) => {
+            const idx = prev.findIndex((c) => c.employeeId === partner);
+            if (idx < 0) {
+              return [
+                {
+                  employeeId: partner,
+                  firstName: msg.senderName || "Unknown",
+                  lastMessage: msg,
+                  unreadCount: fromSelf ? 0 : 1,
+                },
+                ...prev,
+              ];
+            }
+            const updated = [...prev];
+            const existing = updated[idx];
+            updated[idx] = {
+              ...existing,
+              lastMessage: msg,
+              unreadCount: fromSelf ? 0 : (existing.unreadCount || 0) + 1,
+            };
+            return [updated[idx], ...updated.filter((_, i) => i !== idx)];
+          });
+        }
       }
+    });
 
-      // Normal handling for real user messages:
-      const { sender, receiver } = data;
-      const fromMe = sender === employeeIdRef.current;
-      const partnerId = fromMe ? receiver : sender;
-
-      // If it's the active chat, push to local messages
-      if (partnerId === activeConversationIdRef.current) {
-        setMessages((prev) => [...prev, data]);
-      } else if (!fromMe) {
-        // If we are not in that conversation, increase unread
-        setConversations((prev) => {
-          const idx = prev.findIndex((c) => c.employeeId === partnerId);
-          if (idx === -1) {
-            // Not in conversation list, create new item
-            return [
-              {
-                employeeId: partnerId,
-                firstName: data.senderName || "Unknown",
-                lastName: "",
-                userAvatar: null,
-                unreadCount: 1,
-              },
-              ...prev,
-            ];
-          }
-          const old = prev[idx];
-          const updated = {
-            ...old,
-            unreadCount: (old.unreadCount || 0) + 1,
-          };
-          const newList = [...prev];
-          newList.splice(idx, 1);
-          return [updated, ...newList];
-        });
-      }
-    };
-    socket.on("receiveMessage", handleNewMessage);
-
-    // 5) Cleanup
     return () => {
-      if (!socketRef.current) return;
-      socket.off("allRoomIds", handleAllRoomIds);
-      socket.off("receiveMessage", handleNewMessage);
       socket.disconnect();
       socketRef.current = null;
     };
-  }, [employeeId, token, baseUrlSocket]);
+  }, [employeeId, token]);
 
-  //----------------------------------------------------------------
-  // 6) Selecting a conversation
-  //----------------------------------------------------------------
-  const clearActiveConversation = useCallback(() => {
-    setSelectedUser(null);
-    setSelectedConversation(null);
-    setMessages([]);
-  }, []);
-
-  const handleSelectConversation = useCallback(
-    (conv) => {
-      if (!socketRef.current || !employeeId) return;
-      setSelectedConversation(conv);
-      setSelectedUser(null);
-      setMessages([]);
-
-      // Reset unreadCount in local state
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.employeeId === conv.employeeId ? { ...c, unreadCount: 0 } : c
-        )
-      );
-
-      // Join the room
-      const payload = { sender: employeeId, receiver: conv.employeeId };
-      socketRef.current.emit("joinRoom", payload);
-
-      // Mark messages read
-      socketRef.current.emit("markRead", {
-        sender: employeeId,
-        receiver: conv.employeeId,
+  const createGroupUIFlow = (groupName, memberIds, groupIcon = "") => {
+    return new Promise((resolve, reject) => {
+      if (!socketRef.current) return reject("Socket not initialized");
+      const payload = {
+        groupName,
+        admin: employeeId,
+        members: memberIds,
+        groupIcon,
+      };
+      socketRef.current.emit("createGroup", payload, (res) => {
+        if (res.success) {
+          fetchUserGroups();
+          resolve(res);
+        } else {
+          reject(res.message || "Group creation failed");
+        }
       });
-    },
-    [employeeId]
-  );
-
-  const handleSelectUser = useCallback(
-    (user) => {
-      if (!socketRef.current || !employeeId) return;
-      setSelectedUser(user);
-      setSelectedConversation(null);
-      setMessages([]);
-
-      setConversations((prev) =>
-        prev.map((c) =>
-          c.employeeId === user.employeeId ? { ...c, unreadCount: 0 } : c
-        )
-      );
-
-      // Join new room
-      const payload = { sender: employeeId, receiver: user.employeeId };
-      socketRef.current.emit("joinRoom", payload);
-      socketRef.current.emit("markRead", {
-        sender: employeeId,
-        receiver: user.employeeId,
-      });
-    },
-    [employeeId]
-  );
-
-  //----------------------------------------------------------------
-  // 7) Fetching message history for active conversation
-  //----------------------------------------------------------------
-  const fetchMessagesHistory = useCallback(async () => {
-    if (!activeConversation?.employeeId) {
-      setMessages([]);
-      return;
-    }
-    setMessagesLoading(true);
-    try {
-      const res = await fetchChatHistory(employeeId, activeConversation.employeeId);
-      if (res?.success) {
-        setMessages(res.data || []);
-      }
-    } catch (err) {
-      console.error("Error fetching chat history:", err);
-    } finally {
-      setMessagesLoading(false);
-    }
-  }, [employeeId, activeConversation]);
+    });
+  };
 
   useEffect(() => {
-    fetchMessagesHistory();
-  }, [fetchMessagesHistory]);
+    const socket = socketRef.current;
+    if (!socket) return;
 
-  //----------------------------------------------------------------
-  // 8) Sending text messages (1-to-1)
-  //----------------------------------------------------------------
-  const sendMessageHandler = useCallback(() => {
-    if (!message.trim() || !activeConversation?.employeeId) return;
-    if (!socketRef.current) return;
-    const msgData = {
-      sender: employeeId,
-      receiver: activeConversation.employeeId,
-      message,
-      time: new Date().toISOString(),
+    const handleGroupMessage = (msg) => {
+      if (
+        activeConversation?.isGroup &&
+        activeConversation._id === msg.groupId
+      ) {
+        setMessages((prev) => [...prev, msg]);
+      }
     };
-    socketRef.current.emit("privateMessage", msgData);
-    setMessage("");
-  }, [employeeId, message, activeConversation]);
 
-  //----------------------------------------------------------------
-  // 9) Sending files (1-to-1) with progress
-  //----------------------------------------------------------------
-  const MAX_FILE_SIZE_MB = 20;
-  const MAX_FILES = 10;
+    socket.on("groupMessage", handleGroupMessage);
+
+    return () => {
+      socket.off("groupMessage", handleGroupMessage);
+    };
+  }, [activeConversation]);
+
+  const fetchUserGroups = useCallback(() => {
+    if (!socketRef.current || !employeeId) return;
+
+    setGroupsLoading(true);
+    setGroupsError(null);
+
+    socketRef.current.emit("getUserGroups", employeeId, (res) => {
+      if (res.success) {
+        console.log("Fetched groups:", res.data);
+        setGroups(res.data || []);
+      } else {
+        setGroupsError("Failed to load groups.");
+        setGroups([]);
+      }
+      setGroupsLoading(false);
+    });
+  }, [employeeId]);
+
+  const requestFileURL = useCallback((fileName) => {
+    return new Promise((resolve, reject) => {
+      if (!socketRef.current) return reject(new Error("Socket not connected"));
+      socketRef.current.emit("requestFileURL", { fileName }, (resp) => {
+        if (resp?.success) {
+          resolve(resp.data.url);
+        } else {
+          reject(resp?.message || "No URL returned");
+        }
+      });
+    });
+  }, []);
 
   const sendFileHandler = useCallback(
     async (files, onProgress) => {
-      if (!files?.length || !socketRef.current || !activeConversation?.employeeId) return;
-
-      if (files.length > MAX_FILES) {
-        toast.error(`Please select at most ${MAX_FILES} files at once.`);
+      if (
+        !files?.length ||
+        !socketRef.current ||
+        !activeConversation?.employeeId
+      )
         return;
-      }
-
+      if (files.length > MAX_FILES) return;
       for (const file of files) {
         if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-          toast.error(`${file.name} is too large (max ${MAX_FILE_SIZE_MB} MB).`);
           if (onProgress) onProgress(file.name, -1);
           continue;
         }
-
-        // 1) Request pre-signed URL
-        const { success, data, message: serverMsg } = await new Promise((resolve) => {
+        const { success, data } = await new Promise((resolve) => {
           socketRef.current.emit(
             "getPreSignedUploadURL",
             {
@@ -358,16 +286,11 @@ export function ChatProviderv2({ children }) {
             (response) => resolve(response)
           );
         });
-
         if (!success || !data?.uploadUrl) {
-          toast.error(`Failed to generate upload URL for ${file.name}.`);
           if (onProgress) onProgress(file.name, -1);
           continue;
         }
-
         const { uploadUrl, uniqueKey } = data;
-
-        // 2) Put file
         try {
           await axios.put(uploadUrl, file, {
             headers: { "Content-Type": file.type },
@@ -379,14 +302,12 @@ export function ChatProviderv2({ children }) {
             },
           });
         } catch (err) {
-          console.error("File upload error:", err);
-          toast.error(`Upload error for ${file.name}`);
           if (onProgress) onProgress(file.name, -1);
           continue;
         }
-
-        // 3) Confirm upload => broadcast file message
-        const roomId = [employeeId, activeConversation.employeeId].sort().join("_");
+        const roomId = [employeeId, activeConversation.employeeId]
+          .sort()
+          .join("_");
         const confirmResp = await new Promise((res) => {
           socketRef.current.emit(
             "confirmUpload",
@@ -401,449 +322,188 @@ export function ChatProviderv2({ children }) {
             (cbResp) => res(cbResp)
           );
         });
-        if (!confirmResp.success) {
-          toast.error(`Error saving file metadata for ${file.name}`);
-          if (onProgress) onProgress(file.name, -1);
-        } else {
-          if (onProgress) onProgress(file.name, 100);
-        }
+        if (onProgress) onProgress(file.name, confirmResp.success ? 100 : -1);
       }
     },
     [employeeId, activeConversation]
   );
 
-  //----------------------------------------------------------------
-  // 10) requestFileURL for onClick a file
-  //----------------------------------------------------------------
-  const requestFileURL = useCallback((fileName) => {
-    return new Promise((resolve, reject) => {
-      if (!socketRef.current) {
-        return reject(new Error("Socket not connected"));
-      }
-      socketRef.current.emit("requestFileURL", { fileName }, (resp) => {
-        if (resp?.success) {
-          resolve(resp.data.url);
-        } else {
-          reject(resp?.message || "No URL returned");
+  const loadChatHistory = useCallback(async () => {
+    if (!activeConversation?.employeeId) {
+      setMessages([]);
+      return;
+    }
+    setLoadingMessages(true);
+    try {
+      const res = await fetchChatHistory(
+        employeeId,
+        activeConversation.employeeId
+      );
+      if (res.success) setMessages(res.data || []);
+    } finally {
+      setLoadingMessages(false);
+    }
+  }, [employeeId, activeConversation]);
+
+  useEffect(() => {
+    loadChatHistory();
+  }, [loadChatHistory]);
+
+  const sendMessageHandler = useCallback(() => {
+    console.log("🧠 Inside sendMessageHandler:", {
+      message,
+      activeConversation,
+    });
+
+    if (!message.trim() || !activeConversation || !socketRef.current) return;
+
+    if (activeConversation.isGroup) {
+      socketRef.current.emit(
+        "sendGroupMessage",
+        {
+          groupId: activeConversation._id,
+          sender: employeeId,
+          text: message,
+          senderName: username,
+        },
+        (res) => {
+          console.log("✅ Group message sent:", res);
+          if (res.success) setMessage("");
         }
+      );
+    } else {
+      socketRef.current.emit("privateMessage", {
+        sender: employeeId,
+        receiver: activeConversation.employeeId,
+        message,
       });
-    });
-  }, []);
+      setMessage("");
+    }
+  }, [message, activeConversation, employeeId, username]);
 
-  //----------------------------------------------------------------
-  // 11) unreadCounts (for ChatNotification, etc.)
-  //----------------------------------------------------------------
-  const unreadCounts = useMemo(() => {
-    const map = {};
-    conversations.forEach((c) => {
-      if (c.employeeId) {
-        map[c.employeeId] = c.unreadCount || 0;
-      }
-    });
-    return map;
-  }, [conversations]);
-
-  //////////////////////////////////////////////////////////////////
-  // ============== GROUP CHAT LOGIC BELOW =========================
-  //////////////////////////////////////////////////////////////////
-
-  // States for group listing
-  const [groups, setGroups] = useState([]);
-  const [groupsLoading, setGroupsLoading] = useState(false);
-  const [groupsError, setGroupsError] = useState(null);
-
-  // The group currently selected in UI
-  const [selectedGroup, setSelectedGroup] = useState(null);
-
-  // Its messages
-  const [groupMessages, setGroupMessages] = useState([]);
-  const [groupMessagesLoading, setGroupMessagesLoading] = useState(false);
-
-  // For the “Group Settings” modal
-  const [showGroupSettingsModal, setShowGroupSettingsModal] = useState(false);
-  const [groupInSettings, setGroupInSettings] = useState(null);
-
-  // Helper: Are you the admin?
-  const isGroupAdmin = useCallback(
-    (group) => {
-      if (!group || !employeeId) return false;
-      return group.admin === employeeId;
+  const joinAndMarkRoom = useCallback(
+    (partnerId) => {
+      socketRef.current.emit("joinRoom", {
+        sender: employeeId,
+        receiver: partnerId,
+      });
+      socketRef.current.emit("markRead", {
+        sender: employeeId,
+        receiver: partnerId,
+      });
     },
     [employeeId]
   );
 
-  // Clear group selection
-  const clearActiveGroup = useCallback(() => {
-    setSelectedGroup(null);
-    setGroupMessages([]);
-  }, []);
-
-  // ============= fetchUserGroups =============
-  const fetchUserGroups = useCallback(() => {
-    if (!socketRef.current) return;
-    setGroupsLoading(true);
-    setGroupsError(null);
-
-    // We'll assume you have a "getUserGroups" event
-    socketRef.current.emit("getUserGroups", employeeId, (response) => {
-      setGroupsLoading(false);
-      if (!response.success) {
-        setGroupsError(response.message || "Error fetching groups");
-        return;
-      }
-      setGroups(response.data || []);
-    });
-  }, [employeeId]);
-
-  // ============= createGroupUIFlow =============
-  const createGroupUIFlow = useCallback(
-    (groupName, selectedMemberIds, groupIcon) => {
-      if (!socketRef.current) return;
-      const payload = {
-        groupName,
-        admin: employeeId,
-        members: selectedMemberIds,
-        groupIcon,
-      };
-      socketRef.current.emit("createGroup", payload, (resp) => {
-        if (!resp.success) {
-          toast.error(resp.message || "Failed to create group");
-          return;
-        }
-        toast.success("Group created successfully!");
-        // refresh your group list
-        fetchUserGroups();
-      });
-    },
-    [employeeId, fetchUserGroups]
-  );
-
-  // ============= selectGroup =============
-  const selectGroup = useCallback((grp) => {
-    setSelectedGroup(grp);
-    setGroupMessages([]);
-    if (!socketRef.current) return;
-    socketRef.current.emit("joinGroupRoom", grp._id);
-  }, []);
-
-  // ============= sendGroupTextMessage =============
-  const sendGroupTextMessage = useCallback(
-    (groupId, text) => {
-      if (!socketRef.current) return;
-      const data = { groupId, sender: employeeId, senderName: username, text };
-      socketRef.current.emit("sendGroupMessage", data, (resp) => {
-        if (!resp.success) {
-          toast.error(resp.message || "Error sending group message");
-        }
-      });
-    },
-    [employeeId, username]
-  );
-
-  // ============= handleIncomingGroupMessage =============
-  const handleIncomingGroupMessage = useCallback(
-    (data) => {
-      // data: { groupId, sender, text, createdAt }
-      if (!selectedGroup) return;
-      if (data.groupId === selectedGroup._id) {
-        setGroupMessages((prev) => [...prev, data]);
-      } else {
-        // It's for a different group (not currently viewing)
-        // e.g. show a toast or increment unread
-      }
-    },
-    [selectedGroup]
-  );
-
-  // ============= fetchGroupMessages =============
-  const fetchGroupMessages = useCallback((groupId) => {
-    if (!socketRef.current) return;
-    setGroupMessagesLoading(true);
-    // We'll assume a socket event "getGroupMessages"
-    socketRef.current.emit("getGroupMessages", groupId, (resp) => {
-      setGroupMessagesLoading(false);
-      if (!resp.success) {
-        toast.error(resp.message || "Failed to load group messages");
-        return;
-      }
-      setGroupMessages(resp.data || []);
-    });
-  }, []);
-
-  // ============= group settings actions =============
-  const openGroupSettingsModal = useCallback((grp) => {
-    setGroupInSettings(grp);
-    setShowGroupSettingsModal(true);
-  }, []);
-
-  const closeGroupSettingsModal = useCallback(() => {
-    setShowGroupSettingsModal(false);
-    setGroupInSettings(null);
-  }, []);
-
-  // Add member
-  const addMemberToGroup = useCallback(
-    (groupId, newMemberId) => {
-      if (!socketRef.current) return;
-      socketRef.current.emit(
-        "addMemberToGroup",
-        { groupId, adminId: employeeId, newMemberId },
-        (resp) => {
-          if (resp.success) {
-            toast.success("Member added");
-            fetchUserGroups(); // refresh group data
-          } else {
-            toast.error(resp.message || "Failed to add member");
-          }
-        }
+  const selectChat = useCallback(
+    (chat) => {
+      setSelectedConversation(chat);
+      setSelectedUser(null);
+      setMessages([]);
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.employeeId === chat.employeeId ? { ...c, unreadCount: 0 } : c
+        )
       );
+      joinAndMarkRoom(chat.employeeId);
     },
-    [employeeId, fetchUserGroups]
+    [employeeId, joinAndMarkRoom]
   );
 
-  // Remove member
-  const removeMemberFromGroup = useCallback(
-    (groupId, memberId) => {
-      if (!socketRef.current) return;
-      socketRef.current.emit(
-        "removeMemberFromGroup",
-        { groupId, adminId: employeeId, memberId },
-        (resp) => {
-          if (resp.success) {
-            toast.success("Member removed");
-            fetchUserGroups();
-          } else {
-            toast.error(resp.message || "Failed to remove member");
-          }
-        }
+  const selectUser = useCallback(
+    (user) => {
+      setSelectedUser(user);
+      setSelectedConversation(null);
+      setMessages([]);
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.employeeId === user.employeeId ? { ...c, unreadCount: 0 } : c
+        )
       );
+      joinAndMarkRoom(user.employeeId);
     },
-    [employeeId, fetchUserGroups]
+    [employeeId, joinAndMarkRoom]
   );
 
-  // Update group info
-  const updateGroupInfo = useCallback(
-    (groupId, newName, newIcon) => {
-      if (!socketRef.current) return;
-      const payload = {
-        groupId,
-        adminId: employeeId,
-        newName,
-        newIcon,
-      };
-      socketRef.current.emit("updateGroupInfo", payload, (resp) => {
-        if (resp.success) {
-          toast.success("Group info updated");
-          fetchUserGroups();
-        } else {
-          toast.error(resp.message || "Failed to update group");
+  const selectGroup = useCallback((group) => {
+    console.log("Selecting group:", group);
+    setSelectedConversation({ ...group, isGroup: true });
+    setSelectedUser(null);
+    setMessages([]);
+    if (socketRef.current) {
+      socketRef.current.emit("joinGroupRoom", group._id);
+      socketRef.current.emit("getGroupMessages", group._id, (res) => {
+        if (res.success) {
+          setMessages(res.data || []);
         }
       });
-    },
-    [employeeId, fetchUserGroups]
-  );
+    }
+  }, []);
 
-  // Delete group
-  const deleteGroup = useCallback(
-    (groupId) => {
-      if (!socketRef.current) return;
-      const payload = {
-        groupId,
-        adminId: employeeId,
-      };
-      socketRef.current.emit("deleteGroup", payload, (resp) => {
-        if (resp.success) {
-          toast.success("Group deleted");
-          // Also do a fresh fetch from the server if you want to be 100% sure
-          fetchUserGroups(); 
-          // If it was the currently-selected group, clear it
-          if (selectedGroup && String(selectedGroup._id) === String(resp.groupId)) {
-            clearActiveGroup();
-          }
-        } else {
-          toast.error(resp.message || "Failed to delete group");
-        }
-      });
-      
-    },
-    [employeeId, selectedGroup, clearActiveGroup]
-  );
-
-  // leaveGroupChat => just close the UI
-  const leaveGroupChat = useCallback(() => {
-    clearActiveGroup();
-  }, [clearActiveGroup]);
-
-  //----------------------------------------------------------------
-  // 12) Listen for group events
-  //----------------------------------------------------------------
-  useEffect(() => {
-    if (!socketRef.current) return;
-
-    // groupCreated => if the user is in members, refresh
-    const handleGroupCreated = (data) => {
-      if (data.success && data.members.includes(employeeId)) {
-        toast(`You were added to group: ${data.groupName}`, { icon: "🎉" });
-        fetchUserGroups();
-      }
-    };
-
-    // groupMessage => if it's for current group, push message
-    const handleGroupMessage = (data) => {
-      handleIncomingGroupMessage(data);
-    };
-
-    // // groupDeleted => remove from local, close if current
-    // const handleGroupDeleted = ({ groupId }) => {
-    //   setGroups((prev) => prev.filter((g) => g._id !== groupId));
-    //   if (selectedGroup && selectedGroup._id === groupId) {
-    //     clearActiveGroup();
-    //   }
-    //   toast("A group was deleted");
-    // };
-
-    const handleGroupDeleted = ({ groupId }) => {
-      // `groupId` here is the string the server emitted
-      // Make sure we compare it to our local groups by converting to string:
-      setGroups((prev) =>
-        prev.filter((g) => String(g._id) !== String(groupId))
-      );
-    
-      if (selectedGroup && String(selectedGroup._id) === String(groupId)) {
-        clearActiveGroup();
-      }
-    
-      toast("A group was deleted");
-    };
-
-    socketRef.current.on("groupCreated", handleGroupCreated);
-    socketRef.current.on("groupMessage", handleGroupMessage);
-    socketRef.current.on("groupDeleted", handleGroupDeleted);
-
-    return () => {
-      if (!socketRef.current) return;
-      socketRef.current.off("groupCreated", handleGroupCreated);
-      socketRef.current.off("groupMessage", handleGroupMessage);
-      socketRef.current.off("groupDeleted", handleGroupDeleted);
-    };
-  }, [
-    employeeId,
-    selectedGroup,
-    handleIncomingGroupMessage,
-    fetchUserGroups,
-    clearActiveGroup,
-  ]);
-
-  //----------------------------------------------------------------
-  // 13) Build final context object
-  //----------------------------------------------------------------
-  const contextValue = useMemo(() => {
-    return {
-      //////////////////////////////////////////////////////////////////
-      // 1-to-1 chat
-      //////////////////////////////////////////////////////////////////
+  const contextValue = useMemo(
+    () => ({
       employeeId,
       username,
-
-      // Members
+      userStatus,
       members,
-      totalCount,
-      loading,
-      error,
-      fetchMembers,
-
-      // Conversations
-      conversations,
-      conversationsLoading,
-      conversationsError,
-      handleSelectConversation,
-      handleSelectUser,
-      clearActiveConversation,
-
-      // Active conversation
-      selectedUser,
-      setSelectedUser,
-      selectedConversation,
-      setSelectedConversation,
-      activeConversation,
-
-      // Chat messages
-      messages,
-      messagesLoading,
-      message,
-      setMessage,
+      memberCount,
+      loadingMembers,
       sendMessageHandler,
-
-      // File sending
-      sendFileHandler,
-
-      // requestFileURL
-      requestFileURL,
-
-      // Unread counts
-      unreadCounts,
-
-      //////////////////////////////////////////////////////////////////
-      // GROUP chat
-      //////////////////////////////////////////////////////////////////
+      membersError,
+      loadMembers,
+      conversations,
+      loadingConversations,
+      conversationsError,
+      selectChat,
+      selectUser,
+      selectGroup,
+      message,
       groups,
       groupsLoading,
       groupsError,
+      setMessage,
+      messages,
+      loadingMessages,
+      activeConversation,
+      sendFileHandler,
       fetchUserGroups,
+      requestFileURL,
       createGroupUIFlow,
-      selectedGroup,
+    }),
+    [
+      employeeId,
+      username,
+      userStatus,
       selectGroup,
-      groupMessages,
-      groupMessagesLoading,
-      sendGroupTextMessage,
-      fetchGroupMessages,
-      leaveGroupChat,
-
-      isGroupAdmin,
-      openGroupSettingsModal,
-      addMemberToGroup,
-      removeMemberFromGroup,
-      updateGroupInfo,
-      deleteGroup,
-
-      showGroupSettingsModal,
-      groupInSettings,
-      closeGroupSettingsModal,
-
-      clearActiveGroup,
-    };
-  }, [
-    // 1-to-1
-    employeeId, username,
-    members, totalCount, loading, error, fetchMembers,
-    conversations, conversationsLoading, conversationsError,
-    selectedUser, selectedConversation, activeConversation,
-    messages, messagesLoading, message,
-    sendMessageHandler, sendFileHandler, requestFileURL,
-    unreadCounts, clearActiveConversation, handleSelectConversation,
-    handleSelectUser,
-
-    // group
-    groups, groupsLoading, groupsError,
-    fetchUserGroups, createGroupUIFlow, selectedGroup, selectGroup,
-    groupMessages, groupMessagesLoading, sendGroupTextMessage,
-    fetchGroupMessages, leaveGroupChat, isGroupAdmin,
-    openGroupSettingsModal, addMemberToGroup, removeMemberFromGroup,
-    updateGroupInfo, deleteGroup, showGroupSettingsModal, groupInSettings,
-    closeGroupSettingsModal, clearActiveGroup,
-  ]);
+      groups,
+      groupsLoading,
+      groupsError,
+      members,
+      memberCount,
+      loadingMembers,
+      membersError,
+      conversations,
+      loadingConversations,
+      conversationsError,
+      createGroupUIFlow,
+      messages,
+      loadingMessages,
+      message,
+      setMessage,
+      sendMessageHandler,
+      sendFileHandler,
+      fetchUserGroups,
+      loadMembers,
+      selectChat,
+      selectUser,
+      activeConversation,
+      requestFileURL,
+    ]
+  );
 
   return (
     <ChatContextv2.Provider value={contextValue}>
       {children}
-
-      {/* Conditionally show the Group Settings Modal */}
-      {showGroupSettingsModal && groupInSettings && (
-        <GroupSettingsModal
-          group={groupInSettings}
-          onClose={closeGroupSettingsModal}
-        />
-      )}
     </ChatContextv2.Provider>
   );
 }

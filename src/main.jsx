@@ -12,6 +12,7 @@ import { messaging } from "./firebase/firebase-config";
 import { toast } from "react-hot-toast";
 
 import { ChatProviderv2 } from "./contexts/ChatContextv2.jsx";
+import IncomingCallPortal from "./components/chats/calls/IncomingCallPortal.jsx";
 
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
@@ -32,8 +33,9 @@ const employee = localStorage.getItem("employeeId");
 createRoot(document.getElementById("root")).render(
   <ThemeProvider>
     <CallProvider currentUserId={employee}>
-      <CallModal />
-      <IncomingCallModal />
+      {/* <CallModal />
+      <IncomingCallModal /> */}
+      <IncomingCallPortal />
 
       <CallWindow />
       <VideoCallModal />

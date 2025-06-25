@@ -109,16 +109,15 @@ function DemographicCard() {
         rounded-xl sm:rounded-2xl lg:rounded-3xl
         shadow-lg sm:shadow-xl lg:shadow-2xl shadow-black/10 dark:shadow-black/40
         p-3 sm:p-4 lg:p-6
-        before:absolute before:inset-0
-        before:bg-gradient-to-br before:from-blue-500/5 before:to-purple-500/5
-        before:rounded-xl sm:before:rounded-2xl lg:before:rounded-3xl before:pointer-events-none
+        
+      
         flex flex-col
         min-h-0
       "
     >
       {/* Animated Background Glow */}
-      <div className="absolute -top-20 sm:-top-32 lg:-top-40 -right-20 sm:-right-32 lg:-right-40 w-40 sm:w-60 lg:w-80 h-40 sm:h-60 lg:h-80 bg-gradient-to-br from-blue-400/20 to-purple-400/20 rounded-full blur-2xl sm:blur-3xl animate-pulse" />
-      <div className="absolute -bottom-20 sm:-bottom-32 lg:-bottom-40 -left-20 sm:-left-32 lg:-left-40 w-40 sm:w-60 lg:w-80 h-40 sm:h-60 lg:h-80 bg-gradient-to-br from-pink-400/20 to-orange-400/20 rounded-full blur-2xl sm:blur-3xl animate-pulse delay-1000" />
+      <div className=" rounded-full blur-2xl sm:blur-3xl animate-pulse" />
+      <div className=" rounded-full blur-2xl sm:blur-3xl animate-pulse delay-1000" />
 
       {/* Header */}
       <motion.div 
@@ -127,8 +126,8 @@ function DemographicCard() {
       >
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 min-w-0">
           <motion.div 
-            whileHover={{ rotate: 360, scale: 1.1 }}
-            transition={{ duration: 0.8 }}
+            // whileHover={{ rotate: 360, scale: 1.1 }}
+            // transition={{ duration: 0.8 }}
             className="
               p-2 sm:p-2.5 lg:p-3 rounded-xl sm:rounded-xl lg:rounded-2xl
               bg-gradient-to-br from-blue-500 to-purple-600

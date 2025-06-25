@@ -7,6 +7,7 @@ import usePostStore from '../store/postStore';
 import useKudosStore from '../store/kudosStore';
 import usePollStore from '../store/pollStore';
 import useNotificationStore from '../store/notificationStore';
+import { getsocket } from '../service/socketService';
 
 let socket;
 
@@ -20,9 +21,7 @@ const useSocket = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      socket = io(import.meta.env.VITE_SOCKET_IO_URL, {
-        transports: ['websocket'],
-      });
+      socket = getsocket();
 
       socket.on('connect', () => {
         console.log('Connected to Socket.io server');

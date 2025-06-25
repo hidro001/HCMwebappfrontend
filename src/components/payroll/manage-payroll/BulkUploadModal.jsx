@@ -389,9 +389,9 @@ export default function BulkUploadModal({
                   <tr key={idx} className="border-b">
                     <td>{emp.employeeId}</td>
                     <td>{emp.name}</td>
-                    <td>{emp.grossPay.toFixed(2)}</td>
-                    <td>{emp.deduction.toFixed(2)}</td>
-                    <td>{emp.finalSalary.toFixed(2)}</td>
+                    <td>{Number(emp.grossPay || 0).toFixed(2)}</td>
+                    <td>{Number(emp.deduction || 0).toFixed(2)}</td>
+                    <td>{Number(emp.finalSalary || 0).toFixed(2)}</td>
                   </tr>
                 ))}
               </tbody>

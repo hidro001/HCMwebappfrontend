@@ -1,8 +1,6 @@
-
-
 // import React, { useState, useEffect, useMemo, useRef } from "react";
 // import { toast } from "react-hot-toast";
-// import useRatingStore from "../../store/useRatingNewStore"; 
+// import useRatingStore from "../../store/useRatingNewStore";
 // import {
 //   FiCalendar as CalendarIcon,
 //   FiDownload as Download,
@@ -226,7 +224,7 @@
 //   // Validation helper
 //   const isFormValid = () => {
 //     if (!employeeId) return false;
-    
+
 //     if (frequency === "daily") {
 //       return dateRange.startDate && dateRange.endDate;
 //     } else if (frequency === "weekly") {
@@ -271,7 +269,7 @@
 //               Configuration
 //             </h2>
 //           </div>
-          
+
 //           <div className="p-6 space-y-6">
 //             {/* Employee and Frequency Selection */}
 //             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -563,7 +561,7 @@
 //                 </div>
 //               </div>
 //             </div>
-            
+
 //             <div className="p-6">
 //               <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-l-4 border-blue-500">
 //                 <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Steps:</h4>
@@ -574,7 +572,7 @@
 //                   <li>Upload the completed file</li>
 //                 </ol>
 //               </div>
-              
+
 //               <button
 //                 onClick={handleDownloadTemplate}
 //                 disabled={!isFormValid()}
@@ -617,15 +615,15 @@
 //                 <label
 //                   htmlFor="file-upload"
 //                   className={`block border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
-//                     file 
-//                       ? "border-green-400 bg-green-50 dark:bg-green-900/20" 
+//                     file
+//                       ? "border-green-400 bg-green-50 dark:bg-green-900/20"
 //                       : "border-gray-300 dark:border-gray-600 hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-900/20"
 //                   }`}
 //                 >
 //                   <div className="flex flex-col items-center gap-4">
 //                     <div className={`h-16 w-16 rounded-full flex items-center justify-center ${
-//                       file 
-//                         ? "bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400" 
+//                       file
+//                         ? "bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400"
 //                         : "bg-gray-100 dark:bg-gray-700 text-gray-400"
 //                     }`}>
 //                       <ArrowUpCircle size={32} />
@@ -697,12 +695,10 @@
 
 // export default BulkUploadPast;
 
-
-
 // import React, { useState, useEffect, useMemo, useRef } from "react";
 // import { toast } from "react-hot-toast";
 // import { motion, AnimatePresence } from "framer-motion";
-// import useRatingStore from "../../store/useRatingNewStore"; 
+// import useRatingStore from "../../store/useRatingNewStore";
 // import {
 //   FiCalendar as CalendarIcon,
 //   FiDownload as Download,
@@ -715,7 +711,7 @@
 //   FiClock,
 //   FiFileText
 // } from "react-icons/fi";
-// import { 
+// import {
 //   FaFileExcel as FileSpreadsheet,
 //   FaCloudUploadAlt,
 //   FaCloudDownloadAlt,
@@ -951,7 +947,7 @@
 
 //   const isFormValid = () => {
 //     if (!employeeId) return false;
-    
+
 //     if (frequency === "daily") {
 //       return dateRange.startDate && dateRange.endDate;
 //     } else if (frequency === "weekly") {
@@ -1077,7 +1073,7 @@
 //               </div>
 //             </div>
 //           </div>
-          
+
 //           <div className="p-6 space-y-6">
 //             {/* Employee and Frequency Selection */}
 //             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1086,7 +1082,7 @@
 //                 initial={{ opacity: 0, x: -20 }}
 //                 animate={{ opacity: 1, x: 0 }}
 //                 transition={{ delay: 0.1 }}
-//                 className="space-y-2 relative" 
+//                 className="space-y-2 relative"
 //                 ref={inputRef}
 //               >
 //                 <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -1427,7 +1423,7 @@
 //                 </div>
 //               </div>
 //             </div>
-            
+
 //             <div className="p-6">
 //               <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/10 rounded-xl border border-blue-200 dark:border-blue-800">
 //                 <div className="flex items-start space-x-3">
@@ -1443,7 +1439,7 @@
 //                   </div>
 //                 </div>
 //               </div>
-              
+
 //               <motion.button
 //                 whileHover={{ scale: 1.02 }}
 //                 whileTap={{ scale: 0.98 }}
@@ -1508,15 +1504,15 @@
 //                   whileHover={{ scale: 1.01 }}
 //                   htmlFor="file-upload"
 //                   className={`block border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${
-//                     file 
-//                       ? "border-green-400 bg-green-50 dark:bg-green-900/20 dark:border-green-500" 
+//                     file
+//                       ? "border-green-400 bg-green-50 dark:bg-green-900/20 dark:border-green-500"
 //                       : "border-gray-300 dark:border-gray-600 hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-900/20"
 //                   }`}
 //                 >
 //                   <div className="flex flex-col items-center space-y-4">
 //                     <div className={`p-4 rounded-full transition-colors duration-200 ${
-//                       file 
-//                         ? "bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400" 
+//                       file
+//                         ? "bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400"
 //                         : "bg-gray-100 dark:bg-gray-700 text-gray-400"
 //                     }`}>
 //                       <ArrowUpCircle size={32} />
@@ -1648,11 +1644,10 @@
 
 // export default BulkUploadPast;
 
-
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
-import useRatingStore from "../../store/useRatingNewStore"; 
+import useRatingStore from "../../store/useRatingNewStore";
 import {
   FiCalendar as CalendarIcon,
   FiDownload as Download,
@@ -1663,16 +1658,16 @@ import {
   FiAlertCircle,
   FiUsers,
   FiClock,
-  FiFileText
+  FiFileText,
 } from "react-icons/fi";
-import { 
+import {
   FaFileExcel as FileSpreadsheet,
   FaCloudUploadAlt,
   FaCloudDownloadAlt,
   FaUser,
   FaCalendarAlt,
   FaExclamationTriangle,
-  FaCheckCircle as FaCheck
+  FaCheckCircle as FaCheck,
 } from "react-icons/fa";
 import {
   HiDocumentDownload,
@@ -1680,7 +1675,7 @@ import {
   HiUserGroup,
   HiCalendar,
   HiExclamationCircle,
-  HiCheckCircle
+  HiCheckCircle,
 } from "react-icons/hi";
 
 function BulkUploadPast() {
@@ -1747,14 +1742,15 @@ function BulkUploadPast() {
     };
   }, []);
 
-  const filteredEmployees = employees?.filter((emp) => {
-    const search = employeeInput.toLowerCase();
-    return (
-      emp.first_Name.toLowerCase().includes(search) ||
-      emp.last_Name.toLowerCase().includes(search) ||
-      emp.employee_Id.toLowerCase().includes(search)
-    );
-  }) || [];
+  const filteredEmployees =
+    employees?.filter((emp) => {
+      const search = employeeInput.toLowerCase();
+      return (
+        emp.first_Name.toLowerCase().includes(search) ||
+        emp.last_Name.toLowerCase().includes(search) ||
+        emp.employee_Id.toLowerCase().includes(search)
+      );
+    }) || [];
 
   const handleEmployeeInputChange = (e) => {
     setEmployeeInput(e.target.value);
@@ -1843,9 +1839,20 @@ function BulkUploadPast() {
       toast.success("Template downloaded successfully!");
       setCurrentStep(2);
     } catch (err) {
-      toast.error(
-        err?.response?.data?.message || err.message || "Error downloading template"
-      );
+      // err.response.data is now always a Blob
+      let msg = "Error downloading template";
+      if (err.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const json = JSON.parse(text);
+          msg = json.message || msg;
+        } catch {
+          /* ignore parse errors */
+        }
+      } else if (err.message) {
+        msg = err.message;
+      }
+      toast.error(msg);
     } finally {
       setIsDownloading(false);
     }
@@ -1901,13 +1908,23 @@ function BulkUploadPast() {
 
   const isFormValid = () => {
     if (!employeeId) return false;
-    
+
     if (frequency === "daily") {
       return dateRange.startDate && dateRange.endDate;
     } else if (frequency === "weekly") {
-      return weekRange.startYear && weekRange.startWeek && weekRange.endYear && weekRange.endWeek;
+      return (
+        weekRange.startYear &&
+        weekRange.startWeek &&
+        weekRange.endYear &&
+        weekRange.endWeek
+      );
     } else if (frequency === "monthly") {
-      return monthRange.startYear && monthRange.startMonth && monthRange.endYear && monthRange.endMonth;
+      return (
+        monthRange.startYear &&
+        monthRange.startMonth &&
+        monthRange.endYear &&
+        monthRange.endMonth
+      );
     } else if (frequency === "yearly") {
       return yearRange.startYear && yearRange.endYear;
     }
@@ -1916,7 +1933,7 @@ function BulkUploadPast() {
 
   const steps = [
     { id: 1, name: "Configure", icon: HiUserGroup, completed: isFormValid() },
-    { id: 2, name: "Upload", icon: HiCloudUpload, completed: currentStep >= 3 }
+    { id: 2, name: "Upload", icon: HiCloudUpload, completed: currentStep >= 3 },
   ];
 
   const containerVariants = {
@@ -1926,9 +1943,9 @@ function BulkUploadPast() {
       y: 0,
       transition: {
         duration: 0.6,
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
@@ -1936,8 +1953,8 @@ function BulkUploadPast() {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.4 }
-    }
+      transition: { duration: 0.4 },
+    },
   };
 
   const cardVariants = {
@@ -1945,14 +1962,15 @@ function BulkUploadPast() {
     visible: {
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.3 }
+      transition: { duration: 0.3 },
     },
     hover: {
       scale: 1.02,
       y: -5,
-      boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-      transition: { duration: 0.2 }
-    }
+      boxShadow:
+        "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+      transition: { duration: 0.2 },
+    },
   };
 
   return (
@@ -1964,10 +1982,7 @@ function BulkUploadPast() {
     >
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header Section */}
-        <motion.div
-          variants={itemVariants}
-          className="text-center space-y-4"
-        >
+        <motion.div variants={itemVariants} className="text-center space-y-4">
           <div className="flex items-center justify-center space-x-3">
             <div className="p-3 bg-blue-100 dark:bg-blue-900/20 rounded-xl">
               <FileSpreadsheet className="text-blue-600 dark:text-blue-400 text-2xl" />
@@ -1977,7 +1992,8 @@ function BulkUploadPast() {
             </h1>
           </div>
           <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
-            Generate templates and upload historical rating data for employees efficiently
+            Generate templates and upload historical rating data for employees
+            efficiently
           </p>
         </motion.div>
 
@@ -1989,13 +2005,15 @@ function BulkUploadPast() {
           <div className="flex items-center justify-between max-w-md mx-auto">
             {steps.map((step, index) => (
               <div key={step.id} className="flex items-center">
-                <div className={`flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 ${
-                  step.completed
-                    ? "bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400"
-                    : currentStep === step.id
-                    ? "bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
-                    : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
-                }`}>
+                <div
+                  className={`flex items-center space-x-3 px-4 py-2 rounded-lg transition-all duration-200 ${
+                    step.completed
+                      ? "bg-green-100 dark:bg-green-900/20 text-green-600 dark:text-green-400"
+                      : currentStep === step.id
+                      ? "bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400"
+                      : "bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400"
+                  }`}
+                >
                   <step.icon className="text-lg" />
                   <span className="font-medium">{step.name}</span>
                   {step.completed && <HiCheckCircle className="text-lg" />}
@@ -2026,7 +2044,7 @@ function BulkUploadPast() {
                   </p>
                 </div>
               </div>
-              
+
               {/* Compact Download Button */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -2054,7 +2072,7 @@ function BulkUploadPast() {
               </motion.button>
             </div>
           </div>
-          
+
           <div className="p-6 space-y-6">
             {/* Employee and Frequency Selection */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -2063,7 +2081,7 @@ function BulkUploadPast() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.1 }}
-                className="space-y-2 relative" 
+                className="space-y-2 relative"
                 ref={inputRef}
               >
                 <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -2076,7 +2094,9 @@ function BulkUploadPast() {
                 {loading ? (
                   <div className="flex items-center justify-center py-4 px-4 bg-gray-50 dark:bg-gray-700 rounded-xl border border-gray-300 dark:border-gray-600">
                     <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                    <span className="ml-3 text-gray-600 dark:text-gray-400">Loading employees...</span>
+                    <span className="ml-3 text-gray-600 dark:text-gray-400">
+                      Loading employees...
+                    </span>
                   </div>
                 ) : (
                   <>
@@ -2107,7 +2127,9 @@ function BulkUploadPast() {
                           {filteredEmployees.map((emp) => (
                             <motion.div
                               key={emp._id}
-                              whileHover={{ backgroundColor: "rgba(59, 130, 246, 0.1)" }}
+                              whileHover={{
+                                backgroundColor: "rgba(59, 130, 246, 0.1)",
+                              }}
                               onClick={() => handleSelectEmployee(emp)}
                               className="cursor-pointer px-4 py-3 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-200"
                             >
@@ -2121,6 +2143,12 @@ function BulkUploadPast() {
                                   </p>
                                   <p className="text-sm text-gray-500 dark:text-gray-400">
                                     ID: {emp.employee_Id}
+                                  </p>
+                                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    Designation: {emp.designation}
+                                  </p>
+                                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    Department: {emp.department}
                                   </p>
                                 </div>
                               </div>
@@ -2176,7 +2204,8 @@ function BulkUploadPast() {
               <div className="flex items-center space-x-2">
                 <HiCalendar className="text-purple-600 dark:text-purple-400 text-xl" />
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  Select {frequency.charAt(0).toUpperCase() + frequency.slice(1)} Range
+                  Select{" "}
+                  {frequency.charAt(0).toUpperCase() + frequency.slice(1)} Range
                 </h3>
               </div>
 
@@ -2192,7 +2221,10 @@ function BulkUploadPast() {
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                       value={dateRange.startDate}
                       onChange={(e) =>
-                        setDateRange({ ...dateRange, startDate: e.target.value })
+                        setDateRange({
+                          ...dateRange,
+                          startDate: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -2225,7 +2257,10 @@ function BulkUploadPast() {
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                       value={weekRange.startYear}
                       onChange={(e) =>
-                        setWeekRange({ ...weekRange, startYear: e.target.value })
+                        setWeekRange({
+                          ...weekRange,
+                          startYear: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -2241,7 +2276,10 @@ function BulkUploadPast() {
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                       value={weekRange.startWeek}
                       onChange={(e) =>
-                        setWeekRange({ ...weekRange, startWeek: e.target.value })
+                        setWeekRange({
+                          ...weekRange,
+                          startWeek: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -2290,7 +2328,10 @@ function BulkUploadPast() {
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                       value={monthRange.startYear}
                       onChange={(e) =>
-                        setMonthRange({ ...monthRange, startYear: e.target.value })
+                        setMonthRange({
+                          ...monthRange,
+                          startYear: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -2306,7 +2347,10 @@ function BulkUploadPast() {
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                       value={monthRange.startMonth}
                       onChange={(e) =>
-                        setMonthRange({ ...monthRange, startMonth: e.target.value })
+                        setMonthRange({
+                          ...monthRange,
+                          startMonth: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -2320,7 +2364,10 @@ function BulkUploadPast() {
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                       value={monthRange.endYear}
                       onChange={(e) =>
-                        setMonthRange({ ...monthRange, endYear: e.target.value })
+                        setMonthRange({
+                          ...monthRange,
+                          endYear: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -2336,7 +2383,10 @@ function BulkUploadPast() {
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                       value={monthRange.endMonth}
                       onChange={(e) =>
-                        setMonthRange({ ...monthRange, endMonth: e.target.value })
+                        setMonthRange({
+                          ...monthRange,
+                          endMonth: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -2355,7 +2405,10 @@ function BulkUploadPast() {
                       className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200"
                       value={yearRange.startYear}
                       onChange={(e) =>
-                        setYearRange({ ...yearRange, startYear: e.target.value })
+                        setYearRange({
+                          ...yearRange,
+                          startYear: e.target.value,
+                        })
                       }
                     />
                   </div>
@@ -2387,7 +2440,9 @@ function BulkUploadPast() {
               <div className="flex items-start space-x-3">
                 <FiFileText className="text-blue-600 dark:text-blue-400 text-lg mt-0.5" />
                 <div>
-                  <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">Next Steps:</h4>
+                  <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
+                    Next Steps:
+                  </h4>
                   <ol className="text-sm text-blue-800 dark:text-blue-200 space-y-1 list-decimal list-inside">
                     <li>Complete the configuration above</li>
                     <li>Click "Download Template" to get the Excel file</li>
@@ -2438,17 +2493,19 @@ function BulkUploadPast() {
                 whileHover={{ scale: 1.01 }}
                 htmlFor="file-upload"
                 className={`block border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200 ${
-                  file 
-                    ? "border-green-400 bg-green-50 dark:bg-green-900/20 dark:border-green-500" 
+                  file
+                    ? "border-green-400 bg-green-50 dark:bg-green-900/20 dark:border-green-500"
                     : "border-gray-300 dark:border-gray-600 hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-900/20"
                 }`}
               >
                 <div className="flex flex-col items-center space-y-4">
-                  <div className={`p-4 rounded-full transition-colors duration-200 ${
-                    file 
-                      ? "bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400" 
-                      : "bg-gray-100 dark:bg-gray-700 text-gray-400"
-                  }`}>
+                  <div
+                    className={`p-4 rounded-full transition-colors duration-200 ${
+                      file
+                        ? "bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400"
+                        : "bg-gray-100 dark:bg-gray-700 text-gray-400"
+                    }`}
+                  >
                     <ArrowUpCircle size={32} />
                   </div>
                   <div>
@@ -2511,7 +2568,8 @@ function BulkUploadPast() {
                       Upload Errors Found
                     </h4>
                     <p className="text-sm text-red-700 dark:text-red-300">
-                      Found {errorCount} error{errorCount > 1 ? "s" : ""} in your file that need to be fixed
+                      Found {errorCount} error{errorCount > 1 ? "s" : ""} in
+                      your file that need to be fixed
                     </p>
                   </div>
                 </div>
@@ -2563,7 +2621,8 @@ function BulkUploadPast() {
                     Upload Completed Successfully!
                   </h4>
                   <p className="text-sm text-green-700 dark:text-green-300">
-                    All rating data has been processed and uploaded to the system.
+                    All rating data has been processed and uploaded to the
+                    system.
                   </p>
                 </div>
               </div>

@@ -326,23 +326,7 @@ export default function PayrollCycles() {
       className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 lg:p-8"
     >
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header Section */}
-        <motion.div
-          variants={itemVariants}
-          className="text-center space-y-4"
-        >
-          <div className="flex items-center justify-center space-x-3">
-            <div className="p-3 bg-yellow-100 dark:bg-yellow-900/20 rounded-xl">
-              <HiCash className="text-yellow-600 dark:text-yellow-400 text-2xl" />
-            </div>
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white">
-              Payroll Cycles
-            </h1>
-          </div>
-          <p className="text-gray-600 dark:text-gray-400 text-lg">
-            Manage payroll processing schedules and payment cycles
-          </p>
-        </motion.div>
+  
 
         {/* Stats Cards */}
         <motion.div
