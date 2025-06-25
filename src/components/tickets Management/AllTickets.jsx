@@ -634,13 +634,13 @@ export default function AllTickets() {
                               >
                                 <HiOutlineEye size={18} />
                               </button>
-                              <button
+                              {/* <button
                                 onClick={() => handleEdit(issue)}
                                 className="p-2 text-green-600 dark:text-green-400 hover:text-green-500 dark:hover:text-green-300 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-all"
                                 title="Edit Ticket"
                               >
                                 <HiOutlinePencil size={18} />
-                              </button>
+                              </button> */}
                               <button
                                 onClick={() => handleDelete(issue)}
                                 className="p-2 text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-all"
