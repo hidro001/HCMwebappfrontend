@@ -488,14 +488,14 @@ export default function PerformanceAnalytics({
         </motion.div>
 
         {/* Summary Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          <StatCard
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6">
+          {/* <StatCard
             title="Total Score"
             value={totalScore.toLocaleString()}
             trend="up"
             icon={FiTrendingUp}
             gradient={GRADIENT_COLORS.primary}
-          />
+          /> */}
           <StatCard
             title="Avg Performance"
             value={`${avgPerformance}%`}

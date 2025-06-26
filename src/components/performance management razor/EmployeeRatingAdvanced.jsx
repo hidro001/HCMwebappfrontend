@@ -947,11 +947,11 @@ function EmployeeRatingAdvanced() {
                               Total Achieved
                             </th>
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                              Total Score
+                              Total Score (%)
                             </th>
-                            <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                              % of Target
-                            </th>
+                            {/* <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                              Target Achieved (%) 
+                            </th> */}
                             <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                               Category
                             </th>
@@ -1005,16 +1005,19 @@ function EmployeeRatingAdvanced() {
                                   </div>
                                 </td>
                                 <td className="px-4 py-3 whitespace-nowrap">
-                                  <div className="flex items-center">
+                                  {/* <div className="flex items-center">
                                     <span className={`font-bold ${colorClass}`}>
                                       {summary.totalScore.toFixed(1)}
                                     </span>
                                     <span className="ml-1 text-gray-400 text-xs">
                                       / {maxScore}
                                     </span>
-                                  </div>
+                                  </div> */}
+                                    <div className={`font-semibold ${getScoreColor(pctRounded)}`}>
+    {pctRounded.toFixed(1)}%
+  </div>
                                 </td>
-                                <td className="px-4 py-3 whitespace-nowrap">
+                                {/* <td className="px-4 py-3 whitespace-nowrap">
                                   <div
                                     className={`font-medium ${getScoreColor(
                                       summary.percentOfTarget
@@ -1022,7 +1025,7 @@ function EmployeeRatingAdvanced() {
                                   >
                                     {summary.percentOfTarget.toFixed(1)}%
                                   </div>
-                                </td>
+                                </td> */}
                                 <td className="px-4 py-3 whitespace-nowrap">
                                   <span
                                     className={`px-2 py-1 text-xs rounded-full ${
