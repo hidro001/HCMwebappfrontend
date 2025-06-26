@@ -215,7 +215,7 @@ const useAuthStore = create(
           notifications,
           engagement_permission,
         } = userData;
-
+    
         localStorage.setItem("employeeId", employeeId);
         const resolvedUserName = userName
           ? userName
@@ -260,6 +260,8 @@ const useAuthStore = create(
           window.location.href = "/dashboard/super-employee-dashboard";
         } else if (permissions.includes("dashboard-employee")) {
           window.location.href = "/dashboard/employee";
+        } else if (permissions.includes("registration/edit-rest-detail")) {
+          window.location.href = "/dashboard/registration/edit-rest-detail";
         } else {
           window.location.href = "/dashboard";
         }
@@ -285,6 +287,7 @@ const useAuthStore = create(
         }
 
         // Now reset everything
+        
         set({
           isAuthenticated: false,
           _id: "",
@@ -308,6 +311,7 @@ const useAuthStore = create(
       },
 
       // 3) Local‐only clear (no network) for interceptor use
+
       clearAuthState: () => {
         set({
           isAuthenticated: false,
@@ -332,12 +336,14 @@ const useAuthStore = create(
       },
 
       // 4) Optional helper
+
       setCompanyInfo: (companyData) => {
         const current = get().companyInfo;
         if (JSON.stringify(current) !== JSON.stringify(companyData)) {
           set({ companyInfo: companyData });
         }
       },
+
     }),
     {
       name: "auth-storage",

@@ -483,6 +483,9 @@
 // export default LoginCard;
 
 // src/components/LoginCard.jsx
+
+
+
 import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -560,6 +563,8 @@ const LoginCard = () => {
         navigate("/dashboard/super-employee-dashboard", { replace: true });
       } else if (permissions.includes("dashboard-employee")) {
         navigate("/dashboard/employee", { replace: true });
+      } else if (permissions.includes("registration/edit-rest-detail")) {
+        navigate("/dashboard/registration/edit-rest-detail", { replace: true });
       } else {
         navigate("/dashboard", { replace: true });
       }
@@ -635,6 +640,8 @@ const LoginCard = () => {
     setError("");
     try {
       const resp = await loginService(employeeId, password);
+
+
       if (resp.requiresOtp) {
         setStep(2);
         setResendCooldown(30);
@@ -684,6 +691,7 @@ const LoginCard = () => {
   const handleLoginSuccess = (resp) => {
     const { user, accessToken } = resp;
     // parse arrays if needed...
+
     authStore.login({
       accessToken,
       _id: user._id,

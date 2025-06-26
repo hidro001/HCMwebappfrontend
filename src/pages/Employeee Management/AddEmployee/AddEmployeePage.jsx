@@ -27,6 +27,9 @@ import FileSaver from "file-saver";
 /**
  * Utility function to convert 0-based column index -> Excel column name (A, B, ..., Z, AA, AB, etc.)
  */
+
+
+
 function toExcelColName(num) {
   let s = "";
   while (num >= 0) {
@@ -36,11 +39,18 @@ function toExcelColName(num) {
   return s;
 }
 
-/**
- * AddEmployeePage Component
+
+
+/*
+ * 
+ * 
+ *    AddEmployeePage Component
  *  - Loads dropdown data from Zustand (departments, shift timings, etc.)
  *  - Has a direct axios POST call for bulk uploading the Excel file (not using the store).
+ * 
+ * 
  */
+
 export default function AddEmployeePage() {
   // 1) Grab store data & actions for loading dropdowns
   const {

@@ -310,7 +310,7 @@ export default function App() {
   return (
     <>
       {/* Custom toaster with transparent background for our custom notifications */}
-      <Toaster 
+      {/* <Toaster 
         reverseOrder={false} 
         toastOptions={{ 
           style: { 
@@ -319,7 +319,18 @@ export default function App() {
             boxShadow: "none",
           } 
         }} 
-      />
+      /> */}
+      <Toaster
+  reverseOrder={false}
+  toastOptions={{
+    className: 'text-gray-900 dark:text-white bg-white dark:bg-[#1e293b] border dark:border-gray-700',
+    style: {
+      zIndex: 9999999,
+      background: 'transparent',
+      boxShadow: 'none',
+    },
+  }}
+/>
       <RouterProvider router={router} />
     </>
   );
