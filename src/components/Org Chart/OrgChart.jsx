@@ -310,7 +310,7 @@ const DynamicOrgChart = () => {
   // Memoized tree rendering with depth limiting
   const renderTreeNodes = useCallback((node, level = 1, parentId = null) => {
     // Limit depth to prevent excessive rendering
-    if (level > 4) return null;
+    if (level > 200) return null;
     
     const color = activeColors[level % activeColors.length];
     
@@ -333,7 +333,7 @@ const DynamicOrgChart = () => {
         lineColor={color}
       >
         {expandedNodes[node.id]?.expanded &&
-          node.children?.slice(0, 10).map((child) => // Limit children to prevent lag
+          node.children?.slice(0, 200).map((child) => // Limit children to prevent lag
             renderTreeNodes(child, level + 1, node.id)
           )}
       </TreeNode>
