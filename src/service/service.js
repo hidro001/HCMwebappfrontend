@@ -8,7 +8,10 @@ export const login = async (employeeId, password) => {
     const response = await publicAxios.post("/auth/login", {
       employee_Id: employeeId,
       password,
-    });
+    } , {
+  headers: {
+    'x-device-type': 'web'  
+  }});
 
     if (response.data.success) {
       return response.data;
