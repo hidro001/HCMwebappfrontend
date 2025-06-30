@@ -106,7 +106,7 @@ import TeamRatingsAdvancedPageRazor from "./performance management razor/TeamRat
 import AllEmployeeRatingsPageRazor from "./performance management razor/AllEmployeeRatingsPage";
 import ManagerDashboardPage from "./performance management razor/ManagerDashboardPage";
 import SuperAdminDashboardAnlyticsPage from "./performance management razor/SuperAdminDashboardPage";
-
+import EmployeeFullStatisticsPage from "./attendence management/EmployeeFullStatisticsPage";
 
 export {
   Login,
@@ -197,5 +197,6 @@ export {
   TeamRatingsAdvancedPageRazor,
   AllEmployeeRatingsPageRazor,
   ManagerDashboardPage,
-  SuperAdminDashboardAnlyticsPage
+  SuperAdminDashboardAnlyticsPage,
+  EmployeeFullStatisticsPage
 };
