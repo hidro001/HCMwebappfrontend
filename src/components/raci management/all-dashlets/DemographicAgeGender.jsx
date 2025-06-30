@@ -20,7 +20,7 @@ import {
 } from "react-icons/md";
 import useDemographicsStore from "../../../store/analytics dashboards cards/useDemographicsStore"; // adjust path
 import DetailModal from "./BaseModal"; // ① add
-import { useDrilldown } from "./useDrillDown"; // ① add
+import { useDrilldown } from "./useDrillDown";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
