@@ -70,7 +70,7 @@ function CompensationAndAccessForm({ employeeId }) {
 
   const onSubmit = async (data) => {
     try {
-      const res = await axiosInstance.put(`/employee/${employeeId}/compensation`, data);
+      const res = await axiosInstance.put(`registration/employee/${employeeId}/compensation`, data);
       alert("Success: " + res.data.message);
     } catch (err) {
       alert("Error: " + err.response?.data?.message || "Failed to save");

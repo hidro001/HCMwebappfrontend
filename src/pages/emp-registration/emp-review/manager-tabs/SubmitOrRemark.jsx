@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import ReviewChat from './ReviewChat';
 import axiosInstance from '../../../../service/axiosInstance';
 
@@ -34,7 +34,7 @@ export default function SubmitOrRemark({ employeeId, isManager = true }) {
     setShowConfirm(false);
     try {
       setSubmitting(true);
-      const res = await axiosInstance.put(`/registration/mark-verified/${empid}`, {
+      const res = await axiosInstance.put(`/registration/mark-verifiedv2/${empid}`, {
         isUserVerified: pendingStatus,
       });
 
