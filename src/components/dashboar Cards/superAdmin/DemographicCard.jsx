@@ -1,11 +1,11 @@
-
-
 import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { FiUsers, FiTrendingUp, FiEye } from "react-icons/fi";
 import { HiOutlineUserGroup } from "react-icons/hi";
 import { RiMenLine, RiWomenLine } from "react-icons/ri";
 import { useDashboardStore } from "../../../store/useDashboardStore";
+import { useState } from "react";
+import DemographicModal from "./DemographicModal"; // NEW
 
 function DemographicCard() {
   const {
@@ -14,11 +14,22 @@ function DemographicCard() {
     femaleCount,
     ageDistribution,
     fetchDashboardStats,
+    attendanceDetails,
+    attendanceDetailsLoading,
+    fetchAttendanceDetails,
   } = useDashboardStore();
+
+  const [isDemoOpen, setIsDemoOpen] = useState(false);
 
   useEffect(() => {
     fetchDashboardStats();
   }, [fetchDashboardStats]);
+
+  useEffect(() => {
+    if (isDemoOpen && attendanceDetails.length === 0) {
+      fetchAttendanceDetails();
+    }
+  }, [isDemoOpen]);
 
   const otherCount = totalUsers - maleCount - femaleCount;
   const genderSegments = [
@@ -32,43 +43,43 @@ function DemographicCard() {
   });
 
   const colorMap = {
-    "Below 18 ": { 
-      bg: "from-red-500 to-pink-500", 
+    "Below 18 ": {
+      bg: "from-red-500 to-pink-500",
       text: "text-red-400",
-      glow: "shadow-red-500/20"
+      glow: "shadow-red-500/20",
     },
-    "18 - 30 ": { 
-      bg: "from-purple-500 to-pink-500", 
+    "18 - 30 ": {
+      bg: "from-purple-500 to-pink-500",
       text: "text-purple-400",
-      glow: "shadow-purple-500/20"
+      glow: "shadow-purple-500/20",
     },
-    "31 - 40 ": { 
-      bg: "from-emerald-500 to-teal-500", 
+    "31 - 40 ": {
+      bg: "from-emerald-500 to-teal-500",
       text: "text-emerald-400",
-      glow: "shadow-emerald-500/20"
+      glow: "shadow-emerald-500/20",
     },
-    "41 - 50 ": { 
-      bg: "from-blue-500 to-cyan-500", 
+    "41 - 50 ": {
+      bg: "from-blue-500 to-cyan-500",
       text: "text-blue-400",
-      glow: "shadow-blue-500/20"
+      glow: "shadow-blue-500/20",
     },
-    "51 - 60 ": { 
-      bg: "from-violet-500 to-purple-500", 
+    "51 - 60 ": {
+      bg: "from-violet-500 to-purple-500",
       text: "text-violet-400",
-      glow: "shadow-violet-500/20"
+      glow: "shadow-violet-500/20",
     },
-    "61 - 90 ": { 
-      bg: "from-gray-500 to-slate-500", 
+    "61 - 90 ": {
+      bg: "from-gray-500 to-slate-500",
       text: "text-gray-400",
-      glow: "shadow-gray-500/20"
+      glow: "shadow-gray-500/20",
     },
   };
 
   const ageData = (ageDistribution || []).map((item) => {
-    const colorConfig = colorMap[item.range] || { 
-      bg: "from-gray-400 to-gray-500", 
+    const colorConfig = colorMap[item.range] || {
+      bg: "from-gray-400 to-gray-500",
       text: "text-gray-400",
-      glow: "shadow-gray-500/20"
+      glow: "shadow-gray-500/20",
     };
     return {
       label: item.range,
@@ -85,14 +96,14 @@ function DemographicCard() {
       y: 0,
       transition: {
         duration: 0.6,
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const itemVariants = {
     hidden: { opacity: 0, x: -20 },
-    visible: { opacity: 1, x: 0 }
+    visible: { opacity: 1, x: 0 },
   };
 
   return (
@@ -120,12 +131,13 @@ function DemographicCard() {
       <div className=" rounded-full blur-2xl sm:blur-3xl animate-pulse delay-1000" />
 
       {/* Header */}
-      <motion.div 
+      <motion.div
+        onClick={() => setIsDemoOpen(true)}
         variants={itemVariants}
         className="flex items-center justify-between mb-4 sm:mb-6 lg:mb-8 relative z-10 flex-shrink-0"
       >
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-4 min-w-0">
-          <motion.div 
+          <motion.div
             // whileHover={{ rotate: 360, scale: 1.1 }}
             // transition={{ duration: 0.8 }}
             className="
@@ -141,10 +153,12 @@ function DemographicCard() {
             <h2 className="text-sm sm:text-lg lg:text-xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent truncate">
               Employee Demographics
             </h2>
-            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 hidden sm:block">Real-time insights</p>
+            <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
+              Real-time insights
+            </p>
           </div>
         </div>
-        
+
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
@@ -162,7 +176,7 @@ function DemographicCard() {
       </motion.div>
 
       {/* Total Count Display */}
-      <motion.div 
+      <motion.div
         variants={itemVariants}
         className="flex flex-col items-center mb-4 sm:mb-6 lg:mb-8 relative z-10 flex-shrink-0"
       >
@@ -179,7 +193,7 @@ function DemographicCard() {
         >
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-2xl sm:rounded-2xl lg:rounded-3xl" />
           <div className="relative flex flex-col items-center">
-            <motion.span 
+            <motion.span
               className="text-2xl sm:text-3xl lg:text-4xl font-black bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 2, repeat: Infinity }}
@@ -199,20 +213,29 @@ function DemographicCard() {
       </motion.div>
 
       {/* Gender Distribution */}
-      <motion.div variants={itemVariants} className="mb-4 sm:mb-6 lg:mb-8 relative z-10 flex-shrink-0">
+      <motion.div
+        variants={itemVariants}
+        className="mb-4 sm:mb-6 lg:mb-8 relative z-10 flex-shrink-0"
+      >
         <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-800 dark:text-gray-200 mb-3 sm:mb-4 flex items-center gap-2">
           <FiUsers className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
           <span className="truncate">Gender Distribution</span>
         </h3>
-        
+        {/* --- demographic drill‑down modal --- */}
+        <DemographicModal
+          isOpen={isDemoOpen}
+          onRequestClose={() => setIsDemoOpen(false)}
+          loading={attendanceDetailsLoading}
+        />
+
         <div className="flex gap-2 sm:gap-3">
           {genderData.map((item, index) => {
             const Icon = item.icon;
             const gradients = {
               Male: "from-blue-500 to-cyan-500",
-              Female: "from-pink-500 to-rose-500"
+              Female: "from-pink-500 to-rose-500",
             };
-            
+
             return (
               <motion.div
                 key={index}
@@ -228,7 +251,11 @@ function DemographicCard() {
                 "
               >
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <div className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-gradient-to-br ${gradients[item.label]} shadow-md sm:shadow-lg flex-shrink-0`}>
+                  <div
+                    className={`p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-gradient-to-br ${
+                      gradients[item.label]
+                    } shadow-md sm:shadow-lg flex-shrink-0`}
+                  >
                     <Icon className="h-3 w-3 sm:h-4 sm:w-4 text-white" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -247,7 +274,10 @@ function DemographicCard() {
       </motion.div>
 
       {/* Age Distribution */}
-      <motion.div variants={itemVariants} className="relative z-10 flex-1 min-h-0 flex flex-col">
+      <motion.div
+        variants={itemVariants}
+        className="relative z-10 flex-1 min-h-0 flex flex-col"
+      >
         <h3 className="text-sm sm:text-base lg:text-lg font-bold text-gray-800 dark:text-gray-200 mb-3 sm:mb-4 flex items-center gap-2 flex-shrink-0">
           <FiTrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-500" />
           <span className="truncate">Age Distribution</span>
@@ -291,16 +321,20 @@ function DemographicCard() {
               "
             >
               <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
-                <motion.div 
+                <motion.div
                   className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-gradient-to-r ${item.bg} ${item.glow} shadow-sm flex-shrink-0`}
                   animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: index * 0.2 }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    delay: index * 0.2,
+                  }}
                 />
                 <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 truncate">
                   {item.label.trim()}
                 </span>
               </div>
-              
+
               <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
                 <span className="text-xs sm:text-sm font-bold text-gray-800 dark:text-gray-200">
                   {item.count}

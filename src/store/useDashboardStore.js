@@ -16,6 +16,10 @@ export const useDashboardStore = create((set) => ({
   ageDistribution: [],
   totalSalaries: 0,
   topDesignations: [],
+  attendanceDetails: [],          // NEW
+  attendanceDetailsLoading: false, // NEW
+  hiringDetails: [],              // NEW
+  hiringDetailsLoading: false,    // NEW
 
   // ----------------------------
   // Fetches main dashboard stats
@@ -128,4 +132,21 @@ fetchAttendanceDetails: async () => {
       console.error("Error fetching top designations:", error);
     }
   },
+
+  fetchHiringDetails: async (month, year) => {
+        try {
+          set({ hiringDetailsLoading: true });
+          const res = await axiosInstance.get(
+            "/dashboard-stats/super-admin/hiring-details",
+            { params: { month, year } }
+          );
+          if (res.data.success) {
+            set({ hiringDetails: res.data.hires ?? [] });
+          }
+        } catch (err) {
+          console.error("Error fetching hiring details:", err);
+        } finally {
+          set({ hiringDetailsLoading: false });
+        }
+      },
 }));

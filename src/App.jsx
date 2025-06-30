@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { RouterProvider } from "react-router-dom";
 import router from "./routes/Router";
@@ -75,19 +74,29 @@ export default function App() {
   return (
     <>
       {/* Custom toaster with transparent background for our custom notifications */}
+      {/* <Toaster 
+        reverseOrder={false} 
+        toastOptions={{ 
+          style: { 
+            zIndex: 9999999,
+            // background: "transparent",
+            boxShadow: "none",
+          } 
+        }} 
+      /> */}
       <Toaster
         reverseOrder={false}
         toastOptions={{
+          className:
+            "text-gray-900 dark:text-white bg-white dark:bg-[#1e293b] border dark:border-gray-700",
           style: {
             zIndex: 9999999,
-            // background: "transparent",
+            background: "transparent",
             boxShadow: "none",
           },
         }}
       />
-      <ChatProviderv2>
-        <RouterProvider router={router} />
-      </ChatProviderv2>
+      <RouterProvider router={router} />
     </>
   );
 }

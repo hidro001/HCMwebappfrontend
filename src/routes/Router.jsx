@@ -91,7 +91,7 @@ import {
   TeamRatingsAdvancedPageRazor,
   AllEmployeeRatingsPageRazor,
   ManagerDashboardPage,
-  SuperAdminDashboardAnlyticsPage
+  SuperAdminDashboardAnlyticsPage,
 } from "../pages";
 import EmployeeFullStatisticsPage from "../pages/attendence management/EmployeeFullStatisticsPage";
 import MainLayout from "./MainLayout";
@@ -115,6 +115,11 @@ import IndividualAssignedTasks from "../components/task/assigned-task/Individual
 import EmployeeDailyTaskDetail from "../components/task/daily-task/EmployeeDailyTaskDetail";
 import EmployeeDetails from "../components/payroll/manage-payroll/EmployeePayrollDetails";
 import EmployeeIndividualRatings from "../components/performance management new/EmployeeIndividualRating";
+import AddNewEmployeePage from "../pages/emp-registration/add-new-employee/AddNewEmployeePage";
+import SetPassword from "../pages/emp-registration/SetPassword";
+import EditRestDetailPage from "../pages/emp-registration/edit-rest-detail/EditRestDetailPage";
+import ReviewEmployeePage from "../pages/emp-registration/emp-review/ReviewEmployeePage";
+import ManagerTabOverview from "../pages/emp-registration/emp-review/manager-tabs/ManagerTabOverview";
 import SuperAdminRegistration from "../components/SuperAdminRegistration/SuperAdminRegistration";
 
 const router = createBrowserRouter([
@@ -127,6 +132,10 @@ const router = createBrowserRouter([
     element: <ResetPassword />,
   },
   {
+    path: "/registration/set-password/v2/:token",
+    element: <SetPassword />,
+  },
+  {
     path: "/",
     element: <Login />,
   },
@@ -134,7 +143,7 @@ const router = createBrowserRouter([
     path: "/dashboard",
     element: (
       <MainLayout>
-        <PrivateRoute  requiredPermissions={[]}  />
+        <PrivateRoute requiredPermissions={[]} />
       </MainLayout>
     ),
     children: [
@@ -554,15 +563,26 @@ const router = createBrowserRouter([
         path: "all-employess-ratings-aggregate",
         element: <AllEmployeeRatingsPageRazor />,
       },
+
+      //registration
+
       {
-        path: "performance-analytics",
-        element: <ManagerDashboardPage />,
+        path: "registration/add-new-employee",
+        element: <AddNewEmployeePage />,
       },
       {
-        path: "all-performance-analytics",
-        element: <SuperAdminDashboardAnlyticsPage />,
-      }
+        path: "registration/edit-rest-detail",
+        element: <EditRestDetailPage />,
+      },
 
+      {
+        path: "registration/review-employee",
+        element: <ReviewEmployeePage />,
+      },
+      {
+        path: "registration/review-employee/:empid",
+        element: <ManagerTabOverview />,
+      },
     ],
   },
   {

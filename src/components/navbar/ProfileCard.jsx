@@ -277,15 +277,15 @@ const ProfileSidebar = ({ onClose }) => {
   const navigate = useNavigate();
 
   // Sign out
-const handleSignOut = async () => {
-  try {
-    await authStore.logout(); 
-    toast.success("Signed out successfully!");
-    navigate("/");
-  } catch (err) {
-    toast.error("Something went wrong during logout.");
-  }
-};
+  const handleSignOut = async () => {
+    try {
+      await authStore.logout();
+      toast.success("Signed out successfully!");
+      navigate("/");
+    } catch (err) {
+      toast.error("Something went wrong during logout.");
+    }
+  };
 
   // Handle tab navigation
   const handleTabClick = (tabId, route) => {

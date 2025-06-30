@@ -1,242 +1,9 @@
-
-
-// import React, { useEffect, useState } from "react";
-// import useDashboardStore from "../../../store/dashboardStore";
-
-// // Import the specific chart components:
-// import DemographicAgeGender from "./DemographicAgeGender";
-// import DemographicNationalMarital from "./DemographicNationalMarital";
-// import SkillGapAnalysisCard from "./SkillGapAnalysisCard";
-// import CompensationBenchmarkingCard from "./CompensationBenchmarkingCard";
-// import TrainingEffectivenessCard from "./TrainingEffectivenessCard";
-// import InternalMobilityTrendsCard from "./InternalMobilityTrendsCard";
-// import ImpactOnPerformanceCard from "./ImpactOnPerformanceCard";
-// import CTCChartCard from "./CTCChartCard";
-// import PerformanceTrendsCard from "./PerformanceTrendsCard";
-// import HighPotentialEmployeesTrendsCard from "./HighPotentialEmployeesTrendsCard";
-// import AbsenteeismPatternsCard from "./AbsenteeismPatternsCard";
-// import OvertimeCostAnalysisCard from "./OvertimeCostAnalysisCard";
-// import StaffingOptimizationCard from "./StaffingOptimizationCard";
-// import DisciplinaryAnalysisCard from "./DisciplinaryAnalysisCard";
-// import ValidPan from "./ValidPan";
-// import ValidAdhaar from "./ValidAdhaar";
-// import ValidPassport from "./ValidPassport";
-// import TrainingNeedsCard from "./TrainingNeedsCard";
-// import AddressDistributionCard from "./AddressDistributionCard";
-// import ComplianceTrainingCoverageCard from "./ComplianceTrainingCoverageCard";
-// import PerformanceCard from "./PerformanceCard";
-// import CorrelationTrainingPerformanceCard from "./CorrelationTrainingPerformanceCard";
-// import GrievanceResolutionChart from "./GrievanceResolutionChart";
-// // The modal
-// import CustomizeDashboardModal from "./model/CustomizeDashboardModal";
-// import WorkplaceHotspotsChart from "./WorkplaceHotspotsChart";
-// import StreamliningVerificationChart from "./StreamliningVerificationChart";
-
-// export default function AllDashlets() {
-//   const { preferences, fetchPreferences } = useDashboardStore();
-//   const [showModal, setShowModal] = useState(false);
-
-//   useEffect(() => {
-//     fetchPreferences(); // load user preferences when component mounts
-//   }, [fetchPreferences]);
-
-//   // If the user has no preferences => show all
-//   const hasPrefs = preferences && preferences.length > 0;
-//   const shouldShow = (cardId) => !hasPrefs || preferences.includes(cardId);
-
-//   const openModal = () => setShowModal(true);
-//   const closeModal = () => setShowModal(false);
-
-//   return (
-//     <div className="bg-bg-primary p-2">
-//       {/* Page title */}
-//       <h1 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-100 text-center">
-//         Analytics Dashboards
-//       </h1>
-
-//       {/* Button for customizing */}
-//       <div className="flex justify-center my-4">
-//         <button
-//           onClick={openModal}
-//           className="bg-blue-600 text-white px-4 py-2 rounded"
-//         >
-//           {hasPrefs ? "Edit Customization" : "Customize"}
-//         </button>
-//       </div>
-
-//       {/* 2-Column Layout */}
-//       <div className="grid grid-cols-1 lg:grid-cols-2 gap-2">
-//         {/* Column 1 */}
-//         <div>
-//           {shouldShow("DemographicAgeGender") && (
-//             <div className="mt-3">
-//               <DemographicAgeGender />
-//             </div>
-//           )}
-
-//           {shouldShow("DemographicNationalMarital") && (
-//             <div className="mt-3">
-//               <DemographicNationalMarital />
-//             </div>
-//           )}
-
-//           {shouldShow("DisciplinaryAnalysisCard") && (
-//             <div className="mt-3">
-//               <DisciplinaryAnalysisCard />
-//             </div>
-//           )}
-
-//           {shouldShow("StaffingOptimizationCard") && (
-//             <div className="mt-3">
-//               <StaffingOptimizationCard />
-//             </div>
-//           )}
-//           {shouldShow("CompensationBenchmarkingCard") && (
-//             <div className="mt-3">
-//               <CompensationBenchmarkingCard />
-//             </div>
-//           )}
-//           {shouldShow("GrievanceResolutionChart") && (
-//             <div className="mt-3">
-//               <GrievanceResolutionChart />
-//             </div>
-//           )}
-
-//           {shouldShow("PerformanceTrendsCard") && (
-//             <div className="mt-3">
-//               <PerformanceTrendsCard />
-//             </div>
-//           )}
-
-//           {shouldShow("AbsenteeismPatternsCard") && (
-//             <div className="mt-3">
-//               <AbsenteeismPatternsCard />
-//             </div>
-//           )}
-//              {shouldShow("WorkplaceHotspotsChart") && (
-//             <div className="mt-3">
-//               <WorkplaceHotspotsChart />
-//             </div>
-//           )}
-//           {shouldShow("StreamliningVerificationChart") && (
-//             <div className="mt-3">
-//               <StreamliningVerificationChart />
-//             </div>
-//           )}
-//           {/* {shouldShow("SkillGapAnalysisCard") && (
-//             <div className="mt-3">
-//               <SkillGapAnalysisCard />
-//             </div>
-//           )} */}
-
-//           {/* {shouldShow("TrainingEffectivenessCard") && (
-//             <div className="mt-3">
-//               <TrainingEffectivenessCard />
-//             </div>
-//           )} */}
-
-//           {/* {shouldShow("InternalMobilityTrendsCard") && (
-//             <div className="mt-3">
-//               <InternalMobilityTrendsCard />
-//             </div>
-//           )} */}
-
-//           {/* {shouldShow("ImpactOnPerformanceCard") && (
-//             <div className="mt-3">
-//               <ImpactOnPerformanceCard />
-//             </div>
-//           )} */}
-
-//           {/* {shouldShow("CTCChartCard") && (
-//             <div className="mt-3">
-//               <CTCChartCard />
-//             </div>
-//           )} */}
-
-//           {/* {shouldShow("HighPotentialEmployeesTrendsCard") && (
-//             <div className="mt-3">
-//               <HighPotentialEmployeesTrendsCard />
-//             </div>
-//           )} */}
-
-//           {/* {shouldShow("OvertimeCostAnalysisCard") && (
-//             <div className="mt-3">
-//               <OvertimeCostAnalysisCard />
-//             </div>
-//           )} */}
-       
-//         </div>
-
-//         {/* Column 2 */}
-//         <div className="mt-3">
-//           <div className="flex gap-3">
-//             {shouldShow("ValidPan") && (
-//               <div>
-//                 <ValidPan />
-//               </div>
-//             )}
-//             {shouldShow("ValidAdhaar") && (
-//               <div>
-//                 <ValidAdhaar />
-//               </div>
-//             )}
-//           </div>
-
-//           <div className="flex gap-1">
-//             {shouldShow("ValidPassport") && (
-//               <div className="mt-3">
-//                 <ValidPassport />
-//               </div>
-//             )}
-//             {shouldShow("TrainingNeedsCard") && (
-//               <div className="mt-3">
-//                 <TrainingNeedsCard />
-//               </div>
-//             )}
-//           </div>
-
-//           <div className="flex">
-//             {shouldShow("AddressDistributionCard") && (
-//               <div className="mt-3">
-//                 <AddressDistributionCard />
-//               </div>
-//             )}
-//           </div>
-
-//           {shouldShow("ComplianceTrainingCoverageCard") && (
-//             <div className="mt-3">
-//               <ComplianceTrainingCoverageCard />
-//             </div>
-//           )}
-
-//           {shouldShow("PerformanceCard") && (
-//             <div className="mt-3">
-//               <PerformanceCard />
-//             </div>
-//           )}
-
-//           {/* {shouldShow("CorrelationTrainingPerformanceCard") && (
-//             <div className="mt-3">
-//               <CorrelationTrainingPerformanceCard />
-//             </div>
-//           )} */}
-//         </div>
-//       </div>
-
-//       {/* Modal */}
-//       {showModal && <CustomizeDashboardModal onClose={closeModal} />}
-//     </div>
-//   );
-// }
-
-
-
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  FiSettings, 
-  FiUsers, 
-  FiTrendingUp, 
+import {
+  FiSettings,
+  FiUsers,
+  FiTrendingUp,
   FiTarget,
   FiDollarSign,
   FiClock,
@@ -246,15 +13,15 @@ import {
   FiAward,
   FiAlertTriangle,
   FiGrid,
-  FiList
+  FiList,
 } from "react-icons/fi";
 import { TfiBarChartAlt } from "react-icons/tfi";
 
-import { 
+import {
   MdDashboard,
   MdAnalytics,
   MdSecurity,
-  MdLocationOn
+  MdLocationOn,
 } from "react-icons/md";
 import useDashboardStore from "../../../store/dashboardStore";
 
@@ -293,41 +60,41 @@ const containerVariants = {
     opacity: 1,
     transition: {
       staggerChildren: 0.1,
-      delayChildren: 0.2
-    }
-  }
+      delayChildren: 0.2,
+    },
+  },
 };
 
 const cardVariants = {
-  hidden: { 
-    opacity: 0, 
+  hidden: {
+    opacity: 0,
     y: 20,
-    scale: 0.95
+    scale: 0.95,
   },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
     scale: 1,
     transition: {
       duration: 0.5,
-      ease: "easeOut"
-    }
-  }
+      ease: "easeOut",
+    },
+  },
 };
 
 const headerVariants = {
   hidden: { opacity: 0, y: -30 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: "easeOut" }
-  }
+    transition: { duration: 0.6, ease: "easeOut" },
+  },
 };
 
 export default function AllDashlets() {
   const { preferences, fetchPreferences } = useDashboardStore();
   const [showModal, setShowModal] = useState(false);
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'masonry'
+  const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'masonry'
 
   useEffect(() => {
     fetchPreferences();
@@ -345,10 +112,22 @@ export default function AllDashlets() {
       title: "Demographics & Workforce",
       icon: <FiUsers className="w-5 h-5" />,
       cards: [
-        { id: "DemographicAgeGender", component: <DemographicAgeGender />, size: "large" },
-        { id: "DemographicNationalMarital", component: <DemographicNationalMarital />, size: "large" },
-        { id: "AddressDistributionCard", component: <AddressDistributionCard />, size: "medium" }
-      ]
+        {
+          id: "DemographicAgeGender",
+          component: <DemographicAgeGender />,
+          size: "large",
+        },
+        {
+          id: "DemographicNationalMarital",
+          component: <DemographicNationalMarital />,
+          size: "large",
+        },
+        {
+          id: "AddressDistributionCard",
+          component: <AddressDistributionCard />,
+          size: "medium",
+        },
+      ],
     },
     {
       title: "Verification & Compliance",
@@ -357,61 +136,125 @@ export default function AllDashlets() {
         { id: "ValidPan", component: <ValidPan />, size: "small" },
         { id: "ValidAdhaar", component: <ValidAdhaar />, size: "small" },
         { id: "ValidPassport", component: <ValidPassport />, size: "small" },
-        { id: "ComplianceTrainingCoverageCard", component: <ComplianceTrainingCoverageCard />, size: "large" },
-        { id: "StreamliningVerificationChart", component: <StreamliningVerificationChart />, size: "medium" }
-      ]
+        {
+          id: "ComplianceTrainingCoverageCard",
+          component: <ComplianceTrainingCoverageCard />,
+          size: "large",
+        },
+        {
+          id: "StreamliningVerificationChart",
+          component: <StreamliningVerificationChart />,
+          size: "medium",
+        },
+      ],
     },
     {
       title: "Performance & Analytics",
-      icon: <TfiBarChartAlt  className="w-5 h-5" />,
+      icon: <TfiBarChartAlt className="w-5 h-5" />,
       cards: [
-        { id: "PerformanceCard", component: <PerformanceCard />, size: "large" },
-        { id: "PerformanceTrendsCard", component: <PerformanceTrendsCard />, size: "large" },
-        { id: "GrievanceResolutionChart", component: <GrievanceResolutionChart />, size: "medium" },
-        { id: "WorkplaceHotspotsChart", component: <WorkplaceHotspotsChart />, size: "medium" }
-      ]
+        {
+          id: "PerformanceCard",
+          component: <PerformanceCard />,
+          size: "large",
+        },
+        {
+          id: "PerformanceTrendsCard",
+          component: <PerformanceTrendsCard />,
+          size: "large",
+        },
+        {
+          id: "GrievanceResolutionChart",
+          component: <GrievanceResolutionChart />,
+          size: "medium",
+        },
+        {
+          id: "WorkplaceHotspotsChart",
+          component: <WorkplaceHotspotsChart />,
+          size: "medium",
+        },
+      ],
     },
     {
       title: "Training & Development",
       icon: <FiBookOpen className="w-5 h-5" />,
       cards: [
-        { id: "TrainingNeedsCard", component: <TrainingNeedsCard />, size: "medium" },
-        { id: "TrainingEffectivenessCard", component: <TrainingEffectivenessCard />, size: "large" },
-        { id: "CorrelationTrainingPerformanceCard", component: <CorrelationTrainingPerformanceCard />, size: "large" }
-      ]
+        {
+          id: "TrainingNeedsCard",
+          component: <TrainingNeedsCard />,
+          size: "medium",
+        },
+        {
+          id: "TrainingEffectivenessCard",
+          component: <TrainingEffectivenessCard />,
+          size: "large",
+        },
+        {
+          id: "CorrelationTrainingPerformanceCard",
+          component: <CorrelationTrainingPerformanceCard />,
+          size: "large",
+        },
+      ],
     },
     {
       title: "Financial & Compensation",
       icon: <FiDollarSign className="w-5 h-5" />,
       cards: [
-        { id: "CompensationBenchmarkingCard", component: <CompensationBenchmarkingCard />, size: "large" },
+        {
+          id: "CompensationBenchmarkingCard",
+          component: <CompensationBenchmarkingCard />,
+          size: "large",
+        },
         { id: "CTCChartCard", component: <CTCChartCard />, size: "large" },
-        { id: "OvertimeCostAnalysisCard", component: <OvertimeCostAnalysisCard />, size: "medium" }
-      ]
+        {
+          id: "OvertimeCostAnalysisCard",
+          component: <OvertimeCostAnalysisCard />,
+          size: "medium",
+        },
+      ],
     },
     {
       title: "Operations & Management",
       icon: <FiTarget className="w-5 h-5" />,
       cards: [
-        { id: "StaffingOptimizationCard", component: <StaffingOptimizationCard />, size: "large" },
-        { id: "AbsenteeismPatternsCard", component: <AbsenteeismPatternsCard />, size: "medium" },
-        { id: "DisciplinaryAnalysisCard", component: <DisciplinaryAnalysisCard />, size: "medium" },
-        { id: "InternalMobilityTrendsCard", component: <InternalMobilityTrendsCard />, size: "large" },
-        { id: "HighPotentialEmployeesTrendsCard", component: <HighPotentialEmployeesTrendsCard />, size: "large" }
-      ]
-    }
+        {
+          id: "StaffingOptimizationCard",
+          component: <StaffingOptimizationCard />,
+          size: "large",
+        },
+        {
+          id: "AbsenteeismPatternsCard",
+          component: <AbsenteeismPatternsCard />,
+          size: "medium",
+        },
+        {
+          id: "DisciplinaryAnalysisCard",
+          component: <DisciplinaryAnalysisCard />,
+          size: "medium",
+        },
+        {
+          id: "InternalMobilityTrendsCard",
+          component: <InternalMobilityTrendsCard />,
+          size: "large",
+        },
+        {
+          id: "HighPotentialEmployeesTrendsCard",
+          component: <HighPotentialEmployeesTrendsCard />,
+          size: "large",
+        },
+      ],
+    },
   ];
 
   const getSizeClasses = (size) => {
     switch (size) {
-      case 'small':
-        return 'col-span-1 row-span-1';
-      case 'medium':
-        return 'col-span-1 md:col-span-2 row-span-1';
-      case 'large':
-        return 'col-span-1 md:col-span-2 lg:col-span-3 row-span-1';
+      case "small":
+        return "col-span-1 row-span-1";
+      case "medium":
+        return "col-span-1 md:col-span-2 row-span-1";
+      case "large":
+        return "col-span-1 md:col-span-2 lg:col-span-3 row-span-1";
       default:
-        return 'col-span-1';
+        return "col-span-1";
     }
   };
 
@@ -446,21 +289,21 @@ export default function AllDashlets() {
               {/* View Mode Toggle */}
               <div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
                 <button
-                  onClick={() => setViewMode('grid')}
+                  onClick={() => setViewMode("grid")}
                   className={`p-2 rounded-md transition-all duration-200 ${
-                    viewMode === 'grid'
-                      ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                    viewMode === "grid"
+                      ? "bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                   }`}
                 >
                   <FiGrid className="w-4 h-4" />
                 </button>
                 <button
-                  onClick={() => setViewMode('masonry')}
+                  onClick={() => setViewMode("masonry")}
                   className={`p-2 rounded-md transition-all duration-200 ${
-                    viewMode === 'masonry'
-                      ? 'bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400'
-                      : 'text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                    viewMode === "masonry"
+                      ? "bg-white dark:bg-slate-700 shadow-sm text-blue-600 dark:text-blue-400"
+                      : "text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200"
                   }`}
                 >
                   <FiList className="w-4 h-4" />
@@ -491,8 +334,10 @@ export default function AllDashlets() {
           className="space-y-12"
         >
           {dashboardSections.map((section, sectionIndex) => {
-            const visibleCards = section.cards.filter(card => shouldShow(card.id));
-            
+            const visibleCards = section.cards.filter((card) =>
+              shouldShow(card.id)
+            );
+
             if (visibleCards.length === 0) return null;
 
             return (
@@ -513,30 +358,30 @@ export default function AllDashlets() {
                 </div>
 
                 {/* Cards Grid */}
-                <div className={`grid gap-6 ${
-                  viewMode === 'grid' 
-                    ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
-                    : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-                }`}>
+                <div
+                  className={`grid gap-6 ${
+                    viewMode === "grid"
+                      ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                      : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
+                  }`}
+                >
                   {visibleCards.map((card, cardIndex) => (
                     <motion.div
                       key={card.id}
                       variants={cardVariants}
-                      whileHover={{ 
+                      whileHover={{
                         y: -4,
-                        transition: { duration: 0.2 }
+                        transition: { duration: 0.2 },
                       }}
                       className={`
-                        ${viewMode === 'grid' ? getSizeClasses(card.size) : ''}
+                        ${viewMode === "grid" ? getSizeClasses(card.size) : ""}
                         bg-white dark:bg-slate-800 rounded-2xl shadow-sm hover:shadow-xl 
                         transition-all duration-300 border border-slate-100 dark:border-slate-700
                         hover:border-blue-200 dark:hover:border-blue-600
                         overflow-hidden group
                       `}
                     >
-                      <div className="p-1">
-                        {card.component}
-                      </div>
+                      <div className="p-1">{card.component}</div>
                     </motion.div>
                   ))}
                 </div>

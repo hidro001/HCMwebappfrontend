@@ -1,24 +1,26 @@
-
-
-import { useEffect, useState } from 'react';
-import { Bar } from 'react-chartjs-2';
-import { motion } from 'framer-motion';
-import { 
-  HiOutlineUsers, 
-  HiOutlineDotsHorizontal, 
+import { useEffect, useState } from "react";
+import { Bar } from "react-chartjs-2";
+import { motion } from "framer-motion";
+import {
+  HiOutlineUsers,
+  HiOutlineDotsHorizontal,
   HiOutlineRefresh,
-  HiOutlineChartBar 
-} from 'react-icons/hi';
+  HiOutlineChartBar,
+} from "react-icons/hi";
 import { useDashboardStore } from "../../../store/useDashboardStore";
+import LocationModal from "./LocationModal"; // NEW
 
 function EmployeeStatusChart() {
   const [isRefreshing, setIsRefreshing] = useState(false);
-  
+
   // Pull state + method from Zustand
   const {
     totalUsers,
     employeesPerEmployeeType = [],
     fetchDashboardStats,
+    attendanceDetails,
+    attendanceDetailsLoading,
+    fetchAttendanceDetails,
   } = useDashboardStore();
 
   // Fetch data on mount
@@ -33,6 +35,15 @@ function EmployeeStatusChart() {
     setTimeout(() => setIsRefreshing(false), 1000);
   };
 
+  const [openModal, setOpenModal] = useState(false); // NEW
+
+  // pull the people list only when the modal is launched
+  useEffect(() => {
+    if (openModal && attendanceDetails.length === 0) {
+      fetchAttendanceDetails();
+    }
+  }, [openModal]);
+
   // Prepare chart data
   const labels = employeesPerEmployeeType.map(
     (item) => item.employee_Type || "Unknown"
@@ -41,14 +52,14 @@ function EmployeeStatusChart() {
 
   // Dynamic colors with better palette
   const colors = [
-    '#3B82F6', // blue-500
-    '#EF4444', // red-500
-    '#10B981', // emerald-500
-    '#F59E0B', // amber-500
-    '#8B5CF6', // violet-500
-    '#EC4899', // pink-500
-    '#06B6D4', // cyan-500
-    '#84CC16', // lime-500
+    "#3B82F6", // blue-500
+    "#EF4444", // red-500
+    "#10B981", // emerald-500
+    "#F59E0B", // amber-500
+    "#8B5CF6", // violet-500
+    "#EC4899", // pink-500
+    "#06B6D4", // cyan-500
+    "#84CC16", // lime-500
   ];
   const backgroundColors = dataValues.map((_, i) => colors[i % colors.length]);
 
@@ -57,7 +68,7 @@ function EmployeeStatusChart() {
     labels,
     datasets: [
       {
-        label: 'Employees',
+        label: "Employees",
         data: dataValues,
         backgroundColor: backgroundColors,
         borderRadius: 4,
@@ -68,22 +79,22 @@ function EmployeeStatusChart() {
 
   // Responsive chart options
   const options = {
-    indexAxis: 'y',
+    indexAxis: "y",
     responsive: true,
     maintainAspectRatio: false,
     interaction: {
       intersect: false,
-      mode: 'index',
+      mode: "index",
     },
     scales: {
       x: {
         beginAtZero: true,
         max: totalUsers > 0 ? totalUsers : undefined,
         grid: {
-          color: 'rgba(156, 163, 175, 0.2)',
+          color: "rgba(156, 163, 175, 0.2)",
         },
         ticks: {
-          color: 'rgba(107, 114, 128, 0.8)',
+          color: "rgba(107, 114, 128, 0.8)",
           font: {
             size: 11,
           },
@@ -94,7 +105,7 @@ function EmployeeStatusChart() {
           display: false,
         },
         ticks: {
-          color: 'rgba(107, 114, 128, 0.8)',
+          color: "rgba(107, 114, 128, 0.8)",
           font: {
             size: 11,
           },
@@ -107,10 +118,10 @@ function EmployeeStatusChart() {
         display: false,
       },
       tooltip: {
-        backgroundColor: 'rgba(17, 24, 39, 0.9)',
-        titleColor: '#F9FAFB',
-        bodyColor: '#F9FAFB',
-        borderColor: 'rgba(156, 163, 175, 0.2)',
+        backgroundColor: "rgba(17, 24, 39, 0.9)",
+        titleColor: "#F9FAFB",
+        bodyColor: "#F9FAFB",
+        borderColor: "rgba(156, 163, 175, 0.2)",
         borderWidth: 1,
         cornerRadius: 8,
         padding: 12,
@@ -120,28 +131,29 @@ function EmployeeStatusChart() {
 
   // Animation variants
   const cardVariants = {
-    hidden: { 
-      opacity: 0, 
+    hidden: {
+      opacity: 0,
       y: 20,
-      scale: 0.95 
+      scale: 0.95,
     },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       scale: 1,
       transition: {
         duration: 0.5,
-        ease: "easeOut"
-      }
+        ease: "easeOut",
+      },
     },
     hover: {
       y: -2,
-      boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+      boxShadow:
+        "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
       transition: {
         duration: 0.2,
-        ease: "easeInOut"
-      }
-    }
+        ease: "easeInOut",
+      },
+    },
   };
 
   const iconVariants = {
@@ -150,15 +162,15 @@ function EmployeeStatusChart() {
       rotate: 5,
       transition: {
         duration: 0.2,
-        ease: "easeInOut"
-      }
+        ease: "easeInOut",
+      },
     },
     tap: {
       scale: 0.95,
       transition: {
-        duration: 0.1
-      }
-    }
+        duration: 0.1,
+      },
+    },
   };
 
   const refreshVariants = {
@@ -167,20 +179,22 @@ function EmployeeStatusChart() {
       transition: {
         duration: 1,
         ease: "linear",
-        repeat: isRefreshing ? Infinity : 0
-      }
-    }
+        repeat: isRefreshing ? Infinity : 0,
+      },
+    },
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="w-full"
       variants={cardVariants}
       initial="hidden"
       animate="visible"
       whileHover="hover"
+      onClick={() => setOpenModal(true)}
     >
-      <div className="
+      <div
+        className="
         flex flex-col
         rounded-xl lg:rounded-2xl
         bg-white dark:bg-gray-800
@@ -190,9 +204,10 @@ function EmployeeStatusChart() {
         text-gray-800 dark:text-gray-100
         transition-all duration-200
         h-full
-      ">
+      "
+      >
         {/* Header */}
-        <motion.div 
+        <motion.div
           className="flex items-center justify-between mb-4"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -215,7 +230,7 @@ function EmployeeStatusChart() {
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-1 sm:gap-2">
             {/* Total count badge */}
             <motion.div
@@ -227,7 +242,7 @@ function EmployeeStatusChart() {
               <HiOutlineChartBar className="h-3 w-3" />
               {totalUsers || 0}
             </motion.div>
-            
+
             {/* Refresh button */}
             <motion.button
               className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -244,7 +259,7 @@ function EmployeeStatusChart() {
                 <HiOutlineRefresh className="h-4 w-4 sm:h-5 sm:w-5" />
               </motion.div>
             </motion.button>
-            
+
             {/* Menu button */}
             <motion.button
               className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -258,7 +273,7 @@ function EmployeeStatusChart() {
         </motion.div>
 
         {/* Divider */}
-        <motion.div 
+        <motion.div
           className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-600 to-transparent mb-4"
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
@@ -266,7 +281,7 @@ function EmployeeStatusChart() {
         />
 
         {/* Chart Container - Responsive height */}
-        <motion.div 
+        <motion.div
           className="w-full flex-1 min-h-[200px] sm:min-h-[240px] lg:min-h-[280px] relative"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -282,7 +297,7 @@ function EmployeeStatusChart() {
               </div>
             </div>
           )}
-          
+
           {/* Loading overlay */}
           {isRefreshing && (
             <motion.div
@@ -302,7 +317,9 @@ function EmployeeStatusChart() {
                 >
                   <HiOutlineRefresh className="h-4 w-4 text-lime-600" />
                 </motion.div>
-                <span className="text-sm text-gray-600 dark:text-gray-300">Updating...</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">
+                  Updating...
+                </span>
               </motion.div>
             </motion.div>
           )}
@@ -316,13 +333,19 @@ function EmployeeStatusChart() {
           transition={{ delay: 0.6, duration: 0.4 }}
         >
           <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-            {employeesPerEmployeeType.length} location{employeesPerEmployeeType.length !== 1 ? 's' : ''}
+            {employeesPerEmployeeType.length} location
+            {employeesPerEmployeeType.length !== 1 ? "s" : ""}
           </div>
           <div className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
             Total: {totalUsers || 0} employees
           </div>
         </motion.div>
       </div>
+      <LocationModal
+        isOpen={openModal}
+        onRequestClose={() => setOpenModal(false)}
+        loading={attendanceDetailsLoading}
+      />
     </motion.div>
   );
 }

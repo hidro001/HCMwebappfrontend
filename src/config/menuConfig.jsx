@@ -18,10 +18,11 @@ import {
   FaBookReader,
   FaDiceD20,
 } from "react-icons/fa";
+
 import { TiSocialTwitter } from "react-icons/ti";
 import { GrDocumentPerformance } from "react-icons/gr";
 import { MdTrackChanges, MdModelTraining } from "react-icons/md";
-import { RiOrganizationChart } from "react-icons/ri";
+import { RiFileEditLine, RiOrganizationChart } from "react-icons/ri";
 import { LuFileCheck2 } from "react-icons/lu";
 import { ChatBubble } from "@mui/icons-material";
 import { BiCurrentLocation } from "react-icons/bi";
@@ -78,6 +79,7 @@ export const menuItems = [
   // },
 
   // ------------------------------ Synergy (Engagement) ------------------------------
+
   {
     name: "Synergy",
     tooltip:
@@ -242,6 +244,7 @@ export const menuItems = [
   },
 
   // ------------------------------ Payroll ------------------------------
+
   {
     name: "Payroll",
     tooltip:
@@ -273,6 +276,7 @@ export const menuItems = [
   },
 
   // ------------------------------ Task Management ------------------------------
+
   {
     name: "Task Management ",
     tooltip:
@@ -494,6 +498,7 @@ export const menuItems = [
   },
 
   // ------------------------------ Analytics ------------------------------
+
   {
     name: "Company Analytics",
     tooltip:
@@ -525,6 +530,7 @@ export const menuItems = [
   },
 
   // ------------------------------ Company Settings ------------------------------
+
   {
     name: "Company Settings",
     tooltip:
@@ -580,6 +586,7 @@ export const menuItems = [
   },
 
   // ------------------------------ Productivity Lenses ------------------------------
+
   {
     name: "Productivity Lenses",
     tooltip:
@@ -620,6 +627,7 @@ export const menuItems = [
   },
 
   // ------------------------------ Chats ------------------------------
+
   {
     name: "Chats",
     tooltip: "Chats With Team Mates",
@@ -638,6 +646,7 @@ export const menuItems = [
   },
 
   // ------------------------------ Leaves Management ------------------------------
+
   {
     name: "Leaves Management",
     icon: <FaListAlt />,
@@ -667,6 +676,7 @@ export const menuItems = [
   },
 
   // ------------------------------ Resignation & FNF ------------------------------
+
   {
     name: "Resignation & FNF Dashboard",
     icon: <LuFileCheck2 />,
@@ -702,6 +712,7 @@ export const menuItems = [
   },
 
   // ------------------------------ Policies & Induction ------------------------------
+
   {
     name: "Policies & Induction",
     icon: <FaFileSignature />,
@@ -737,6 +748,7 @@ export const menuItems = [
   },
 
   // ------------------------------ Organization Chart ------------------------------
+
   {
     name: "Organization Chart",
     tooltip: "",
@@ -772,6 +784,36 @@ export const menuItems = [
         name: "View Map",
         link: "/dashboard/geo-location",
         permission: "geolocation-all-permission",
+        textAnimation: { x: 10 },
+      },
+    ],
+  },
+
+  {
+    name: "Registration",
+    tooltip: "",
+    icon: <RiFileEditLine />, // Updated icon for registration
+    color: "text-yellow-400",
+    iconAnimation: { scale: 1.2 },
+    textAnimation: { x: 10 },
+    options: [
+      {
+        name: "Add New Employee",
+        link: "/dashboard/registration/add-new-employee",
+        permission: "registration/add-new-employee",
+        textAnimation: { x: 10 },
+      },
+
+      {
+        name: "Edit Rest Detail",
+        link: "/dashboard/registration/edit-rest-detail",
+        permission: "registration/edit-rest-detail",
+        textAnimation: { x: 10 },
+      },
+      {
+        name: "Employee Review",
+        link: "/dashboard/registration/review-employee",
+        permission: "registration/review-employee",
         textAnimation: { x: 10 },
       },
     ],

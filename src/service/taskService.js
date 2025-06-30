@@ -152,7 +152,6 @@ export const getSubordinateDepartments = async () => {
 
 export const getComments = async (taskId) => {
   try {
-    // Adjust the base URL if needed, e.g., axios.create({ baseURL: 'http://localhost:4000' })
     const response = await axiosInstance.get(`/task/comment/${taskId}`, {
     
     });
