@@ -1104,7 +1104,7 @@ function formatHMS(totalSeconds) {
   return `${hh}:${mm}:${ss}`;
 }
 
-const Navbar = () => {
+const Navbar = ({ collapsed, setCollapsed }) => {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [showNotificationDropdown, setShowNotificationDropdown] =
     useState(false);

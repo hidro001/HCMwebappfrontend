@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -209,21 +208,19 @@ const EmployeeBreakStatsTable = () => {
           {/* Compact Header */}
           <motion.div
             variants={headerVariants}
-            className="relative px-4 py-4 bg-bg-tertiary"
+            className="relative px-4 py-4 bg-bg-tertiary dark:bg-bg-tertiary bg-gradient-to-r from-blue-600 to-purple-600 dark:from-gray-800 dark:to-gray-900"
           >
-      
-
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-white/20 rounded-xl backdrop-blur-sm">
-                  <HiOutlineSparkles className="text-2xl text-white" />
+                <div className="p-2 bg-white/20 dark:bg-white/10 rounded-xl backdrop-blur-sm border border-white/30 dark:border-white/20">
+                  <HiOutlineSparkles className="text-2xl text-white dark:text-gray-100" />
                 </div>
                 <div>
-                  <h1 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+                  <h1 className="text-2xl md:text-3xl font-black text-white dark:text-gray-100 tracking-tight">
                     Productivity Lens
                   </h1>
-                  <p className="text-white/90 text-sm font-medium flex items-center gap-2">
-                    <HiOutlineLightningBolt className="text-yellow-300" />
+                  <p className="text-white/90 dark:text-gray-300 text-sm font-medium flex items-center gap-2">
+                    <HiOutlineLightningBolt className="text-yellow-300 dark:text-yellow-400" />
                     Employee break analytics
                   </p>
                 </div>
@@ -231,19 +228,23 @@ const EmployeeBreakStatsTable = () => {
 
               {/* Compact stats */}
               <div className="flex gap-2">
-                <div className="bg-white/20 backdrop-blur-sm rounded-xl p-2 text-center min-w-[60px]">
-                  <FaUsers className="text-lg text-white mx-auto mb-1" />
-                  <div className="text-lg font-bold text-white">
+                <div className="bg-white/20 dark:bg-white/10 backdrop-blur-sm rounded-xl p-2 text-center min-w-[60px] border border-white/30 dark:border-white/20 hover:bg-white/30 dark:hover:bg-white/20 transition-colors duration-200">
+                  <FaUsers className="text-lg text-white dark:text-gray-100 mx-auto mb-1" />
+                  <div className="text-lg font-bold text-white dark:text-gray-100">
                     {pagination.totalResults}
                   </div>
-                  <div className="text-xs text-white/80">Total</div>
+                  <div className="text-xs text-white/80 dark:text-gray-300">
+                    Total
+                  </div>
                 </div>
-                <div className="bg-white/20 backdrop-blur-sm rounded-xl p-2 text-center min-w-[60px]">
-                  <FaCoffee className="text-lg text-white mx-auto mb-1" />
-                  <div className="text-lg font-bold text-white">
+                <div className="bg-white/20 dark:bg-white/10 backdrop-blur-sm rounded-xl p-2 text-center min-w-[60px] border border-white/30 dark:border-white/20 hover:bg-white/30 dark:hover:bg-white/20 transition-colors duration-200">
+                  <FaCoffee className="text-lg text-white dark:text-gray-100 mx-auto mb-1" />
+                  <div className="text-lg font-bold text-white dark:text-gray-100">
                     {currentPage}
                   </div>
-                  <div className="text-xs text-white/80">Page</div>
+                  <div className="text-xs text-white/80 dark:text-gray-300">
+                    Page
+                  </div>
                 </div>
               </div>
             </div>
@@ -282,28 +283,6 @@ const EmployeeBreakStatsTable = () => {
                     <option value={50}>50</option>
                   </select>
                 </div>
-              </div>
-
-              {/* Right side actions */}
-              <div className="flex items-center gap-2">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => setIsFilterOpen(!isFilterOpen)}
-                  className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 font-semibold text-sm"
-                >
-                  <FaFilter className="text-xs" />
-                  Filters
-                </motion.button>
-
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 font-semibold text-sm"
-                >
-                  <FaDownload className="text-xs" />
-                  Export
-                </motion.button>
               </div>
             </div>
           </div>

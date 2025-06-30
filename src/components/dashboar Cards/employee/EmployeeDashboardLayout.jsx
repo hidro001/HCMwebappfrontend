@@ -84,17 +84,14 @@ function EmployeeDashboardLayout() {
             </motion.section>
 
             {/* Tasks Section */}
-            <section
-              className="bg-bg-secondary backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 "
-            >
+            <section className="bg-bg-secondary backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">
               <div className="p-6">
                 <AssignedTaskListCard />
               </div>
             </section>
 
             {/* Bottom Row - Performance & Holidays */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Performance Card */}
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">
                 <div className="p-6 bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/10 dark:to-red-900/10 border-b border-gray-200/50 dark:border-gray-700/50">
                   <div className="flex items-center gap-3">
@@ -116,7 +113,6 @@ function EmployeeDashboardLayout() {
                 </div>
               </section>
 
-              {/* Holidays Card */}
               <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">
                 <div className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/10 dark:to-pink-900/10 border-b border-gray-200/50 dark:border-gray-700/50">
                   <div className="flex items-center gap-3">
@@ -137,7 +133,7 @@ function EmployeeDashboardLayout() {
                   <UpcomingHolidaysCard />
                 </div>
               </section>
-            </div>
+            </div> */}
           </div>
 
           {/* Right Sidebar */}
@@ -165,7 +161,7 @@ function EmployeeDashboardLayout() {
             </section>
 
             {/* Announcements Card */}
-            <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">
+            {/* <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">
               <div className="p-6 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/10 dark:to-pink-900/10 border-b border-gray-200/50 dark:border-gray-700/50">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -187,7 +183,7 @@ function EmployeeDashboardLayout() {
               <div className="p-6">
                 <AnnouncementCard />
               </div>
-            </section>
+            </section> */}
 
             {/* Top Performer Card */}
             <section className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/30 overflow-hidden transition-transform duration-200 ">

@@ -2119,8 +2119,6 @@ function SubordinatesEmployees() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Toaster />
-        {/* Help Section - Always visible */}
-        {renderHelpSection("subordinatesEmployees")}
         <div className="p-4 sm:p-6">
           <div className="max-w-8xl mx-auto">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -2138,8 +2136,6 @@ function SubordinatesEmployees() {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
         <Toaster />
-        {/* Help Section - Always visible */}
-        {renderHelpSection("subordinatesEmployees")}
         <div className="flex items-center justify-center min-h-96">
           <div className="text-center space-y-4">
             <div className="text-6xl text-red-600 dark:text-red-400">⚠️</div>
@@ -2159,7 +2155,7 @@ function SubordinatesEmployees() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200  rounded-2xl">
    
 
-      {renderHelpSection("subordinatesEmployees")}
+      
 
       {/* Main Content */}
       <div className="p-4 sm:p-6">

@@ -269,7 +269,7 @@
 //                 [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
 //                 [&::-webkit-scrollbar-thumb]:rounded-full
 //                 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
-      
+
 //       "
 //       >
 //         <AnimatePresence>
@@ -376,7 +376,6 @@
 // };
 
 // export default NotificationDropdown;
-
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";

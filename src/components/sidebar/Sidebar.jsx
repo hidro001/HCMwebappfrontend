@@ -1,4 +1,3 @@
-
 // import { useEffect, useState } from "react";
 // import { motion } from "framer-motion";
 // import { useLocation } from "react-router-dom";
@@ -75,8 +74,8 @@
 
 //   return (
 //     <motion.div
-//       className={`dark:shadow-[0_0_20px_rgba(0,0,0,0.5)] shadow-[0_0_20px_rgba(0,0,0,0.1)] h-screen transition-all duration-300 ease-in-out flex flex-col overflow-hidden relative 
-//         dark:bg-black dark:text-white bg-white text-slate-800 
+//       className={`dark:shadow-[0_0_20px_rgba(0,0,0,0.5)] shadow-[0_0_20px_rgba(0,0,0,0.1)] h-screen transition-all duration-300 ease-in-out flex flex-col overflow-hidden relative
+//         dark:bg-black dark:text-white bg-white text-slate-800
 //         ${actualCollapsed ? "w-20" : "w-64"}`}
 //       onMouseEnter={handleMouseEnter}
 //       onMouseLeave={handleMouseLeave}
@@ -144,7 +143,7 @@
 //                 [&::-webkit-scrollbar-thumb]:rounded-full
 //                 [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-gray-800
 //                 transition-colors duration-300
-                
+
 //                 "
 //       >
 //         <ul className="space-y-2 px-2">
@@ -166,7 +165,7 @@
 //                     transition: { duration: 0.2 },
 //                   }}
 //                   whileTap={{ scale: 0.97 }}
-//                   className={`flex items-center w-full pl-4 py-2.5 rounded-xl transition-all duration-200 
+//                   className={`flex items-center w-full pl-4 py-2.5 rounded-xl transition-all duration-200
 //                     ${
 //                       active
 //                         ? "dark:bg-indigo-600/80 dark:text-white bg-indigo-50 text-indigo-700 shadow-md dark:shadow-indigo-900/30 shadow-indigo-200/50"
@@ -249,7 +248,6 @@
 //   );
 // }
 
-
 // import { useEffect, useState } from "react";
 // import { motion } from "framer-motion";
 // import { useLocation } from "react-router-dom";
@@ -303,8 +301,8 @@
 
 //   return (
 //     <div
-//       className={`dark:shadow-[0_0_20px_rgba(0,0,0,0.5)] shadow-[0_0_20px_rgba(0,0,0,0.1)] h-screen transition-all duration-200 ease-in-out flex flex-col overflow-hidden relative 
-//         dark:bg-black dark:text-white bg-white text-slate-800 
+//       className={`dark:shadow-[0_0_20px_rgba(0,0,0,0.5)] shadow-[0_0_20px_rgba(0,0,0,0.1)] h-screen transition-all duration-200 ease-in-out flex flex-col overflow-hidden relative
+//         dark:bg-black dark:text-white bg-white text-slate-800
 //         ${actualCollapsed ? "w-20" : "w-64"}`}
 //       onMouseEnter={handleMouseEnter}
 //       onMouseLeave={handleMouseLeave}
@@ -412,7 +410,6 @@
 //     </div>
 //   );
 // }
-
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";

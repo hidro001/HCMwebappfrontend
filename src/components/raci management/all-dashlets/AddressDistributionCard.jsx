@@ -1,130 +1,27 @@
-
-// import React, { useEffect } from 'react';
-// import { Doughnut } from 'react-chartjs-2';
-// import { motion, AnimatePresence } from 'framer-motion';
-// import { toast } from 'react-hot-toast';
-// import { FaChevronDown } from 'react-icons/fa';
-// import 'chart.js/auto';
-// import useAddressDistributionStore from '../../../store/analytics dashboards cards/useAddressDistributionStore'; // adjust path
-
-// const AddressDistributionCard = () => {
-//   // 1) Get store state & actions
-//   const { data, loading, error, fetchDistribution } = useAddressDistributionStore();
-
-//   // 2) Fetch on mount
-//   useEffect(() => {
-//     fetchDistribution();
-//   }, [fetchDistribution]);
-
-//   // 3) Handle loading and error states
-//   if (loading) return <div>Loading Address Distribution...</div>;
-//   if (error) return <div>Error: {error}</div>;
-//   if (!data) return null; // No data yet
-
-//   // 4) Extract from the store data
-//   const { currentPct, permanentPct } = data;
-//   // Convert string to number if needed
-//   const currentVal = parseFloat(currentPct) || 0;
-//   const permanentVal = parseFloat(permanentPct) || 0;
-
-//   // 5) Prepare Chart.js data
-//   const chartData = {
-//     labels: ['Current Address', 'Permanent Address'],
-//     datasets: [
-//       {
-//         data: [currentVal, permanentVal],
-//         backgroundColor: ['#3B82F6', '#F97316'], 
-//         hoverBackgroundColor: ['#2563EB', '#EA580C'],
-//         borderWidth: 0,
-//       },
-//     ],
-//   };
-
-//   // Chart options
-//   const options = {
-//     cutout: '70%',
-//     plugins: {
-//       legend: { display: false },
-//       tooltip: {
-//         backgroundColor: '#111827',
-//         titleColor: '#F9FAFB',
-//         bodyColor: '#F9FAFB',
-//         borderWidth: 0,
-//       },
-//     },
-//     maintainAspectRatio: false,
-//   };
-
-//   return (
-//     <div
-//       className="
-//         w-full 
-//         max-w-xs
-//         p-4
-//         bg-white 
-//         dark:bg-slate-800
-//         rounded-lg
-//         shadow
-//         text-gray-800 
-//         dark:text-gray-200
-//       "
-//     >
-//       {/* Header Row */}
-//       <div className="flex items-center justify-between mb-2">
-//         <h2 className="font-semibold text-lg">Address Distribution</h2>
-//       </div>
-
-//       {/* Donut Chart */}
-//       <div className="relative w-full h-40">
-//         <Doughnut data={chartData} options={options} />
-//       </div>
-
-//       {/* Custom Legend */}
-//       <div className="mt-4 flex space-x-6 justify-center">
-//         {/* Current Address Legend */}
-//         <div className="flex items-center space-x-2">
-//           <span className="inline-block w-3 h-3 bg-blue-500 rounded-sm"></span>
-//           <span className="text-sm">
-//             Current Address: <strong>{currentVal}%</strong>
-//           </span>
-//         </div>
-//         {/* Permanent Address Legend */}
-//         <div className="flex items-center space-x-2">
-//           <span className="inline-block w-3 h-3 bg-orange-500 rounded-sm"></span>
-//           <span className="text-sm">
-//             Permanent Address: <strong>{permanentVal}%</strong>
-//           </span>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default AddressDistributionCard;
-
-
-
-import React, { useEffect, useState } from 'react';
-import { Doughnut } from 'react-chartjs-2';
-import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  FaMapMarkerAlt, 
-  FaHome, 
-  FaChevronDown, 
+import React, { useEffect, useState } from "react";
+import { Doughnut } from "react-chartjs-2";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  FaMapMarkerAlt,
+  FaHome,
+  FaChevronDown,
   FaInfoCircle,
   FaSync,
-  FaExpand
-} from 'react-icons/fa';
-import { HiSparkles } from 'react-icons/hi';
-import 'chart.js/auto';
-
+  FaExpand,
+} from "react-icons/fa";
+import { HiSparkles } from "react-icons/hi";
+import "chart.js/auto";
+import DetailModal from "./BaseModal"; // ① add
+import { useDrilldown } from "./useDrillDown"; // ① add
 // Import your actual store
-import useAddressDistributionStore from '../../../store/analytics dashboards cards/useAddressDistributionStore';
+import useAddressDistributionStore from "../../../store/analytics dashboards cards/useAddressDistributionStore";
 
 const AddressDistributionCard = () => {
-  const { data, loading, error, fetchDistribution } = useAddressDistributionStore();
+  const { data, loading, error, fetchDistribution } =
+    useAddressDistributionStore();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const drill = useDrilldown();
 
   useEffect(() => {
     fetchDistribution();
@@ -136,17 +33,14 @@ const AddressDistributionCard = () => {
 
   // Chart configuration
   const chartData = {
-    labels: ['Current Address', 'Permanent Address'],
+    labels: ["Current Address", "Permanent Address"],
     datasets: [
       {
         data: [currentVal, permanentVal],
-        backgroundColor: [
-          'rgba(99, 102, 241, 0.8)',
-          'rgba(236, 72, 153, 0.8)'
-        ],
+        backgroundColor: ["rgba(99, 102, 241, 0.8)", "rgba(236, 72, 153, 0.8)"],
         hoverBackgroundColor: [
-          'rgba(99, 102, 241, 1)',
-          'rgba(236, 72, 153, 1)'
+          "rgba(99, 102, 241, 1)",
+          "rgba(236, 72, 153, 1)",
         ],
         borderWidth: 0,
         borderRadius: 8,
@@ -156,26 +50,26 @@ const AddressDistributionCard = () => {
   };
 
   const chartOptions = {
-    cutout: '75%',
+    cutout: "75%",
     plugins: {
       legend: { display: false },
       tooltip: {
         enabled: true,
-        backgroundColor: 'rgba(17, 24, 39, 0.95)',
-        titleColor: '#F9FAFB',
-        bodyColor: '#F9FAFB',
-        borderColor: 'rgba(99, 102, 241, 0.3)',
+        backgroundColor: "rgba(17, 24, 39, 0.95)",
+        titleColor: "#F9FAFB",
+        bodyColor: "#F9FAFB",
+        borderColor: "rgba(99, 102, 241, 0.3)",
         borderWidth: 1,
         cornerRadius: 12,
         displayColors: false,
-        titleFont: { size: 14, weight: 'bold' },
+        titleFont: { size: 14, weight: "bold" },
         bodyFont: { size: 13 },
         padding: 12,
         callbacks: {
-          label: function(context) {
+          label: function (context) {
             return `${context.parsed}% of users`;
-          }
-        }
+          },
+        },
       },
     },
     maintainAspectRatio: false,
@@ -184,8 +78,8 @@ const AddressDistributionCard = () => {
       animateRotate: true,
       animateScale: true,
       duration: 1000,
-      easing: 'easeInOutQuart'
-    }
+      easing: "easeInOutQuart",
+    },
   };
 
   // Loading component
@@ -200,7 +94,9 @@ const AddressDistributionCard = () => {
         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
         className="w-8 h-8 border-3 border-indigo-500 border-t-transparent rounded-full"
       />
-      <p className="text-sm text-gray-500 dark:text-gray-400">Loading distribution data...</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        Loading distribution data...
+      </p>
     </motion.div>
   );
 
@@ -215,7 +111,9 @@ const AddressDistributionCard = () => {
         <FaInfoCircle className="w-6 h-6 text-red-500" />
       </div>
       <div className="text-center">
-        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Failed to load data</p>
+        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          Failed to load data
+        </p>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{error}</p>
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -246,12 +144,12 @@ const AddressDistributionCard = () => {
         shadow-lg hover:shadow-xl
         transition-all duration-300 ease-out
         overflow-hidden
-        ${isHovered ? 'transform scale-[1.02]' : ''}
+        ${isHovered ? "transform scale-[1.02]" : ""}
       `}
     >
       {/* Gradient Background Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 via-transparent to-pink-500/5 pointer-events-none" />
-      
+
       {/* Header */}
       <div className="relative p-6 pb-4">
         <div className="flex items-center justify-between">
@@ -273,7 +171,7 @@ const AddressDistributionCard = () => {
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <motion.button
               whileHover={{ scale: 1.1 }}
@@ -292,7 +190,11 @@ const AddressDistributionCard = () => {
             >
               <motion.div
                 animate={loading ? { rotate: 360 } : { rotate: 0 }}
-                transition={{ duration: 1, repeat: loading ? Infinity : 0, ease: "linear" }}
+                transition={{
+                  duration: 1,
+                  repeat: loading ? Infinity : 0,
+                  ease: "linear",
+                }}
               >
                 <FaSync className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </motion.div>
@@ -318,15 +220,22 @@ const AddressDistributionCard = () => {
             >
               {/* Chart Container */}
               <div className="relative">
-                <div className="relative w-full h-48 mb-6">
+                <div
+                  className="relative w-full h-48 mb-6"
+                  onClick={() => drill.fetch("address")}
+                >
                   <Doughnut data={chartData} options={chartOptions} />
-                  
+
                   {/* Center Statistics */}
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+                      transition={{
+                        delay: 0.5,
+                        type: "spring",
+                        stiffness: 200,
+                      }}
                       className="text-center"
                     >
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -406,8 +315,15 @@ const AddressDistributionCard = () => {
                         Quick Insights
                       </h4>
                       <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
-                        <p>• {currentVal > permanentVal ? 'Current' : 'Permanent'} addresses dominate the distribution</p>
-                        <p>• {Math.abs(currentVal - permanentVal).toFixed(1)}% difference between address types</p>
+                        <p>
+                          •{" "}
+                          {currentVal > permanentVal ? "Current" : "Permanent"}{" "}
+                          addresses dominate the distribution
+                        </p>
+                        <p>
+                          • {Math.abs(currentVal - permanentVal).toFixed(1)}%
+                          difference between address types
+                        </p>
                         <p>• Data updated in real-time from user profiles</p>
                       </div>
                     </motion.div>
@@ -421,6 +337,13 @@ const AddressDistributionCard = () => {
 
       {/* Bottom Accent Line */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+      <DetailModal
+        open={drill.open}
+        onClose={drill.close}
+        loading={drill.loading}
+        rows={drill.rows}
+        title="Address Distribution – User List"
+      />
     </motion.div>
   );
 };
