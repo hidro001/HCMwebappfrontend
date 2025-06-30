@@ -93,9 +93,9 @@ function KPIDetailModal({
           <div className="flex items-center justify-between mb-4 bg-gray-100 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
             <div>
               <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                TOTAL SCORE
+                Avg Score (%) out of 100
               </h4>
-              <div className="mt-2 flex items-baseline">
+              {/* <div className="mt-2 flex items-baseline">
                 <span
                   className={`text-3xl font-bold ${performanceColor}`}
                 >
@@ -104,7 +104,13 @@ function KPIDetailModal({
                 <span className="text-gray-500 dark:text-gray-400 text-lg ml-2">
                   / {maxScore}
                 </span>
-              </div>
+
+                
+              </div> */}
+
+                <div className={`font-semibold ${getScoreColor(pctRounded)}`}>
+    {pctRounded.toFixed(1)}%
+  </div>
             </div>
             <div className="text-right">
               <div className={`text-xl font-semibold ${performanceColor}`}>

@@ -116,7 +116,7 @@ export const fetchAllTasks = async () => {
 
 export const fetchTasksEmp = async () => {
   try {
-    const response = await axiosInstance.get("/task/assign");
+    const response = await axiosInstance.get("/task/assigned");
     if (response.data.success) {
       return response.data.data; 
     }

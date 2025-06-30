@@ -95,6 +95,7 @@ import {
 } from "../pages";
 import EmployeeFullStatisticsPage from "../pages/attendence management/EmployeeFullStatisticsPage";
 import MainLayout from "./MainLayout";
+import { helpConfigs } from "../config/HelpConfig";
 
 import {
   Footer,
@@ -187,14 +188,18 @@ const router = createBrowserRouter([
       {
         path: "manage-tickets",
         element: <ManageTicketsPage />,
+         handle: { helpKey: "ManageTickets" },
       },
       {
         path: "all-tickets",
         element: <AllTicketsPage />,
+        handle: { helpKey: "AllTickets" },
       },
       {
         path: "raise-ticket",
         element: <RaiseTicketsPage />,
+         handle: { helpKey: "RaiseTickets" },
+
       },
       {
         path: "posh-manage",
