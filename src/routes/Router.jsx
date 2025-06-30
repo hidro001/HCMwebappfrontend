@@ -119,6 +119,7 @@ import SetPassword from "../pages/emp-registration/SetPassword";
 import EditRestDetailPage from "../pages/emp-registration/edit-rest-detail/EditRestDetailPage";
 import ReviewEmployeePage from "../pages/emp-registration/emp-review/ReviewEmployeePage";
 import ManagerTabOverview from "../pages/emp-registration/emp-review/manager-tabs/ManagerTabOverview";
+import SuperAdminRegistration from "../components/SuperAdminRegistration/SuperAdminRegistration";
 
 const router = createBrowserRouter([
   {
