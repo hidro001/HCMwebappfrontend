@@ -128,16 +128,12 @@
 
 // export default AnnouncementCard;
 
-
-
-
-
 // import { useEffect, useState } from "react";
 // import { motion, AnimatePresence } from "framer-motion";
-// import { 
-//   FiBell, 
-//   FiCalendar, 
-//   FiUsers, 
+// import {
+//   FiBell,
+//   FiCalendar,
+//   FiUsers,
 //   FiChevronRight,
 //   FiClock,
 //   FiMoreVertical
@@ -184,7 +180,7 @@
 //     const now = new Date();
 //     const diffMs = now - new Date(date);
 //     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    
+
 //     if (diffDays === 0) return "Today";
 //     if (diffDays === 1) return "Yesterday";
 //     if (diffDays < 7) return `${diffDays} days ago`;
@@ -232,8 +228,8 @@
 
 //   const cardVariants = {
 //     hidden: { opacity: 0, y: 20 },
-//     visible: { 
-//       opacity: 1, 
+//     visible: {
+//       opacity: 1,
 //       y: 0,
 //       transition: {
 //         duration: 0.5,
@@ -282,10 +278,10 @@
 //       >
 //         {/* Gradient overlay */}
 //         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        
+
 //         {/* Content */}
 //         <div className="relative p-3 sm:p-4 h-full flex flex-col">
-          
+
 //           {/* Header */}
 //           <div className="flex items-center justify-between mb-3">
 //             <div className="flex items-center gap-2">
@@ -304,7 +300,7 @@
 //                 </p>
 //               </div>
 //             </div>
-            
+
 //             <motion.button
 //               whileHover={{ scale: 1.05 }}
 //               whileTap={{ scale: 0.95 }}
@@ -362,13 +358,13 @@
 //                     <div className="flex items-start justify-between gap-2">
 //                       <div className="flex-1 min-w-0">
 //                         <h3 className="
-//                           text-xs sm:text-sm font-medium 
+//                           text-xs sm:text-sm font-medium
 //                           text-gray-900 dark:text-gray-100
 //                           line-clamp-1 mb-1
 //                         ">
 //                           {item.subject}
 //                         </h3>
-                        
+
 //                         <div className="flex items-center gap-1 text-[10px] sm:text-xs text-gray-500 dark:text-gray-400">
 //                           <div className="flex items-center gap-1">
 //                             <FiUsers className="w-2.5 h-2.5" />
@@ -380,7 +376,7 @@
 //                           <span>{item.relativeTime}</span>
 //                         </div>
 //                       </div>
-                      
+
 //                       <motion.div
 //                         initial={{ opacity: 0, x: -5 }}
 //                         whileHover={{ opacity: 1, x: 0 }}
@@ -449,13 +445,13 @@
 
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  FiBell, 
-  FiCalendar, 
-  FiUsers, 
+import {
+  FiBell,
+  FiCalendar,
+  FiUsers,
   FiChevronRight,
   FiClock,
-  FiMoreVertical
+  FiMoreVertical,
 } from "react-icons/fi";
 
 import useAnnouncementStore from "../../../store/announcementStore";
@@ -474,14 +470,24 @@ function AnnouncementCard() {
   const formatDate = (announcementDate) => {
     const dateObj = new Date(announcementDate);
     const monthNames = [
-      "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-      "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "May",
+      "Jun",
+      "Jul",
+      "Aug",
+      "Sep",
+      "Oct",
+      "Nov",
+      "Dec",
     ];
     const monthIndex = dateObj.getMonth();
     const dayNum = dateObj.getDate();
     return {
       month: monthNames[monthIndex] || "Jan",
-      day: String(dayNum).padStart(2, '0'), // Ensure 2-digit day
+      day: String(dayNum).padStart(2, "0"), // Ensure 2-digit day
     };
   };
 
@@ -499,7 +505,7 @@ function AnnouncementCard() {
     const now = new Date();
     const diffMs = now - new Date(date);
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    
+
     if (diffDays === 0) return "Today";
     if (diffDays === 1) return "Yesterday";
     if (diffDays < 7) return `${diffDays} days ago`;
@@ -522,9 +528,7 @@ function AnnouncementCard() {
     if (dateDiff !== 0) {
       return dateDiff;
     } else {
-      return (
-        new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-      );
+      return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime();
     }
   });
 
@@ -547,14 +551,14 @@ function AnnouncementCard() {
 
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       transition: {
         duration: 0.5,
-        ease: "easeOut"
-      }
-    }
+        ease: "easeOut",
+      },
+    },
   };
 
   const itemVariants = {
@@ -565,16 +569,16 @@ function AnnouncementCard() {
       transition: {
         delay: index * 0.1,
         duration: 0.4,
-        ease: "easeOut"
-      }
+        ease: "easeOut",
+      },
     }),
     hover: {
       x: 4,
       transition: {
         duration: 0.2,
-        ease: "easeInOut"
-      }
-    }
+        ease: "easeInOut",
+      },
+    },
   };
 
   return (
@@ -597,10 +601,9 @@ function AnnouncementCard() {
       >
         {/* Gradient overlay */}
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        
+
         {/* Content */}
         <div className="relative p-4 h-full flex flex-col">
-          
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -619,7 +622,7 @@ function AnnouncementCard() {
                 </p>
               </div>
             </div>
-            
+
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -656,7 +659,8 @@ function AnnouncementCard() {
                 >
                   {/* Date Badge - Improved Design */}
                   <div className="flex-shrink-0">
-                    <div className="
+                    <div
+                      className="
                       flex flex-col items-center justify-center
                       w-12 h-12
                       rounded-xl
@@ -664,7 +668,8 @@ function AnnouncementCard() {
                       text-white
                       shadow-lg
                       border-2 border-white/20
-                    ">
+                    "
+                    >
                       <span className="text-[10px] font-medium opacity-90 uppercase tracking-wide">
                         {item.month}
                       </span>
@@ -678,16 +683,18 @@ function AnnouncementCard() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
-                        <h3 className="
+                        <h3
+                          className="
                           text-sm font-semibold 
                           text-gray-900 dark:text-gray-100
                           line-clamp-1 mb-1.5
                           group-hover/item:text-blue-600 dark:group-hover/item:text-blue-400
                           transition-colors duration-200
-                        ">
+                        "
+                        >
                           {item.subject}
                         </h3>
-                        
+
                         <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
                           <div className="flex items-center gap-1.5">
                             <FiUsers className="w-3 h-3" />
@@ -695,14 +702,16 @@ function AnnouncementCard() {
                               {item.department}
                             </span>
                           </div>
-                          <span className="text-gray-300 dark:text-gray-600">•</span>
+                          <span className="text-gray-300 dark:text-gray-600">
+                            •
+                          </span>
                           <div className="flex items-center gap-1">
                             <FiClock className="w-3 h-3" />
                             <span>{item.relativeTime}</span>
                           </div>
                         </div>
                       </div>
-                      
+
                       <motion.div
                         initial={{ opacity: 0, x: -5 }}
                         whileHover={{ opacity: 1, x: 0 }}

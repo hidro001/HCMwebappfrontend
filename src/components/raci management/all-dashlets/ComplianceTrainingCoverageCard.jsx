@@ -1,160 +1,27 @@
-
-// import React, { useEffect } from 'react';
-// import { Doughnut } from 'react-chartjs-2';
-// import 'chart.js/auto';
-// import useComplianceCoverageStore from '../../../store/analytics dashboards cards/useComplianceCoverageStore'; // Adjust the path
-
-// const ComplianceTrainingCoverageCard = () => {
-//   // 1) Get store data & actions
-//   const { data, loading, error, fetchCoverage } = useComplianceCoverageStore();
-
-//   // 2) Fetch coverage on mount
-//   useEffect(() => {
-//     fetchCoverage();
-//   }, [fetchCoverage]);
-
-//   // 3) Handle loading & error
-//   if (loading) return <div>Loading compliance coverage...</div>;
-//   if (error) return <div>Error: {error}</div>;
-
-//   // If no data yet, return null or a placeholder
-//   if (!data) return null;
-
-//   // 4) Extract what we need from the store
-//   const {
-//     totalUsers,
-//     completedCount,
-//     pendingCount,
-//     completedPercentage,
-//     pendingPercentage,
-//   } = data;
-
-//   // Convert to numeric if necessary
-//   const completedVal = parseFloat(completedPercentage) || 0;
-//   const pendingVal = parseFloat(pendingPercentage) || 0;
-
-//   // Build chart data
-//   const chartData = {
-//     labels: ['Completed', 'Pending'],
-//     datasets: [
-//       {
-//         data: [completedVal, pendingVal],
-//         backgroundColor: ['#F97316', '#FFEDD5'],
-//         borderWidth: 0,
-//       },
-//     ],
-//   };
-
-//   const chartOptions = {
-//     cutout: '70%',
-//     plugins: {
-//       legend: { display: false },
-//       tooltip: {
-//         backgroundColor: '#111827',
-//         titleColor: '#F9FAFB',
-//         bodyColor: '#F9FAFB',
-//       },
-//     },
-//     maintainAspectRatio: false,
-//   };
-
-//   return (
-//     <div
-//       className="
-//         w-full
-//         max-w-xs
-//         bg-white
-//         dark:bg-slate-800
-//         rounded-lg
-//         shadow
-//         text-gray-800
-//         dark:text-gray-200
-//         p-4
-//         border
-//       "
-//     >
-//       {/* Header */}
-//       <div className="flex items-center space-x-2 mb-4">
-//         <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-//           <svg
-//             className="w-4 h-4 text-white"
-//             fill="none"
-//             stroke="currentColor"
-//             strokeWidth="2"
-//             viewBox="0 0 24 24"
-//           >
-//             <path strokeLinecap="round" strokeLinejoin="round" d="M3 3h18M9 9h6m-6 4h6m-6 4h6" />
-//           </svg>
-//         </div>
-//         <h2 className="text-base font-semibold">Compliance Training Coverage</h2>
-//       </div>
-
-//       {/* Doughnut Chart */}
-//       <div className="relative w-full h-52">
-//         <Doughnut data={chartData} options={chartOptions} />
-//         {/* Center text overlay */}
-//         <div className="absolute inset-0 flex flex-col items-center justify-center">
-//           <span className="text-2xl font-semibold">{totalUsers} </span>
-//           <span className="text-sm text-gray-500 dark:text-gray-400">
-//           Employees
-//           </span>
-//         </div>
-//       </div>
-
-//       {/* Custom Legend */}
-//       <div className="mt-4 flex items-center justify-center space-x-4 flex-wrap">
-//         {/* Completed */}
-//         <div className="flex items-center space-x-2">
-//           <span
-//             className="inline-block w-3 h-3 rounded-sm"
-//             style={{ backgroundColor: '#F97316' }}
-//           />
-//           <span className="text-sm">
-//             Completed Compliance Trainings ({completedVal}%)
-//           </span>
-//         </div>
-
-//         {/* Pending */}
-//         <div className="flex items-center space-x-2">
-//           <span
-//             className="inline-block w-3 h-3 rounded-sm"
-//             style={{ backgroundColor: '#FFEDD5' }}
-//           />
-//           <span className="text-sm">
-//             Pending Compliance Trainings ({pendingVal}%)
-//           </span>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default ComplianceTrainingCoverageCard;
-
-
-import React, { useEffect, useState } from 'react';
-import { Doughnut } from 'react-chartjs-2';
-import 'chart.js/auto';
+import React, { useEffect, useState } from "react";
+import { Doughnut } from "react-chartjs-2";
+import "chart.js/auto";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
+import {
   HiOutlineAcademicCap,
-  HiOutlineCheckCircle, 
-  HiOutlineClock, 
+  HiOutlineCheckCircle,
+  HiOutlineClock,
   HiOutlineChevronDown,
   HiOutlineExclamationTriangle,
-  HiOutlineUsers
+  HiOutlineUsers,
 } from "react-icons/hi2";
+import DetailModal from "./BaseModal"; // ① add
+import { useDrilldown } from "./useDrillDown"; // ① add
+import { FaSync } from "react-icons/fa";
 
-import { FaSync } from 'react-icons/fa';
-
-import useComplianceCoverageStore from '../../../store/analytics dashboards cards/useComplianceCoverageStore'; // Adjust the path
+import useComplianceCoverageStore from "../../../store/analytics dashboards cards/useComplianceCoverageStore"; // Adjust the path
 
 const ComplianceTrainingCoverageCard = () => {
   // 1) Get store data & actions
   const { data, loading, error, fetchCoverage } = useComplianceCoverageStore();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [selectedPeriod, setSelectedPeriod] = useState("This Month");
-
+  const drill = useDrilldown();
   // 2) Fetch coverage on mount
   useEffect(() => {
     fetchCoverage();
@@ -162,6 +29,10 @@ const ComplianceTrainingCoverageCard = () => {
 
   const handleRefresh = () => {
     fetchCoverage();
+  };
+  const handleCardClick = () => {
+    if (drill.open || drill.loading) return; // <- key line
+    drill.fetch("compliance");
   };
 
   const periods = ["This Week", "This Month", "Last 3 Months", "This Year"];
@@ -244,23 +115,20 @@ const ComplianceTrainingCoverageCard = () => {
 
   // Enhanced chart data with gradients
   const chartData = {
-    labels: ['Completed', 'Pending'],
+    labels: ["Completed", "Pending"],
     datasets: [
       {
         label: "Training Coverage",
         data: [completedVal, pendingVal],
         backgroundColor: [
-          "rgba(249, 115, 22, 0.8)",  // orange-500
-          "rgba(255, 237, 213, 0.8)"  // orange-100
+          "rgba(249, 115, 22, 0.8)", // orange-500
+          "rgba(255, 237, 213, 0.8)", // orange-100
         ],
-        borderColor: [
-          "rgba(249, 115, 22, 1)",
-          "rgba(255, 237, 213, 1)"
-        ],
+        borderColor: ["rgba(249, 115, 22, 1)", "rgba(255, 237, 213, 1)"],
         borderWidth: 2,
         hoverBackgroundColor: [
           "rgba(249, 115, 22, 0.9)",
-          "rgba(255, 237, 213, 0.9)"
+          "rgba(255, 237, 213, 0.9)",
         ],
         hoverBorderWidth: 3,
       },
@@ -268,7 +136,7 @@ const ComplianceTrainingCoverageCard = () => {
   };
 
   const chartOptions = {
-    cutout: '75%',
+    cutout: "75%",
     rotation: -90,
     circumference: 360,
     responsive: true,
@@ -286,20 +154,21 @@ const ComplianceTrainingCoverageCard = () => {
         callbacks: {
           label: (context) => {
             return `${context.label}: ${context.raw}%`;
-          }
-        }
+          },
+        },
       },
     },
     animation: {
       animateRotate: true,
       animateScale: true,
       duration: 1200,
-      easing: 'easeOutQuart'
+      easing: "easeOutQuart",
     },
   };
 
   return (
     <motion.div
+      onClick={handleCardClick}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -321,13 +190,17 @@ const ComplianceTrainingCoverageCard = () => {
       {/* Header */}
       <div className="flex items-center justify-between mb-6 relative z-10">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-gradient-to-br from-orange-500/10 to-red-500/10 
-                          dark:from-orange-400/20 dark:to-red-400/20">
+          <div
+            className="p-2 rounded-xl bg-gradient-to-br from-orange-500/10 to-red-500/10 
+                          dark:from-orange-400/20 dark:to-red-400/20"
+          >
             <HiOutlineAcademicCap className="w-5 h-5 text-orange-600 dark:text-orange-400" />
           </div>
           <div>
-            <h2 className="font-bold text-base sm:text-lg bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 
-                           dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent">
+            <h2
+              className="font-bold text-base sm:text-lg bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 
+                           dark:from-white dark:via-gray-100 dark:to-white bg-clip-text text-transparent"
+            >
               Compliance Training Coverage
             </h2>
             <div className="flex items-center gap-2 mt-1">
@@ -338,7 +211,7 @@ const ComplianceTrainingCoverageCard = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Dropdown */}
         <div className="relative">
           <motion.button
@@ -350,10 +223,16 @@ const ComplianceTrainingCoverageCard = () => {
                        hover:bg-gray-50 dark:hover:bg-slate-600/50
                        transition-all duration-200 flex items-center gap-1"
           >
-            <HiOutlineChevronDown className={`w-4 h-4 transition-transform duration-200 
-                                             ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            <HiOutlineChevronDown
+              className={`w-4 h-4 transition-transform duration-200 
+                                             ${
+                                               isDropdownOpen
+                                                 ? "rotate-180"
+                                                 : ""
+                                             }`}
+            />
           </motion.button>
-          
+
           <AnimatePresence>
             {isDropdownOpen && (
               <motion.div
@@ -374,9 +253,11 @@ const ComplianceTrainingCoverageCard = () => {
                       setIsDropdownOpen(false);
                     }}
                     className={`w-full px-4 py-2 text-left text-sm transition-colors
-                               ${selectedPeriod === period 
-                                 ? 'text-orange-600 dark:text-orange-400 font-medium' 
-                                 : 'text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400'}`}
+                               ${
+                                 selectedPeriod === period
+                                   ? "text-orange-600 dark:text-orange-400 font-medium"
+                                   : "text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400"
+                               }`}
                   >
                     {period}
                   </motion.button>
@@ -389,14 +270,14 @@ const ComplianceTrainingCoverageCard = () => {
 
       {/* Chart Container */}
       <div className="relative flex items-center justify-center mb-6">
-        <motion.div 
+        <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.2, duration: 0.6 }}
           className="relative w-40 h-40 sm:w-48 sm:h-48"
         >
           <Doughnut data={chartData} options={chartOptions} />
-          
+
           {/* Center Stats */}
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <motion.div
@@ -405,8 +286,10 @@ const ComplianceTrainingCoverageCard = () => {
               transition={{ delay: 0.8, type: "spring", stiffness: 200 }}
               className="text-center"
             >
-              <div className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 
-                              dark:from-orange-400 dark:to-red-400 bg-clip-text text-transparent">
+              <div
+                className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-orange-600 to-red-600 
+                              dark:from-orange-400 dark:to-red-400 bg-clip-text text-transparent"
+              >
                 {completedVal}%
               </div>
               <div className="text-xs text-gray-500 dark:text-gray-400 font-medium">
@@ -425,10 +308,12 @@ const ComplianceTrainingCoverageCard = () => {
         className="space-y-3"
       >
         {/* Completed */}
-        <div className="flex items-center justify-between p-3 rounded-xl
+        <div
+          className="flex items-center justify-between p-3 rounded-xl
                         bg-gradient-to-r from-orange-50 to-orange-100/50
                         dark:from-orange-900/20 dark:to-orange-800/10
-                        border border-orange-200/50 dark:border-orange-700/30">
+                        border border-orange-200/50 dark:border-orange-700/30"
+        >
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-gradient-to-r from-orange-500 to-orange-600"></div>
@@ -449,10 +334,12 @@ const ComplianceTrainingCoverageCard = () => {
         </div>
 
         {/* Pending */}
-        <div className="flex items-center justify-between p-3 rounded-xl
+        <div
+          className="flex items-center justify-between p-3 rounded-xl
                         bg-gradient-to-r from-orange-50/50 to-orange-100/30
                         dark:from-orange-900/10 dark:to-orange-800/5
-                        border border-orange-200/30 dark:border-orange-700/20">
+                        border border-orange-200/30 dark:border-orange-700/20"
+        >
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-gradient-to-r from-orange-200 to-orange-300"></div>
@@ -475,11 +362,18 @@ const ComplianceTrainingCoverageCard = () => {
 
       {/* Click overlay to close dropdown */}
       {isDropdownOpen && (
-        <div 
-          className="fixed inset-0 z-40" 
+        <div
+          className="fixed inset-0 z-40"
           onClick={() => setIsDropdownOpen(false)}
         />
       )}
+      <DetailModal
+        open={drill.open}
+        loading={drill.loading}
+        rows={drill.rows}
+        onClose={drill.close}
+        title="Compliance Training Coverage– User List"
+      />
     </motion.div>
   );
 };

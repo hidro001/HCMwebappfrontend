@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import {
@@ -28,18 +27,18 @@ import { useEffect } from "react";
 // Simplified animation variants
 const fadeInVariants = {
   hidden: { opacity: 0 },
-  visible: { 
+  visible: {
     opacity: 1,
-    transition: { duration: 0.3 }
+    transition: { duration: 0.3 },
   },
 };
 
 const slideUpVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
-    transition: { duration: 0.3, ease: "easeOut" }
+    transition: { duration: 0.3, ease: "easeOut" },
   },
 };
 
@@ -62,7 +61,7 @@ function SuperAdminDashboard() {
             {/* Main Content Area - 3 columns on XL screens */}
             <div className="xl:col-span-3 space-y-8">
               {/* Stats Cards Section */}
-              <motion.section 
+              <motion.section
                 variants={slideUpVariants}
                 initial="hidden"
                 animate="visible"
@@ -132,9 +131,9 @@ function SuperAdminDashboard() {
                   <AttendanceCard />
                 </div>
 
-                <div className="transition-transform duration-200 hover:scale-[1.01]">
+                {/* <div className="transition-transform duration-200 hover:scale-[1.01]">
                   <AnnouncementCard />
-                </div>
+                </div> */}
               </div>
 
               {/* Quick Actions Panel */}
