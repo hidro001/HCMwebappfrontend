@@ -14,7 +14,7 @@ import { motion } from 'framer-motion';
 
 // Register Chart.js components
 ChartJS.register(
-  CategoryScale,
+  CategoryScale, 
   LinearScale,
   PointElement,
   LineElement,

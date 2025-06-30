@@ -1,20 +1,100 @@
-
-
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   HiOutlineClock,
   HiOutlineUserGroup,
   HiOutlineRefresh,
   HiOutlineDotsHorizontal,
-  // HiOutlineExclamationTriangle,
   HiOutlineCheckCircle,
   HiOutlineCalendar,
-  HiOutlineEye
+  HiOutlineEye,
 } from "react-icons/hi";
-import { HiOutlineExclamationTriangle } from 'react-icons/hi2';
-
+import { HiOutlineExclamationTriangle } from "react-icons/hi2";
+import SectionDetailModal from "./SectionDetailModal";
 import { getAttendanceData } from "../../../service/dashboardService";
+
+// Lazy Image Loading Component
+const LazyImage = React.memo(({ src, alt, className, fallback }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [hasError, setHasError] = useState(false);
+  const imgRef = useRef();
+
+  const handleLoad = useCallback(() => {
+    setIsLoaded(true);
+  }, []);
+
+  const handleError = useCallback(() => {
+    setHasError(true);
+    setIsLoaded(true);
+  }, []);
+
+  // Intersection Observer for lazy loading
+  useEffect(() => {
+    let observer;
+    if (imgRef.current && !isLoaded && !hasError) {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            /* start loading once the image enters the viewport */
+            imgRef.current.src = src;
+            observer.disconnect();
+          }
+        },
+        { threshold: 0.1, rootMargin: "50px" }
+      );
+      observer.observe(imgRef.current);
+    }
+    return () => observer && observer.disconnect();
+  }, [src, isLoaded, hasError]);
+
+  if (!src || hasError) {
+    return fallback;
+  }
+
+  return (
+    <div className="relative">
+      {!isLoaded && (
+        <div
+          className={`${className} bg-gray-200 dark:bg-gray-700 animate-pulse`}
+        />
+      )}
+      <img
+        ref={imgRef}
+        alt={alt}
+        className={`${className} ${
+          !isLoaded ? "opacity-0 absolute inset-0" : "opacity-100"
+        } transition-opacity duration-300`}
+        onLoad={handleLoad}
+        onError={handleError}
+        loading="lazy"
+        decoding="async"
+      />
+    </div>
+  );
+});
+
+// Intersection Observer Hook
+const useIntersectionObserver = (options = {}) => {
+  const [isIntersecting, setIsIntersecting] = useState(false);
+  const ref = useRef();
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsIntersecting(entry.isIntersecting);
+      },
+      { threshold: 0.1, ...options }
+    );
+
+    if (ref.current) {
+      observer.observe(ref.current);
+    }
+
+    return () => observer.disconnect();
+  }, [options]);
+
+  return [ref, isIntersecting];
+};
 
 /**
  * Returns today's date as a string in YYYY-MM-DD format.
@@ -28,34 +108,30 @@ function getTodayString() {
 }
 
 function AttendanceSummary() {
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState(null);
   const [sections, setSections] = useState([]);
+  const fetchedRef = useRef(false); // ⬅ NEW (track first fetch)
   const [loading, setLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const [containerRef, isVisible] = useIntersectionObserver();
 
   // Use today's date by default
-  const today = getTodayString();
+  // const today = getTodayString();
+  const [selectedDate, setSelectedDate] = useState(getTodayString());
 
-  const fetchAttendanceData = async () => {
+  const fetchAttendanceData = async (dateParam = selectedDate) => {
     setLoading(true);
     setErrorMsg("");
 
     try {
-      const res = await getAttendanceData(today);
+      // Limit to first 10 users per section for performance
+      const res = await getAttendanceData(dateParam, 10);
       if (res.success) {
-        const { whoIsIn, lateArrival, onTime } = res.data || {};
+        const { whoIsIn, lateArrival, onTime, absent } = res.data || {};
 
         const sectionsData = [
-          {
-            title: "Who is in?",
-            users: whoIsIn?.users?.map(mapUserToSection) || [],
-            more: whoIsIn?.more || 0,
-            icon: HiOutlineEye,
-            color: "emerald",
-            bgColor: "bg-emerald-100 dark:bg-emerald-900/30",
-            textColor: "text-emerald-600 dark:text-emerald-400",
-            borderColor: "border-emerald-200 dark:border-emerald-700"
-          },
           {
             title: "Late Arrival",
             users: lateArrival?.users?.map(mapUserToSection) || [],
@@ -64,7 +140,7 @@ function AttendanceSummary() {
             color: "amber",
             bgColor: "bg-amber-100 dark:bg-amber-900/30",
             textColor: "text-amber-600 dark:text-amber-400",
-            borderColor: "border-amber-200 dark:border-amber-700"
+            borderColor: "border-amber-200 dark:border-amber-700",
           },
           {
             title: "On Time",
@@ -74,7 +150,17 @@ function AttendanceSummary() {
             color: "green",
             bgColor: "bg-green-100 dark:bg-green-900/30",
             textColor: "text-green-600 dark:text-green-400",
-            borderColor: "border-green-200 dark:border-green-700"
+            borderColor: "border-green-200 dark:border-green-700",
+          },
+          {
+            title: "Absent",
+            users: absent?.users?.map(mapUserToSection) || [],
+            more: absent?.more || 0,
+            icon: HiOutlineEye, // any icon you prefer
+            color: "gray",
+            bgColor: "bg-gray-100 dark:bg-gray-900/30",
+            textColor: "text-gray-600 dark:text-gray-400",
+            borderColor: "border-gray-200 dark:border-gray-700",
           },
         ];
 
@@ -89,14 +175,17 @@ function AttendanceSummary() {
     }
   };
 
+  // Only fetch data when component is visible
   useEffect(() => {
-    fetchAttendanceData();
-  }, [today]);
+    if (isVisible && !fetchedRef.current) {
+      fetchAttendanceData(selectedDate).then(() => (fetchedRef.current = true));
+    }
+  }, [isVisible, selectedDate]);
 
   // Handle refresh with animation
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    await fetchAttendanceData();
+    await fetchAttendanceData(selectedDate);
     setTimeout(() => setIsRefreshing(false), 1000);
   };
 
@@ -104,9 +193,24 @@ function AttendanceSummary() {
    * Converts a single attendance document into an object
    * that matches the structure your UI code expects.
    */
-  const mapUserToSection = (attendanceDoc) => {
+  const mapUserToSection = useCallback((attendanceDoc) => {
     const avatar = attendanceDoc?.userData?.avatar || "";
     const fullName = attendanceDoc?.userData?.name || "Unknown User";
+    const loginTime = attendanceDoc?.login;
+    const logoutTime = attendanceDoc?.logout;
+    // Preload critical images in background
+    if (avatar) {
+      /* low‑quality thumb to cut bandwidth */
+      const lowRes = avatar.includes("/upload/")
+        ? avatar.replace("/upload/", "/upload/q_auto:eco,w_64/")
+        : avatar;
+      return {
+        img: lowRes,
+        name: fullName,
+        login: loginTime,
+        logout: logoutTime,
+      };
+    }
 
     if (avatar) {
       return { img: avatar, name: fullName };
@@ -116,45 +220,51 @@ function AttendanceSummary() {
       .split(" ")
       .map((part) => part[0])
       .join("")
-      .toUpperCase();
+      .toUpperCase()
+      .slice(0, 2); // Limit to 2 characters for better display
 
     return {
       initials,
       name: fullName,
-      type: "blue", // Updated to use a consistent color
+      type: "blue",
+
+      login: loginTime,
+      logout: logoutTime,
     };
-  };
+  }, []);
 
   // Check if ALL sections are empty (no user data)
   const hasNoData = sections.every((section) => section.users.length === 0);
-  const totalAttendees = sections.reduce((sum, section) => 
-    sum + section.users.length + section.more, 0
+  const totalAttendees = sections.reduce(
+    (sum, section) => sum + section.users.length + section.more,
+    0
   );
 
   // Animation variants
   const cardVariants = {
-    hidden: { 
-      opacity: 0, 
+    hidden: {
+      opacity: 0,
       y: 20,
-      scale: 0.95 
+      scale: 0.95,
     },
-    visible: { 
-      opacity: 1, 
+    visible: {
+      opacity: 1,
       y: 0,
       scale: 1,
       transition: {
         duration: 0.5,
-        ease: "easeOut"
-      }
+        ease: "easeOut",
+      },
     },
     hover: {
       y: -2,
-      boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+      boxShadow:
+        "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
       transition: {
         duration: 0.2,
-        ease: "easeInOut"
-      }
-    }
+        ease: "easeInOut",
+      },
+    },
   };
 
   const sectionVariants = {
@@ -165,9 +275,9 @@ function AttendanceSummary() {
       transition: {
         delay: i * 0.1,
         duration: 0.4,
-        ease: "easeOut"
-      }
-    })
+        ease: "easeOut",
+      },
+    }),
   };
 
   const avatarVariants = {
@@ -178,13 +288,13 @@ function AttendanceSummary() {
       transition: {
         delay: i * 0.05,
         duration: 0.3,
-        ease: "easeOut"
-      }
+        ease: "easeOut",
+      },
     }),
     hover: {
       scale: 1.1,
-      transition: { duration: 0.2 }
-    }
+      transition: { duration: 0.2 },
+    },
   };
 
   const iconVariants = {
@@ -193,15 +303,15 @@ function AttendanceSummary() {
       rotate: 5,
       transition: {
         duration: 0.2,
-        ease: "easeInOut"
-      }
+        ease: "easeInOut",
+      },
     },
     tap: {
       scale: 0.95,
       transition: {
-        duration: 0.1
-      }
-    }
+        duration: 0.1,
+      },
+    },
   };
 
   const refreshVariants = {
@@ -210,31 +320,33 @@ function AttendanceSummary() {
       transition: {
         duration: 1,
         ease: "linear",
-        repeat: isRefreshing ? Infinity : 0
-      }
-    }
+        repeat: isRefreshing ? Infinity : 0,
+      },
+    },
   };
 
   // Format today's date for display
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
+    return date.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
   return (
-    <motion.div 
+    <motion.div
+      ref={containerRef}
       className="w-full"
       variants={cardVariants}
       initial="hidden"
       animate="visible"
       whileHover="hover"
     >
-      <div className="
+      <div
+        className="
         flex flex-col
         rounded-xl lg:rounded-2xl
         bg-white dark:bg-gray-800
@@ -245,9 +357,10 @@ function AttendanceSummary() {
         transition-all duration-200
         h-full
         min-h-[300px]
-      ">
+      "
+      >
         {/* Header */}
-        <motion.div 
+        <motion.div
           className="flex items-center justify-between mb-4"
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -263,18 +376,28 @@ function AttendanceSummary() {
             </motion.div>
             <div>
               <h2 className="text-purple-600 dark:text-purple-400 font-semibold text-sm sm:text-base lg:text-lg">
-                Today's Attendance
+                Time Attendance Summary
               </h2>
               <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                {formatDate(today)}
+                {formatDate(selectedDate)}
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-1 sm:gap-2">
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => {
+                setSelectedDate(e.target.value);
+                fetchedRef.current = false; // force re‑fetch when visible
+              }}
+              className="hidden sm:block px-2 py-1 rounded-lg border border-gray-300 dark:border-gray-600
+                 text-xs bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200"
+            />
             {/* Total count badge */}
             <motion.div
-              className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-xs font-medium"
+              className="hidden sm:flex items-center gap-1 px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-xs font-medium text-gray-600 dark:text-gray-300"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.3, duration: 0.3 }}
@@ -282,7 +405,7 @@ function AttendanceSummary() {
               <HiOutlineUserGroup className="h-3 w-3" />
               {totalAttendees}
             </motion.div>
-            
+
             {/* Refresh button */}
             <motion.button
               className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
@@ -291,6 +414,7 @@ function AttendanceSummary() {
               whileTap="tap"
               onClick={handleRefresh}
               disabled={loading || isRefreshing}
+              aria-label="Refresh attendance data"
             >
               <motion.div
                 variants={refreshVariants}
@@ -299,13 +423,14 @@ function AttendanceSummary() {
                 <HiOutlineRefresh className="h-4 w-4 sm:h-5 sm:w-5" />
               </motion.div>
             </motion.button>
-            
+
             {/* Menu button */}
             <motion.button
               className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:text-gray-300 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
               variants={iconVariants}
               whileHover="hover"
               whileTap="tap"
+              aria-label="More options"
             >
               <HiOutlineDotsHorizontal className="h-4 w-4 sm:h-5 sm:w-5" />
             </motion.button>
@@ -313,7 +438,7 @@ function AttendanceSummary() {
         </motion.div>
 
         {/* Divider */}
-        <motion.div 
+        <motion.div
           className="h-px bg-gradient-to-r from-transparent via-gray-200 dark:via-gray-600 to-transparent mb-4"
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
@@ -334,9 +459,13 @@ function AttendanceSummary() {
                 <div className="flex items-center gap-3">
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                   >
-                    <HiOutlineRefresh className="h-6 w-6 text-purple-600" />
+                    <HiOutlineRefresh className="h-6 w-6 text-purple-600 dark:text-purple-400" />
                   </motion.div>
                   <span className="text-gray-600 dark:text-gray-300">
                     Loading attendance data...
@@ -355,7 +484,9 @@ function AttendanceSummary() {
               >
                 <div className="text-center">
                   <HiOutlineExclamationTriangle className="h-12 w-12 mx-auto mb-3 text-red-400" />
-                  <p className="text-red-500 font-medium">Error</p>
+                  <p className="text-red-500 dark:text-red-400 font-medium">
+                    Error
+                  </p>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                     {errorMsg}
                   </p>
@@ -372,7 +503,7 @@ function AttendanceSummary() {
                 exit={{ opacity: 0, scale: 0.95 }}
               >
                 <div className="text-center">
-                  <HiOutlineCalendar className="h-12 w-12 mx-auto mb-3 text-gray-400" />
+                  <HiOutlineCalendar className="h-12 w-12 mx-auto mb-3 text-gray-400 dark:text-gray-500" />
                   <p className="text-gray-500 dark:text-gray-300 text-lg font-semibold">
                     No Attendance Records
                   </p>
@@ -404,7 +535,9 @@ function AttendanceSummary() {
                     >
                       <div className="flex items-center gap-2">
                         <div className={`p-1.5 rounded-lg ${section.bgColor}`}>
-                          <IconComponent className={`h-4 w-4 ${section.textColor}`} />
+                          <IconComponent
+                            className={`h-4 w-4 ${section.textColor}`}
+                          />
                         </div>
                         <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                           {section.title}
@@ -415,7 +548,15 @@ function AttendanceSummary() {
                         </span>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                      <div
+                        className="flex flex-wrap items-center gap-2 sm:gap-3"
+                        onClick={() => {
+                          if (section.users.length === 0 && section.more === 0)
+                            return;
+                          setActiveSection(section);
+                          setDetailOpen(true);
+                        }}
+                      >
                         {section.users.map((user, userIndex) => (
                           <motion.div
                             key={userIndex}
@@ -427,14 +568,24 @@ function AttendanceSummary() {
                             className="relative group"
                           >
                             {user.img ? (
-                              <img
-                                loading="lazy"
+                              <LazyImage
                                 src={user.img}
                                 alt={user.name}
                                 className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover border-2 border-white dark:border-gray-600 shadow-sm"
+                                fallback={
+                                  <div className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded-full text-xs sm:text-sm font-medium bg-gradient-to-br from-blue-400 to-blue-600 text-white border-2 border-white dark:border-gray-600 shadow-sm">
+                                    {user.name
+                                      .split(" ")
+                                      .map((part) => part[0])
+                                      .join("")
+                                      .toUpperCase()
+                                      .slice(0, 2)}
+                                  </div>
+                                }
                               />
                             ) : (
-                              <div className={`
+                              <div
+                                className={`
                                 flex items-center justify-center
                                 w-8 h-8 sm:w-9 sm:h-9
                                 rounded-full
@@ -443,13 +594,14 @@ function AttendanceSummary() {
                                 text-white
                                 border-2 border-white dark:border-gray-600
                                 shadow-sm
-                              `}>
+                              `}
+                              >
                                 {user.initials}
                               </div>
                             )}
-                            
+
                             {/* Tooltip */}
-                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10">
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-10 shadow-lg">
                               {user.name}
                             </div>
                           </motion.div>
@@ -484,7 +636,7 @@ function AttendanceSummary() {
               exit={{ opacity: 0 }}
             >
               <motion.div
-                className="flex items-center gap-2 px-3 py-2 rounded-full bg-white dark:bg-gray-700 shadow-lg"
+                className="flex items-center gap-2 px-3 py-2 rounded-full bg-white dark:bg-gray-700 shadow-lg border border-gray-200 dark:border-gray-600"
                 initial={{ scale: 0.8, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
               >
@@ -492,14 +644,21 @@ function AttendanceSummary() {
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                 >
-                  <HiOutlineRefresh className="h-4 w-4 text-purple-600" />
+                  <HiOutlineRefresh className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                 </motion.div>
-                <span className="text-sm text-gray-600 dark:text-gray-300">Refreshing...</span>
+                <span className="text-sm text-gray-600 dark:text-gray-300">
+                  Refreshing...
+                </span>
               </motion.div>
             </motion.div>
           )}
         </div>
       </div>
+      <SectionDetailModal
+        isOpen={detailOpen}
+        onClose={() => setDetailOpen(false)}
+        section={activeSection}
+      />
     </motion.div>
   );
 }

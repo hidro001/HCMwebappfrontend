@@ -1,143 +1,28 @@
-
-// import React, { useEffect } from "react";
-// import { Doughnut } from "react-chartjs-2";
-// import "chart.js/auto";
-// import { motion } from "framer-motion";
-// import { toast } from "react-hot-toast";
-// import { FiChevronDown } from "react-icons/fi";
-// import useAadhaarCardStore from "../../../store/analytics dashboards cards/useAadhaarCardStore"; // Path to your store
-
-// const AadhaarCardChart = () => {
-//   // 1) Get store data & fetch action
-//   const { data, loading, error, fetchAadhaarStats } = useAadhaarCardStore();
-
-//   // 2) Fetch stats on mount
-//   useEffect(() => {
-//     fetchAadhaarStats();
-//   }, [fetchAadhaarStats]);
-
-//   // 3) Handle loading/error
-//   if (loading) return <div>Loading Aadhaar Stats...</div>;
-//   if (error) return <div>Error: {error}</div>;
-//   if (!data) return null; // no data yet
-
-//   // 4) Extract from the API response
-//   const {
-//     completeCount,
-//     pendingCount,
-//     completePercentage,
-//     pendingPercentage,
-//   } = data;
-
-//   // Build chart data from the store
-//   const chartData = {
-//     labels: ["Pending", "Complete"],
-//     datasets: [
-//       {
-//         label: "Aadhaar Card Status",
-//         data: [pendingCount, completeCount],
-//         backgroundColor: ["#3B82F6", "#F59E0B", "#10B981"], // first 2 are used
-//         hoverBackgroundColor: ["#2563EB", "#D97706", "#059669"],
-//         borderWidth: 0,
-//       },
-//     ],
-//   };
-
-//   const options = {
-//     cutout: "70%",
-//     rotation: -90,    // optional: starts the chart from the top
-//     circumference: 180, // optional: draw a semi-circle
-//     plugins: {
-//       legend: { display: false },
-//       tooltip: {
-//         bodyColor: "#fff",
-//         backgroundColor: "#111827",
-//         titleColor: "#F9FAFB",
-//         displayColors: false,
-//       },
-//     },
-//   };
-
-//   // 5) Render the chart & custom legend
-//   return (
-//     <motion.div
-//       initial={{ opacity: 0, y: 10 }}
-//       animate={{ opacity: 1, y: 0 }}
-//       transition={{ duration: 0.3 }}
-//       className="max-w-sm p-4 rounded-lg shadow-sm
-//                  bg-white dark:bg-slate-800
-//                  text-gray-900 dark:text-gray-100"
-//     >
-//       <div className="flex items-center justify-between mb-4">
-//         <h2 className="font-semibold text-lg">Valid Aadhaar Card</h2>
-//       </div>
-
-//       <div className="flex items-center justify-center">
-//         <div className="w-40 h-40">
-//           <Doughnut data={chartData} options={options} />
-//         </div>
-//       </div>
-
-//       {/* Custom legend */}
-//       <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
-//         {/* Pending */}
-//         <div className="flex flex-col items-center">
-//           <div className="flex items-center space-x-1">
-//             <span
-//               className="inline-block w-3 h-3 rounded-full"
-//               style={{ backgroundColor: "#3B82F6" }}
-//             />
-//             <span className="text-gray-500 dark:text-gray-400">Pending:</span>
-//           </div>
-//           <span className="font-bold mt-1">
-//             {pendingCount} ({pendingPercentage}%)
-//           </span>
-//         </div>
-
-//         {/* Complete */}
-//         <div className="flex flex-col items-center">
-//           <div className="flex items-center space-x-1">
-//             <span
-//               className="inline-block w-3 h-3 rounded-full"
-//               style={{ backgroundColor: "#F59E0B" }}
-//             />
-//             <span className="text-gray-500 dark:text-gray-400">Complete:</span>
-//           </div>
-//           <span className="font-bold mt-1">
-//             {completeCount} ({completePercentage}%)
-//           </span>
-//         </div>
-//       </div>
-//     </motion.div>
-//   );
-// };
-
-// export default AadhaarCardChart;
-
-
-
 import React, { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  FaIdCard, 
-  FaCheckCircle, 
-  FaClock, 
+import {
+  FaIdCard,
+  FaCheckCircle,
+  FaClock,
   FaSync,
   FaExpand,
   FaInfoCircle,
   FaShieldAlt,
-} from 'react-icons/fa';
-import { MdTrendingUp } from 'react-icons/md';
+} from "react-icons/fa";
+import { MdTrendingUp } from "react-icons/md";
 
-import { HiSparkles, HiFingerPrint } from 'react-icons/hi';
+import { HiSparkles, HiFingerPrint } from "react-icons/hi";
 import "chart.js/auto";
 import useAadhaarCardStore from "../../../store/analytics dashboards cards/useAadhaarCardStore";
+import DetailModal from "./BaseModal"; // ① add
+import { useDrilldown } from "./useDrillDown"; // ① add
 
 const AadhaarCardChart = () => {
   const { data, loading, error, fetchAadhaarStats } = useAadhaarCardStore();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const drill = useDrilldown();
 
   useEffect(() => {
     fetchAadhaarStats();
@@ -156,13 +41,10 @@ const AadhaarCardChart = () => {
     datasets: [
       {
         data: [completeCount, pendingCount],
-        backgroundColor: [
-          'rgba(59, 130, 246, 0.8)',
-          'rgba(245, 158, 11, 0.8)'
-        ],
+        backgroundColor: ["rgba(59, 130, 246, 0.8)", "rgba(245, 158, 11, 0.8)"],
         hoverBackgroundColor: [
-          'rgba(59, 130, 246, 1)',
-          'rgba(245, 158, 11, 1)'
+          "rgba(59, 130, 246, 1)",
+          "rgba(245, 158, 11, 1)",
         ],
         borderWidth: 0,
         borderRadius: 8,
@@ -172,31 +54,31 @@ const AadhaarCardChart = () => {
   };
 
   const chartOptions = {
-    cutout: '75%',
+    cutout: "75%",
     rotation: -90,
     circumference: 360, // Full circle for better visual impact
     plugins: {
       legend: { display: false },
       tooltip: {
         enabled: true,
-        backgroundColor: 'rgba(17, 24, 39, 0.95)',
-        titleColor: '#F9FAFB',
-        bodyColor: '#F9FAFB',
-        borderColor: 'rgba(59, 130, 246, 0.3)',
+        backgroundColor: "rgba(17, 24, 39, 0.95)",
+        titleColor: "#F9FAFB",
+        bodyColor: "#F9FAFB",
+        borderColor: "rgba(59, 130, 246, 0.3)",
         borderWidth: 1,
         cornerRadius: 12,
         displayColors: false,
-        titleFont: { size: 14, weight: 'bold' },
+        titleFont: { size: 14, weight: "bold" },
         bodyFont: { size: 13 },
         padding: 12,
         callbacks: {
-          label: function(context) {
+          label: function (context) {
             const label = context.label;
             const value = context.parsed;
             const percentage = ((value / totalCount) * 100).toFixed(1);
             return `${label}: ${value} cards (${percentage}%)`;
-          }
-        }
+          },
+        },
       },
     },
     maintainAspectRatio: false,
@@ -205,8 +87,8 @@ const AadhaarCardChart = () => {
       animateRotate: true,
       animateScale: true,
       duration: 1200,
-      easing: 'easeInOutQuart'
-    }
+      easing: "easeInOutQuart",
+    },
   };
 
   // Loading component
@@ -221,7 +103,9 @@ const AadhaarCardChart = () => {
         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
         className="w-8 h-8 border-3 border-blue-500 border-t-transparent rounded-full"
       />
-      <p className="text-sm text-gray-500 dark:text-gray-400">Loading Aadhaar stats...</p>
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        Loading Aadhaar stats...
+      </p>
     </motion.div>
   );
 
@@ -236,7 +120,9 @@ const AadhaarCardChart = () => {
         <FaInfoCircle className="w-6 h-6 text-red-500" />
       </div>
       <div className="text-center">
-        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">Failed to load data</p>
+        <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          Failed to load data
+        </p>
         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{error}</p>
         <motion.button
           whileHover={{ scale: 1.05 }}
@@ -267,21 +153,25 @@ const AadhaarCardChart = () => {
         shadow-lg hover:shadow-xl
         transition-all duration-300 ease-out
         overflow-hidden
-        ${isHovered ? 'transform scale-[1.02]' : ''}
+        ${isHovered ? "transform scale-[1.02]" : ""}
       `}
     >
       {/* Gradient Background Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-amber-500/5 pointer-events-none" />
-      
+
       {/* Header */}
       <div className="relative p-6 pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <motion.div
-              animate={isHovered ? { 
-                scale: [1, 1.1, 1],
-                rotate: [0, 5, -5, 0]
-              } : { scale: 1, rotate: 0 }}
+              animate={
+                isHovered
+                  ? {
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 5, -5, 0],
+                    }
+                  : { scale: 1, rotate: 0 }
+              }
               transition={{ duration: 0.6 }}
               className="w-10 h-10 bg-gradient-to-br from-blue-500 to-amber-500 rounded-xl flex items-center justify-center shadow-lg"
             >
@@ -297,7 +187,7 @@ const AadhaarCardChart = () => {
               </p>
             </div>
           </div>
-          
+
           <div className="flex items-center space-x-2">
             <motion.button
               whileHover={{ scale: 1.1 }}
@@ -316,7 +206,11 @@ const AadhaarCardChart = () => {
             >
               <motion.div
                 animate={loading ? { rotate: 360 } : { rotate: 0 }}
-                transition={{ duration: 1, repeat: loading ? Infinity : 0, ease: "linear" }}
+                transition={{
+                  duration: 1,
+                  repeat: loading ? Infinity : 0,
+                  ease: "linear",
+                }}
               >
                 <FaSync className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               </motion.div>
@@ -342,15 +236,22 @@ const AadhaarCardChart = () => {
             >
               {/* Chart Container */}
               <div className="relative">
-                <div className="relative w-full h-48 mb-6">
+                <div
+                  className="relative w-full h-48 mb-6"
+                  onClick={() => drill.fetch("aadhaar")}
+                >
                   <Doughnut data={chartData} options={chartOptions} />
-                  
+
                   {/* Center Statistics */}
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <motion.div
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
-                      transition={{ delay: 0.5, type: "spring", stiffness: 200 }}
+                      transition={{
+                        delay: 0.5,
+                        type: "spring",
+                        stiffness: 200,
+                      }}
                       className="text-center"
                     >
                       <p className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -444,13 +345,23 @@ const AadhaarCardChart = () => {
                         </h4>
                       </div>
                       <div className="space-y-2 text-xs text-gray-600 dark:text-gray-400">
-                        <p>• {completePercentage > 80 ? 'Excellent' : completePercentage > 60 ? 'Good' : 'Needs Attention'} verification rate at {completePercentage}%</p>
-                        <p>• {pendingCount} identity documents require processing</p>
+                        <p>
+                          •{" "}
+                          {completePercentage > 80
+                            ? "Excellent"
+                            : completePercentage > 60
+                            ? "Good"
+                            : "Needs Attention"}{" "}
+                          verification rate at {completePercentage}%
+                        </p>
+                        <p>
+                          • {pendingCount} identity documents require processing
+                        </p>
                         <p>• Average verification time: 24-48 hours</p>
                         <p>• Biometric matching accuracy: 99.7%</p>
                         <p>• Compliance with UIDAI standards maintained</p>
                       </div>
-                      
+
                       {/* Mini Progress Bar */}
                       <div className="mt-3">
                         <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
@@ -477,6 +388,13 @@ const AadhaarCardChart = () => {
 
       {/* Bottom Accent Line */}
       <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 via-indigo-500 to-amber-500" />
+      <DetailModal
+        open={drill.open}
+        onClose={drill.close}
+        loading={drill.loading}
+        rows={drill.rows}
+        title="Aadhaar – User List"
+      />
     </motion.div>
   );
 };
