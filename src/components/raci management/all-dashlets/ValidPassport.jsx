@@ -13,7 +13,7 @@ import { FaSync } from "react-icons/fa";
 
 import usePassportStore from "../../../store/analytics dashboards cards/usePassportStore"; // Path to your Zustand store
 import DetailModal from "./BaseModal"; // ① add
-import { useDrilldown } from "./useDrillDown"; // ① add
+import { useDrilldown } from "./useDrilldown"; // ① add
 
 const PassportValidityCard = () => {
   const { data, loading, error, fetchPassportValidity } = usePassportStore();

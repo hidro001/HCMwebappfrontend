@@ -13,7 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronDown } from "react-icons/fa";
 import useAbsenteeismStore from "../../../store/analytics dashboards cards/useAbsenteeismStore";
 import DetailModal from "./BaseModal";
-import { useDrilldown } from "./useDrillDown";
+import { useDrilldown } from "./useDrilldown";
 
 ChartJS.register(
   CategoryScale,

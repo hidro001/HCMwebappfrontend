@@ -15,7 +15,7 @@ import { HiSparkles, HiLightningBolt } from "react-icons/hi";
 import "chart.js/auto";
 import usePanCardStatsStore from "../../../store/analytics dashboards cards/usePanCardStatsStore";
 import DetailModal from "./BaseModal"; // ① add
-import { useDrilldown } from "./useDrillDown"; // ① add
+import { useDrilldown } from "./useDrilldown"; // ① add
 
 const PanCardChart = () => {
   const { data, loading, error, fetchPanCardStats } = usePanCardStatsStore();
