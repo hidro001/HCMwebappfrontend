@@ -91,7 +91,7 @@ export default function App() {
             "text-gray-900 dark:text-white bg-white dark:bg-[#1e293b] border dark:border-gray-700",
           style: {
             zIndex: 9999999,
-            background: "transparent",
+         
             boxShadow: "none",
           },
         }}

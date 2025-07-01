@@ -188,7 +188,7 @@ const router = createBrowserRouter([
       {
         path: "manage-tickets",
         element: <ManageTicketsPage />,
-         handle: { helpKey: "ManageTickets" },
+        handle: { helpKey: "ManageTickets" },
       },
       {
         path: "all-tickets",
@@ -198,8 +198,7 @@ const router = createBrowserRouter([
       {
         path: "raise-ticket",
         element: <RaiseTicketsPage />,
-         handle: { helpKey: "RaiseTickets" },
-
+        handle: { helpKey: "RaiseTickets" },
       },
       {
         path: "posh-manage",
@@ -563,6 +562,11 @@ const router = createBrowserRouter([
         path: "all-employess-ratings-aggregate",
         element: <AllEmployeeRatingsPageRazor />,
       },
+      {
+        path: "all-performance-analytics",
+        element: <SuperAdminDashboardAnlyticsPage />,
+        handle: { helpKey: " " },
+      },
 
       //registration
 
@@ -582,6 +586,11 @@ const router = createBrowserRouter([
       {
         path: "registration/review-employee/:empid",
         element: <ManagerTabOverview />,
+      },
+      {
+        path: "performance-analytics",
+        element: <ManagerDashboardPage />,
+        handle: { helpKey: " " },
       },
     ],
   },
