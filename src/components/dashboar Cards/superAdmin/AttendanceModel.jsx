@@ -1,5 +1,401 @@
 
 
+// import React, { useState } from "react";
+// import BaseModal from "../../common/BaseModal"; 
+// import { motion, AnimatePresence } from "framer-motion";
+// import {
+//   HiCheckCircle,
+//   HiXCircle,
+//   HiMagnifyingGlass,
+//   HiXMark,
+//   HiUsers,
+//   HiSparkles,
+//   HiUserMinus,
+//   HiLightBulb,
+// } from "react-icons/hi2";
+// import { FaUserCheck, FaUserTimes } from "react-icons/fa";
+
+// export default function AttendanceModal({
+//   isOpen,
+//   onRequestClose,
+//   attendanceDetailsLoading,
+//   loggedInUsers,
+//   notLoggedInUsers,
+// }) {
+//   const [searchLoggedIn, setSearchLoggedIn] = useState("");
+//   const [searchNotLoggedIn, setSearchNotLoggedIn] = useState("");
+//   const [activeTab, setActiveTab] = useState("present");
+
+//   const filteredLoggedIn = loggedInUsers.filter((u) =>
+//     `${u.first_Name} ${u.last_Name}`
+//       .toLowerCase()
+//       .includes(searchLoggedIn.toLowerCase())
+//   );
+//   const filteredNotLoggedIn = notLoggedInUsers.filter((u) =>
+//     `${u.first_Name} ${u.last_Name}`
+//       .toLowerCase()
+//       .includes(searchNotLoggedIn.toLowerCase())
+//   );
+
+//   const modalVariants = {
+//     hidden: { opacity: 0, scale: 0.8, y: 50 },
+//     visible: {
+//       opacity: 1,
+//       scale: 1,
+//       y: 0,
+//       transition: { duration: 0.3, ease: "easeOut" },
+//     },
+//     exit: {
+//       opacity: 0,
+//       scale: 0.8,
+//       y: 50,
+//       transition: { duration: 0.2, ease: "easeIn" },
+//     },
+//   };
+//   const tabVariants = {
+//     hidden: { opacity: 0, x: 20 },
+//     visible: { opacity: 1, x: 0, transition: { duration: 0.3 } },
+//   };
+
+//   return (
+//     <AnimatePresence>
+//       {isOpen && (
+//         <BaseModal isOpen={isOpen} onClose={onRequestClose}>
+//           <motion.div
+//             variants={modalVariants}
+//             initial="hidden"
+//             animate="visible"
+//             exit="exit"
+//             className="relative w-[95vw] sm:w-11/12 max-w-2xl h-[95vh] sm:max-h-[90vh]
+//                        bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl
+//                        rounded-2xl sm:rounded-3xl border border-gray-200/50 dark:border-gray-700/50
+//                        shadow-2xl shadow-black/20
+//                        flex flex-col overflow-hidden"
+//             onClick={(e) => e.stopPropagation()}
+//           >
+//             {/* Decorative Gradients */}
+//             <div className="absolute top-0 left-0 w-full h-20 sm:h-32 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 pointer-events-none" />
+//             <div className="absolute bottom-0 right-0 w-32 sm:w-64 h-32 sm:h-64 bg-gradient-to-tl from-green-500/5 via-blue-500/5 to-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+
+//             {/* Header */}
+//             <div className="flex-shrink-0 p-4 sm:p-6 lg:p-8 border-b border-gray-200/50 dark:border-gray-700/50">
+//               <div className="flex items-center justify-between">
+//                 <div className="flex items-center gap-2 sm:gap-4">
+//                   <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl sm:rounded-2xl shadow-lg">
+//                     <HiUsers className="text-lg sm:text-2xl text-white" />
+//                   </div>
+//                   <div>
+//                     <h2 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+//                       Attendance Overview
+//                     </h2>
+//                     <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
+//                       Real-time employee presence tracking
+//                     </p>
+//                   </div>
+//                 </div>
+//                 <motion.button
+//                   onClick={onRequestClose}
+//                   className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-gray-100/80 dark:bg-gray-800/80 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 border border-gray-200/50 dark:border-gray-700/50 transition-all duration-200"
+//                   whileHover={{ scale: 1.05 }}
+//                   whileTap={{ scale: 0.95 }}
+//                 >
+//                   <HiXMark className="text-lg sm:text-xl text-gray-600 dark:text-gray-400" />
+//                 </motion.button>
+//               </div>
+
+//               {/* Stats Bar */}
+//               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-32 mt-20 sm:mt-20 ">
+//                 <StatCard
+//                   icon={
+//                     <HiCheckCircle className="text-green-600 dark:text-green-400" />
+//                   }
+//                   label={`${loggedInUsers.length} Present`}
+//                   bg="bg-green-50 dark:bg-green-900/20"
+//                   border="border-green-200/50 dark:border-green-800/50"
+//                   text="text-green-700 dark:text-green-300"
+//                 />
+//                 <StatCard
+//                   icon={
+//                     <HiXCircle className="text-red-600 dark:text-red-400" />
+//                   }
+//                   label={`${notLoggedInUsers.length} Absent`}
+//                   bg="bg-red-50 dark:bg-red-900/20"
+//                   border="border-red-200/50 dark:border-red-800/50"
+//                   text="text-red-700 dark:text-red-300"
+//                 />
+//                 <StatCard
+//                   icon={
+//                     <HiSparkles className="text-blue-600 dark:text-blue-400" />
+//                   }
+//                   label={`${(
+//                     (loggedInUsers.length /
+//                       (loggedInUsers.length + notLoggedInUsers.length)) *
+//                     100
+//                   ).toFixed(1)}% Rate`}
+//                   bg="bg-blue-50 dark:bg-blue-900/20"
+//                   border="border-blue-200/50 dark:border-blue-800/50"
+//                   text="text-blue-700 dark:text-blue-300"
+//                 />
+//               </div>
+//             </div>
+
+//             {/* Tabs */}
+//             <div className="flex-shrink-0 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
+//               <div className="flex gap-1 sm:gap-2 p-1 bg-gray-100/80 dark:bg-gray-800/80 rounded-xl sm:rounded-2xl border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm">
+//                 <TabButton
+//                   active={activeTab === "present"}
+//                   onClick={() => setActiveTab("present")}
+//                   icon={<FaUserCheck className="text-sm sm:text-lg" />}
+//                   label={`Present (${filteredLoggedIn.length})`}
+//                   activeStyles="bg-white dark:bg-gray-700 text-green-700 dark:text-green-300 shadow-lg border border-green-200/50 dark:border-green-800/50"
+//                   inactiveStyles="text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400"
+//                 />
+//                 <TabButton
+//                   active={activeTab === "absent"}
+//                   onClick={() => setActiveTab("absent")}
+//                   icon={<FaUserTimes className="text-sm sm:text-lg" />}
+//                   label={`Absent (${filteredNotLoggedIn.length})`}
+//                   activeStyles="bg-white dark:bg-gray-700 text-red-700 dark:text-red-300 shadow-lg border border-red-200/50 dark:border-red-800/50"
+//                   inactiveStyles="text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
+//                 />
+//               </div>
+//             </div>
+
+//             {/* Content - Fixed height with proper scrolling */}
+//             <div className="flex-1 overflow-hidden p-4 sm:p-6 lg:p-8">
+//               {attendanceDetailsLoading ? (
+//                 <LoadingState />
+//               ) : (
+//                 <AnimatePresence mode="wait">
+//                   <motion.div
+//                     key={activeTab}
+//                     variants={tabVariants}
+//                     initial="hidden"
+//                     animate="visible"
+//                     exit="hidden"
+//                     className="h-full flex flex-col"
+//                   >
+//                     <SearchBar
+//                       value={
+//                         activeTab === "present"
+//                           ? searchLoggedIn
+//                           : searchNotLoggedIn
+//                       }
+//                       onChange={(e) =>
+//                         activeTab === "present"
+//                           ? setSearchLoggedIn(e.target.value)
+//                           : setSearchNotLoggedIn(e.target.value)
+//                       }
+//                       placeholder={`Search ${activeTab} employees...`}
+//                     />
+//                     {/* Fixed scrollable container */}
+//                     <div className="flex-1 min-h-0 overflow-hidden">
+//                       <AttendanceList
+//                         users={
+//                           activeTab === "present"
+//                             ? filteredLoggedIn
+//                             : filteredNotLoggedIn
+//                         }
+//                         type={activeTab}
+//                       />
+//                     </div>
+//                   </motion.div>
+//                 </AnimatePresence>
+//               )}
+//             </div>
+//           </motion.div>
+//         </BaseModal>
+//       )}
+//     </AnimatePresence>
+//   );
+// }
+
+// // --- Helpers ---
+// function StatCard({ icon, label, bg, border, text }) {
+//   return (
+//     <div
+//       className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2 ${bg} rounded-lg sm:rounded-xl ${border} flex-1 sm:flex-none`}
+//     >
+//       {icon}
+//       <span className={`text-xs sm:text-sm font-medium ${text}`}>{label}</span>
+//     </div>
+//   );
+// }
+
+// function TabButton({
+//   active,
+//   onClick,
+//   icon,
+//   label,
+//   activeStyles,
+//   inactiveStyles,
+// }) {
+//   return (
+//     <motion.button
+//       onClick={onClick}
+//       className={`flex-1 flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all duration-200 text-xs sm:text-sm lg:text-base ${
+//         active ? activeStyles : inactiveStyles
+//       }`}
+//       whileHover={{ scale: 1.02 }}
+//       whileTap={{ scale: 0.98 }}
+//     >
+//       {icon}
+//       <span className="hidden sm:inline">{label}</span>
+//       <span className="sm:hidden">{label.split(' ')[0]}</span>
+//     </motion.button>
+//   );
+// }
+
+// function SearchBar({ value, onChange, placeholder }) {
+//   return (
+//     <div className="mb-4 sm:mb-6 flex-shrink-0">
+//       <div className="relative w-full sm:max-w-md">
+//         <HiMagnifyingGlass className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 text-base sm:text-lg" />
+//         <input
+//           type="text"
+//           placeholder={placeholder}
+//           value={value}
+//           onChange={onChange}
+//           className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-4 bg-white/80 dark:bg-gray-800/80 border border-gray-200/50 dark:border-gray-700/50 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 backdrop-blur-sm transition-all duration-200 text-sm sm:text-base"
+//         />
+//       </div>
+//     </div>
+//   );
+// }
+
+// function LoadingState() {
+//   return (
+//     <motion.div
+//       className="flex flex-col items-center justify-center h-full"
+//       initial={{ opacity: 0 }}
+//       animate={{ opacity: 1 }}
+//     >
+//       <div className="relative">
+//         <div className="w-12 sm:w-16 h-12 sm:h-16 border-4 border-blue-200 dark:border-blue-800 rounded-full animate-spin border-t-blue-600 dark:border-t-blue-400"></div>
+//         <HiLightBulb className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-600 dark:text-blue-400 text-lg sm:text-xl" />
+//       </div>
+//       <p className="text-gray-600 dark:text-gray-400 mt-4 font-medium text-sm sm:text-base">
+//         Loading attendance data...
+//       </p>
+//     </motion.div>
+//   );
+// }
+
+// function AttendanceList({ users, type }) {
+//   const isPresent = type === "present";
+
+//   const containerVariants = {
+//     hidden: { opacity: 0 },
+//     visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
+//   };
+//   const itemVariants = {
+//     hidden: { opacity: 0, y: 20 },
+//     visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+//   };
+
+//   if (users.length === 0) {
+//     return (
+//       <motion.div
+//         className="flex flex-col items-center justify-center h-full text-center p-4"
+//         initial={{ opacity: 0 }}
+//         animate={{ opacity: 1 }}
+//       >
+//         <div
+//           className={`p-4 sm:p-6 rounded-2xl sm:rounded-3xl ${
+//             isPresent
+//               ? "bg-green-50 dark:bg-green-900/20"
+//               : "bg-red-50 dark:bg-red-900/20"
+//           }`}
+//         >
+//           {isPresent ? (
+//             <FaUserCheck className="text-4xl sm:text-6xl text-green-400 dark:text-green-500" />
+//           ) : (
+//             <HiUserMinus className="text-4xl sm:text-6xl text-red-400 dark:text-red-500" />
+//           )}
+//         </div>
+//         <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 mt-4">
+//           {isPresent
+//             ? "No one has checked in yet"
+//             : "Everyone is present today!"}
+//         </h3>
+//         <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm sm:text-base">
+//           {isPresent
+//             ? "Employees will appear here once they check in"
+//             : "Great attendance today!"}
+//         </p>
+//       </motion.div>
+//     );
+//   }
+
+//   return (
+//     <div className="h-full flex flex-col">
+//       <motion.div
+//         className="flex-1 overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500 pr-2 space-y-2 sm:space-y-3"
+//         variants={containerVariants}
+//         initial="hidden"
+//         animate="visible"
+//         style={{
+//           scrollbarWidth: 'thin',
+//           scrollbarColor: '#cbd5e1 transparent',
+//         }}
+//       >
+//         {users.map((user, idx) => (
+//           <motion.div
+//             key={user._id}
+//             variants={itemVariants}
+//             className={`p-4 sm:p-6 rounded-xl sm:rounded-2xl border backdrop-blur-sm transition-all duration-200 hover:scale-[1.01] sm:hover:scale-[1.02] cursor-pointer group ${
+//               isPresent
+//                 ? "bg-green-50/80 dark:bg-green-900/20 border-green-200/50 dark:border-green-800/50 hover:bg-green-100/80 dark:hover:bg-green-900/30"
+//                 : "bg-red-50/80 dark:bg-red-900/20 border-red-200/50 dark:border-red-800/50 hover:bg-red-100/80 dark:hover:bg-red-900/30"
+//             }`}
+//             whileHover={{ y: -1 }}
+//           >
+//             <div className="flex items-center gap-3 sm:gap-4">
+//               <div
+//                 className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${
+//                   isPresent
+//                     ? "bg-green-100 dark:bg-green-800/50"
+//                     : "bg-red-100 dark:bg-red-800/50"
+//                 }`}
+//               >
+//                 {isPresent ? (
+//                   <HiCheckCircle className="text-lg sm:text-xl text-green-600 dark:text-green-400" />
+//                 ) : (
+//                   <HiXCircle className="text-lg sm:text-xl text-red-600 dark:text-red-400" />
+//                 )}
+//               </div>
+//               <div className="flex-1 min-w-0">
+//                 <h4 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors text-sm sm:text-base truncate">
+//                   {user.first_Name} {user.last_Name}
+//                 </h4>
+//                 <p
+//                   className={`text-xs sm:text-sm mt-1 ${
+//                     isPresent
+//                       ? "text-green-600 dark:text-green-400"
+//                       : "text-red-600 dark:text-red-400"
+//                   }`}
+//                 >
+//                   {isPresent ? "Currently present" : "Not checked in"}
+//                 </p>
+//               </div>
+//               <div
+//                 className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium flex-shrink-0 ${
+//                   isPresent
+//                     ? "bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200"
+//                     : "bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200"
+//                 }`}
+//               >
+//                 {isPresent ? "Present" : "Absent"}
+//               </div>
+//             </div>
+//           </motion.div>
+//         ))}
+//       </motion.div>
+//     </div>
+//   );
+// }
+
+
 import React, { useState } from "react";
 import BaseModal from "../../common/BaseModal"; 
 import { motion, AnimatePresence } from "framer-motion";
@@ -27,12 +423,12 @@ export default function AttendanceModal({
   const [activeTab, setActiveTab] = useState("present");
 
   const filteredLoggedIn = loggedInUsers.filter((u) =>
-    `${u.first_Name} ${u.last_Name}`
+    `${u.first_Name} ${u.last_Name} ${u.employee_Id} ${u.department}`
       .toLowerCase()
       .includes(searchLoggedIn.toLowerCase())
   );
   const filteredNotLoggedIn = notLoggedInUsers.filter((u) =>
-    `${u.first_Name} ${u.last_Name}`
+    `${u.first_Name} ${u.last_Name} ${u.employee_Id} ${u.department}`
       .toLowerCase()
       .includes(searchNotLoggedIn.toLowerCase())
   );
@@ -74,37 +470,37 @@ export default function AttendanceModal({
             onClick={(e) => e.stopPropagation()}
           >
             {/* Decorative Gradients */}
-            <div className="absolute top-0 left-0 w-full h-20 sm:h-32 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-32 sm:w-64 h-32 sm:h-64 bg-gradient-to-tl from-green-500/5 via-blue-500/5 to-purple-500/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 left-0 w-full h-16 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-green-500/5 via-blue-500/5 to-purple-500/5 rounded-full blur-3xl pointer-events-none" />
 
-            {/* Header */}
-            <div className="flex-shrink-0 p-4 sm:p-6 lg:p-8 border-b border-gray-200/50 dark:border-gray-700/50">
+            {/* Compact Header */}
+            <div className="flex-shrink-0 p-3 sm:p-4 border-b border-gray-200/50 dark:border-gray-700/50">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 sm:gap-4">
-                  <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl sm:rounded-2xl shadow-lg">
-                    <HiUsers className="text-lg sm:text-2xl text-white" />
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className="p-1.5 sm:p-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg sm:rounded-xl shadow-lg">
+                    <HiUsers className="text-base sm:text-lg text-white" />
                   </div>
                   <div>
-                    <h2 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
+                    <h2 className="text-base sm:text-lg font-bold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-300 bg-clip-text text-transparent">
                       Attendance Overview
                     </h2>
-                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1 hidden sm:block">
-                      Real-time employee presence tracking
+                    <p className="text-xs text-gray-500 dark:text-gray-400 hidden sm:block">
+                      Real-time employee tracking
                     </p>
                   </div>
                 </div>
                 <motion.button
                   onClick={onRequestClose}
-                  className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-gray-100/80 dark:bg-gray-800/80 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 border border-gray-200/50 dark:border-gray-700/50 transition-all duration-200"
+                  className="p-1.5 sm:p-2 rounded-lg sm:rounded-xl bg-gray-100/80 dark:bg-gray-800/80 hover:bg-gray-200/80 dark:hover:bg-gray-700/80 border border-gray-200/50 dark:border-gray-700/50 transition-all duration-200"
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <HiXMark className="text-lg sm:text-xl text-gray-600 dark:text-gray-400" />
+                  <HiXMark className="text-base sm:text-lg text-gray-600 dark:text-gray-400" />
                 </motion.button>
               </div>
 
-              {/* Stats Bar */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-32 mt-20 sm:mt-20 ">
+              {/* Compact Stats Bar */}
+              <div className="flex items-center gap-2 sm:gap-4 mt-3">
                 <StatCard
                   icon={
                     <HiCheckCircle className="text-green-600 dark:text-green-400" />
@@ -131,7 +527,7 @@ export default function AttendanceModal({
                     (loggedInUsers.length /
                       (loggedInUsers.length + notLoggedInUsers.length)) *
                     100
-                  ).toFixed(1)}% Rate`}
+                  ).toFixed(1)}%`}
                   bg="bg-blue-50 dark:bg-blue-900/20"
                   border="border-blue-200/50 dark:border-blue-800/50"
                   text="text-blue-700 dark:text-blue-300"
@@ -139,13 +535,13 @@ export default function AttendanceModal({
               </div>
             </div>
 
-            {/* Tabs */}
-            <div className="flex-shrink-0 px-4 sm:px-6 lg:px-8 pt-4 sm:pt-6">
-              <div className="flex gap-1 sm:gap-2 p-1 bg-gray-100/80 dark:bg-gray-800/80 rounded-xl sm:rounded-2xl border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm">
+            {/* Compact Tabs */}
+            <div className="flex-shrink-0 px-3 sm:px-4 pt-3">
+              <div className="flex gap-1 p-1 bg-gray-100/80 dark:bg-gray-800/80 rounded-lg sm:rounded-xl border border-gray-200/50 dark:border-gray-700/50 backdrop-blur-sm">
                 <TabButton
                   active={activeTab === "present"}
                   onClick={() => setActiveTab("present")}
-                  icon={<FaUserCheck className="text-sm sm:text-lg" />}
+                  icon={<FaUserCheck className="text-xs sm:text-sm" />}
                   label={`Present (${filteredLoggedIn.length})`}
                   activeStyles="bg-white dark:bg-gray-700 text-green-700 dark:text-green-300 shadow-lg border border-green-200/50 dark:border-green-800/50"
                   inactiveStyles="text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400"
@@ -153,7 +549,7 @@ export default function AttendanceModal({
                 <TabButton
                   active={activeTab === "absent"}
                   onClick={() => setActiveTab("absent")}
-                  icon={<FaUserTimes className="text-sm sm:text-lg" />}
+                  icon={<FaUserTimes className="text-xs sm:text-sm" />}
                   label={`Absent (${filteredNotLoggedIn.length})`}
                   activeStyles="bg-white dark:bg-gray-700 text-red-700 dark:text-red-300 shadow-lg border border-red-200/50 dark:border-red-800/50"
                   inactiveStyles="text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400"
@@ -161,8 +557,8 @@ export default function AttendanceModal({
               </div>
             </div>
 
-            {/* Content - Fixed height with proper scrolling */}
-            <div className="flex-1 overflow-hidden p-4 sm:p-6 lg:p-8">
+            {/* Content - Maximized height with proper scrolling */}
+            <div className="flex-1 overflow-hidden p-3 sm:p-4">
               {attendanceDetailsLoading ? (
                 <LoadingState />
               ) : (
@@ -214,10 +610,10 @@ export default function AttendanceModal({
 function StatCard({ icon, label, bg, border, text }) {
   return (
     <div
-      className={`flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2 ${bg} rounded-lg sm:rounded-xl ${border} flex-1 sm:flex-none`}
+      className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 ${bg} rounded-lg ${border} flex-1`}
     >
-      {icon}
-      <span className={`text-xs sm:text-sm font-medium ${text}`}>{label}</span>
+      <div className="text-sm sm:text-base">{icon}</div>
+      <span className={`text-xs sm:text-xs font-medium ${text}`}>{label}</span>
     </div>
   );
 }
@@ -233,7 +629,7 @@ function TabButton({
   return (
     <motion.button
       onClick={onClick}
-      className={`flex-1 flex items-center justify-center gap-2 sm:gap-3 px-3 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-all duration-200 text-xs sm:text-sm lg:text-base ${
+      className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 px-2 sm:px-4 py-1.5 sm:py-2 rounded-md sm:rounded-lg font-medium transition-all duration-200 text-xs sm:text-sm ${
         active ? activeStyles : inactiveStyles
       }`}
       whileHover={{ scale: 1.02 }}
@@ -248,15 +644,15 @@ function TabButton({
 
 function SearchBar({ value, onChange, placeholder }) {
   return (
-    <div className="mb-4 sm:mb-6 flex-shrink-0">
+    <div className="mb-3 flex-shrink-0">
       <div className="relative w-full sm:max-w-md">
-        <HiMagnifyingGlass className="absolute left-3 sm:left-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 text-base sm:text-lg" />
+        <HiMagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 text-sm sm:text-base" />
         <input
           type="text"
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          className="w-full pl-10 sm:pl-12 pr-4 py-3 sm:py-4 bg-white/80 dark:bg-gray-800/80 border border-gray-200/50 dark:border-gray-700/50 rounded-xl sm:rounded-2xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 backdrop-blur-sm transition-all duration-200 text-sm sm:text-base"
+          className="w-full pl-9 sm:pl-10 pr-3 py-2 sm:py-2.5 bg-white/80 dark:bg-gray-800/80 border border-gray-200/50 dark:border-gray-700/50 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/50 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 backdrop-blur-sm transition-all duration-200 text-xs sm:text-sm"
         />
       </div>
     </div>
@@ -271,10 +667,10 @@ function LoadingState() {
       animate={{ opacity: 1 }}
     >
       <div className="relative">
-        <div className="w-12 sm:w-16 h-12 sm:h-16 border-4 border-blue-200 dark:border-blue-800 rounded-full animate-spin border-t-blue-600 dark:border-t-blue-400"></div>
-        <HiLightBulb className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-600 dark:text-blue-400 text-lg sm:text-xl" />
+        <div className="w-10 sm:w-12 h-10 sm:h-12 border-3 border-blue-200 dark:border-blue-800 rounded-full animate-spin border-t-blue-600 dark:border-t-blue-400"></div>
+        <HiLightBulb className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-blue-600 dark:text-blue-400 text-sm sm:text-base" />
       </div>
-      <p className="text-gray-600 dark:text-gray-400 mt-4 font-medium text-sm sm:text-base">
+      <p className="text-gray-600 dark:text-gray-400 mt-3 font-medium text-xs sm:text-sm">
         Loading attendance data...
       </p>
     </motion.div>
@@ -286,11 +682,11 @@ function AttendanceList({ users, type }) {
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
+    visible: { opacity: 1, transition: { staggerChildren: 0.03 } },
   };
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.2 } },
   };
 
   if (users.length === 0) {
@@ -301,24 +697,24 @@ function AttendanceList({ users, type }) {
         animate={{ opacity: 1 }}
       >
         <div
-          className={`p-4 sm:p-6 rounded-2xl sm:rounded-3xl ${
+          className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl ${
             isPresent
               ? "bg-green-50 dark:bg-green-900/20"
               : "bg-red-50 dark:bg-red-900/20"
           }`}
         >
           {isPresent ? (
-            <FaUserCheck className="text-4xl sm:text-6xl text-green-400 dark:text-green-500" />
+            <FaUserCheck className="text-2xl sm:text-4xl text-green-400 dark:text-green-500" />
           ) : (
-            <HiUserMinus className="text-4xl sm:text-6xl text-red-400 dark:text-red-500" />
+            <HiUserMinus className="text-2xl sm:text-4xl text-red-400 dark:text-red-500" />
           )}
         </div>
-        <h3 className="text-lg sm:text-xl font-semibold text-gray-800 dark:text-gray-200 mt-4">
+        <h3 className="text-sm sm:text-lg font-semibold text-gray-800 dark:text-gray-200 mt-3">
           {isPresent
             ? "No one has checked in yet"
             : "Everyone is present today!"}
         </h3>
-        <p className="text-gray-500 dark:text-gray-400 mt-2 text-sm sm:text-base">
+        <p className="text-gray-500 dark:text-gray-400 mt-1 text-xs sm:text-sm">
           {isPresent
             ? "Employees will appear here once they check in"
             : "Great attendance today!"}
@@ -330,7 +726,7 @@ function AttendanceList({ users, type }) {
   return (
     <div className="h-full flex flex-col">
       <motion.div
-        className="flex-1 overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500 pr-2 space-y-2 sm:space-y-3"
+        className="flex-1 overflow-y-auto overscroll-contain scrollbar-thin scrollbar-thumb-gray-300 dark:scrollbar-thumb-gray-600 scrollbar-track-transparent hover:scrollbar-thumb-gray-400 dark:hover:scrollbar-thumb-gray-500 pr-2 space-y-2"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -343,43 +739,76 @@ function AttendanceList({ users, type }) {
           <motion.div
             key={user._id}
             variants={itemVariants}
-            className={`p-4 sm:p-6 rounded-xl sm:rounded-2xl border backdrop-blur-sm transition-all duration-200 hover:scale-[1.01] sm:hover:scale-[1.02] cursor-pointer group ${
+            className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border backdrop-blur-sm transition-all duration-200 hover:scale-[1.01] cursor-pointer group ${
               isPresent
                 ? "bg-green-50/80 dark:bg-green-900/20 border-green-200/50 dark:border-green-800/50 hover:bg-green-100/80 dark:hover:bg-green-900/30"
                 : "bg-red-50/80 dark:bg-red-900/20 border-red-200/50 dark:border-red-800/50 hover:bg-red-100/80 dark:hover:bg-red-900/30"
             }`}
             whileHover={{ y: -1 }}
           >
-            <div className="flex items-center gap-3 sm:gap-4">
+            <div className="flex items-center gap-3">
+              {/* User Avatar */}
+              <div className="flex-shrink-0">
+                {user.user_Avatar ? (
+                  <img
+                    src={user.user_Avatar}
+                    alt={`${user.first_Name} ${user.last_Name}`}
+                    className="w-8 h-8 sm:w-10 sm:h-10 rounded-full object-cover border-2 border-white dark:border-gray-700 shadow-sm"
+                  />
+                ) : (
+                  <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-semibold text-xs sm:text-sm ${
+                    isPresent
+                      ? "bg-green-500 dark:bg-green-600"
+                      : "bg-red-500 dark:bg-red-600"
+                  }`}>
+                    {user.first_Name?.[0]}{user.last_Name?.[0]}
+                  </div>
+                )}
+              </div>
+
+              {/* Status Icon */}
               <div
-                className={`p-2 sm:p-3 rounded-lg sm:rounded-xl ${
+                className={`p-1.5 sm:p-2 rounded-lg ${
                   isPresent
                     ? "bg-green-100 dark:bg-green-800/50"
                     : "bg-red-100 dark:bg-red-800/50"
                 }`}
               >
                 {isPresent ? (
-                  <HiCheckCircle className="text-lg sm:text-xl text-green-600 dark:text-green-400" />
+                  <HiCheckCircle className="text-sm sm:text-base text-green-600 dark:text-green-400" />
                 ) : (
-                  <HiXCircle className="text-lg sm:text-xl text-red-600 dark:text-red-400" />
+                  <HiXCircle className="text-sm sm:text-base text-red-600 dark:text-red-400" />
                 )}
               </div>
+
+              {/* Employee Info */}
               <div className="flex-1 min-w-0">
-                <h4 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors text-sm sm:text-base truncate">
-                  {user.first_Name} {user.last_Name}
-                </h4>
-                <p
-                  className={`text-xs sm:text-sm mt-1 ${
-                    isPresent
-                      ? "text-green-600 dark:text-green-400"
-                      : "text-red-600 dark:text-red-400"
-                  }`}
-                >
-                  {isPresent ? "Currently present" : "Not checked in"}
-                </p>
+                <div className="flex items-center gap-2 mb-1">
+                  <h4 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors text-xs sm:text-sm truncate">
+                    {user.first_Name} {user.last_Name}
+                  </h4>
+                  <span className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-1.5 py-0.5 rounded">
+                    {user.employee_Id}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                    {user.department || 'Unassigned'}
+                  </p>
+                  {user.designation && (
+                    <>
+                      <span className="text-xs text-gray-400">•</span>
+                      <p className="text-xs text-gray-500 dark:text-gray-500 truncate">
+                        {user.designation}
+                      </p>
+                    </>
+                  )}
+                </div>
               </div>
+
+              {/* Status Badge */}
               <div
-                className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium flex-shrink-0 ${
+                className={`px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${
                   isPresent
                     ? "bg-green-200 dark:bg-green-800 text-green-800 dark:text-green-200"
                     : "bg-red-200 dark:bg-red-800 text-red-800 dark:text-red-200"
