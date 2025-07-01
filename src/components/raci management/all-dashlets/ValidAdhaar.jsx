@@ -16,7 +16,7 @@ import { HiSparkles, HiFingerPrint } from "react-icons/hi";
 import "chart.js/auto";
 import useAadhaarCardStore from "../../../store/analytics dashboards cards/useAadhaarCardStore";
 import DetailModal from "./BaseModal"; // ① add
-import { useDrilldown } from "./useDrillDown"; // ① add
+import { useDrilldown } from "./useDrilldown"; // ① add
 
 const AadhaarCardChart = () => {
   const { data, loading, error, fetchAadhaarStats } = useAadhaarCardStore();

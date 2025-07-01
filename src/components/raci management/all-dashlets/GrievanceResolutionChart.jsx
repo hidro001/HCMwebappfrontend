@@ -16,7 +16,7 @@ import {
 } from "react-icons/hi2";
 import useGrievanceResolutionStore from "../../../store/analytics dashboards cards/useGrievanceResolutionStore";
 import DetailModal from "./BaseModal"; // ① add
-import { useDrilldown } from "./useDrillDown"; // ① add
+import { useDrilldown } from "./useDrilldown"; // ① add
 function GrievanceResolutionChart() {
   const [isExpanded, setIsExpanded] = useState(false);
   const drill = useDrilldown();

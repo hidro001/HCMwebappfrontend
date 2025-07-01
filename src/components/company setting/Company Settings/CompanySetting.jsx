@@ -216,9 +216,9 @@ export default function CompanySetting() {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="h-[calc(100vh-250px)] bg-gray-50 dark:bg-gray-900 rounded-2xl "
+      className="h-[calc(100vh-200px)] bg-gray-50 dark:bg-gray-900 rounded-2xl "
     >
-      <div className="flex h-[calc(100vh-180px)] overflow-hidden rounded-2xl">
+      <div className="flex h-[calc(100vh-140px)] overflow-hidden rounded-2xl">
         {/* Sidebar */}
         <motion.div
           variants={sidebarVariants}

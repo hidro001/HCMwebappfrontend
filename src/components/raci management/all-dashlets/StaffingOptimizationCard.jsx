@@ -5,7 +5,7 @@ import { FaChartBar } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import useStaffingOptimizationStore from "../../../store/analytics dashboards cards/useStaffingOptimizationStore"; // adjust path
 import DetailModal from "./BaseModal"; // ① add
-import { useDrilldown } from "./useDrillDown"; // ① add
+import { useDrilldown } from "./useDrilldown"; // ① add
 
 const StaffingOptimizationCard = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);

@@ -11,7 +11,7 @@ import {
   HiOutlineUsers,
 } from "react-icons/hi2";
 import DetailModal from "./BaseModal"; // ① add
-import { useDrilldown } from "./useDrillDown"; // ① add
+import { useDrilldown } from "./useDrilldown"; // ① add
 import { FaSync } from "react-icons/fa";
 
 import useComplianceCoverageStore from "../../../store/analytics dashboards cards/useComplianceCoverageStore"; // Adjust the path

@@ -13,7 +13,7 @@ import {
 } from "react-icons/fi";
 import { HiOutlineUserGroup, HiOutlineGlobeAlt } from "react-icons/hi";
 import DetailModal from "./BaseModal"; // ① add
-import { useDrilldown } from "./useDrillDown";
+import { useDrilldown } from "./useDrilldown"; // ① add
 
 // Register Chart.js components once
 ChartJS.register(ArcElement, Tooltip, Legend);

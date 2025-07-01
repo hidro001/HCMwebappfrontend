@@ -129,7 +129,7 @@ export function ChatProviderv2({ children }) {
         setConversationsError(data.message);
         return;
       }
-      console.log("All room IDs:", data.data);
+      // console.log("All room IDs:", data.data);
       const list = data.data.map((item) => ({
         ...item,
         employeeId: item.employee_Id,
@@ -142,7 +142,7 @@ export function ChatProviderv2({ children }) {
         isOnline: userStatus[item.employee_Id] || false,
       }));
 
-      console.log("Fetched conversations:", list);
+      // console.log("Fetched conversations:", list);
       setConversations(list);
     });
 
@@ -237,7 +237,7 @@ export function ChatProviderv2({ children }) {
 
     socketRef.current.emit("getUserGroups", employeeId, (res) => {
       if (res.success) {
-        console.log("Fetched groups:", res.data);
+        // console.log("Fetched groups:", res.data);
         setGroups(res.data || []);
       } else {
         setGroupsError("Failed to load groups.");
@@ -350,10 +350,10 @@ export function ChatProviderv2({ children }) {
   }, [loadChatHistory]);
 
   const sendMessageHandler = useCallback(() => {
-    console.log("🧠 Inside sendMessageHandler:", {
-      message,
-      activeConversation,
-    });
+    // console.log("🧠 Inside sendMessageHandler:", {
+    //   message,
+    //   activeConversation,
+    // });
 
     if (!message.trim() || !activeConversation || !socketRef.current) return;
 
@@ -367,7 +367,7 @@ export function ChatProviderv2({ children }) {
           senderName: username,
         },
         (res) => {
-          console.log("✅ Group message sent:", res);
+          // console.log("✅ Group message sent:", res);
           if (res.success) setMessage("");
         }
       );
@@ -426,7 +426,7 @@ export function ChatProviderv2({ children }) {
   );
 
   const selectGroup = useCallback((group) => {
-    console.log("Selecting group:", group);
+    // console.log("Selecting group:", group);
     setSelectedConversation({ ...group, isGroup: true });
     setSelectedUser(null);
     setMessages([]);

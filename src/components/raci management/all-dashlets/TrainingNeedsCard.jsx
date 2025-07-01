@@ -4,7 +4,7 @@ import { Doughnut } from "react-chartjs-2";
 import "chart.js/auto";
 import { FiChevronDown } from "react-icons/fi";
 import DetailModal from "./BaseModal"; // ① add
-import { useDrilldown } from "./useDrillDown"; // ① add
+import { useDrilldown } from "./useDrilldown"; // ① add
 // Import the zustand store
 import useTrainingNeedsStore from "../../../store/analytics dashboards cards/useTrainingNeedsStore"; // adjust path
 
