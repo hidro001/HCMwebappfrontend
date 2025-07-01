@@ -51,7 +51,7 @@ export const initSocket = (employeeId , token) => {
 
 };
 
-console.log(`socket only :-${connectedsocket}`)
+// console.log(`socket only :-${connectedsocket}`)
 
 export const getsocket = () => connectedsocket;
 

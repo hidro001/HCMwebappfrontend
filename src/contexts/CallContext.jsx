@@ -95,11 +95,11 @@ export function CallProvider({ children, currentUserId }) {
         async ({ rtpCapabilities }) => {
           try {
             const d = new Device();
-            console.log("[join] creating device");
+            // console.log("[join] creating device");
             await d.load({ routerRtpCapabilities: rtpCapabilities });
-            console.log("[join] device loaded");
+            // console.log("[join] device loaded");
             device.current = d;
-            console.log("[join] device loaded", device.current);
+            // console.log("[join] device loaded", device.current);
 
             socket.current.emit("get-producers", { roomId }, (list) => {
               list.forEach((p) => createRecvTransport(p.producerId, p.userId));
@@ -140,7 +140,7 @@ export function CallProvider({ children, currentUserId }) {
                 console.error("[send] connect errored", res.error);
                 eb(res.error);
               } else {
-                console.log("[send] DTLS connected");
+                // console.log("[send] DTLS connected");
                 cb();
               }
             }
@@ -148,7 +148,7 @@ export function CallProvider({ children, currentUserId }) {
         });
 
         transport.on("produce", ({ kind, rtpParameters }, cb, eb) => {
-          console.log("[send] PRODUCE", kind);
+          // console.log("[send] PRODUCE", kind);
           socket.current.emit(
             "produce",
             { roomId, transportId: transport.id, kind, rtpParameters },
@@ -157,7 +157,7 @@ export function CallProvider({ children, currentUserId }) {
                 console.error("[send] produce errored", res.error);
                 eb(res.error);
               } else {
-                console.log("[send] produced id", res.producerId);
+                // console.log("[send] produced id", res.producerId);
                 cb({ id: res.producerId });
               }
             }
@@ -165,7 +165,7 @@ export function CallProvider({ children, currentUserId }) {
         });
 
         for (const track of stream.getTracks()) {
-          console.log("[send] calling transport.produce for", track.kind);
+          // console.log("[send] calling transport.produce for", track.kind);
           await transport.produce({ track });
         }
       }
@@ -179,7 +179,7 @@ export function CallProvider({ children, currentUserId }) {
       screenShareProducer.current?.close();
       screenShareProducer.current = null;
       setIsScreenSharing(false);
-      console.log("[share] stopped");
+      // console.log("[share] stopped");
     } catch (err) {
       console.error("[share] stop failed:", err);
     }
@@ -187,13 +187,13 @@ export function CallProvider({ children, currentUserId }) {
 
   const createRecvTransport = (producerId, userId) => {
     const roomId = roomIdRef.current;
-    console.log(
-      "[recv] creating transport for",
-      producerId,
-      userId,
-      "in room",
-      roomId
-    );
+    // console.log(
+    //   "[recv] creating transport for",
+    //   producerId,
+    //   userId,
+    //   "in room",
+    //   roomId
+    // );
 
     if (!roomId || !device.current || recvTransports.current.has(producerId)) {
       console.warn(
@@ -216,11 +216,11 @@ export function CallProvider({ children, currentUserId }) {
           iceServers: params.iceServers,
         });
         recvTransports.current.set(producerId, transport);
-        console.log(`[recv ${producerId}] transport created`, transport.id);
+        // console.log(`[recv ${producerId}] transport created`, transport.id);
 
         // 3) Handle the DTLS connect event
         transport.on("connect", ({ dtlsParameters }, callback, errback) => {
-          console.log(`[recv ${producerId}] DTLS connect`, dtlsParameters);
+          // console.log(`[recv ${producerId}] DTLS connect`, dtlsParameters);
           socket.current.emit(
             "connect-transport",
             { roomId, transportId: transport.id, dtlsParameters },
@@ -232,14 +232,14 @@ export function CallProvider({ children, currentUserId }) {
                 );
                 return errback(res.error);
               }
-              console.log(`[recv ${producerId}] DTLS connected`);
+              // console.log(`[recv ${producerId}] DTLS connected`);
               callback();
             }
           );
         });
 
         // 4) Ask server to consume the producer
-        console.log(`[recv ${producerId}] sending consume request`);
+        // console.log(`[recv ${producerId}] sending consume request`);
         socket.current.emit(
           "consume",
           {
@@ -250,10 +250,10 @@ export function CallProvider({ children, currentUserId }) {
           },
           async (data) => {
             if (data.error) {
-              console.error(`[recv ${producerId}] consume error`, data.error);
+              // console.error(`[recv ${producerId}] consume error`, data.error);
               return;
             }
-            console.log(`[recv ${producerId}] consume response`, data);
+            // console.log(`[recv ${producerId}] consume response`, data);
 
             try {
               // 5) Actually create the consumer (this will trigger 'connect')
@@ -263,7 +263,7 @@ export function CallProvider({ children, currentUserId }) {
                 kind: data.kind,
                 rtpParameters: data.rtpParameters,
               });
-              console.log(`[recv ${producerId}] consumer created`, consumer.id);
+              // console.log(`[recv ${producerId}] consumer created`, consumer.id);
 
               // 6) Tell server to resume sending us RTP
               socket.current.emit(
@@ -276,7 +276,7 @@ export function CallProvider({ children, currentUserId }) {
                       res.error
                     );
                   } else {
-                    console.log(`[recv ${producerId}] resume OK`);
+                    // console.log(`[recv ${producerId}] resume OK`);
                   }
                 }
               );
@@ -290,7 +290,7 @@ export function CallProvider({ children, currentUserId }) {
                   stream: new MediaStream([consumer.track]),
                 },
               ]);
-              console.log(`[recv ${producerId}] added remote stream`);
+              // console.log(`[recv ${producerId}] added remote stream`);
             } catch (err) {
               console.error(`[recv ${producerId}] consume failed`, err);
               socket.current.emit("consume-error", {
@@ -304,7 +304,7 @@ export function CallProvider({ children, currentUserId }) {
       }
     );
   };
-  console.log("remoteStreams", remoteStreams);
+  // console.log("remoteStreams", remoteStreams);
 
   // 5) high-level call controls
   // somewhere in your CallProvider:

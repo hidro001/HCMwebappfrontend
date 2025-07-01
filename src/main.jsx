@@ -19,7 +19,7 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker
       .register("/firebase-messaging-sw.js")
       .then((registration) => {
-        console.log("✅ Firebase service worker registered:", registration);
+        // console.log("✅ Firebase service worker registered:", registration);
       })
       .catch((err) => {
         console.error("❌ Service worker registration failed:", err);
