@@ -1,14 +1,9 @@
-
-
 import React, { useEffect, useState } from "react";
 import { useForm, FormProvider, useFieldArray } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 import useEmployeeStore from "../../../store/useEmployeeStore.js";
-import {
-  createEmployee,
-  updateEmployee,
-} from "../../../service/employeeService.js";
+import { createEmployee, updateEmployee } from "../../../service/employeeService.js";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import TabButton from "../common/TabButton";
 import FullScreenLoader from "../../common/FullScreenLoader.jsx";
@@ -16,7 +11,7 @@ import FullScreenLoader from "../../common/FullScreenLoader.jsx";
 import Step1EmployeeDetails from "./Step1EmployeeDetails";
 import Step2QualificationsExperience from "./Step2QualificationsExperience";
 import Step3PersonalDetails from "./Step3PersonalDetails";
-import Step4AdditionalInfo from "./Step4AdditionalInfo"; // New tab component
+import Step4AdditionalInfo from "./Step4AdditionalInfo"; 
 
 export default function EmployeeFormTabs({
   formTitle = "Employee Form",
@@ -32,6 +27,7 @@ export default function EmployeeFormTabs({
     loadPermissionRoles,
     loadCompanyAddresses,
     loadDesignations,
+    loadLeaveTypes,
     loadBreakRecords, 
   } = useEmployeeStore();
 
@@ -47,6 +43,7 @@ export default function EmployeeFormTabs({
     loadPermissionRoles();
     loadCompanyAddresses();
     loadDesignations();
+    loadLeaveTypes()
     loadBreakRecords(); 
   }, []);
 
@@ -78,7 +75,7 @@ export default function EmployeeFormTabs({
       break_Type: "",
       salary: "",
       otp: "no",
-      no_of_Paid_Leave: 0,
+      assigned_leaves: [],
       employee_Type: "",
       user_Avatar: null,
       qualifications: [
@@ -182,121 +179,91 @@ export default function EmployeeFormTabs({
     setSubmitting(true);
     try {
       const formValues = getValues();
+      console.log("🔍 Form values before processing:", formValues);
+      
       const formData = new FormData();
+      
       // These keys will be handled separately:
       const omitKeys = [
         "permission",
-        "assigned_to",
+        "assigned_to", 
+        "assigned_leaves", 
         "qualifications",
         "experiences",
         "documents",
         "confirmBankAccountNo",
         "user_Avatar",
+        "languages_Known",
+        "allowances_Provided"
       ];
-      // Loop and remap keys if needed:
-      // Object.keys(formValues).forEach((key) => {
-      //   if (omitKeys.includes(key)) return;
 
-      //   // Remap keys:
-      //   if (key === "officeLocation") {
-      //     if (formValues[key] !== null && formValues[key] !== "") {
-      //       formData.append("office_address", formValues[key]);
-      //     }
-      //   } else if (key === "permanent_Address") {
-      //     if (formValues[key] !== null && formValues[key] !== "") {
-      //       formData.append("user_Address", formValues[key]);
-      //     }
+      // Handle regular fields
+      Object.keys(formValues).forEach((key) => {
+        if (omitKeys.includes(key)) return;
 
-      //   } else {
-      //     if (formValues[key] !== null && formValues[key] !== "") {
-      //       formData.append(key, formValues[key]);
-      //     }
-      //   }
-      // });
+        if (key === "officeLocation") {
+          if (formValues[key]) {
+            formData.append("office_address", formValues[key]);
+          }
+        } else if (key === "permanent_Address") {
+          if (formValues[key]) {
+            formData.append("user_Address", formValues[key]);
+          }
+        } else if (key === "break_Type") {
+          if (formValues[key] && typeof formValues[key] === "object") {
+            formData.append("break_Type", JSON.stringify(formValues[key]));
+          } else {
+            formData.append("break_Type", formValues[key] || "");
+          }
+        } else {
+          if (formValues[key] !== null && formValues[key] !== "") {
+            formData.append(key, formValues[key]);
+          }
+        }
+      });
 
-      // Object.keys(formValues).forEach((key) => {
-      //   if (omitKeys.includes(key)) return;
-      
-      //   if (key === "officeLocation") {
-      //     if (formValues[key] !== null && formValues[key] !== "") {
-      //       formData.append("office_address", formValues[key]);
-      //     }
-      //   } else if (key === "permanent_Address") {
-      //     if (formValues[key] !== null && formValues[key] !== "") {
-      //       formData.append("user_Address", formValues[key]);
-      //     }
-      //   } else if (key === "break_Type") {
-      //     // Check if break_Type is an object; if so, stringify it.
-      //     if (formValues[key] && typeof formValues[key] === "object") {
-      //       formData.append("break_Type", JSON.stringify(formValues[key]));
-      //     } else {
-      //       formData.append("break_Type", formValues[key] || "");
-      //     }
-      //   } else {
-      //     if (formValues[key] !== null && formValues[key] !== "") {
-      //       formData.append(key, formValues[key]);
-      //     }
-      //   }
-        
-      // });
-
-      // Step A: Loop and handle everything except allowances_Provided
-  Object.keys(formValues).forEach((key) => {
-    if (omitKeys.includes(key)) return;
-
-    // example handle officeLocation, permanent_Address, etc...
-    if (key === "officeLocation") {
-      if (formValues[key]) {
-        formData.append("office_address", formValues[key]);
-      }
-    } else if (key === "permanent_Address") {
-      if (formValues[key]) {
-        formData.append("user_Address", formValues[key]);
-      }
-    } else if (key === "break_Type") {
-      // if break_Type is an object, JSON.stringify
-      if (formValues[key] && typeof formValues[key] === "object") {
-        formData.append("break_Type", JSON.stringify(formValues[key]));
-      } else {
-        formData.append("break_Type", formValues[key] || "");
-      }
-    }
-    // Step B: If it's allowances_Provided, join into a comma-separated string
-    else if (key === "allowances_Provided" && Array.isArray(formValues[key])) {
-      const joined = formValues[key].join(","); // "da,conveyance,medical"
-      formData.append("allowances_Provided", joined);
-    }
-    // otherwise append as normal
-    else {
-      if (formValues[key] !== null && formValues[key] !== "") {
-        formData.append(key, formValues[key]);
+      // ✅ Handle assigned_leaves array properly
+      if (formValues.assigned_leaves && Array.isArray(formValues.assigned_leaves)) {
+        console.log("📋 Processing assigned_leaves:", formValues.assigned_leaves);
+        formValues.assigned_leaves.forEach((leaveId, index) => {
+          if (leaveId) {
+            formData.append(`assigned_leaves[${index}]`, leaveId);
+          }
+        });
       }
 
-    }
-    if (key === "languages_Known" && Array.isArray(formValues[key])) {
-      const joined = formValues[key].join(","); // e.g. "Spanish,Mandarin,Hindi"
-      formData.append("languages_Known", joined);
-    } else if (key === "allowances_Provided" && Array.isArray(formValues[key])) {
-      const joined = formValues[key].join(",");
-      formData.append("allowances_Provided", joined);
-    } 
-  });
+      // ✅ Handle other arrays properly
+      if (formValues.permission && Array.isArray(formValues.permission)) {
+        formValues.permission.forEach((perm, i) =>
+          formData.append(`permission[${i}]`, perm)
+        );
+      }
 
-      
+      if (formValues.assigned_to && Array.isArray(formValues.assigned_to)) {
+        formValues.assigned_to.forEach((mgr, i) =>
+          formData.append(`assigned_to[${i}]`, mgr)
+        );
+      }
 
+      // ✅ Handle languages_Known as array
+      if (formValues.languages_Known && Array.isArray(formValues.languages_Known)) {
+        formValues.languages_Known.forEach((lang, index) => {
+          formData.append(`languages_Known[${index}]`, lang);
+        });
+      }
 
+      // ✅ Handle allowances_Provided as array  
+      if (formValues.allowances_Provided && Array.isArray(formValues.allowances_Provided)) {
+        formValues.allowances_Provided.forEach((allowance, index) => {
+          formData.append(`allowances_Provided[${index}]`, allowance);
+        });
+      }
 
-      // Append arrays:
-      formValues.permission.forEach((perm, i) =>
-        formData.append(`permission[${i}]`, perm)
-      );
-      formValues.assigned_to.forEach((mgr, i) =>
-        formData.append(`assigned_to[${i}]`, mgr)
-      );
       // Append avatar file:
       if (formValues.user_Avatar) {
         formData.append("user_Avatar", formValues.user_Avatar);
       }
+
       // Append documents:
       formValues.documents.forEach((doc, index) => {
         if (doc.name) {
@@ -306,6 +273,7 @@ export default function EmployeeFormTabs({
           formData.append(`documents[${index}][file]`, doc.file);
         }
       });
+
       // Append qualifications:
       formValues.qualifications.forEach((qual, index) => {
         formData.append(
@@ -337,6 +305,7 @@ export default function EmployeeFormTabs({
           qual.percentageCgpa || ""
         );
       });
+
       // Append experiences:
       formValues.experiences.forEach((exp, index) => {
         formData.append(
@@ -347,10 +316,6 @@ export default function EmployeeFormTabs({
           `experiences[${index}][designation]`,
           exp.designation || ""
         );
-        // formData.append(
-        //   `experiences[${index}][totalExperience]`,
-        //   exp.totalExperience || ""
-        // );
         formData.append(
           `experiences[${index}][grade_Band_Level]`,
           exp.grade_Band_Level || ""
@@ -366,12 +331,19 @@ export default function EmployeeFormTabs({
         formData.append(`experiences[${index}][endDate]`, exp.endDate || "");
       });
 
+      // ✅ Debug: Log FormData contents
+      console.log("📦 FormData contents:");
+      for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+      }
+
       let response;
       if (employeeId) {
         response = await updateEmployee(employeeId, formData);
       } else {
         response = await createEmployee(formData);
       }
+      
       if (response.success) {
         toast.success(
           employeeId
@@ -388,6 +360,7 @@ export default function EmployeeFormTabs({
         );
       }
     } catch (error) {
+      console.error("❌ Submit error:", error);
       if (error.response?.data?.details) {
         error.response.data.details.forEach((detail) => {
           toast.error(detail.message);

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAnimate } from "framer-motion";
 import { useFormContext, useWatch } from "react-hook-form";
-
 import FormField from "../common/FormField";
 import FormTextArea from "../common/FormTextArea";
 import FormReactSelect from "../common/FormReactSelect"; // <-- Our new react-select component
@@ -33,6 +32,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
   const employmentTypes = useEmployeeStore((state) => state.employmentTypes);
   const permissionRoles = useEmployeeStore((state) => state.permissionRoles);
   const designations = useEmployeeStore((state) => state.designations);
+  const leaveTypes = useEmployeeStore((state) => state.leaveTypes);
   const allEmployees = useEmployeeStore((state) => state.allEmployees);
   const breakRecords = useEmployeeStore((state) => state.breakRecords);
 
@@ -44,6 +44,7 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
   const loadingEmploymentTypes = useEmployeeStore((state) => state.loadingEmploymentTypes);
   const loadingPermissionRoles = useEmployeeStore((state) => state.loadingPermissionRoles);
   const loadingDesignations = useEmployeeStore((state) => state.loadingDesignations);
+  const loadingLeaveTypes = useEmployeeStore((state) => state.loadingLeaveTypes);
   const loadingAllEmployees = useEmployeeStore((state) => state.loadingAllEmployees);
 
     // 1) On mount, set initial avatarPreview if user_Avatar is a string
@@ -204,15 +205,14 @@ export default function Step1EmployeeDetails({ onSubmitStep, submitting }) {
 
       {/* Leaves & EmployeeType */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-        <FormField
-          label="No. of Paid Leaves"
-          name="no_of_Paid_Leave"
-          placeholder="e.g. 12"
-          type="number"
-          registerOptions={{
-            required: "No. of Paid Leaves is required",
-            min: { value: 0, message: "Cannot be negative" },
-          }}
+        
+        <FormReactSelect
+          label="Assign Leaves"
+          name="assigned_leaves"
+          isMulti
+          loading={loadingLeaveTypes}
+          options={leaveTypes} 
+          requiredMessage="At least one leave type must be assigned"
         />
         <FormReactSelect
           label="Employee Type"

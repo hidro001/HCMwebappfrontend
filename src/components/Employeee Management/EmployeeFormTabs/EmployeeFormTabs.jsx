@@ -32,6 +32,7 @@ export default function EmployeeFormTabs({
     loadPermissionRoles,
     loadCompanyAddresses,
     loadDesignations,
+    loadLeaveTypes,
     loadBreakRecords, 
   } = useEmployeeStore();
 
@@ -47,6 +48,7 @@ export default function EmployeeFormTabs({
     loadPermissionRoles();
     loadCompanyAddresses();
     loadDesignations();
+    loadLeaveTypes();
     loadBreakRecords(); 
   }, []);
 
@@ -78,7 +80,7 @@ export default function EmployeeFormTabs({
       break_Type: "",
       salary: "",
       otp: "no",
-      no_of_Paid_Leave: 0,
+     assigned_leaves: [],
       employee_Type: "",
       user_Avatar: null,
       qualifications: [
@@ -187,6 +189,7 @@ export default function EmployeeFormTabs({
       const omitKeys = [
         "permission",
         "assigned_to",
+        "assigned_leaves",
         "qualifications",
         "experiences",
         "documents",
@@ -292,6 +295,9 @@ export default function EmployeeFormTabs({
       );
       formValues.assigned_to.forEach((mgr, i) =>
         formData.append(`assigned_to[${i}]`, mgr)
+      );
+         formValues.assigned_leaves.forEach((lve, i) =>
+        formData.append(`assigned_leaves[${i}]`, lve)
       );
       // Append avatar file:
       if (formValues.user_Avatar) {

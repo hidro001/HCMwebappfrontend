@@ -1,12 +1,10 @@
 import React from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
-
-
 const AttendanceChart = ({ attendanceData }) => {
   if (!attendanceData) return null;
 
-  const { totalEmployees, presentCount, onTimeCount, lateCount, absentCount, onleaveCount } = attendanceData;
+  const { totalEmployees, presentCount, onTimeCount, lateCount, absentCount, onLeaveCount } = attendanceData;
 
   const TOTAL_EMPLOYEES = totalEmployees;
 
@@ -14,7 +12,7 @@ const AttendanceChart = ({ attendanceData }) => {
     { name: "Checked In", value: presentCount },
     { name: "Late In", value: lateCount },
     { name: "Absent", value: absentCount },
-    { name: "On Leave", value: onleaveCount },
+    { name: "On Leave", value: onLeaveCount },
   ];
 
   const PALETTE = {
@@ -98,7 +96,7 @@ const AttendanceChart = ({ attendanceData }) => {
 
  return ( 
  <div className="w-full max-w-5xl mx-auto">
-    {/* Legend */}
+
     <div className="flex justify-end gap-2 mb-3">
       {Object.keys(PALETTE).map((key) => (
         <div key={key} className="flex items-center gap-2">

@@ -6,7 +6,6 @@ import { jsPDF } from "jspdf";
 import "jspdf-autotable";
 import axiosInstance from "../service/axiosInstance";
 
-// --- Utility functions ---
 function convertTo24Hour(timeStr) {
   if (!timeStr) return null;
   const [timePart, ampm] = timeStr.split(" ");
@@ -23,10 +22,7 @@ function convertTo24Hour(timeStr) {
   return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
 }
 
-/**
- * Returns an array of every Date in the given (year, month).
- * month = 1..12
- */
+
 // function getAllDaysInMonth(year, month) {
 //   const days = [];
 //   let current = new Date(year, month - 1, 1);
@@ -39,23 +35,18 @@ function convertTo24Hour(timeStr) {
 
 function getAllDaysInMonth(year, month) {
   const days = [];
-  // Create the date at noon local time so it never "shifts" to the previous/next month
   let current = new Date(year, month - 1, 1, 12, 0, 0, 0);
 
   while (current.getMonth() === month - 1) {
-    days.push(new Date(current.getTime())); // use a copy of current
+    days.push(new Date(current.getTime())); 
     current.setDate(current.getDate() + 1);
   }
   return days;
 }
 
 
-// optional: if you store a “convertTo24HourTime” or other helpers in your “attendanceUtils,” import them likewise
-
 const useFullAttendanceStore = create((set, get) => ({
-  // -------------------------------
-  //  States
-  // -------------------------------
+
   userProfileData: null,
   approvedLeaves: [],
   attendanceData: [],
@@ -69,18 +60,13 @@ const useFullAttendanceStore = create((set, get) => ({
   attendancePolicies: null,
   error: null,
   isLoading: false,
-
-  // You can keep a “hasRealData” or “dummyAttendanceData” if you like
   hasRealData: false,
 
-  // -------------------------------
-  //  Async Action: fetchAllData
-  // -------------------------------
+
   fetchAllData: async (employeeId) => {
     try {
       set({ isLoading: true, error: null });
 
-      // 1) user profile
       const userProfileResponse = await axiosInstance.get(`/user/profile/${employeeId}`);
       if (!userProfileResponse.data?.success) {
         throw new Error(
@@ -89,7 +75,6 @@ const useFullAttendanceStore = create((set, get) => ({
       }
       const userData = userProfileResponse.data.data;
 
-      // 2) approved leaves
       const approvedLeavesResponse = await axiosInstance.get(`/leaves/employee/`, {
         params: {
           status: "approved",

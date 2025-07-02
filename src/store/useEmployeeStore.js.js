@@ -8,6 +8,7 @@ import {
   fetchPermissionRoles,
   fetchCompanyInfo,
   fetchDesignations,
+  fetchLeaveTypes,
   fetchEmployeeById,
   updateEmployee,
 } from "../service/employeeService";
@@ -25,6 +26,7 @@ const useEmployeeStore = create((set, get) => ({
   addressOptions: [],
   designations: [],
   breakRecords: [],
+  leaveTypes: [],
 
   // Loading States
   loadingBreakRecords: false,
@@ -35,6 +37,7 @@ const useEmployeeStore = create((set, get) => ({
   loadingPermissionRoles: false,
   loadingAddresses: false,
   loadingDesignations: false,
+  loadingLeaveTypes: false,
 
   loadBreakRecords: async () => {
     try {
@@ -184,6 +187,28 @@ const useEmployeeStore = create((set, get) => ({
       set({ designations: [] });
     } finally {
       set({ loadingDesignations: false });
+    }
+  },
+
+   loadLeaveTypes: async () => {
+    try {
+      set({ loadingLeaveTypes: true });
+      const data = await fetchLeaveTypes();
+      const leaveTypesOptions = data.map((d) => ({
+        label: d.name,
+        value: d._id,
+      }));
+
+      set({ leaveTypes: leaveTypesOptions });
+      
+      console.log("leaveTypes:", leaveTypesOptions); // ✅ Use local variable
+// OR
+console.log("leaveTypes:", get().leaveTypes); 
+    } catch (error) {
+      console.error("Error fetching leaves:", error);
+      set({ leaveTypes: [] });
+    } finally {
+      set({ loadingLeaveTypes: false });
     }
   },
   // To store a single employee in the store (if you like):

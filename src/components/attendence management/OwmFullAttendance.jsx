@@ -1,29 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  FiPrinter,
-  FiDownload,
-  FiSearch,
-  FiBriefcase,
-  FiCalendar,
-  FiAlertTriangle,
-  FiSun,
-  FiMoon,
-  FiCheckCircle,
-  FiLogOut,
-  FiClock,
-  FiX,
-  FiChevronLeft,
-  FiChevronRight,
-  FiFilter,
-  FiRefreshCw,
-  FiUser,
-  FiDollarSign,
-  FiTrendingUp,
-  FiMenu,
-  FiEye,
-  FiEyeOff,
-} from "react-icons/fi";
+  FiPrinter, FiDownload, FiSearch, FiBriefcase, FiCalendar, FiAlertTriangle, FiSun, FiMoon, FiCheckCircle, FiLogOut, FiClock, FiX, 
+  FiChevronLeft, FiChevronRight, FiFilter, FiUser, FiDollarSign, FiTrendingUp, FiMenu, FiEye, FiEyeOff } from "react-icons/fi";
 import { toast } from "react-hot-toast";
 import ConfirmationDialog from "../common/ConfirmationDialog";
 import "react-clock/dist/Clock.css";
@@ -600,19 +579,6 @@ export default function OwnFullAttendance() {
   const [punchOutTime, setPunchOutTime] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     if (window.innerWidth >= 1024) {
-  //       setSidebarOpen(true);
-  //     } else {
-  //       setSidebarOpen(false);
-  //     }
-  //   };
-  //   handleResize();
-  //   window.addEventListener('resize', handleResize);
-  //   return () => window.removeEventListener('resize', handleResize);
-  // }, []);
-
   const [showPayrollDetails, setShowPayrollDetails] = useState(false);
   const fetchAttendanceData = useOwnFullAttendanceStore(
     (s) => s.fetchAttendanceData
@@ -703,7 +669,7 @@ export default function OwnFullAttendance() {
     const isApprovedLeave = approvedLeaveDates.has(formatted);
 
     if (isApprovedLeave) {
-      row.status = "Holiday";
+      row.status = "Leave";
       return row;
     }
     if (!isWorkingDay || isHoliday) {
@@ -822,7 +788,6 @@ export default function OwnFullAttendance() {
     month,
   });
 
-  // next payroll date - KEEPING ORIGINAL LOGIC
   const { nextPayrollDate } = getPayrollPeriodDates({
     year,
     month,
@@ -834,7 +799,6 @@ export default function OwnFullAttendance() {
     ? nextPayrollDate.toDateString()
     : "Not available";
 
-  // event handlers - KEEPING ALL ORIGINAL HANDLERS
   function openMissedPunchModal(dateRow) {
     setSelectedDateForPunch(dateRow);
     setMissedPunchModalOpen(true);
@@ -949,6 +913,13 @@ export default function OwnFullAttendance() {
         border: "border-blue-200 dark:border-blue-700",
         icon: FiCalendar,
         iconColor: "text-blue-500 dark:text-blue-400",
+      },
+      Leave: {
+        bg: "bg-gradient-to-r from-orange-50 to-orange-50 dark:from-orange-900/20 dark:to-orange-900/20",
+        text: "text-orange-700 dark:text-orange-400",
+        border: "border-blue-200 dark:border-orange-700",
+        icon: FiCalendar,
+        iconColor: "text-orange-500 dark:text-orange-400",
       },
       Late: {
         bg: "bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20",

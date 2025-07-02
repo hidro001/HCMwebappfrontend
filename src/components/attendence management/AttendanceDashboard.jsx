@@ -5,17 +5,15 @@ import { FaCheckCircle, FaRegClock } from "react-icons/fa";
 import { fetchOverview, fetchAttendanceToday, fetchEmployeeOverview, fetchPunchStatusToday, fetchDepartmentAttendanceSummary,} from "../../service/attendanceService";
 
 export default function AttendanceDashboard() {
-  // Loading & Error states
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  // Department Attendance chart data
   const [departmentBarData, setDepartmentBarData] = useState({
     labels: [],
     datasets: [],
   });
 
-  // Attendance Today (Doughnut)
   const [attendanceData, setAttendanceData] = useState({
     labels: ["Attendance", "Remaining"],
     datasets: [
@@ -28,7 +26,6 @@ export default function AttendanceDashboard() {
   });
   const [attendanceMeta, setAttendanceMeta] = useState({});
 
-  // Employee Overview (Doughnut)
   const [employeeOverviewData, setEmployeeOverviewData] = useState({
     labels: ["Active", "Inactive"],
     datasets: [
@@ -41,10 +38,8 @@ export default function AttendanceDashboard() {
   });
   const [employeeOverviewMeta, setEmployeeOverviewMeta] = useState({});
 
-  // Late In Today array
   const [lateInToday, setLateInToday] = useState([]);
 
-  // On-Time vs Late Counts
   const [onTimeCount, setOnTimeCount] = useState(0);
   const [lateCount, setLateCount] = useState(0);
 
@@ -62,7 +57,7 @@ export default function AttendanceDashboard() {
         fetchAttendanceTodayData(),
         fetchEmployeeOverviewData(),
         fetchPunchStatusTodayData(),
-        fetchDepartmentAttendanceData(), // We'll call the new departmental API
+        fetchDepartmentAttendanceData(), 
       ]);
     } catch (err) {
       console.error("Error loading attendance dashboard data:", err);
@@ -75,7 +70,7 @@ export default function AttendanceDashboard() {
   async function fetchOverviewData() {
     const result = await fetchOverview();
     if (result?.data) {
-      // ... handle if you want
+  
     }
   }
 
@@ -108,41 +103,35 @@ export default function AttendanceDashboard() {
   async function fetchPunchStatusTodayData() {
     const result = await fetchPunchStatusToday();
     if (result?.data) {
-      setLateInToday(result.data.late); // missing
+      setLateInToday(result.data.late);
       setOnTimeCount(result.data.onTimeCount);
       setLateCount(result.data.lateCount);
 
     }
   }
 
-  /**
-   * Fetch department attendance summary from new API
-   * => data = [ { department, present, absent, totalEmployees }, ... ]
-   */
+
   async function fetchDepartmentAttendanceData() {
     const result = await fetchDepartmentAttendanceSummary();
     if (result?.data) {
-      // We can create a stacked bar chart with "Present" and "Absent".
-      // 1) Gather department labels
       const departmentLabels = result.data.map((d) => d.department);
-      // 2) Gather present counts
+
       const presentData = result.data.map((d) => d.present);
-      // 3) Gather absent counts
+
       const absentData = result.data.map((d) => d.absent);
 
-      // Build the chart.js data structure
       const barData = {
         labels: departmentLabels,
         datasets: [
           {
             label: "Present",
             data: presentData,
-            backgroundColor: "#22c55e", // green
+            backgroundColor: "#22c55e", 
           },
           {
             label: "Absent",
             data: absentData,
-            backgroundColor: "#ef4444", // red
+            backgroundColor: "#ef4444", 
           },
         ],
       };
@@ -150,7 +139,6 @@ export default function AttendanceDashboard() {
     }
   }
 
-  // Chart options for the Department Bar Chart
   const isDarkMode = false;
   const gridColor = isDarkMode ? "#374151" : "#e5e7eb";
   const barOptions = {
@@ -162,19 +150,18 @@ export default function AttendanceDashboard() {
     },
     scales: {
       x: {
-        stacked: true, // keep stacked or false if you prefer side-by-side
+        stacked: true, 
         grid: { display: true },
         ticks: { stepSize: 5 },
       },
       y: {
-        stacked: true, // same as above
+        stacked: true, 
         grid: { color: gridColor },
         ticks: { stepSize: 5 },
       },
     },
   };
 
-  // Framer Motion animation variants
   const cardVariants = {
     offscreen: { opacity: 0, y: 30 },
     onscreen: {
@@ -188,11 +175,9 @@ export default function AttendanceDashboard() {
     <div className="min-h-screen w-full bg-[#F8FBFF] dark:bg-gray-900 text-gray-800 dark:text-gray-100 py-8">
       <div className="mx-auto max-w-7xl px-4">
 
-        {/* Loading / Error messages */}
         {loading && <p className="text-blue-500 mb-4">Loading...</p>}
         {error && <p className="text-red-500 mb-4">Error: {error}</p>}
 
-        {/* Example top row for OnTime / Late counts */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
           <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm flex flex-col items-center">
             <div className="flex items-center mb-2">
@@ -210,10 +195,8 @@ export default function AttendanceDashboard() {
           </div>
         </div>
 
-        {/* MAIN CONTENT ROW */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
-          {/* ===== NEW Department Attendance Bar Chart ===== */}
           <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm">
             <h2 className="text-base font-semibold mb-3 text-gray-700 dark:text-gray-100">
               Today Department Attendance
@@ -223,9 +206,7 @@ export default function AttendanceDashboard() {
             </div>
           </div>
 
-          {/* RIGHT SIDE (Attendance Today + Employee Overview) */}
           <div className="flex flex-col gap-5">
-            {/* Attendance Today (Doughnut) */}
             <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm flex flex-col items-center">
               <h3 className="text-base font-semibold text-gray-700 dark:text-gray-100 mb-3">
                 Attendance Today
@@ -244,7 +225,6 @@ export default function AttendanceDashboard() {
               </div>
             </div>
 
-            {/* Employee Overview (Doughnut) */}
             <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm flex flex-col">
               <div className="flex w-full items-center justify-between mb-3">
                 <h3 className="text-base font-semibold text-gray-700 dark:text-gray-100">
@@ -276,7 +256,6 @@ export default function AttendanceDashboard() {
           </div>
         </div>
 
-        {/* LATE IN TODAY TABLE */}
         <div className="mt-8 bg-white dark:bg-gray-800 rounded-xl p-5 shadow-sm">
           <h2 className="text-base font-semibold mb-4 text-gray-700 dark:text-gray-100">
             Late In Today
