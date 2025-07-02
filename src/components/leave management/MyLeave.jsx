@@ -1,16 +1,15 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronLeft, FaChevronRight, FaTimes } from "react-icons/fa";
 import BaseModal from "../common/BaseModal";
 import useLeaveStore from "../../store/leaveStore.js";
 
-
 const getColorClasses = (color = "bg-gray-500") => {
   try {
     const base = color.replace("500", "");
     return {
-      bg: `${base}100`, // e.g., bg-green-100
-      text: `text-${base.slice(3)}800`, // e.g., text-green-800
+      bg: `${base}100`, 
+      text: `text-${base.slice(3)}800`, 
     };
   } catch {
     return {
@@ -102,7 +101,7 @@ const MyLeave = () => {
   return (
     <div className="min-h-screen p-6 bg-gray-50 dark:bg-gray-900">
       <div className="max-w-6xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700 overflow-hidden">
-        {/* Header */}
+     
         <div className="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
             {currentDate.toLocaleDateString("en-US", { month: "long", year: "numeric" })}
@@ -120,7 +119,7 @@ const MyLeave = () => {
           </div>
         </div>
 
-        {/* Calendar Grid */}
+     
         <div className="p-6">
           <div className="grid grid-cols-7 gap-2 text-sm font-medium text-center text-gray-500 dark:text-gray-400 mb-3">
             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
@@ -164,7 +163,6 @@ const MyLeave = () => {
         </div>
       </div>
 
-      {/* Leave Details Modal */}
       <AnimatePresence>
         {selectedLeave && (
           <BaseModal isOpen={true} onClose={() => setSelectedLeave(null)}>
