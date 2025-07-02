@@ -96,7 +96,6 @@ const useFullAttendanceStore = create((set, get) => ({
         approvedLeavesData = approvedLeavesResponse.data.leave;
       }
 
-      // 3) attendance
       const attendanceResponse = await axiosInstance.get(`/attendance-user/employee`, {
         params: {
           employee_Id: employeeId,
@@ -126,9 +125,6 @@ const useFullAttendanceStore = create((set, get) => ({
       const settingsData = companySettingsResponse.data.data || {};
       const attendancePoliciesData = settingsData.attendancePolicies || {};
 
-      // parse shift timing or other details if needed...
-      // find employment type, leave system, etc. (if your logic requires that)
-
       set({
         userProfileData: userData,
         approvedLeaves: approvedLeavesData,
@@ -150,9 +146,6 @@ const useFullAttendanceStore = create((set, get) => ({
     }
   },
 
-  // -------------------------------
-  // Build a complete month view
-  // -------------------------------
   getMonthlyAttendanceView: (year, month) => {
     const { attendanceData, approvedLeaves, companySettings, attendancePolicies } = get();
 
@@ -284,9 +277,6 @@ const useFullAttendanceStore = create((set, get) => ({
     
   },
 
-  // -------------------------------
-  // Calculation helpers
-  // -------------------------------
   calculateTotalShifts: (year, month) => {
     const { attendanceData } = get();
     return attendanceData.filter((rec) => {
@@ -392,7 +382,6 @@ const useFullAttendanceStore = create((set, get) => ({
           const end = new Date(`1970-01-01T${logout24}`);
           const hours = (end - start) / 36e5;
 
-          // if less than minHrs, count
           if (hours > 0 && hours < minHrs) count++;
         }
       }
@@ -415,7 +404,7 @@ const useFullAttendanceStore = create((set, get) => ({
     }).length;
   },
 
-  // Sample PDF generator
+
   generatePDF: () => {
     const doc = new jsPDF();
     doc.text("Hello from the PDF logic in Zustand store!", 10, 10);

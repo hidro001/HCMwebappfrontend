@@ -471,29 +471,13 @@
 // }
 
 
-import React, { useState, useEffect, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  FaUserAlt, FaCalendarAlt, FaCheckCircle, FaEye, FaCheck, FaTimes, FaCalendarCheck, FaList, FaFilter, FaSearch, FaClock, FaChevronLeft, FaChevronRight
-} from "react-icons/fa";
-import useLeaveStore from "../../store/useLeaveStore.js";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import { FaCheckCircle, FaTimes, FaClock, } from "react-icons/fa";
 import { fetchSubordinateLeaveStats } from "../../service/leaveService.js";
-import BaseModal from "../common/BaseModal.jsx";
 import LeaveCalendarDashboard from './SubordinateLeave.jsx'
 
 const LeaveManagementDashboard = () => {
-
-  const { leaves, isLoading, fetchAssignedLeaves, userProfile, handleLeaveRequest } = useLeaveStore();
-
-  const [viewMode, setViewMode] = useState("calendar"); // calendar or list
-  const [currentDate, setCurrentDate] = useState(new Date());
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [activeStatus, setActiveStatus] = useState("all");
-  const [searchText, setSearchText] = useState("");
-  const [selectedLeave, setSelectedLeave] = useState(null);
-  const [showApprovalModal, setShowApprovalModal] = useState(false);
-  const [approvalAction, setApprovalAction] = useState(""); // approve or reject
-  const [rejectionReason, setRejectionReason] = useState("");
   
   const [stats, setStats] = useState({
     pendingRequests: 0,
@@ -515,122 +499,9 @@ const LeaveManagementDashboard = () => {
     loadStats();
   }, []);
 
-  // Fetch assigned leaves whenever activeStatus changes
-  useEffect(() => {
-    fetchAssignedLeaves(activeStatus);
-  }, [activeStatus, fetchAssignedLeaves]);
-
-  // Calendar helper functions
-  const getDaysInMonth = (date) => {
-    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
-  };
-
-  const getFirstDayOfMonth = (date) => {
-    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-  };
-
-  const formatDate = (date) => {
-    return date.toISOString().split('T')[0];
-  };
-
-  // Get leaves for a specific date
-  const getLeavesForDate = (date) => {
-    const dateStr = formatDate(date);
-    return leaves.filter(leave => {
-      const leaveFrom = leave.leave_From;
-      const leaveTo = leave.leave_To || leave.leave_From;
-      return dateStr >= leaveFrom && dateStr <= leaveTo;
-    });
-  };
-
-  // Generate calendar days
-  const generateCalendarDays = () => {
-    const daysInMonth = getDaysInMonth(currentDate);
-    const firstDay = getFirstDayOfMonth(currentDate);
-    const days = [];
-
-    // Previous month's trailing days
-    const prevMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 0);
-    for (let i = firstDay - 1; i >= 0; i--) {
-      const day = prevMonth.getDate() - i;
-      days.push({
-        day,
-        isCurrentMonth: false,
-        date: new Date(prevMonth.getFullYear(), prevMonth.getMonth(), day)
-      });
-    }
-
-    // Current month days
-    for (let day = 1; day <= daysInMonth; day++) {
-      const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-      days.push({
-        day,
-        isCurrentMonth: true,
-        date,
-        leaves: getLeavesForDate(date)
-      });
-    }
-
-    // Next month's leading days
-    const totalCells = Math.ceil(days.length / 7) * 7;
-    const nextMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1);
-    for (let day = 1; days.length < totalCells; day++) {
-      days.push({
-        day,
-        isCurrentMonth: false,
-        date: new Date(nextMonth.getFullYear(), nextMonth.getMonth(), day)
-      });
-    }
-
-    return days;
-  };
-
-  const calendarDays = generateCalendarDays();
-
-  // Filter leaves based on search and status
-  const filteredLeaves = useMemo(() => {
-    return leaves.filter(leave => {
-      const matchesSearch = searchText === "" || 
-        leave.employee.first_Name.toLowerCase().includes(searchText.toLowerCase()) ||
-        leave.employee.last_Name.toLowerCase().includes(searchText.toLowerCase()) ||
-        leave.employee.employee_Id.toLowerCase().includes(searchText.toLowerCase()) ||
-        leave.leaveType.name.toLowerCase().includes(searchText.toLowerCase());
-      
-      const matchesStatus = activeStatus === "all" || leave.leave_Status === activeStatus;
-      
-      return matchesSearch && matchesStatus;
-    });
-  }, [leaves, searchText, activeStatus]);
-
-  const handleApprovalAction = (leave, action) => {
-    setSelectedLeave(leave);
-    setApprovalAction(action);
-    setShowApprovalModal(true);
-  };
-
-  const handleApprovalSubmit = () => {
-    console.log(`${approvalAction} leave for`, selectedLeave.employee.first_Name);
-
-    if (approvalAction === "reject") {
-      handleLeaveRequest(selectedLeave._id, "rejected", rejectionReason )
-      console.log("Rejection reason:", rejectionReason);
-    }
-    if(approvalAction === "approve"){
-      handleLeaveRequest(selectedLeave._id, "approved", '' )
-
-    }
-    setShowApprovalModal(false);
-    setRejectionReason("");
-
-  };
-
-  const navigateMonth = (direction) => {
-    setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + direction, 1));
-  };
-
   return (
     <div className="h-auto bg-gray-50 dark:bg-gray-900 p-6">
-      {/* Header Stats */}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -682,11 +553,7 @@ const LeaveManagementDashboard = () => {
           </div>
         </motion.div>
       </div>
-
       <LeaveCalendarDashboard/>
-     
-
-  
     </div>
   );
 };

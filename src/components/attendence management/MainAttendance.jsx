@@ -49,7 +49,6 @@ const Dashboard = () => {
     const fetchHolidayData = async () => {
       try {
         const resData = await getMonthHolidays(); 
-           console.log(resData, 'afds');
         if (resData.success) {
           getMonthHolidays(resData.data || []);
         } else {

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FaCalendarAlt,
@@ -38,7 +38,7 @@ const LeaveCalendarDashboard = () => {
    monthlyLeave, fetchMonthlySummary} = useLeaveStore();
   
   const {
-    subordinateStats, fetchSubordinateStats, loading: attendanceLoading, error: attendanceError,
+     loading: attendanceLoading, error: attendanceError,
   } = useAttendanceStore();
 
   const [currentDate, setCurrentDate] = useState(new Date(2025, 5, 1)); 
@@ -59,7 +59,6 @@ const LeaveCalendarDashboard = () => {
       try {
         await Promise.all([
           fetchAssigndata(), 
-          fetchSubordinateStats()
         ]);
         
         await fetchAssignedLeaves(activeStatus);
@@ -71,7 +70,7 @@ const LeaveCalendarDashboard = () => {
     return () => {
       isMounted = false;
     };
-  }, [fetchAssigndata, fetchSubordinateStats, fetchAssignedLeaves]);
+  }, [fetchAssigndata, fetchAssignedLeaves]);
 
   useEffect(() => {
     if (fetchAssignedLeaves) {
@@ -91,7 +90,6 @@ const LeaveCalendarDashboard = () => {
     fetchMonthlySummary(monthKey);
   }
 }, [currentDate, activeTab, fetchMonthlySummary]);
-
 
   const getUniqueEmployees = () => {
     const employeesFromLeaves = [];
@@ -295,7 +293,6 @@ const getMonthlyLeaveSummary = (empId) => {
     unpaid: summary?.unpaid || 0
   };
 };
-
 
 const renderLeaveIndicator = (leave, cellDate) => {
   const leaveStatus = leave.leave_Status || leave.leaveStatus || leave.status;
