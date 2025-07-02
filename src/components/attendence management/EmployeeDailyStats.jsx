@@ -1556,37 +1556,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
-  FiClock,
-  FiCoffee,
-  FiActivity,
-  FiMonitor,
-  FiGlobe,
-  FiTrendingUp,
-  FiInfo,
-  FiEye,
-  FiEyeOff,
-  FiDownload,
-  FiShare2,
-  FiCalendar,
-  FiUser,
-  FiBarChart,
-  FiPieChart,
-  FiZap,
-  FiRefreshCw,
+  FiClock, FiCoffee, FiActivity, FiMonitor, FiGlobe, FiTrendingUp, FiInfo, FiEye, FiEyeOff, 
+  FiDownload, FiShare2, FiCalendar, FiUser, FiBarChart, FiPieChart, FiZap, FiRefreshCw,
 } from "react-icons/fi";
 import useUsageStatsStore from "../../store/useUsageStore";
 import useFullAttendanceStore from "../../store/useFullAttendanceStore";
 import CustomTooltip from "./CustomToolTip";
-import {
-  ResponsiveContainer,
-  BarChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip,
-  Legend,
-  Bar,
-} from "recharts";
+import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
 
 export default function EmployeeDailyStats() {
   const { attendanceData } = useFullAttendanceStore();
@@ -1596,16 +1572,8 @@ export default function EmployeeDailyStats() {
   const [activeTab, setActiveTab] = useState("overview");
 
   const {
-    dailyStats,
-    fetchDailyStats,
-    fetchDeptCategories,
-    deptCategories,
-    loading,
-    error,
-    timeline,
-    fetchTimeline,
-    fetchGraphData,
-    graphData,
+    dailyStats, fetchDailyStats, fetchDeptCategories, deptCategories, loading, error, timeline, fetchTimeline, 
+    fetchGraphData, graphData,
   } = useUsageStatsStore();
 
   const attendanceRecord = useMemo(() => {
@@ -1794,7 +1762,6 @@ export default function EmployeeDailyStats() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950">
-      {/* Enhanced Header */}
       <div className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600"></div>
         <div className="absolute inset-0 bg-black/20"></div>
@@ -1859,7 +1826,7 @@ export default function EmployeeDailyStats() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Enhanced Tab Navigation */}
+
         <div className="mb-8">
           <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg rounded-2xl p-2 shadow-xl border border-white/20">
             <div className="flex flex-wrap gap-2">
@@ -1886,10 +1853,8 @@ export default function EmployeeDailyStats() {
           </div>
         </div>
 
-        {/* Enhanced Content Sections */}
         {activeTab === "overview" && (
           <div className="space-y-8">
-            {/* Productivity Overview */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20">
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
@@ -1990,7 +1955,6 @@ export default function EmployeeDailyStats() {
                 </div>
               </div>
 
-              {/* Enhanced Attendance Summary */}
               <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20">
                 <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6 flex items-center">
                   <div className="bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl p-3 mr-4">
@@ -2090,7 +2054,7 @@ export default function EmployeeDailyStats() {
 
         {activeTab === "activity" && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Enhanced Apps Section */}
+
             <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
               <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-8 py-6">
                 <div className="flex items-center text-white">

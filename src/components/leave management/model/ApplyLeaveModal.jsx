@@ -1,27 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import {  FaCalendarAlt,  FaUser,  FaFileUpload,  FaPaperPlane,  FaTimes,  FaInfoCircle, FaCheckCircle, FaExclamationTriangle, FaClock, FaFileAlt, FaSpinner, FaChevronLeft, FaChevronRight, FaMoon, FaSun} from 'react-icons/fa';
-import { motion, AnimatePresence } from 'framer-motion';
 import useAuthStore from "../../../store/store";
 import BaseModal from '../../common/BaseModal';
 import leaveTypeStore from "../../../store/leaveTypeStore";
 import useLeaveStore from '../../../store/leaveStore.js';
-
+import { toast } from "react-hot-toast";
 
 const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
 
-  const {
-    assignedLeaveTypes,
-    isLoading,
-    error,
-    fetchAssignedLeaveTypeById
-  } = leaveTypeStore();
+  const { assignedLeaveTypes, isLoading, error, fetchAssignedLeaveTypeById,  } = leaveTypeStore();
+  const { availability, applyLeave, fetchAvailability} = useLeaveStore()
 
-  const {
-    applyLeave
-  } = useLeaveStore()
-
-   const authStore = useAuthStore();
-   const userEmplId = authStore.employeeId
+  const authStore = useAuthStore();
+  const userEmplId = authStore.employeeId
 
   const [formData, setFormData] = useState({
     leaveType: '',
@@ -52,27 +43,27 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
     fetchAssignedLeaveTypeById(userEmplId)
   }, [ fetchAssignedLeaveTypeById]);
 
-
-  // Check if documents are required based on leave type and days
   const getDocumentRequirement = () => {
     if (!selectedLeaveType) return { required: false, reason: '' };
-    
-    // For sick leave, check if days exceed policy limit
+
+    const requestedDays = parseFloat(formData.no_Of_Days) || calculatedDays;
+
     if (selectedLeaveType.name === 'Sick Leave' && selectedLeaveType.noDocumentLimit) {
-      const requestedDays = parseFloat(formData.no_Of_Days) || calculatedDays;
       if (requestedDays > selectedLeaveType.noDocumentLimit) {
-        return { 
-          required: true, 
-          reason: `Medical certificate required for more than ${selectedLeaveType.noDocumentLimit} days` 
+        return {
+          required: true,
+          reason: `Medical certificate required for more than ${selectedLeaveType.noDocumentLimit} days`,
         };
       }
-      return { required: false, reason: 'No documents required for this duration' };
+      return {
+        required: false,
+        reason: `No documents required for up to ${selectedLeaveType.noDocumentLimit} days`,
+      };
     }
-    
-    // For other leave types, use the standard requirement
-    return { 
+
+    return {
       required: selectedLeaveType.documentsRequired !== 'Not Required',
-      reason: selectedLeaveType.documentsRequired 
+      reason: selectedLeaveType.documentsRequired,
     };
   };
 
@@ -88,7 +79,7 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
     const current = new Date(start);
     while (current <= end) {
       const dayOfWeek = current.getDay();
-      if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Not Sunday (0) or Saturday (6)
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) { 
         count++;
       }
       current.setDate(current.getDate() + 1);
@@ -97,7 +88,13 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
     return count;
   };
 
-  // Update calculated days when dates change
+  const formatDateForDisplay = (yyyyMMdd) => {
+    if (!yyyyMMdd) return '';
+    const [year, month, day] = yyyyMMdd.split('-');
+    return new Date(year, month - 1, day).toLocaleDateString();
+  };
+
+
   useEffect(() => {
     if (formData.leave_From && !manualDaysEntry) {
       let days;
@@ -130,33 +127,33 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
     if (lowerNotice.includes('immediate') || lowerNotice.includes('same day')) {
       return 0;
     }
-    
     const dayMatch = lowerNotice.match(/(\d+)\s*days?/);
     if (dayMatch) {
       return parseInt(dayMatch[1], 10);
     }
-    
     const weekMatch = lowerNotice.match(/(\d+)\s*weeks?/);
     if (weekMatch) {
       return parseInt(weekMatch[1], 10) * 7;
     }
-    
     const monthMatch = lowerNotice.match(/(\d+)\s*months?/);
     if (monthMatch) {
       return parseInt(monthMatch[1], 10) * 30;
-    }
-    
+    }  
     return 0;
   };
 
   const getMinDate = () => {
     const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
     if (selectedLeaveType && selectedLeaveType.advanceNotice) {
       const advanceNoticeDays = extractDaysFromAdvanceNotice(selectedLeaveType.advanceNotice);
       today.setDate(today.getDate() + advanceNoticeDays);
     }
-    return today.toISOString().split('T')[0];
+
+    return today; 
   };
+
 
   const getAdvanceNoticeInfo = () => {
     if (!selectedLeaveType) return null;
@@ -172,7 +169,6 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
     };
   };
 
-  // Handle leave type selection
   const handleLeaveTypeChange = (leaveTypeId) => {
     const leaveType = assignedLeaveTypes.find(lt => lt._id === leaveTypeId);
     setSelectedLeaveType(leaveType);
@@ -187,40 +183,50 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
       halfDayPosition: 'end',
       documents: null
     }));
+    fetchAvailability(leaveTypeId);
     setCalculatedDays(0);
     setManualDaysEntry(false);
     setErrors({});
   };
 
-  // Handle form input changes
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
     
+
     if (field === 'no_Of_Days') {
       setManualDaysEntry(true);
       const numDays = parseFloat(value);
-      if (!isNaN(numDays)) {
+
+      if (!isNaN(numDays) && formData.leave_From) {
         setCalculatedDays(numDays);
+
+        const from = new Date(formData.leave_From);
+        let added = 0;
+        let current = new Date(from);
+        while (added < numDays && current.getDate() <= 31) {
+          if (current.getDay() !== 0 && current.getDay() !== 6) added++;
+          if (added < numDays) current.setDate(current.getDate() + 1);
+        }
+        const toStr = `${current.getFullYear()}-${(current.getMonth() + 1)
+          .toString().padStart(2, '0')}-${current.getDate().toString().padStart(2, '0')}`;
+
+        setFormData(prev => ({ ...prev, leave_To: toStr }));
       }
     }
     
     if (field === 'isHalfDay') {
       if (!value) {
-        // If disabling half day, clear half day related fields
         setFormData(prev => ({ 
           ...prev, 
           halfDayPeriod: '', 
           halfDayPosition: 'end'
         }));
       }
-      // Don't automatically set days or disable manual entry when half day is toggled
       setManualDaysEntry(false);
     }
-    
-    // Clear specific field errors
     if (errors[field]) {
       setErrors(prev => ({
         ...prev,
@@ -229,7 +235,6 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
     }
   };
 
-  // Handle file upload
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -264,7 +269,6 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
     }
   };
 
-  // Remove uploaded file
   const removeFile = () => {
     setFormData(prev => ({
       ...prev,
@@ -274,84 +278,82 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
     if (fileInput) fileInput.value = '';
   };
 
-  // Validate form
   const validateForm = () => {
     const newErrors = {};
+    const days = parseFloat(formData.no_Of_Days);
 
     if (!formData.leaveType) {
       newErrors.leaveType = 'Please select a leave type';
     }
 
-    if (!formData.no_Of_Days) {
-      newErrors.no_Of_Days = 'Please specify number of days';
+    if (!formData.no_Of_Days || isNaN(days) || days <= 0) {
+      newErrors.no_Of_Days = 'Please enter a valid number of days';
     } else {
-      const days = parseFloat(formData.no_Of_Days);
-      if (isNaN(days) || days <= 0) {
-        newErrors.no_Of_Days = 'Please enter a valid number of days';
-      } else if (days > 365) {
-        newErrors.no_Of_Days = 'Cannot exceed 365 days';
+      if (selectedLeaveType?.category === 'paid' && days > selectedLeaveType.maxDays) {
+        newErrors.no_Of_Days = `You can't take more than ${selectedLeaveType.maxDays} days of paid leave.`;
+      }
+      if (availability?.totalAvailable !== undefined && days > availability.totalAvailable) {
+        newErrors.no_Of_Days = `You only have ${availability.totalAvailable} days available this month.`;
       }
     }
 
     if (!formData.leave_From) {
-      newErrors.leave_From = 'Please select start date';
-    }
+        newErrors.leave_From = 'Please select start date';
+      }
 
-    // For multi-day leaves or when end date is needed
-    if (!formData.isHalfDay || (formData.isHalfDay && parseFloat(formData.no_Of_Days) > 0.5)) {
-      if (!formData.leave_To && !manualDaysEntry) {
-        newErrors.leave_To = 'Please select end date or enter days manually';
-      }
-    }
-
-    if (formData.isHalfDay) {
-      if (!formData.halfDayPeriod) {
-        newErrors.halfDayPeriod = 'Please select first half or second half';
-      }
-      if (!formData.halfDayPosition) {
-        newErrors.halfDayPosition = 'Please specify which day is the half day';
-      }
-    }
-
-    if (formData.leave_From && formData.leave_To) {
-      const start = new Date(formData.leave_From);
-      const end = new Date(formData.leave_To);
-      
-      if (end < start) {
-        newErrors.leave_To = 'End date cannot be before start date';
-      }
-      
-      if (selectedLeaveType) {
-        const advanceNoticeDays = extractDaysFromAdvanceNotice(selectedLeaveType.advanceNotice);
-        const minAllowedDate = new Date();
-        minAllowedDate.setDate(minAllowedDate.getDate() + advanceNoticeDays);
-        minAllowedDate.setHours(0, 0, 0, 0);
-        
-        if (start < minAllowedDate) {
-          newErrors.leave_From = `Start date must be at least ${advanceNoticeDays} days from today (${selectedLeaveType.advanceNotice})`;
+      if (!formData.isHalfDay || (formData.isHalfDay && parseFloat(formData.no_Of_Days) > 0.5)) {
+        if (!formData.leave_To && !manualDaysEntry) {
+          newErrors.leave_To = 'Please select end date or enter days manually';
         }
       }
-    }
 
-    if (!formData.reason_For_Leave.trim()) {
-      newErrors.reason_For_Leave = 'Please provide a reason for leave';
-    } else if (formData.reason_For_Leave.trim().length < 10) {
-      newErrors.reason_For_Leave = 'Reason must be at least 10 characters';
-    }
+      if (formData.isHalfDay) {
+        if (!formData.halfDayPeriod) {
+          newErrors.halfDayPeriod = 'Please select first half or second half';
+        }
+        if (!formData.halfDayPosition) {
+          newErrors.halfDayPosition = 'Please specify which day is the half day';
+        }
+      }
 
-    if (documentRequirement.required && !formData.documents) {
-      newErrors.documents = 'Required document must be uploaded';
-    }
+      if (formData.leave_From && formData.leave_To) {
+        const start = new Date(formData.leave_From);
+        const end = new Date(formData.leave_To);
+        
+        if (end < start) {
+          newErrors.leave_To = 'End date cannot be before start date';
+        }
+        
+        if (selectedLeaveType) {
+          const advanceNoticeDays = extractDaysFromAdvanceNotice(selectedLeaveType.advanceNotice);
+          const minAllowedDate = new Date();
+          minAllowedDate.setDate(minAllowedDate.getDate() + advanceNoticeDays);
+          minAllowedDate.setHours(0, 0, 0, 0);
+          
+          if (start < minAllowedDate) {
+            newErrors.leave_From = `Start date must be at least ${advanceNoticeDays} days from today (${selectedLeaveType.advanceNotice})`;
+          }
+        }
+      }
 
-    if (!formData.emergencyContact.trim()) {
-      newErrors.emergencyContact = 'Emergency contact is required';
-    }
+      if (!formData.reason_For_Leave.trim()) {
+        newErrors.reason_For_Leave = 'Please provide a reason for leave';
+      } else if (formData.reason_For_Leave.trim().length < 10) {
+        newErrors.reason_For_Leave = 'Reason must be at least 10 characters';
+      }
+
+      // if (documentRequirement.required && !formData.documents) {
+      //   newErrors.documents = 'Required document must be uploaded';
+      // }
+
+      if (!formData.emergencyContact.trim()) {
+        newErrors.emergencyContact = 'Emergency contact is required';
+      }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -364,8 +366,8 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
     try {
       const submitData = new FormData();
       submitData.append('leaveType', formData.leaveType);
-      submitData.append('leave_From', formData.leave_From);
-      submitData.append('leave_To', formData.leave_To || formData.leave_From);
+      submitData.append('leave_From', new Date(formData.leave_From).toISOString());
+      submitData.append('leave_To', new Date(formData.leave_To || formData.leave_From).toISOString());
       submitData.append('no_Of_Days', formData.no_Of_Days);
       submitData.append('isHalfDay', formData.isHalfDay);
       if (formData.isHalfDay) {
@@ -379,14 +381,11 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
       if (formData.documents) {
         submitData.append('documents', formData.documents);
       }
-
-      // Simulate API call
-       const result = await applyLeave(submitData); 
-        if(result){
-      setShowSuccess(true);
-        }
-     
-      
+      const result = await applyLeave(submitData); 
+      if(result){
+        setShowSuccess(true);
+        handleCancel();
+      }
     } catch (error) {
       console.error('Submission error:', error);
       setErrors({ submit: 'Failed to submit application. Please try again.' });
@@ -417,7 +416,6 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
     if (fileInput) fileInput.value = '';
   };
 
-  // Get category color
   const getCategoryColor = (category) => {
     switch(category) {
       case 'paid': return 'text-green-600 bg-green-100 border-green-200 dark:text-green-300 dark:bg-green-900/40 dark:border-green-500/50';
@@ -427,10 +425,9 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
     }
   };
 
-  // Modern Calendar Component
   const ModernCalendar = () => {
     const today = new Date();
-    const minSelectableDate = new Date(getMinDate());
+    const minSelectableDate = getMinDate();
     
     const getDaysInMonth = (date) => {
       return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -451,8 +448,15 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
       if (dayOfWeek === 0 || dayOfWeek === 6) return true;
       if (dateObj < minSelectableDate) return true;
       
+      // if (!selectingStartDate && formData.leave_From) {
+      //   if (dateObj < new Date(formData.leave_From)) return true;
+      // }
       if (!selectingStartDate && formData.leave_From) {
-        if (dateObj < new Date(formData.leave_From)) return true;
+        const start = new Date(formData.leave_From);
+        start.setHours(0, 0, 0, 0);
+        dateObj.setHours(0, 0, 0, 0);
+        if (dateObj < start) return true; // Keep this
+        // allow same-day as valid
       }
       
       return false;
@@ -471,23 +475,62 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
       return dateObj > start && dateObj < end;
     };
 
-    const handleDateClick = (date) => {
-      const dateStr = formatDate(date);
-      
-      if (isDateDisabled(date)) return;
+//  const handleDateClick = (date) => {
+//   const dateStr = date.toISOString().split('T')[0]; 
 
-      if (selectingStartDate) {
-        setFormData(prev => ({ ...prev, leave_From: dateStr, leave_To: '' }));
-        setSelectingStartDate(false);
-      } else {
-        if (new Date(dateStr) < new Date(formData.leave_From)) {
-          setFormData(prev => ({ ...prev, leave_From: dateStr, leave_To: '' }));
-        } else {
-          setFormData(prev => ({ ...prev, leave_To: dateStr }));
-          setShowCalendar(false);
-        }
-      }
-    };
+//   if (isDateDisabled(date)) return;
+
+//   if (selectingStartDate) {
+//     setFormData(prev => ({ ...prev, leave_From: dateStr, leave_To: '' }));
+//     setSelectingStartDate(false);
+//   } else {
+//     if (new Date(dateStr) < new Date(formData.leave_From)) {
+//       setFormData(prev => ({ ...prev, leave_From: dateStr, leave_To: '' }));
+//     } else {
+//       setFormData(prev => ({ ...prev, leave_To: dateStr }));
+//       setShowCalendar(false);
+//     }
+//   }
+// };
+
+const handleDateClick = (date) => {
+  const dateStr = `${date.getFullYear()}-${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+
+  if (isDateDisabled(date)) return;
+
+  if (selectingStartDate) {
+    setFormData(prev => ({ ...prev, leave_From: dateStr, leave_To: '' }));
+    setSelectingStartDate(false);
+  } else {
+    const days = calculateWorkingDays(formData.leave_From, dateStr);
+
+    // ✳️ Toast for paid leave exceeding availability
+    if (
+      selectedLeaveType?.category === 'paid' &&
+      availability?.totalAvailable !== undefined &&
+      days > availability.totalAvailable
+    ) {
+      toast.error(`Only ${availability.totalAvailable} day(s) available for this leave type.`);
+      return;
+    }
+
+    // ✳️ Toast for exceeding maxDays
+    if (selectedLeaveType?.maxDays && days > selectedLeaveType.maxDays) {
+      toast.error(`You can select up to ${selectedLeaveType.maxDays} working days.`);
+      return;
+    }
+
+    setFormData(prev => ({ ...prev, leave_To: dateStr }));
+    setShowCalendar(false);
+  }
+};
+
+
+const safeDisplayDate = (dateStr) => {
+  return new Date(dateStr + 'T00:00:00Z').toLocaleDateString();
+};
 
     const navigateMonth = (direction) => {
       setCurrentMonth(prev => {
@@ -580,7 +623,7 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
           </p>
           {formData.leave_From && (
             <p className="text-xs mt-1 text-blue-600 dark:text-blue-400">
-              Start: {new Date(formData.leave_From).toLocaleDateString()}
+              Start: {formatDateForDisplay(formData.leave_From)}
             </p>
           )}
         </div>
@@ -699,6 +742,8 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
                     <div className='flex items-center'> 
                       <p className="font-bold pr-3 text-gray-800 dark:text-gray-200">Total Paid Leaves</p>
                       <span className="font-bold pr-3 text-xl text-gray-900 dark:text-gray-100">{totalPaidLeaves}</span>
+                      
+
                     </div>
                   </div>
                   
@@ -776,12 +821,27 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
                               {documentRequirement.reason || selectedLeaveType.documentsRequired}
                             </span>
                           </div>
-                          <div className="flex justify-between">
-                            <span className="text-gray-600 dark:text-gray-300">Max Days:</span>
-                            <span className="font-semibold text-gray-800 dark:text-gray-100">
-                              {selectedLeaveType.maxDays}
-                            </span>
+                         <div className="flex flex-col space-y-2">
+                            <div className="flex justify-between">
+                              <span className="text-gray-600 dark:text-gray-300">Max Days (Policy):</span>
+                              <span className="font-semibold text-gray-800 dark:text-gray-100">
+                                {selectedLeaveType.maxDays}
+                              </span>
+                            </div>
+                            {availability?.totalAvailable !== undefined && (
+                              <div className="flex justify-between">
+                                <span className="text-gray-600 dark:text-gray-300">Available this month:</span>
+                                <span className="font-semibold text-blue-800 dark:text-blue-300">
+                                  {availability.totalAvailable}
+                                </span>
+                              </div>
+                            )}
                           </div>
+                          {availability && (
+                            <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                              Quota: {availability.monthlyQuota}, Used: {availability.used}, Carry Forward: {availability.carryForward}
+                            </div>
+                          )}
                         </div>
                       </div>
                       
@@ -977,7 +1037,7 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
                         <div className="relative">
                           <input
                             type="text"
-                            value={formData.leave_From ? new Date(formData.leave_From).toLocaleDateString() : ''}
+                            value={formData.leave_From ? formatDateForDisplay(formData.leave_From) : ''}
                             placeholder="Select start date"
                             readOnly
                             onClick={() => {
@@ -1070,7 +1130,7 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves }) => {
                         )}
                         {formData.leave_From && (
                           <div className="mt-2 text-sm text-blue-600 dark:text-blue-400">
-                            <strong>Date(s):</strong> {new Date(formData.leave_From).toLocaleDateString()}
+                            <strong>Date(s):</strong> { formatDateForDisplay(formData.leave_From)}
                             {formData.leave_To && formData.leave_To !== formData.leave_From && 
                               ` - ${new Date(formData.leave_To).toLocaleDateString()}`
                             }

@@ -27,11 +27,15 @@ const formatDate = (date) => {
   return `${year}-${month}-${day}`; 
 };
 
-
+const getMonthKey = (date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  return `${year}-${month}`;
+};
 
 const LeaveCalendarDashboard = () => {
-  const { leaves, isLoading: leaveLoading, fetchAssignedLeaves, userProfile, handleLeaveRequest, employees, fetchAssigndata, isLoadingEmployees
-  } = useLeaveStore();
+  const { leaves, isLoading: leaveLoading, fetchAssignedLeaves, userProfile, handleLeaveRequest, employees, fetchAssigndata, isLoadingEmployees,
+   monthlyLeave, fetchMonthlySummary} = useLeaveStore();
   
   const {
     subordinateStats, fetchSubordinateStats, loading: attendanceLoading, error: attendanceError,
@@ -80,6 +84,14 @@ const LeaveCalendarDashboard = () => {
       fetchAssignedLeaves(activeStatus);
     }
   }, [activeTab, fetchAssignedLeaves, activeStatus]);
+
+  useEffect(() => {
+  if (fetchMonthlySummary ) {
+    const monthKey = getMonthKey(currentDate);
+    fetchMonthlySummary(monthKey);
+  }
+}, [currentDate, activeTab, fetchMonthlySummary]);
+
 
   const getUniqueEmployees = () => {
     const employeesFromLeaves = [];
@@ -273,6 +285,18 @@ const getLeavesForEmployeeAndDate = (employee, date) => {
     setCurrentPage(1);
   };
 
+const getMonthlyLeaveSummary = (empId) => {
+  console.log(empId)
+  const summary = monthlyLeave?.find(
+    (entry) => entry.employee_Id?.toString() === empId?.toString()
+  );
+  return {
+    paid: summary?.paid || 0,
+    unpaid: summary?.unpaid || 0
+  };
+};
+
+
 const renderLeaveIndicator = (leave, cellDate) => {
   const leaveStatus = leave.leave_Status || leave.leaveStatus || leave.status;
   const leaveTypeName = leave.leaveType?.name || leave.leaveTypeName || leave.type;
@@ -305,7 +329,7 @@ const renderLeaveIndicator = (leave, cellDate) => {
     return (
       <div className={`w-3 h-3 cursor-pointer relative`} title={tooltip} onClick={() => handleLeaveClick(leave)}>
         <div className={`w-full h-full rounded-full ${leaveColor} relative`}>
-          <div className="absolute inset-0 rounded-full border-2 border-white"></div>
+          <div className="absolute inset-0 rounded-full border-1 border-white"></div>
           {/* <div className="absolute top-0 left-0 w-1/2 h-full bg-white rounded-l-full"></div> */}
           {halfDaySession === 'morning' ? (
               <div className="absolute top-0 right-0 w-1/2 h-full bg-white rounded-r-full"></div>
@@ -325,8 +349,6 @@ const renderLeaveIndicator = (leave, cellDate) => {
     </div>
   );
 };
-
-
 
   if (attendanceLoading || leaveLoading || isLoadingEmployees) {
     return (
@@ -610,63 +632,132 @@ const renderLeaveIndicator = (leave, cellDate) => {
                   </button>
                 </div>
               ) : (
-                paginatedEmployees.map((employee, employeeIndex) => (
-                  <motion.div
-                    key={employee.employee_Id || employee.employeeId || employeeIndex}
-                    initial={{ opacity: 0, y: 5 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: employeeIndex * 0.01 }}
-                    className="grid hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                    style={{ gridTemplateColumns: calendarGridTemplate }}
-                  >
-                    {/* Employee Name */}
-                    <div className="p-3 border-r border-b text-sm font-medium text-gray-900 dark:text-gray-200">
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
-                          <span className="text-blue-600 dark:text-blue-400 font-medium text-xs">
-                            {employee.first_Name?.charAt(0) || employee.name?.charAt(0) || 'U'}
-                            {employee.last_Name?.charAt(0) || employee.name?.split(' ')[1]?.charAt(0) || ''}
-                          </span>
-                        </div>
-                        <div>
-                          <div className="font-medium">{employee.name || 'Unknown'}</div>
-                          <div className="text-xs text-gray-500 dark:text-gray-400">
-                            {employee.empID || employee.employee_Id || 'No ID'}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                // paginatedEmployees.map((employee, employeeIndex) => (
+                //   <motion.div
+                //     key={employee.employee_Id || employee.employeeId || employeeIndex}
+                //     initial={{ opacity: 0, y: 5 }}
+                //     animate={{ opacity: 1, y: 0 }}
+                //     transition={{ delay: employeeIndex * 0.01 }}
+                //     className="grid hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+                //     style={{ gridTemplateColumns: calendarGridTemplate }}
+                //   >
+                //     {/* Employee Name */}
+                //     <div className="p-3 border-r border-b text-sm font-medium text-gray-900 dark:text-gray-200">
+                //       <div className="flex items-center gap-2">
+                //         <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
+                //           <span className="text-blue-600 dark:text-blue-400 font-medium text-xs">
+                //             {employee.first_Name?.charAt(0) || employee.name?.charAt(0) || 'U'}
+                //             {employee.last_Name?.charAt(0) || employee.name?.split(' ')[1]?.charAt(0) || ''}
+                //           </span>
+                //         </div>
+                //         <div>
+                //           <div className="font-medium">{employee.name || 'Unknown'}</div>
+                //           <div className="text-xs text-gray-500 dark:text-gray-400">
+                //             {employee.empID || employee.employee_Id || 'No ID'}
+                //           </div>
+                //         </div>
+                //       </div>
+                //     </div>
 
-                    {/* Paid Leave */}
-                    <div className="p-3 border-r border-b text-sm text-center text-green-600 dark:text-green-400 font-medium">
-                      {employee.paid_leave_balance || subordinateStats?.paidLeave || 0}
-                    </div>
+                //     {/* Paid Leave */}
+                //     <div className="p-3 border-r border-b text-sm text-center text-green-600 dark:text-green-400 font-medium">
+                //       {employee.paid_leave_balance || subordinateStats?.paidLeave || 0}
+                //     </div>
 
-                    {/* Unpaid Leave */}
-                    <div className="p-3 border-r border-b text-sm text-center text-red-600 dark:text-red-400 font-medium">
-                      {employee.unpaid_leave_taken || subordinateStats?.unpaidLeave || 0}
-                    </div>
+                //     {/* Unpaid Leave */}
+                //     <div className="p-3 border-r border-b text-sm text-center text-red-600 dark:text-red-400 font-medium">
+                //       {employee.unpaid_leave_taken || subordinateStats?.unpaidLeave || 0}
+                //     </div>
 
-                    {/* Leave Indicators */}
-                    {dateRange.map((date, dateIndex) => {
-                      const leavesForDate = getLeavesForEmployeeAndDate(employee, date);
-                      return (
-                        <div
-                          key={dateIndex}
-                          className={`p-2 border-r border-b min-h-[40px] flex items-center justify-center
-                            ${hoveredColumn === dateIndex ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
-                          onMouseEnter={() => setHoveredColumn(dateIndex)}
-                          onMouseLeave={() => setHoveredColumn(null)}
-                          title={leavesForDate.length > 0 ? `${leavesForDate.length} leave(s)` : ''}
-                        >
-                          {leavesForDate.map((leave, leaveIndex) => (
-                            <div key={leaveIndex}>{renderLeaveIndicator(leave, date)}</div>
-                          ))}
-                        </div>
-                      );
-                    })}
-                  </motion.div>
-                ))
+                //     {/* Leave Indicators */}
+                //     {dateRange.map((date, dateIndex) => {
+                //       const leavesForDate = getLeavesForEmployeeAndDate(employee, date);
+                //       return (
+                //         <div
+                //           key={dateIndex}
+                //           className={`p-2 border-r border-b min-h-[40px] flex items-center justify-center
+                //             ${hoveredColumn === dateIndex ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+                //           onMouseEnter={() => setHoveredColumn(dateIndex)}
+                //           onMouseLeave={() => setHoveredColumn(null)}
+                //           title={leavesForDate.length > 0 ? `${leavesForDate.length} leave(s)` : ''}
+                //         >
+                //           {leavesForDate.map((leave, leaveIndex) => (
+                //             <div key={leaveIndex}>{renderLeaveIndicator(leave, date)}</div>
+                //           ))}
+                //         </div>
+                //       );
+                //     })}
+                //   </motion.div>
+                // ))
+                <div className="grid grid-rows-auto" style={{ gridTemplateColumns: calendarGridTemplate }}>
+                  
+  {paginatedEmployees.map((employee, employeeIndex) => (
+    <motion.div
+      key={employee.employee_Id || employee.employeeId || employeeIndex}
+      initial={{ opacity: 0, y: 5 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: employeeIndex * 0.01 }}
+      className="contents"
+    >
+      {/* First three cells (Name, Paid Leave, Unpaid Leave) */}
+     <div className="p-3 border-r border-b text-sm font-medium text-gray-900 dark:text-gray-200">
+           <div className="flex items-center gap-2">
+             <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/20 rounded-full flex items-center justify-center">
+               <span className="text-blue-600 dark:text-blue-400 font-medium text-xs">
+                 {employee.first_Name?.charAt(0) || employee.name?.charAt(0) || 'U'}
+                 {employee.last_Name?.charAt(0) || employee.name?.split(' ')[1]?.charAt(0) || ''}
+               </span>
+             </div>
+             <div>
+               <div className="font-medium">{employee.name || 'Unknown'}</div>
+               <div className="text-xs text-gray-500 dark:text-gray-400">
+                 {employee.empID || employee.employee_Id || 'No ID'}
+               </div>
+             </div>
+           </div>
+         </div>
+
+        {(() => {
+  const { paid, unpaid } = getMonthlyLeaveSummary(employee.employeeId);
+
+  return (
+    <>
+      {/* Paid Leave */}
+      <div className="p-3 border-r border-b text-sm text-center text-green-600 dark:text-green-400 font-medium">
+        {paid}
+      </div>
+
+      {/* Unpaid Leave */}
+      <div className="p-3 border-r border-b text-sm text-center text-red-600 dark:text-red-400 font-medium">
+        {unpaid}
+      </div>
+    </>
+  );
+})()}
+
+
+
+      {/* Calendar cells */}
+      {dateRange.map((date, dateIndex) => {
+        const leavesForDate = getLeavesForEmployeeAndDate(employee, date);
+        return (
+          <div
+            key={dateIndex}
+            className={`p-2 border-r border-b min-h-[40px] flex items-center justify-center
+              ${hoveredColumn === dateIndex ? 'bg-blue-50 dark:bg-blue-900/20' : ''}`}
+            onMouseEnter={() => setHoveredColumn(dateIndex)}
+            onMouseLeave={() => setHoveredColumn(null)}
+          >
+            {leavesForDate.map((leave, leaveIndex) => (
+              <div key={leaveIndex}>{renderLeaveIndicator(leave, date)}</div>
+            ))}
+          </div>
+        );
+      })}
+    </motion.div>
+  ))}
+</div>
+
               )}
             </div>
           </div>

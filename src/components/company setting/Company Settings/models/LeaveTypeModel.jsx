@@ -189,35 +189,36 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
     }
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.name.trim()) newErrors.name = 'Leave type name is required';
-    if (!formData.description.trim()) newErrors.description = 'Description is required';
-    if (!formData.maxDays || formData.maxDays <= 0) newErrors.maxDays = 'Valid maximum days is required';
-    
-    // Validate carry forward days for paid leave
-    if (formData.category === 'paid' && formData.carryForwardDays) {
-      if (formData.carryForwardDays < 0) {
-        newErrors.carryForwardDays = 'Carry forward days cannot be negative';
-      } else if (parseInt(formData.carryForwardDays) > parseInt(formData.maxDays)) {
-        newErrors.carryForwardDays = 'Carry forward days cannot exceed maximum days';
-      }
-    }
-    
-    if (!formData.advanceNotice.trim()) newErrors.advanceNotice = 'Advance notice is required';
-    if (!formData.eligibility.trim()) newErrors.eligibility = 'Eligibility criteria is required';
-    
-    const validPolicies = formData.policies.filter(policy => policy.trim());
-    if (validPolicies.length === 0) newErrors.policies = 'At least one policy is required';
+ const validateForm = () => {
+  const newErrors = {};
+  if (!formData.name.trim()) newErrors.name = 'Leave type name is required';
+  if (!formData.description.trim()) newErrors.description = 'Description is required';
+  if (!formData.maxDays || formData.maxDays <= 0) newErrors.maxDays = 'Valid maximum days is required';
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  if (formData.category === 'paid' && formData.carryForwardDays) {
+    if (formData.carryForwardDays < 0) {
+      newErrors.carryForwardDays = 'Carry forward days cannot be negative';
+    }
+  }
+
+  if (!formData.advanceNotice.trim()) newErrors.advanceNotice = 'Advance notice is required';
+  if (!formData.eligibility.trim()) newErrors.eligibility = 'Eligibility criteria is required';
+
+  const validPolicies = formData.policies.filter(policy => policy.trim());
+  if (validPolicies.length === 0) newErrors.policies = 'At least one policy is required';
+
+  setErrors(newErrors);
+  console.log("Validation Errors:", newErrors);
+  return Object.keys(newErrors).length === 0;
+};
+
 
   const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
+    const isValid = validateForm();
+
+  if (!isValid) {
+    return;
+  }
     setIsSubmitting(true);
     try {
       const submitData = {
@@ -232,13 +233,13 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
       }
 
       const result = await addOrUpdateLeaveType(submitData);
-      
+     
       if (result) {
         resetForm();
-        onClose(); 
         await fetchLeaveTypes(); 
-        
+        onClose(); 
       }
+       onClose(); 
     } catch (error) {
       console.error(' Submit error:', error);
     } finally {
@@ -836,7 +837,7 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+            className=" flex items-center justify-center p-4 "
             onClick={handleCancel}
           >
             <motion.div

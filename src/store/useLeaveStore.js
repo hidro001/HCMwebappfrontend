@@ -1,15 +1,15 @@
-// src/stores/useLeaveStore.js
 import {create} from 'zustand';
 import axiosInstance from '../service/axiosInstance';
 import { toast } from 'react-hot-toast';
 
 const useLeaveStore = create((set, get) => ({
   leaves: [],
+  monthlyLeave: [],
   userProfile: null,
   companySettings: null,
   isLoading: false,
+  monthlyLeaveLoading: false,
 
-  // Fetch assigned leaves (if status is "all" the API call omits the filter)
   fetchAssignedLeaves: async (status = 'all') => {
     set({ isLoading: true });
     try {
@@ -18,7 +18,7 @@ const useLeaveStore = create((set, get) => ({
         url += `?status=${status}`;
       }
       const response = await axiosInstance.get(url);
-      // Assume the leaves are in response.data.data (or fallback to response.data)
+      console.log(response.data, 'response')
       set({ leaves: response.data.data || response.data });
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to fetch leaves');
@@ -27,7 +27,6 @@ const useLeaveStore = create((set, get) => ({
     }
   },
 
-  // Handle (approve/reject) a leave request
   handleLeaveRequest: async (leaveId, action, reason_For_Reject) => {
     set({ isLoading: true });
     console.log(reason_For_Reject)
@@ -44,7 +43,6 @@ const useLeaveStore = create((set, get) => ({
     }
   },
 
-  // Apply for a new leave
   applyLeave: async (leaveData) => {
     set({ isLoading: true });
     try {
@@ -61,7 +59,6 @@ const useLeaveStore = create((set, get) => ({
     }
   },
 
-  // Fetch the user profile
   fetchUserProfile: async () => {
     set({ isLoading: true });
     try {
@@ -76,7 +73,6 @@ const useLeaveStore = create((set, get) => ({
     }
   },
 
-  // Fetch company settings (if needed in the leave application)
   fetchCompanySettings: async () => {
     set({ isLoading: true });
     try {
@@ -90,6 +86,19 @@ const useLeaveStore = create((set, get) => ({
       set({ isLoading: false });
     }
   },
+
+  fetchMonthlySummary: async (month) => {
+    console.log('kjfd')
+    set({ monthlyLeaveLoading: true});
+    try {
+      const res = await axiosInstance.get(`/leaves/monthly-summary?month=${month}`);
+      set({ monthlyLeave: res.data.data, monthlyLeaveLoading: false });
+
+    } catch (error) {
+      console.log(error)
+      set({ monthlyLeaveLoading: false });
+    }
+  }
 }));
 
 export default useLeaveStore;

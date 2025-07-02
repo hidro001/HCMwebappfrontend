@@ -6,7 +6,6 @@ import { FaUsers} from "react-icons/fa";
 import { motion } from "framer-motion";
 
 const AttendanceCards = ({attendanceData = {}, data=''}) => {
-
    const {
     totalSubordinates  = 0,
     presentCount     = 0,
