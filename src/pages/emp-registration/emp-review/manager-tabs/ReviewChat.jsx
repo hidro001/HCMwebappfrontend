@@ -3,8 +3,7 @@ import { FaPaperPlane } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import axiosInstance from "../../../../service/axiosInstance";
 
-export default function ManagerChatPanel({ employeeId }) {
-  const managerId = localStorage.getItem("employeeId"); // reviewer or manager
+export default function ManagerChatPanel({ managerId,employeeId }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const messageEndRef = useRef(null);

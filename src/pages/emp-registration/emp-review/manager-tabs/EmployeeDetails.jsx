@@ -154,10 +154,17 @@ function LabelValue({ label, value }) {
 function labelize(str) {
   return str.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 }
-
 function formatValue(val) {
-  if (!val) return '—';
-  if (typeof val === 'string' && val.includes('T')) return new Date(val).toLocaleDateString();
+  if (val === null || val === undefined || val === '') return '—';
+
+  // Handle ISO or plain YYYY-MM-DD date strings
+  if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2}/.test(val)) {
+    const date = new Date(val);
+    return isNaN(date.getTime()) ? val : date.toLocaleDateString();
+  }
+
+  // Handle arrays
   if (Array.isArray(val)) return val.join(', ');
+
   return val;
 }
