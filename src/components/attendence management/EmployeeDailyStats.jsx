@@ -1563,6 +1563,7 @@ import useUsageStatsStore from "../../store/useUsageStore";
 import useFullAttendanceStore from "../../store/useFullAttendanceStore";
 import CustomTooltip from "./CustomToolTip";
 import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
+import { Bar as SimpleBar } from "recharts";   // <-- we’ll use this for the new graph
 
 export default function EmployeeDailyStats() {
   const { attendanceData } = useFullAttendanceStore();
@@ -1663,6 +1664,44 @@ export default function EmployeeDailyStats() {
     });
   }, [timeline, attendanceRecord, date]);
 
+    /* ------------------------------------------------------------------
+     Graph data: one bar per APP session (Chrome, VLC, …)
+     ------------------------------------------------------------------ */
+  const sessionGraphData = useMemo(() => {
+    if (!combinedTimeline.length) return [];
+
+    const browserRegex = /chrome|edge|firefox|brave|opera/i;
+    const rows = [];
+
+    for (let i = 0; i < combinedTimeline.length; i++) {
+      const seg = combinedTimeline[i];
+      if (seg.type !== "app") continue;               // only apps form bars
+
+      // duration is already computed earlier
+      const websitesDuringThisApp = new Set();
+
+      /* grab any website segments that live right after this app
+         (until we hit the next app or reach the end)            */
+      for (let j = i + 1; j < combinedTimeline.length; j++) {
+        const nxt = combinedTimeline[j];
+        if (nxt.type === "app") break;
+        if (nxt.type === "website") websitesDuringThisApp.add(nxt.name);
+      }
+
+      rows.push({
+        name     : seg.name,              // label on X‑axis
+        minutes  : seg.duration,          // bar height
+        tooltip  : {
+          start : seg.startTime,
+          end   : seg.endTime,
+          sites : Array.from(websitesDuringThisApp)
+        }
+      });
+    }
+    return rows;
+  }, [combinedTimeline]);
+
+
   const toggleWebsiteExpansion = (index) => {
     setExpandedWebsites((prev) => ({
       ...prev,
@@ -1691,6 +1730,30 @@ export default function EmployeeDailyStats() {
       ? text.substring(0, maxLength) + "..."
       : text;
   };
+
+    /* ---------- little bubble when you hover a bar ------------- */
+  const SessionTooltip = ({ active, payload }) => {
+    if (!active || !payload?.length) return null;
+    const p = payload[0].payload;               // our row object
+
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-4 text-sm">
+        <div className="font-semibold mb-1">{p.name}</div>
+        <div>⏰ {p.tooltip.start} – {p.tooltip.end}</div>
+        <div>🕒 {p.minutes} minute(s)</div>
+        {p.tooltip.sites.length > 0 && (
+          <>
+            <hr className="my-2" />
+            <div className="font-medium mb-1">Websites inside:</div>
+            <ul className="list-disc list-inside space-y-1">
+              {p.tooltip.sites.map((s,i)=><li key={i}>{s}</li>)}
+            </ul>
+          </>
+        )}
+      </div>
+    );
+  };
+
 
   if (loading) {
     return (
@@ -1759,6 +1822,8 @@ export default function EmployeeDailyStats() {
   const totalTime = productiveTime + unproductiveTime;
   const productivityPercentage =
     totalTime > 0 ? Math.round((productiveTime / totalTime) * 100) : 0;
+
+    
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950">
@@ -2227,6 +2292,20 @@ export default function EmployeeDailyStats() {
         {activeTab === "timeline" && (
           <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20">
             <div className="flex flex-wrap justify-between items-center mb-8">
+                    {/* ----------- NEW BAR‑CHART ------------- */}
+        {sessionGraphData.length > 0 && (
+          <div className="mb-10">
+            <ResponsiveContainer width="100%" height={260}>
+              <BarChart data={sessionGraphData}>
+                <XAxis dataKey="name" stroke="#6b7280" />
+                <YAxis stroke="#6b7280" />
+                <Tooltip content={<SessionTooltip />} />
+                <SimpleBar dataKey="minutes" radius={[4,4,0,0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        )}
+
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center">
                 <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl p-3 mr-4">
                   <FiClock className="w-6 h-6 text-white" />
