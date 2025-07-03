@@ -11,8 +11,8 @@ import {
   FaEye,
 } from "react-icons/fa";
 import LeaveDetailsModal from "./model/LeaveDetailsAllModal";
-import useLeaveStore from "../../store/allLeaveStore"; // Import the Zustand store
-import ExportButtons from "../common/PdfExcel"; // adjust path if needed
+import useLeaveStore from "../../store/allLeaveStore";
+import ExportButtons from "../common/PdfExcel"; 
 import { fetchGlobalLeaveStats } from "../../service/leaveService.js";
 
 const tableContainerVariants = {
@@ -29,7 +29,6 @@ const tableRowVariants = {
 };
 
 export default function AllLeave() {
-  // States for filters and pagination
   const [activeStatus, setActiveStatus] = useState("all");
   const [searchText, setSearchText] = useState("");
   const [selectedMonth, setSelectedMonth] = useState("");
@@ -37,17 +36,14 @@ export default function AllLeave() {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedLeave, setSelectedLeave] = useState(null);
 
-  // State to hold global stats
   const [globalStats, setGlobalStats] = useState({
     pendingRequests: 0,
     approvedThisMonth: 0,
     rejectedThisMonth: 0,
   });
 
-  // Zustand store for leaves
   const { leaves, isLoading, fetchLeaves } = useLeaveStore();
 
-  // 1. Fetch global stats on mount
   useEffect(() => {
     async function loadGlobalStats() {
       try {
@@ -62,19 +58,16 @@ export default function AllLeave() {
     loadGlobalStats();
   }, []);
 
-  // 2. Fetch leaves from the store whenever activeStatus changes
   useEffect(() => {
     fetchLeaves(activeStatus);
   }, [activeStatus, fetchLeaves]);
 
-  // 3. Filter the leaves client‑side based on search text and selected month
   const filteredData = useMemo(() => {
     let searchRegex;
     try {
-      // Create a case-insensitive regex from the search text
       searchRegex = new RegExp(searchText, "i");
     } catch (err) {
-      searchRegex = /a^/; // never matches
+      searchRegex = /a^/; 
     }
 
     return leaves.filter((item) => {

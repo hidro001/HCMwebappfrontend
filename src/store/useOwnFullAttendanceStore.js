@@ -4,11 +4,7 @@ import axiosInstance from "../service/axiosInstance";
 import { toast } from "react-hot-toast";
 import { parse } from "date-fns";
 
-/* --------------------------------------
-   HELPER FUNCTIONS
--------------------------------------- */
 
-// Convert 12-hour "hh:mm:ss AM/PM" → 24-hour "HH:mm:ss"
 function convertTo24Hour(time) {
   if (!time) return null;
   let [hourPart, modifier] = time.split(" ");
@@ -26,7 +22,6 @@ function convertTo24Hour(time) {
   return `${String(hours).padStart(2, "0")}:${minutes}:${seconds}`;
 }
 
-// Calculate hours difference
 function getHoursWorked(login, logout) {
   if (!login || !logout) return 0;
   const loginDate = parse(convertTo24Hour(login), "HH:mm:ss", new Date());
@@ -35,7 +30,6 @@ function getHoursWorked(login, logout) {
   return diff / (1000 * 60 * 60);
 }
 
-// Return all working days (if needed)
 function getTotalWorkingDays(
   leaveSystemDetails,
   companySettings,
@@ -43,8 +37,7 @@ function getTotalWorkingDays(
   month,
   upToToday = false
 ) {
-  // Implementation from your original code, if needed
-  // Or keep your existing logic
+
   const days = [];
   let date = new Date(year, month - 1, 1, 12);
   const today = new Date();
@@ -61,7 +54,6 @@ function getTotalWorkingDays(
 
     if (isWorkingDay && !isHoliday) {
       if (upToToday && date > today) {
-        // skip future dates if upToToday
       } else {
         days.push(new Date(date));
       }
@@ -72,7 +64,6 @@ function getTotalWorkingDays(
   return days.length;
 }
 
-// Calculate total leaves used
 function calculateTotalLeaves({
   attendanceData,
   approvedLeaves,
@@ -81,16 +72,10 @@ function calculateTotalLeaves({
   year,
   month,
 }) {
-  // EXACT logic from your snippet (you can unify if you like).
-  // For brevity, let's do a simple example:
   let totalLeaves = 0;
-  // ...
-  // your code to figure out how many days are absent (that are not holidays, not weekends, etc.)
-  // ...
   return totalLeaves;
 }
 
-// Calculate not even half days
 function calculateNotEvenHalfDays(attendanceData, year, month) {
   let count = 0;
   attendanceData.forEach((rec) => {
@@ -107,7 +92,6 @@ function calculateNotEvenHalfDays(attendanceData, year, month) {
   return count;
 }
 
-// Example “calculateFinalSalary” pulled from your snippet
 function calculateFinalSalary({
   baseSalary,
   attendanceData,
@@ -120,7 +104,6 @@ function calculateFinalSalary({
   year,
   month,
 }) {
-  // If baseSalary is 0 or missing, bail out
   if (!baseSalary || !attendancePolicies || baseSalary <= 0) {
     return {
       finalSalary: "₹ 0.00",
@@ -132,17 +115,14 @@ function calculateFinalSalary({
     };
   }
 
-  // Example from your snippet:
   const calcMethod = attendancePolicies.calcSalaryBasedOn || "WORKING_DAYS";
   const totalPaidLeaves = userProfileData?.no_of_Paid_Leave || 0;
 
-  // denominator
   const denom =
     calcMethod === "CALENDAR_DAYS"
       ? new Date(year, month, 0).getDate()
       : getTotalWorkingDays(leaveSystemDetails, companySettings, year, month);
 
-  // up to today if current
   const isCurrentMonthAndYear =
     year === new Date().getFullYear() && month === new Date().getMonth() + 1;
   let daysUpToToday = denom;
@@ -159,7 +139,6 @@ function calculateFinalSalary({
           );
   }
 
-  // total leaves
   const totalLeaves = calculateTotalLeaves({
     attendanceData,
     approvedLeaves,
@@ -170,7 +149,6 @@ function calculateFinalSalary({
   });
   const notEvenHalfDays = calculateNotEvenHalfDays(attendanceData, year, month);
 
-  // figure out how many of those are "unpaid" vs "paid"
   let paidLeavesUsed = 0;
   for (const lv of approvedLeaves) {
     const from = new Date(lv.leave_From);
@@ -185,10 +163,9 @@ function calculateFinalSalary({
       }
     }
   }
-  const totalUnpaidLeaves = totalLeaves + notEvenHalfDays; // simplified
+  const totalUnpaidLeaves = totalLeaves + notEvenHalfDays; 
   const unpaidLeaves = Math.max(totalUnpaidLeaves - paidLeavesUsed, 0);
 
-  // standard deductions
   const deductionIds = employmentTypeDetails?.deductions || [];
   const allDeductions = companySettings?.deductions || [];
   const deductionDetails = deductionIds
@@ -213,11 +190,9 @@ function calculateFinalSalary({
     baseSalary - totalDeductionsAmount
   );
 
-  // fraction
   const fractionOfMonthWorked = daysUpToToday / denom;
   const payForDaysUpToToday = leftoverAfterDeductions * fractionOfMonthWorked;
 
-  // daily rate
   const dailyRate = leftoverAfterDeductions / denom;
   const leavesDeduction = unpaidLeaves * dailyRate;
   breakdown.push({
@@ -238,7 +213,6 @@ function calculateFinalSalary({
   };
 }
 
-/* Parse shift timing strings like "Saket (09:00 - 07:00)" */
 function parseShiftTiming(shiftTimingString) {
   if (!shiftTimingString) return null;
   const regex = /(.+?)\s*\((\d{2}:\d{2})\s*-\s*(\d{2}:\d{2})\)/;
@@ -257,10 +231,10 @@ function parseShiftTiming(shiftTimingString) {
 export const useOwnFullAttendanceStore = create(
   persist(
     (set, get) => ({
-      // ---------- STATES ----------
       userProfileData: null,
       approvedLeaves: [],
       attendanceData: [],
+      userAttendanceSummary: [],
       companySettings: null,
       shiftTimingDetails: null,
       employmentTypeDetails: null,
@@ -271,11 +245,9 @@ export const useOwnFullAttendanceStore = create(
       attendancePolicies: {},
       error: null,
 
-      // ---------- ACTIONS ----------
 
       fetchAttendanceData: async () => {
         try {
-          // 1) User profile
           const userProfileRes = await axiosInstance.get("/user/profile");
           if (!userProfileRes.data.success) {
             throw new Error(
@@ -284,7 +256,6 @@ export const useOwnFullAttendanceStore = create(
           }
           const userData = userProfileRes.data.response;
 
-          // 2) Approved Leaves
           const approvedLeavesRes = await axiosInstance.get(
             "/leaves/employee/?status=approved"
           );
@@ -302,13 +273,13 @@ export const useOwnFullAttendanceStore = create(
             (leave) => leave.employee?.employee_Id === currentEmployeeId
           );
 
-          // 3) Attendance
           const attendanceRes = await axiosInstance.get("/attendance-user");
           if (!attendanceRes.data.success) {
             throw new Error(
               attendanceRes.data.message || "Failed to fetch attendance data"
             );
           }
+          const monthSummary = attendanceRes.data.monthSummary;
           const uniqueData = attendanceRes.data.data.reduce((acc, item) => {
             if (!acc.find((x) => x.date === item.date)) {
               acc.push(item);
@@ -316,7 +287,7 @@ export const useOwnFullAttendanceStore = create(
             return acc;
           }, []);
 
-          // 4) Company Settings
+     
           const settingsRes = await axiosInstance.get(
             "/company-settings/settings"
           );
@@ -327,9 +298,8 @@ export const useOwnFullAttendanceStore = create(
           }
           const settingsData = settingsRes.data.data;
           const allShifts = settingsData.shifts || [];
-          // SHIFT TIMING
+
           let finalShiftTiming = null;
-          // 1) If userData.shift_Timing is an object with name/startTime/endTime
           if (
             userData.shift_Timing &&
             typeof userData.shift_Timing === "object" &&
@@ -343,19 +313,16 @@ export const useOwnFullAttendanceStore = create(
               endTime: userData.shift_Timing.endTime,
             };
           }
-          // 2) If userData.shift_Timing is a string that looks like "Name (00:00 - 00:00)"
           else if (
             typeof userData.shift_Timing === "string" &&
-            userData.shift_Timing.includes("(") // just a quick guess
+            userData.shift_Timing.includes("(") 
           ) {
             finalShiftTiming = parseShiftTiming(userData.shift_Timing) || null;
           }
-          // 3) If userData.shift_Timing is a string that looks like an ID
           else if (
             typeof userData.shift_Timing === "string" &&
-            userData.shift_Timing.length > 15 // or some other check
+            userData.shift_Timing.length > 15
           ) {
-            // NEW CODE: Try to find it in allShifts by ID
             const shiftId = userData.shift_Timing;
             const foundShift = allShifts.find((sh) => sh.id === shiftId);
             if (foundShift) {
@@ -382,8 +349,8 @@ export const useOwnFullAttendanceStore = create(
           );
 
           const normalizedWorkingDays = (leaveSystem.workingDays || [])
-            .flatMap((s) => s.split(",")) // ["Mon"," Tue",…]
-            .map((s) => s.trim()); // ["Mon","Tue",…]
+            .flatMap((s) => s.split(",")) 
+            .map((s) => s.trim()); 
             leaveSystem.workingDays = normalizedWorkingDays;
 
           const monthlyPaidLeavesValue = leaveSystem?.monthlyPaidLeaves || 0;
@@ -393,11 +360,11 @@ export const useOwnFullAttendanceStore = create(
             .map((dedId) => settingsData.deductions.find((d) => d.id === dedId))
             .filter(Boolean);
 
-          // Store everything
           set(() => ({
             userProfileData: userData,
             approvedLeaves: filteredApprovedLeaves,
             attendanceData: uniqueData,
+            userAttendanceSummary: monthSummary,
             companySettings: settingsData,
             shiftTimingDetails: finalShiftTiming,
             employmentTypeDetails: employmentType,
@@ -417,10 +384,8 @@ export const useOwnFullAttendanceStore = create(
         }
       },
 
-      // Generate PDF for a specific (year, month)
       generatePDF: async (year, month) => {
         try {
-          // 1) Grab data from the store
           const {
             attendanceData,
             approvedLeaves,
@@ -431,7 +396,6 @@ export const useOwnFullAttendanceStore = create(
             attendancePolicies,
           } = get();
 
-          // 2) Calculate final salary for that (year, month)
           const baseSalary =
             parseFloat(userProfileData?.current_Base_Salary) || 0;
           const { finalSalary, deduction, leaves } = calculateFinalSalary({

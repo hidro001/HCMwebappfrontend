@@ -4,9 +4,13 @@ import axiosInstance from "../service/axiosInstance";
 import toast from "react-hot-toast";
 
 const useLeaveStore = create((set, get) => ({
+  
   // State variables
   leaves: [],
+  availability: [],
   isLoading: false,
+  availloading: false,
+  availError: null,
   error: null,
   activeStatus: "all", 
   userProfile: null,
@@ -74,6 +78,7 @@ const useLeaveStore = create((set, get) => ({
     }
   },
 
+
   // Initialize the store (user profile, company settings, leave system, etc.)
   initializeData: async () => {
     try {
@@ -122,7 +127,17 @@ const useLeaveStore = create((set, get) => ({
     }
   },
 
-  // Apply for leave
+  fetchAvailability: async (leaveTypeId) => {
+
+    set({ availloading: true, availError: null });
+    try {
+      const res = await axiosInstance.get(`/leaves/leaveBalance?leaveTypeId=${leaveTypeId}`);
+      set({ availability: res.data.data, availloading: false });
+    } catch (error) {
+      set({ availError: error.message, availloading: false });
+    }
+  },
+
   applyLeave: async (leaveData) => {
     try {
       const response = await axiosInstance.post(

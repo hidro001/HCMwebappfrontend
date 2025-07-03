@@ -9,6 +9,7 @@ export default function SubmitOrRemark({ employeeId, isManager = true }) {
   const [verifyStatus, setVerifyStatus] = useState('Not Verified');
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingStatus, setPendingStatus] = useState('');
+  const managerId = localStorage.getItem("employeeId"); // reviewer or manager
 
   const empid = employeeId;
 
@@ -73,7 +74,8 @@ export default function SubmitOrRemark({ employeeId, isManager = true }) {
       {/* Review Chat */}
       <div className="md:w-1/2 w-full h-full border rounded-xl p-5 bg-white dark:bg-[#0e1322] border-gray-300 dark:border-gray-700 shadow-md">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Review Chat</h2>
-        <ReviewChat />
+       <ReviewChat managerId={managerId} employeeId={employeeId} />
+
       </div>
 
       {/* Submission / Status Panel */}

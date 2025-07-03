@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 
 const leaveTypeStore = create((set, get) => ({
   leaveTypes: [],
+  assignedLeaveTypes: [],
   activeLeaveTypes: [],
   leaveTypeStats: null,
   isLoading: false,
@@ -39,6 +40,25 @@ const leaveTypeStore = create((set, get) => ({
       return res.data?.data || null;
     } catch (error) {
       console.error('[fetchLeaveTypeById] Error:', error);
+      set({ 
+        error: error.response?.data?.message || 'Failed to fetch leave type',
+        isLoading: false 
+      });
+      toast.error('Failed to fetch leave type.');
+      return null;
+    }
+  },
+
+  fetchAssignedLeaveTypeById: async (id) => {
+    set({ isLoading: true, error: null });
+    try {
+      const res = await axiosInstance.get(`/leaves-types/assigned-leave-type/${id}`);
+      set({ 
+         assignedLeaveTypes: res.data?.data || [], 
+        isLoading: false
+       });
+    } catch (error) {
+      console.error('[fetchAssignedLeaveTypeById] Error:', error);
       set({ 
         error: error.response?.data?.message || 'Failed to fetch leave type',
         isLoading: false 

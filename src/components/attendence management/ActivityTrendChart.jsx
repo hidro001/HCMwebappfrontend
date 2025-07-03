@@ -13,12 +13,10 @@ import {
 } from "recharts";
 
 export default function ActivityTrendChart({ employeeId, date }) {
-  // We'll assume `fetchActivityTrend` was already called in EmployeeStatistics
+
   const { activityTrend } = useUsageStatsStore();
 
-  // If you want to filter locally or do transformations:
   const chartData = useMemo(() => {
-    // e.g. rename fields or ensure numeric
     return activityTrend.map((d) => ({
       time: d.time,
       keyboardPresses: Number(d.keyboardPresses || 0),
@@ -51,7 +49,6 @@ export default function ActivityTrendChart({ employeeId, date }) {
           <YAxis />
           <Tooltip />
 
-          {/* Keyboard Presses Area */}
           <Area
             type="monotone"
             dataKey="keyboardPresses"
@@ -60,7 +57,6 @@ export default function ActivityTrendChart({ employeeId, date }) {
             name="Average Productivity Rating"
           />
 
-         
         </AreaChart>
       </ResponsiveContainer>
     </div>

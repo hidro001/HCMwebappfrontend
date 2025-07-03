@@ -121,6 +121,7 @@ import EditRestDetailPage from "../pages/emp-registration/edit-rest-detail/EditR
 import ReviewEmployeePage from "../pages/emp-registration/emp-review/ReviewEmployeePage";
 import ManagerTabOverview from "../pages/emp-registration/emp-review/manager-tabs/ManagerTabOverview";
 import SuperAdminRegistration from "../components/SuperAdminRegistration/SuperAdminRegistration";
+import RegistrationLogin from "../pages/emp-registration/RegistrationLogin";
 
 const router = createBrowserRouter([
   {
@@ -135,6 +136,15 @@ const router = createBrowserRouter([
     path: "/registration/set-password/v2/:token",
     element: <SetPassword />,
   },
+   {
+    path: "/registration/login",
+    element: <RegistrationLogin />,
+  },
+
+   {
+        path: "registration/edit-rest-detail",
+        element: <EditRestDetailPage />,
+      },
   {
     path: "/",
     element: <Login />,
@@ -574,10 +584,7 @@ const router = createBrowserRouter([
         path: "registration/add-new-employee",
         element: <AddNewEmployeePage />,
       },
-      {
-        path: "registration/edit-rest-detail",
-        element: <EditRestDetailPage />,
-      },
+     
 
       {
         path: "registration/review-employee",

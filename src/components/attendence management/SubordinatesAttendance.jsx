@@ -533,7 +533,7 @@ export default function SubordinatesAttendance() {
   const [selectedMonth, setSelectedMonth] = useState(defaultMonth);
   const [showCount, setShowCount] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'table'
+  const [viewMode, setViewMode] = useState("grid"); 
   const [filterMenuOpen, setFilterMenuOpen] = useState(false);
   const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
 
@@ -561,14 +561,11 @@ export default function SubordinatesAttendance() {
 
     console.log(subordinateStats, 'data')
 
-  // Filter employees based on criteria
   const filteredEmployees = employeesData.filter((emp) => {
-    // Department filter
     if (selectedDepartment !== "Department" && emp.department !== selectedDepartment) {
       return false;
     }
     
-    // Month filter
     if (selectedMonth && emp.attendanceDate) {
       const [filterYear, filterMonth] = selectedMonth.split("-");
       const empYear = emp.attendanceDate.slice(0, 4);
@@ -578,7 +575,6 @@ export default function SubordinatesAttendance() {
       }
     }
     
-    // Search filter
     const lowerSearch = searchTerm.toLowerCase();
     if (
       !emp.name.toLowerCase().includes(lowerSearch) &&

@@ -112,7 +112,7 @@ axiosInstance.interceptors.request.use(
       // 2) redirect once (if not already on login)
       if (!isRedirecting && window.location.pathname !== '/') {
         isRedirecting = true;
-        window.location.href = '/';
+        // window.location.href = '/';
       }
       // 3) cancel the request so no network call happens
       throw new axios.Cancel('No access token');
@@ -144,7 +144,7 @@ axiosInstance.interceptors.response.use(
       // redirect once if not already on "/"
       if (!isRedirecting && window.location.pathname !== '/') {
         isRedirecting = true;
-        window.location.href = '/';
+        // window.location.href = '/';
       }
 
       // hang forever so no downstream .catch/.then runs

@@ -30,7 +30,7 @@ export default function SetPassword() {
     if (result.success) {
       toast.success('Password set successfully!');
       setIsSuccess(true);
-      setTimeout(() => navigate('/'), 2000);
+      setTimeout(() => navigate('/registration/login'), 2000);
     } else {
       toast.error(result.message);
     }

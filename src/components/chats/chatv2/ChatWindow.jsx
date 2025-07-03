@@ -390,7 +390,12 @@ function ChatWindow() {
       {/* Messages Area */}
       <div
         ref={scrollRef}
-        className="flex-1 overflow-y-auto px-4 py-4 bg-gray-50 dark:bg-gray-800 custom-scrollbar"
+        className="flex-1 overflow-y-auto px-4 py-4 bg-gray-50 dark:bg-gray-800 custom-scrollbar [&::-webkit-scrollbar]:w-2
+    [&::-webkit-scrollbar-track]:rounded-full
+    [&::-webkit-scrollbar-track]:bg-gray-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-800
+    [&::-webkit-scrollbar-thumb]:rounded-full
+    [&::-webkit-scrollbar-thumb]:bg-gray-400 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-600
+    transition-colors duration-300"
         style={{ minHeight: 0 }}
       >
         {renderMessages()}
