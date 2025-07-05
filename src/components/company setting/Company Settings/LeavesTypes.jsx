@@ -504,7 +504,6 @@ export default function LeavesTypes() {
         )}
       </div>
       
-      {/* Modal */}
       <LeaveType 
         isOpen={isModalOpen} 
         onClose={handleCloseModal}
