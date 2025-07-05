@@ -139,6 +139,7 @@ const useLeaveStore = create((set, get) => ({
   },
 
   applyLeave: async (leaveData) => {
+    console.log(leaveData, 'apply')
     try {
       const response = await axiosInstance.post(
         "/leaves/apply",

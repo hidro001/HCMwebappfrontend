@@ -1,18 +1,8 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  FaCalendarAlt,
-  FaUser,
-  FaChevronLeft,
-  FaChevronRight,
-  FaFilter,
-  FaTimes,
-  FaExclamationTriangle,
-  FaCheckCircle,
-  FaTimesCircle,
-  FaClock,
-  FaCheck,
-  FaSpinner
+  FaCalendarAlt, FaUser, FaChevronLeft, FaChevronRight, FaFilter, FaTimes, FaExclamationTriangle, 
+  FaCheckCircle, FaTimesCircle, FaClock, FaCheck,FaSpinner
 } from 'react-icons/fa';
 import useLeaveStore from '../../store/useLeaveStore.js';
 import useAttendanceStore from '../../store/useAttendanceStore.js';
