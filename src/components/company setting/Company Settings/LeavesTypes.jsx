@@ -7,6 +7,7 @@ import LeaveType from "./models/LeaveTypeModel";
 import leaveTypeStore from "../../../store/leaveTypeStore";
 import ConfirmationDialog from "../../common/ConfirmationDialog.jsx";
 
+
 export default function LeavesTypes() {
   const { leaveTypes, isLoading, error, fetchLeaveTypes, deleteLeaveType, toggleLeaveTypeStatus, clearError} = leaveTypeStore();
 
