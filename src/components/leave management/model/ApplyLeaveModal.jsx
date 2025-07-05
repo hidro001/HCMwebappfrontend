@@ -1005,36 +1005,7 @@ const safeDisplayDate = (dateStr) => {
                      <span className='pl-2 text-red-400 font-bold'> {leaveDate} </span>
                     </div>
                   }
-                    {/* Number of Days Input */}
-                    <div className="mb-6">
-                      <label className="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">
-                        Number of Days *
-                      </label>
-                      <input
-                        type="number"
-                        step="0.5"
-                        min="0.5"
-                        max="365"
-                        value={formData.no_Of_Days}
-                        onChange={(e) => handleInputChange('no_Of_Days', e.target.value)}
-                        placeholder="Enter number of days (e.g., 2.5 for 2.5 days)"
-                        className={`w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 bg-white border-gray-300 text-gray-900 placeholder-gray-500 focus:border-blue-500 dark:bg-gray-700/50 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-400 dark:focus:bg-gray-700 dark:focus:border-blue-400 ${
-                          errors.no_Of_Days ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
-                        }`}
-                      />
-                      {errors.no_Of_Days && (
-                        <p className="text-red-600 dark:text-red-400 text-sm mt-1 flex items-center">
-                          <FaExclamationTriangle className="w-4 h-4 mr-1" />
-                          {errors.no_Of_Days}
-                        </p>
-                      )}
-                      <p className="text-xs mt-1 text-gray-500 dark:text-gray-400">
-                        {formData.isHalfDay 
-                          ? 'When half-day is enabled, 0.5 will be deducted from your total (e.g., 5 days becomes 4.5 days)'
-                          : 'You can enter decimal values like 0.5, 1.5, 2.5, etc. for half days'
-                        }
-                      </p>
-                    </div>
+             
 
                     {/* Number of Days Input */}
                     <div className="mb-6">
