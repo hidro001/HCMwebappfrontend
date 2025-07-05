@@ -49,8 +49,8 @@
 //     error,
 //     timeline,
 //     fetchTimeline,
-//     fetchGraphData,   
-//     graphData,        
+//     fetchGraphData,
+//     graphData,
 //   } = useUsageStatsStore();
 
 //   const attendanceRecord = useMemo(() => {
@@ -288,19 +288,19 @@
 //             <FiActivity className="mr-2 text-indigo-500" />
 //             Productivity Overview
 //           </h2>
-          
+
 //           <div className="flex items-center justify-between mb-6">
 //             <div className="text-center">
 //               <div className="text-3xl font-bold text-emerald-500">{productivityPercentage}%</div>
 //               <div className="text-sm text-gray-500 dark:text-gray-400">Productivity</div>
 //             </div>
-            
+
 //             <div className="w-36 h-36 relative">
 //               <div className="absolute inset-0 rounded-full bg-gray-200 dark:bg-gray-700"></div>
-//               <div 
-//                 className="absolute inset-0 rounded-full border-[12px] border-emerald-500" 
-//                 style={{ 
-//                   clipPath: `inset(0 0 0 ${100 - productivityPercentage}%)` 
+//               <div
+//                 className="absolute inset-0 rounded-full border-[12px] border-emerald-500"
+//                 style={{
+//                   clipPath: `inset(0 0 0 ${100 - productivityPercentage}%)`
 //                 }}
 //               ></div>
 //               <div className="absolute inset-0 flex items-center justify-center">
@@ -311,7 +311,7 @@
 //               </div>
 //             </div>
 //           </div>
-          
+
 //           <div className="grid grid-cols-2 gap-4">
 //             <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-900/10 p-4 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
 //               <div className="flex items-center">
@@ -324,7 +324,7 @@
 //                 </div>
 //               </div>
 //             </div>
-            
+
 //             <div className="bg-gradient-to-br from-rose-50 to-rose-100 dark:from-rose-900/20 dark:to-rose-900/10 p-4 rounded-xl border border-rose-100 dark:border-rose-900/30">
 //               <div className="flex items-center">
 //                 <div className="bg-rose-100 dark:bg-rose-900/30 text-rose-600 dark:text-rose-300 p-2 rounded-lg mr-3">
@@ -338,13 +338,13 @@
 //             </div>
 //           </div>
 //         </div>
-        
+
 //         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
 //           <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 flex items-center">
 //             <FiClock className="mr-2 text-indigo-500" />
 //             Attendance Summary
 //           </h2>
-          
+
 //           {attendanceRecord ? (
 //             <>
 //               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
@@ -354,7 +354,7 @@
 //                     {attendanceRecord.login}
 //                   </div>
 //                 </div>
-                
+
 //                 <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/10 p-4 rounded-xl border border-purple-100 dark:border-purple-900/30">
 //                   <div className="text-sm text-gray-600 dark:text-gray-300 mb-1">Logout Time</div>
 //                   <div className="text-xl font-bold text-purple-600 dark:text-purple-300">
@@ -362,7 +362,7 @@
 //                   </div>
 //                 </div>
 //               </div>
-              
+
 //               {attendanceRecord.breaks && attendanceRecord.breaks.length > 0 && (
 //                 <div>
 //                   <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">Breaks Taken</h3>
@@ -374,8 +374,8 @@
 //                         </div>
 //                         <div>
 //                           <div className="font-medium text-gray-800 dark:text-gray-200">
-//                             {new Date(br.start).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} 
-//                             {" → "} 
+//                             {new Date(br.start).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+//                             {" → "}
 //                             {new Date(br.end).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
 //                           </div>
 //                           <div className="text-xs text-gray-500 dark:text-gray-400">
@@ -403,7 +403,7 @@
 //           )}
 //         </div>
 //       </div>
-      
+
 //       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
 //         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
 //           <div className="bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 px-6 py-4 flex items-center">
@@ -442,7 +442,7 @@
 //             </ul>
 //           </div>
 //         </div>
-        
+
 //         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
 //           <div className="bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 px-6 py-4 flex items-center">
 //             <div className="mr-3 text-white bg-indigo-400/20 p-2 rounded-lg">
@@ -483,7 +483,7 @@
 //           </div>
 //         </div>
 //       </div>
-      
+
 //       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 border border-gray-100 dark:border-gray-700 mb-8">
 //         <div className="flex flex-wrap justify-between items-center mb-6">
 //           <h2 className="text-xl font-bold text-gray-800 dark:text-white flex items-center">
@@ -501,12 +501,12 @@
 //             </span>
 //           </div>
 //         </div>
-        
+
 //         {combinedTimeline.length > 0 ? (
 //           <div className="relative pl-4">
 //             {/* Timeline track */}
 //             <div className="absolute left-[18px] top-0 w-1 h-full bg-gradient-to-b from-indigo-200 via-purple-200 to-pink-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700 rounded-full"></div>
-            
+
 //             <div className="space-y-8">
 //               {combinedTimeline.map((block, idx) => {
 //                 const isBreak = block.type === "break";
@@ -530,11 +530,11 @@
 //                         isBreak ? "bg-amber-500" : "bg-indigo-500"
 //                       } border-4 border-white dark:border-gray-800`}></div>
 //                     </div>
-                    
+
 //                     <div className="ml-6 flex-1">
 //                       <div className={`p-4 rounded-xl shadow-sm transition-all duration-300 group-hover:shadow-md ${
-//                         isBreak 
-//                           ? "bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-900/10 border border-amber-100 dark:border-amber-900/30" 
+//                         isBreak
+//                           ? "bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-900/10 border border-amber-100 dark:border-amber-900/30"
 //                           : "bg-gradient-to-br from-indigo-50 to-indigo-100 dark:from-indigo-900/20 dark:to-indigo-900/10 border border-indigo-100 dark:border-indigo-900/30"
 //                       }`}>
 //                         <div className="flex flex-wrap justify-between items-start">
@@ -557,8 +557,8 @@
 //                           </div>
 //                           <div className="mt-2 sm:mt-0">
 //                             <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
-//                               isBreak 
-//                                 ? "bg-amber-100 text-amber-700 dark:bg-amber-700/30 dark:text-amber-200" 
+//                               isBreak
+//                                 ? "bg-amber-100 text-amber-700 dark:bg-amber-700/30 dark:text-amber-200"
 //                                 : "bg-indigo-100 text-indigo-700 dark:bg-indigo-700/30 dark:text-indigo-200"
 //                             }`}>
 //                               {block.type.toUpperCase()}
@@ -586,7 +586,7 @@
 //           </div>
 //         )}
 //       </div>
-      
+
 //       {/* Summary Footer */}
 //       <div className="bg-gradient-to-r from-indigo-500 to-purple-600 dark:from-indigo-600 dark:to-purple-700 rounded-2xl shadow-xl p-6 text-white">
 //         <div className="flex flex-col sm:flex-row justify-between items-center">
@@ -773,8 +773,6 @@
 //     </div>
 //   );
 // }
-
-
 
 // import  { useEffect } from 'react';
 // import { useParams } from 'react-router-dom';
@@ -1556,14 +1554,38 @@
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
-  FiClock, FiCoffee, FiActivity, FiMonitor, FiGlobe, FiTrendingUp, FiInfo, FiEye, FiEyeOff, 
-  FiDownload, FiShare2, FiCalendar, FiUser, FiBarChart, FiPieChart, FiZap, FiRefreshCw,
+  FiClock,
+  FiCoffee,
+  FiActivity,
+  FiMonitor,
+  FiGlobe,
+  FiTrendingUp,
+  FiInfo,
+  FiEye,
+  FiEyeOff,
+  FiDownload,
+  FiShare2,
+  FiCalendar,
+  FiUser,
+  FiBarChart,
+  FiPieChart,
+  FiZap,
+  FiRefreshCw,
 } from "react-icons/fi";
 import useUsageStatsStore from "../../store/useUsageStore";
 import useFullAttendanceStore from "../../store/useFullAttendanceStore";
 import CustomTooltip from "./CustomToolTip";
-import { ResponsiveContainer, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from "recharts";
-import { Bar as SimpleBar } from "recharts";   // <-- we’ll use this for the new graph
+import {
+  ResponsiveContainer,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  Bar,
+} from "recharts";
+import { Bar as SimpleBar } from "recharts"; // <-- we’ll use this for the new graph
 
 export default function EmployeeDailyStats() {
   const { attendanceData } = useFullAttendanceStore();
@@ -1573,8 +1595,16 @@ export default function EmployeeDailyStats() {
   const [activeTab, setActiveTab] = useState("overview");
 
   const {
-    dailyStats, fetchDailyStats, fetchDeptCategories, deptCategories, loading, error, timeline, fetchTimeline, 
-    fetchGraphData, graphData,
+    dailyStats,
+    fetchDailyStats,
+    fetchDeptCategories,
+    deptCategories,
+    loading,
+    error,
+    timeline,
+    fetchTimeline,
+    fetchGraphData,
+    graphData,
   } = useUsageStatsStore();
 
   const attendanceRecord = useMemo(() => {
@@ -1664,7 +1694,7 @@ export default function EmployeeDailyStats() {
     });
   }, [timeline, attendanceRecord, date]);
 
-    /* ------------------------------------------------------------------
+  /* ------------------------------------------------------------------
      Graph data: one bar per APP session (Chrome, VLC, …)
      ------------------------------------------------------------------ */
   const sessionGraphData = useMemo(() => {
@@ -1675,7 +1705,7 @@ export default function EmployeeDailyStats() {
 
     for (let i = 0; i < combinedTimeline.length; i++) {
       const seg = combinedTimeline[i];
-      if (seg.type !== "app") continue;               // only apps form bars
+      if (seg.type !== "app") continue; // only apps form bars
 
       // duration is already computed earlier
       const websitesDuringThisApp = new Set();
@@ -1689,18 +1719,17 @@ export default function EmployeeDailyStats() {
       }
 
       rows.push({
-        name     : seg.name,              // label on X‑axis
-        minutes  : seg.duration,          // bar height
-        tooltip  : {
-          start : seg.startTime,
-          end   : seg.endTime,
-          sites : Array.from(websitesDuringThisApp)
-        }
+        name: seg.name, // label on X‑axis
+        minutes: seg.duration, // bar height
+        tooltip: {
+          start: seg.startTime,
+          end: seg.endTime,
+          sites: Array.from(websitesDuringThisApp),
+        },
       });
     }
     return rows;
   }, [combinedTimeline]);
-
 
   const toggleWebsiteExpansion = (index) => {
     setExpandedWebsites((prev) => ({
@@ -1731,29 +1760,32 @@ export default function EmployeeDailyStats() {
       : text;
   };
 
-    /* ---------- little bubble when you hover a bar ------------- */
+  /* ---------- little bubble when you hover a bar ------------- */
   const SessionTooltip = ({ active, payload }) => {
     if (!active || !payload?.length) return null;
-    const p = payload[0].payload;               // our row object
+    const p = payload[0].payload; // our row object
 
     return (
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-4 text-sm">
         <div className="font-semibold mb-1">{p.name}</div>
-        <div>⏰ {p.tooltip.start} – {p.tooltip.end}</div>
+        <div>
+          ⏰ {p.tooltip.start} – {p.tooltip.end}
+        </div>
         <div>🕒 {p.minutes} minute(s)</div>
         {p.tooltip.sites.length > 0 && (
           <>
             <hr className="my-2" />
             <div className="font-medium mb-1">Websites inside:</div>
             <ul className="list-disc list-inside space-y-1">
-              {p.tooltip.sites.map((s,i)=><li key={i}>{s}</li>)}
+              {p.tooltip.sites.map((s, i) => (
+                <li key={i}>{s}</li>
+              ))}
             </ul>
           </>
         )}
       </div>
     );
   };
-
 
   if (loading) {
     return (
@@ -1823,8 +1855,6 @@ export default function EmployeeDailyStats() {
   const productivityPercentage =
     totalTime > 0 ? Math.round((productiveTime / totalTime) * 100) : 0;
 
-    
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950">
       <div className="relative overflow-hidden">
@@ -1891,7 +1921,6 @@ export default function EmployeeDailyStats() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
-
         <div className="mb-8">
           <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-lg rounded-2xl p-2 shadow-xl border border-white/20">
             <div className="flex flex-wrap gap-2">
@@ -2119,7 +2148,6 @@ export default function EmployeeDailyStats() {
 
         {activeTab === "activity" && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
             <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
               <div className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 px-8 py-6">
                 <div className="flex items-center text-white">
@@ -2292,19 +2320,19 @@ export default function EmployeeDailyStats() {
         {activeTab === "timeline" && (
           <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20">
             <div className="flex flex-wrap justify-between items-center mb-8">
-                    {/* ----------- NEW BAR‑CHART ------------- */}
-        {sessionGraphData.length > 0 && (
-          <div className="mb-10">
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={sessionGraphData}>
-                <XAxis dataKey="name" stroke="#6b7280" />
-                <YAxis stroke="#6b7280" />
-                <Tooltip content={<SessionTooltip />} />
-                <SimpleBar dataKey="minutes" radius={[4,4,0,0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        )}
+              {/* ----------- NEW BAR‑CHART ------------- */}
+              {sessionGraphData.length > 0 && (
+                <div className="mb-10 w-full">
+                  <ResponsiveContainer width="100%" height={260}>
+                    <BarChart data={sessionGraphData}>
+                      <XAxis dataKey="name" stroke="#6b7280" />
+                      <YAxis stroke="#6b7280" />
+                      <Tooltip content={<SessionTooltip />} />
+                      <SimpleBar dataKey="minutes" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
 
               <h2 className="text-2xl font-bold text-gray-800 dark:text-white flex items-center">
                 <div className="bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl p-3 mr-4">
