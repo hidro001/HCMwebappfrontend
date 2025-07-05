@@ -61,7 +61,7 @@ const LeaveCalendarDashboard = () => {
    const [showApprovalModal, setShowApprovalModal] = useState(false);
    const [approvalAction, setApprovalAction] = useState("");
    const [rejectionReason, setRejectionReason] = useState("");
-   const [showVacationTooltip, setShowVacationTooltip] = useState(true);
+  //  const [showVacationTooltip, setShowVacationTooltip] = useState(true);
    const [hoveredColumn, setHoveredColumn] = useState(null);
    const [activeStatus, setActiveStatus] = useState('all');
    const [currentPage, setCurrentPage] = useState(1);
@@ -691,7 +691,7 @@ return (
                   </button>
                 </div>
                 
-                {showVacationTooltip && (
+                {/* {showVacationTooltip && (
                   <div className="relative">
                     <div className="flex items-center gap-2 border rounded px-3 py-1 text-sm bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700 transition-colors">
                       <span className="text-green-600">✓</span>
@@ -706,7 +706,7 @@ return (
                       </button>
                     </div>
                   </div>
-                )}
+                )} */}
               </div>
               
               <div className="flex items-center gap-2">
