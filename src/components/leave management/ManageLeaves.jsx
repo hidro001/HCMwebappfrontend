@@ -1,5 +1,3 @@
-
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { FaCheckCircle, FaTimes, FaClock, } from "react-icons/fa";
@@ -64,7 +62,6 @@ const LeaveManagementDashboard = () => {
             </div>
           </div>
         </motion.div>
-
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

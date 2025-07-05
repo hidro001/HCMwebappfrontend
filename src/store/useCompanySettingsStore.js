@@ -5,9 +5,7 @@ import axiosInstance from '../service/axiosInstance'
 import { toast } from 'react-hot-toast'
 
 const useCompanySettingsStore = create((set, get) => ({
-  // -----------------------------
-  // Attendance Policies
-  // -----------------------------
+
   attendancePolicies: {
     // default fallback if needed
     fullDayHours: 9,
@@ -59,7 +57,6 @@ const useCompanySettingsStore = create((set, get) => ({
         updatedSettings
       )
       toast.success('Attendance Policies updated successfully.')
-      // Re-fetch to refresh local state
       get().fetchAttendancePolicies()
     } catch (error) {
       console.error(error)
@@ -67,9 +64,6 @@ const useCompanySettingsStore = create((set, get) => ({
     }
   },
 
-  // -----------------------------
-  // Shift Timings
-  // -----------------------------
   shiftTimings: [],
 
   fetchShiftTimings: async () => {

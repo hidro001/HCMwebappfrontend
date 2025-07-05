@@ -44,7 +44,7 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
     description: '',
     category: 'paid',
     maxDays: '',
-    carryForwardDays: '', 
+    isCarryForward: false, 
     documentsRequired: '',
     advanceNotice: '',
     eligibility: '',
@@ -83,7 +83,7 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
       description: '',
       category: 'paid',
       maxDays: '',
-      carryForwardDays: '',
+      isCarryForward: false,
       documentsRequired: '',
       advanceNotice: '',
       eligibility: '',
@@ -135,7 +135,7 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
       description: data.description || '',
       category: data.category || 'paid',
       maxDays: data.maxDays?.toString() || '',
-      carryForwardDays: data.carryForwardDays?.toString() || '',
+      isCarryForward: data.isCarryForward || false,
       documentsRequired: data.documentsRequired === 'Not Required' ? '' : (data.documentsRequired || ''),
       advanceNotice: data.advanceNotice || '',
       eligibility: data.eligibility || '',
@@ -165,7 +165,7 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
 
     // Clear carry forward days if category is changed to unpaid or mixed
     if (name === 'category' && value !== 'paid') {
-      setFormData(prev => ({ ...prev, carryForwardDays: '' }));
+      setFormData(prev => ({ ...prev, isCarryForward: false }));
     }
   };
 
@@ -195,12 +195,6 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
   if (!formData.description.trim()) newErrors.description = 'Description is required';
   if (!formData.maxDays || formData.maxDays <= 0) newErrors.maxDays = 'Valid maximum days is required';
 
-  if (formData.category === 'paid' && formData.carryForwardDays) {
-    if (formData.carryForwardDays < 0) {
-      newErrors.carryForwardDays = 'Carry forward days cannot be negative';
-    }
-  }
-
   if (!formData.advanceNotice.trim()) newErrors.advanceNotice = 'Advance notice is required';
   if (!formData.eligibility.trim()) newErrors.eligibility = 'Eligibility criteria is required';
 
@@ -224,7 +218,7 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
       const submitData = {
         ...formData,
         maxDays: parseInt(formData.maxDays),
-        carryForwardDays: formData.carryForwardDays ? parseInt(formData.carryForwardDays) : 0,
+        isCarryForward: formData.isCarryForward || false,
         policies: formData.policies.filter(policy => policy.trim()),
         documentsRequired: formData.documentsRequired || 'Not Required'
       };
@@ -384,7 +378,48 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
                   <option value="mixed">Mixed Benefits</option>
                 </select>
               </motion.div>
+
+              
             </div>
+              {formData.category === 'paid' && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.45 }}
+                  className="  flex items-center justify-center"
+                >
+                  <input
+                    type="checkbox"
+                    name="isCarryForward"
+                    value={formData.isCarryForward}
+                    onChange={handleInputChange}
+                    disabled={isLoadingEdit}
+                    className={` mx-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 ${
+                      errors.isCarryForward ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
+                    }`}
+                   
+                  />
+                  <label className="w-full flex items-center space-x-2 text-xs  text-gray-700 dark:text-gray-300">
+                    {/* <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/20 rounded-md">
+                      <HiArrowRight className="text-emerald-600 dark:text-emerald-400 text-sm" />
+                    </div> */}
+                    <span>Carry Forward (
+                    Number of unused days that can be carried forward to next period
+                      )</span>
+                  </label>
+                  
+                  
+                  {errors.isCarryForward && (
+                    <motion.p
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-red-500 text-sm"
+                    >
+                      {errors.isCarryForward}
+                    </motion.p>
+                  )}
+                </motion.div>
+              )}
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -459,47 +494,7 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
                 )}
               </motion.div>
 
-              {/* Carry Forward Days - Only show for paid leave */}
-              {formData.category === 'paid' && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.45 }}
-                  className="space-y-2"
-                >
-                  <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                    <div className="p-1.5 bg-emerald-100 dark:bg-emerald-900/20 rounded-md">
-                      <HiArrowRight className="text-emerald-600 dark:text-emerald-400 text-sm" />
-                    </div>
-                    <span>Carry Forward Days</span>
-                  </label>
-                  <input
-                    type="number"
-                    name="carryForwardDays"
-                    value={formData.carryForwardDays}
-                    onChange={handleInputChange}
-                    disabled={isLoadingEdit}
-                    min="0"
-                    max={formData.maxDays || 365}
-                    className={`w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 ${
-                      errors.carryForwardDays ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
-                    }`}
-                    placeholder="e.g., 5"
-                  />
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Number of unused days that can be carried forward to next period (0 for no carry forward)
-                  </p>
-                  {errors.carryForwardDays && (
-                    <motion.p
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="text-red-500 text-sm"
-                    >
-                      {errors.carryForwardDays}
-                    </motion.p>
-                  )}
-                </motion.div>
-              )}
+             
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -764,8 +759,8 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
                   </div>
                   {formData.category === 'paid' && (
                     <div>
-                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Carry Forward Days</p>
-                      <p className="text-gray-900 dark:text-white">{formData.carryForwardDays || "0"} days</p>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400">Carry Forward</p>
+                      <p className="text-gray-900 dark:text-white">{formData.isCarryForward || false} </p>
                     </div>
                   )}
                   <div>
@@ -987,7 +982,7 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
                             {formData.category === 'paid' && (
                               <div className="flex justify-between text-sm">
                                 <span className="text-gray-600 dark:text-gray-400">Carry Forward:</span>
-                                <span className="font-medium text-gray-900 dark:text-white">{formData.carryForwardDays || '0'} days</span>
+                                <span className="font-medium text-gray-900 dark:text-white">{formData.isCarryForward || false} </span>
                               </div>
                             )}
                             <div className="flex justify-between text-sm">
