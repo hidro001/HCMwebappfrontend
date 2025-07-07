@@ -12,6 +12,9 @@ import axiosInstance from "../../service/axiosInstance";
 import { useOwnFullAttendanceStore } from "../../store/useOwnFullAttendanceStore";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import BaseModal from "../common/BaseModal";
+import { GiNotebook } from "react-icons/gi";
+import ApplyLeaveModal from "../leave management/model/ApplyLeaveModal";
 
 function getAllDaysInMonth(year, month) {
   const days = [];
@@ -481,13 +484,13 @@ function checkFilteringIssues(finalAttendanceData, searchText) {
       return combined.includes(searchText.toLowerCase().trim());
     }).length;
   }
-
 }
 
 export default function OwnFullAttendance() {
 
   const [punchReason, setPunchReason] = useState("");
   const [missedPunchModalOpen, setMissedPunchModalOpen] = useState(false);
+  const [onLeave, setOnLeave] = useState(false);
   const [selectedDateForPunch, setSelectedDateForPunch] = useState(null);
   const [punchInTime, setPunchInTime] = useState("");
   const [punchOutTime, setPunchOutTime] = useState("");
@@ -545,6 +548,7 @@ export default function OwnFullAttendance() {
   );
 
   const allDaysInMonth = getAllDaysInMonth(year, month);
+
 
   const approvedLeaveDates = new Set();
   if (approvedLeaves) {
@@ -617,6 +621,9 @@ export default function OwnFullAttendance() {
     return row;
   });
 
+  const handleClose =() => {
+    setOnLeave(false)
+  }
   useEffect(() => {
     if (finalAttendanceData.length > 0) {
       checkFilteringIssues(finalAttendanceData, searchText);
@@ -684,9 +691,14 @@ export default function OwnFullAttendance() {
     ? nextPayrollDate.toDateString()
     : "Not available";
 
-  function openMissedPunchModal(dateRow) {
+  function requestAction(dateRow, req) {
     setSelectedDateForPunch(dateRow);
-    setMissedPunchModalOpen(true);
+    if(req === 'punch'){
+      setMissedPunchModalOpen(true);
+    }
+    if(req === 'leave'){
+      setOnLeave(true)
+    }
   }
 
   function handleMonthChange(e) {
@@ -1288,15 +1300,26 @@ export default function OwnFullAttendance() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             {(item.status === "Absent" && isSameMonth(item.date)  ) && (
+                              <>
                               <motion.button
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
-                                onClick={() => openMissedPunchModal(item)}
+                                onClick={() => requestAction(item, 'punch')}
                                 className="inline-flex items-center gap-2 px-3 py-1.5 border border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-lg text-xs font-medium transition-colors"
                               >
                                 <FiClock className="w-3 h-3" />
-                                Request
+                                Missed?
                               </motion.button>
+                               <motion.button
+                                whileHover={{ scale: 1.05 }}
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => requestAction(item, 'leave')}
+                                className="inline-flex items-center gap-2 ml-2 px-3 py-1.5 border border-yellow-300 dark:border-yellow-600 text-yellow-700 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/30 hover:bg-yellow-100 dark:hover:bg-yellow-900/50 rounded-lg text-xs font-medium transition-colors"
+                              >
+                                <GiNotebook className="w-3 h-3" />
+                                Ask Leave
+                              </motion.button>
+                              </>
                             )}
                           </td>
                         </motion.tr>
@@ -1490,144 +1513,245 @@ export default function OwnFullAttendance() {
         </main>
       </div>
 
-      <AnimatePresence>
-        {missedPunchModalOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-          >
-            <motion.div
-              initial={{ scale: 0.95, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-gray-700"
-            >
-              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center">
-                      <FiClock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-                        Missed Punch Request
-                      </h2>
-                      <p className="text-sm text-gray-600 dark:text-gray-400">
-                        Date: {selectedDateForPunch?.date}
-                      </p>
+    
+        <AnimatePresence>
+            <BaseModal isOpen={missedPunchModalOpen} onClose={!missedPunchModalOpen}>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                >
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.95, opacity: 0 }}
+                  className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-gray-700"
+                >
+                  <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center">
+                          <FiClock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div>
+                          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                            Missed Punch Request
+                          </h2>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Date: {selectedDateForPunch?.date}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setPunchInTime("");
+                          setPunchOutTime("");
+                          setPunchReason("");
+                          setMissedPunchModalOpen(false);
+                        }}
+                        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        <FiX className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                      </button>
                     </div>
                   </div>
-                  <button
-                    onClick={() => {
-                      setPunchInTime("");
-                      setPunchOutTime("");
-                      setPunchReason("");
-                      setMissedPunchModalOpen(false);
-                    }}
-                    className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                  >
-                    <FiX className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                  </button>
-                </div>
-              </div>
 
-              <div className="p-6 space-y-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Punch In Time
-                  </label>
-                  <TimePicker
-                    onChange={(timeVal) => setPunchInTime(timeVal)}
-                    value={punchInTime}
-                    disableClock
-                    clearIcon={null}
-                    format="hh:mm a"
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                  />
-                </div>
+                  <div className="p-6 space-y-6">
+                    <div className="flex items-center w-full justify-between">
+                    <div className="w-full">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Punch In Time
+                      </label>
+                      <TimePicker
+                        onChange={(timeVal) => setPunchInTime(timeVal)}
+                        value={punchInTime}
+                        disableClock
+                        clearIcon={null}
+                        format="hh:mm a"
+                        className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                      />
+                    </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Punch Out Time
-                  </label>
-                  <TimePicker
-                    onChange={(timeVal) => setPunchOutTime(timeVal)}
-                    value={punchOutTime}
-                    disableClock
-                    clearIcon={null}
-                    format="hh:mm a"
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
-                  />
-                </div>
+                    <div className="w-full pl-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Punch Out Time
+                      </label>
+                      <TimePicker
+                        onChange={(timeVal) => setPunchOutTime(timeVal)}
+                        value={punchOutTime}
+                        disableClock
+                        clearIcon={null}
+                        format="hh:mm a"
+                        className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                      />
+                    </div>
+                    </div>  
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Reason for Missed Punch
+                      </label>
+                      <textarea
+                        value={punchReason}
+                        onChange={(e) => setPunchReason(e.target.value)}
+                        placeholder="Please provide a brief explanation..."
+                        rows={4}
+                        className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 resize-none"
+                      />
+                    </div>
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    Reason for Missed Punch
-                  </label>
-                  <textarea
-                    value={punchReason}
-                    onChange={(e) => setPunchReason(e.target.value)}
-                    placeholder="Please provide a brief explanation..."
-                    rows={4}
-                    className="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 resize-none"
-                  />
-                </div>
-              </div>
-
-              <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => {
-                    setPunchInTime("");
-                    setPunchOutTime("");
-                    setPunchReason("");
-                    setMissedPunchModalOpen(false);
-                  }}
-                  className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
-                >
-                  Cancel
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={async () => {
-                    try {
-                      await axiosInstance.post(
-                        "/attendance-user/missed-punch-request",
-                        {
-                          date: selectedDateForPunch?.date,
-                          punchIn: punchInTime,
-                          punchOut: punchOutTime,
-                          reason: punchReason,
+                  <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        setPunchInTime("");
+                        setPunchOutTime("");
+                        setPunchReason("");
+                        setMissedPunchModalOpen(false);
+                      }}
+                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                    >
+                      Cancel
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={async () => {
+                        try {
+                          await axiosInstance.post(
+                            "/attendance-user/missed-punch-request",
+                            {
+                              date: selectedDateForPunch?.date,
+                              punchIn: punchInTime,
+                              punchOut: punchOutTime,
+                              reason: punchReason,
+                            }
+                          );
+                          toast.success(
+                            "Missed Punch request submitted successfully!"
+                          );
+                        } catch (error) {
+                          console.error(error);
+                          toast.error("Failed to submit missed punch request.");
+                        } finally {
+                          setPunchInTime("");
+                          setPunchOutTime("");
+                          setPunchReason("");
+                          setMissedPunchModalOpen(false);
                         }
-                      );
-                      toast.success(
-                        "Missed Punch request submitted successfully!"
-                      );
-                    } catch (error) {
-                      console.error(error);
-                      toast.error("Failed to submit missed punch request.");
-                    } finally {
-                      setPunchInTime("");
-                      setPunchOutTime("");
-                      setPunchReason("");
-                      setMissedPunchModalOpen(false);
-                    }
-                  }}
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center gap-2"
-                >
-                  <FiCheckCircle className="w-4 h-4" />
-                  Submit Request
-                </motion.button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                      }}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      <FiCheckCircle className="w-4 h-4" />
+                      Submit Request
+                    </motion.button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </BaseModal>
+          
+        </AnimatePresence>
 
+        <AnimatePresence>
+            {/* <BaseModal isOpen={onLeave} onClose={!onLeave}>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                >
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.95, opacity: 0 }}
+                  className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-gray-700"
+                >
+                  <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center">
+                          <FiClock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        </div>
+                        <div>
+                          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
+                            Request Leave
+                          </h2>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Date: {selectedDateForPunch?.date}
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setPunchInTime("");
+                          setPunchOutTime("");
+                          setPunchReason("");
+                          setOnLeave(false);
+                        }}
+                        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                      >
+                        <FiX className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+                      </button>
+                    </div>
+                  </div>
+
+                  
+
+                  <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => {
+                        setPunchInTime("");
+                        setPunchOutTime("");
+                        setPunchReason("");
+                        setOnLeave(false);
+                      }}
+                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                    >
+                      Cancel
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={async () => {
+                        try {
+                          await axiosInstance.post(
+                            "/attendance-user/missed-punch-request",
+                            {
+                              date: selectedDateForPunch?.date,
+                              punchIn: punchInTime,
+                              punchOut: punchOutTime,
+                              reason: punchReason,
+                            }
+                          );
+                          toast.success(
+                            "Missed Punch request submitted successfully!"
+                          );
+                        } catch (error) {
+                          console.error(error);
+                          toast.error("Failed to submit missed punch request.");
+                        } finally {
+                          setPunchInTime("");
+                          setPunchOutTime("");
+                          setPunchReason("");
+                          setOnLeave(false);
+                        }
+                      }}
+                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      <FiCheckCircle className="w-4 h-4" />
+                      Submit Request
+                    </motion.button>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </BaseModal> */}
+            {selectedDateForPunch &&
+           <ApplyLeaveModal show={onLeave} onClose={handleClose} leaveDate={selectedDateForPunch.date} />
+           }
+        </AnimatePresence>
+      
       <ConfirmationDialog
         open={confirmDialogOpen}
         title="Download Payslip PDF"

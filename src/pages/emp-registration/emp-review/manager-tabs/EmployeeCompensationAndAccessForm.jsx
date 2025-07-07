@@ -1,8 +1,7 @@
-// CompensationAndAccessFormWrapper.jsx
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm, FormProvider, useFormContext, useWatch } from "react-hook-form";
 import { useAnimate } from "framer-motion";
-
+import { toast } from "react-hot-toast";
 import FormField from "./common/FormField";
 import FormReactSelect from "./common/FormReactSelect";
 import useEmployeeStore from "../../../../store/useEmployeeStore.js";
@@ -11,7 +10,13 @@ import { availablePermissionManager } from "../../../../service/availablePermiss
 import axiosInstance from "../../../../service/axiosInstance.js";
 
 export default function CompensationAndAccessFormWrapper({ employeeId }) {
-  const methods = useForm();
+  const methods = useForm({
+    mode: "onBlur",
+    defaultValues: {
+      permission: [],
+      overtime_allowed: "",
+    },
+  });
 
   return (
     <FormProvider {...methods}>
@@ -25,10 +30,35 @@ function CompensationAndAccessForm({ employeeId }) {
   const {
     handleSubmit,
     setValue,
+    register,
+    reset,
     formState: { errors },
   } = useFormContext();
 
-  // Global store data
+  const {
+    loadShiftTimings,
+    loadEmploymentTypes,
+    loadDepartments,
+    loadAllEmployees,
+    loadPermissionRoles,
+    loadCompanyAddresses,
+    loadDesignations,
+    loadBreakRecords,
+  } = useEmployeeStore();
+
+  // Load all store data
+  useEffect(() => {
+    loadShiftTimings();
+    loadEmploymentTypes();
+    loadDepartments();
+    loadAllEmployees();
+    loadPermissionRoles();
+    loadCompanyAddresses();
+    loadDesignations();
+    loadBreakRecords();
+  }, []);
+
+  // Store data
   const addressOptions = useEmployeeStore((s) => s.addressOptions);
   const departments = useEmployeeStore((s) => s.departments);
   const shiftTimings = useEmployeeStore((s) => s.shiftTimings);
@@ -54,47 +84,142 @@ function CompensationAndAccessForm({ employeeId }) {
   const officeLocation = useWatch({ name: "office_location" });
   const roleWatch = useWatch({ name: "roleId" });
 
-  // Animate inputs
   useAnimateEffect(animate);
-
-  // Set latitude/longitude
   useAutoFillLatLong(officeLocation, addressOptions, setValue);
-
-  // Role-based permissions
   useAutoAssignPermissions(roleWatch, permissionRoles, setValue);
 
-  // Permission modal
   const [isPermissionModalOpen, setPermissionModalOpen] = useState(false);
   const openPermissionModal = () => setPermissionModalOpen(true);
   const closePermissionModal = () => setPermissionModalOpen(false);
 
-  const onSubmit = async (data) => {
-    try {
-      const res = await axiosInstance.put(`registration/employee/${employeeId}/compensation`, data);
-      alert("Success: " + res.data.message);
-    } catch (err) {
-      alert("Error: " + err.response?.data?.message || "Failed to save");
-    }
-  };
+
+
+const onSubmit = async (data) => {
+  try {
+    // console.log("submit data-> ", data);
+
+    const res = await axiosInstance.put(
+      `registration/employee-compensation/${employeeId}`,
+      data
+    );
+
+    toast.success(res.data.message || "Details updated successfully");
+
+    // reset({
+    //   permission: [],
+    //   overtime_allowed: "",
+    //   no_of_Paid_Leave: "",
+    //   employee_Type: "",
+    //   department: "",
+    //   designation: "",
+    //   permission_role: "",
+    //   managerId: [],
+    //   base_Salary: "",
+    //   current_Base_Salary: "",
+    //   otp_Required: "",
+    //   work_Mode: "",
+    //   office_location: "",
+    //   latitude: "",
+    //   longitude: "",
+    //   shift_Timing: "",
+    //   break_Type: "",
+    //   allowances_Provided: [],
+    // });
+
+    setPermissionModalOpen(false);
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Failed to save");
+  }
+};
+
 
   return (
-    <form ref={scope} onSubmit={handleSubmit(onSubmit)} className="p-8 bg-white dark:bg-gray-900 rounded-xl shadow mb-20">
+    <form
+      ref={scope}
+      onSubmit={handleSubmit(onSubmit)}
+      className="p-8 bg-white dark:bg-gray-900 rounded-xl shadow mb-20"
+    >
       <h2 className="text-2xl font-bold mb-6 border-b pb-4 dark:border-gray-700">
         Compensation & Access Details
       </h2>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <FormField name="no_of_Paid_Leave" label="Paid Leave" type="number" />
-        <FormReactSelect name="employee_Type" label="Employee Type" options={employmentTypes} loading={loading.employmentTypes} />
-        <FormReactSelect name="department" label="Department" options={departments} loading={loading.departments} />
-        <FormReactSelect name="designation" label="Designation" options={designations} loading={loading.designations} />
-        <FormReactSelect name="roleId" label="Role" options={permissionRoles.map(r => ({ label: r.role_name, value: r.role_name }))} loading={loading.permissionRoles} />
-        <FormReactSelect name="managerId" label="Manager" options={allEmployees} isMulti loading={loading.employees} />
-        <FormField name="base_Salary" label="Base Salary" type="number" />
-        <FormField name="current_Base_Salary" label="Current Base Salary" type="number" />
-        <FormReactSelect name="otp_Required" label="OTP Required" options={[{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }]} />
-        <FormReactSelect name="work_Mode" label="Work Mode" options={[{ value: 'onsite', label: 'Onsite' }, { value: 'remote', label: 'Remote' }, { value: 'hybrid', label: 'Hybrid' }]} />
-        <FormReactSelect name="overtime_allowed" label="Overtime Allowed" options={[{ value: 'Yes', label: 'Yes' }, { value: 'No', label: 'No' }]} />
+        <FormField
+          name="no_of_Paid_Leave"
+          label="Paid Leave"
+          type="number"
+          registerOptions={{ required: "Required", min: 0 }}
+        />
+        <FormReactSelect
+          name="employee_Type"
+          label="Employee Type"
+          options={employmentTypes}
+          loading={loading.employmentTypes}
+          registerOptions={{ required: "Required" }}
+        />
+        <FormReactSelect
+          name="departmentAllocated"
+          label="Department"
+          options={departments}
+          loading={loading.departments}
+          registerOptions={{ required: "Required" }}
+        />
+        <FormReactSelect
+          name="designation"
+          label="Designation"
+          options={designations}
+          loading={loading.designations}
+          registerOptions={{ required: "Required" }}
+        />
+        <FormReactSelect
+          name="roleId"
+          label="Role"
+options={permissionRoles.map((r) => ({ label: r.role_name, value: r.id }))}
+          loading={loading.permissionRoles}
+          registerOptions={{ required: "Required" }}
+        />
+        <FormReactSelect
+          name="managerId"
+          label="Manager"
+          options={allEmployees}
+          isMulti
+          loading={loading.employees}
+          requiredMessage="Select at least one manager"
+        />
+        <FormField
+          name="base_Salary"
+          label="Base Salary"
+          type="number"
+          registerOptions={{ required: "Required", min: 0 }}
+        />
+        <FormField
+          name="current_Base_Salary"
+          label="Current Base Salary"
+          type="number"
+          registerOptions={{ required: "Required", min: 0 }}
+        />
+        <FormReactSelect
+          name="otp_Required"
+          label="OTP Required"
+          options={[{ value: "yes", label: "Yes" }, { value: "no", label: "No" }]}
+          registerOptions={{ required: "Required" }}
+        />
+        <FormReactSelect
+          name="work_Mode"
+          label="Work Mode"
+          options={[
+            { value: "onsite", label: "Onsite" },
+            { value: "remote", label: "Remote" },
+            { value: "hybrid", label: "Hybrid" },
+          ]}
+          registerOptions={{ required: "Required" }}
+        />
+        <FormReactSelect
+          name="overtime_allowed"
+          label="Overtime Allowed"
+          options={[{ value: "Yes", label: "Yes" }, { value: "No", label: "No" }]}
+          registerOptions={{ required: "Required" }}
+        />
       </div>
 
       <div className="mt-6">
@@ -102,7 +227,11 @@ function CompensationAndAccessForm({ employeeId }) {
         <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
           Selected: {currentPermissions.join(", ") || "None"}
         </p>
-        <button type="button" onClick={openPermissionModal} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+        <button
+          type="button"
+          onClick={openPermissionModal}
+          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+        >
           Select Permissions
         </button>
         <PermissionModal
@@ -118,14 +247,40 @@ function CompensationAndAccessForm({ employeeId }) {
       </div>
 
       <div className="grid md:grid-cols-3 gap-6 mt-6">
-        <FormReactSelect name="office_location" label="Office Location" options={addressOptions} loading={loading.addresses} />
-        <FormField name="latitude" label="Latitude" />
-        <FormField name="longitude" label="Longitude" />
+        <FormReactSelect
+          name="office_location"
+          label="Office Location"
+          options={addressOptions}
+          loading={loading.addresses}
+          registerOptions={{ required: "Required" }}
+        />
+        <FormField
+          name="latitude"
+          label="Latitude"
+          registerOptions={{ required: "Required", pattern: { value: /^-?\d+(\.\d+)?$/, message: "Invalid latitude" } }}
+        />
+        <FormField
+          name="longitude"
+          label="Longitude"
+          registerOptions={{ required: "Required", pattern: { value: /^-?\d+(\.\d+)?$/, message: "Invalid longitude" } }}
+        />
       </div>
 
       <div className="grid md:grid-cols-3 gap-6 mt-6">
-        <FormReactSelect name="shift_Timing" label="Shift Timing" options={shiftTimings} loading={loading.shiftTimings} />
-        <FormReactSelect name="break_Type" label="Break Type" options={breakRecords} loading={loading.breaks} />
+        <FormReactSelect
+          name="shift_Timing"
+          label="Shift Timing"
+          options={shiftTimings}
+          loading={loading.shiftTimings}
+          registerOptions={{ required: "Required" }}
+        />
+        <FormReactSelect
+          name="break_Type"
+          label="Break Type"
+          options={breakRecords}
+          loading={loading.breaks}
+          registerOptions={{ required: "Required" }}
+        />
         <FormReactSelect
           name="allowances_Provided"
           label="Allowances Provided"
@@ -150,7 +305,7 @@ function CompensationAndAccessForm({ employeeId }) {
   );
 }
 
-// 🔧 Helper hooks for modular behavior
+// 🔧 Helper hooks
 function useAnimateEffect(animate) {
   useEffect(() => {
     animate([
@@ -170,9 +325,10 @@ function useAutoFillLatLong(officeLocation, addressOptions, setValue) {
 
 function useAutoAssignPermissions(roleWatch, permissionRoles, setValue) {
   useEffect(() => {
-    const found = permissionRoles?.find((r) => r.role_name === roleWatch);
+    const found = permissionRoles?.find((r) => r.id === roleWatch);
     if (found?.permission) {
       setValue("permission", found.permission.map((p) => p.permission));
+      setValue("permission_role", found.role_name); // ✅ Set role name for submission
     }
   }, [roleWatch, permissionRoles, setValue]);
 }
