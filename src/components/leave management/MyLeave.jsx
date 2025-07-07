@@ -32,25 +32,30 @@ const getColorClasses = (color = "bg-gray-500") => {
 
 const MyLeave = ({ leaves = [], isLoading = false }) => {
 
-
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedLeave, setSelectedLeave] = useState(null);
 
 
   const getDaysInMonth = (date) => new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
   const getFirstDayOfMonth = (date) => new Date(date.getFullYear(), date.getMonth(), 1).getDay();
-  const formatDate = (date) => date.toISOString().split("T")[0];
+
+   const formatDate = (date) => {
+    const year = date.getFullYear();
+    const month = `${date.getMonth() + 1}`.padStart(2, "0");
+    const day = `${date.getDate()}`.padStart(2, "0");
+    return `${year}-${month}-${day}`; 
+  };
 
   const getLeavesForDate = (date) => {
     const dateStr = formatDate(date);
-    const matchingLeaves = leaves.filter((leave) => {
+    return leaves.filter((leave) => {
       const from = formatDate(new Date(leave.leave_From));
       const to = formatDate(new Date(leave.leave_To || leave.leave_From));
       return dateStr >= from && dateStr <= to;
     });
-    
-    return matchingLeaves;
   };
+
+ 
 
   const getStatusIcon = (status) => {
   switch (status?.toLowerCase()) {
