@@ -131,7 +131,42 @@ const LeaveDetailsModal = ({
                   </div>
                
                 </div>
-                
+                {selectedLeave.leave_document && selectedLeave.leave_document.length > 0 && (
+                <div className="mt-4">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-500 transition-colors">Uploaded Document</label>
+                              
+                          {selectedLeave.leave_document.endsWith('.jpg') || selectedLeave.leave_document.endsWith('.jpeg') || selectedLeave.leave_document.endsWith('.png') ? (
+                            <a href={selectedLeave.leave_document} target="_blank" rel="noopener noreferrer">
+                              <img
+                                src={selectedLeave.leave_document}
+                                alt="Leave Document"
+                                className="mt-2 w-40 h-40 object-cover rounded-md cursor-pointer"
+                              />
+                            </a>
+                          ) : selectedLeave.leave_document.endsWith('.pdf') ? (
+                    
+                      <a
+                        href={selectedLeave.leave_document}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 text-blue-600 dark:text-blue-400"
+                      >
+                        <FaFileAlt className="inline-block mr-2" />
+                        Download PDF
+                      </a>
+                    ) : (
+                     
+                      <div className="mt-2">
+                        <span className="text-gray-800 dark:text-gray-100">
+                          {selectedLeave.leave_document.split('/').pop()} 
+                        </span>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {(selectedLeave.leave_document.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {selectedLeave.leave_Status === "pending" && (
                   <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 transition-colors">
