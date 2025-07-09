@@ -188,6 +188,25 @@ export default function AllEmployeeAttendance() {
   const [exporting, setExporting] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
 
+  
+  useEffect(() => {
+    const savedDepartment = localStorage.getItem("selectedDepartment");
+    const savedPage = localStorage.getItem("currentPage");
+
+    if (savedDepartment) {
+      setSelectedDepartment(savedDepartment);
+    }
+
+    if (savedPage) {
+      setCurrentPage(Number(savedPage));
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("selectedDepartment", selectedDepartment);
+    localStorage.setItem("currentPage", currentPage.toString());
+  }, [selectedDepartment, currentPage]);
+
   useEffect(() => {
     fetchTodaysPunchTimes();
     fetchDepartments();
