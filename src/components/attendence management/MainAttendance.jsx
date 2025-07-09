@@ -35,7 +35,8 @@ const Dashboard = () => {
       fetchTodaysLateIn();
       fetchTodaysAttendanceStatus()
       fetchHolidayData();
-  }, [fetchTodaysPunchTimes, fetchTodaysLateIn, fetchTodaysAttendanceStatus]);
+      fetchDepartments()
+  }, [fetchTodaysPunchTimes, fetchTodaysLateIn, fetchTodaysAttendanceStatus, fetchDepartments]);
   
   const departmentTabs = [
     { department : "All Departments", _id : 'all'},
