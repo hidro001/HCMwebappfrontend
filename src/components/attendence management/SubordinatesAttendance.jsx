@@ -559,7 +559,6 @@ export default function SubordinatesAttendance() {
     : [];
 
 
-    console.log(subordinateStats, 'data')
 
   const filteredEmployees = employeesData.filter((emp) => {
     if (selectedDepartment !== "Department" && emp.department !== selectedDepartment) {
@@ -708,6 +707,7 @@ export default function SubordinatesAttendance() {
 
        <AttendanceCards attendanceData={subordinateStats} data='team'/>
       
+
       {/* Filters Bar */}
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
