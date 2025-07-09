@@ -24,11 +24,15 @@ function renderStatusBadge(status) {
       bgColor = "bg-black";
       textColor = "text-white";
       break;
+    case "leave":
+      bgColor = "bg-yellow-100 dark:bg-yellow-900";
+      textColor = "text-yellow-700 dark:text-yellow-100";
+      break;
     case "half day":
       bgColor = "bg-pink-100 dark:bg-pink-900";
       textColor = "text-pink-700 dark:text-pink-100";
       break;
-    case "not even half day":
+    case "less than half day":
       bgColor = "bg-gray-300 dark:bg-gray-800";
       textColor = "text-gray-700 dark:text-gray-200";
       break;
@@ -55,13 +59,7 @@ export default function EmployeeFullAttendance() {
     calculateTotalLates, calculateTotalHalfDays, calculateNotEvenHalfDays, calculateNotLoggedOut, error, isLoading,
   } = useAttendanceStore();
 
-  useEffect(() => {
-    if (empID) {
-      fetchAllData(empID);
-    } else {
-      fetchAllData(""); 
-    }
-  }, [empID, fetchAllData]);
+  
 
   const today = new Date();
   const defaultMonthString = `${today.getFullYear()}-${String(
@@ -72,6 +70,14 @@ export default function EmployeeFullAttendance() {
   const [searchText, setSearchText] = useState("");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
+
+  useEffect(() => {
+      if (empID) {
+        fetchAllData(empID, selectedMonth);
+      } else {
+        fetchAllData(""); 
+      }
+  }, [empID, fetchAllData, selectedMonth]);
 
   function handleMonthChange(e) {
     setSelectedMonth(e.target.value);
@@ -229,7 +235,7 @@ export default function EmployeeFullAttendance() {
       text: "text-pink-700 dark:text-pink-100",
     },
     {
-      label: "Not Even Half Day",
+      label: "Less than half day",
       short: "?",
       value: notEvenHalfDay,
       bg: "bg-gray-100 dark:bg-gray-800",
