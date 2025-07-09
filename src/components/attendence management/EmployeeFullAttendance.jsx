@@ -71,6 +71,7 @@ export default function EmployeeFullAttendance() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
 
+  console.log(selectedMonth, "selectedMonth");
   useEffect(() => {
       if (empID) {
         fetchAllData(empID, selectedMonth);
