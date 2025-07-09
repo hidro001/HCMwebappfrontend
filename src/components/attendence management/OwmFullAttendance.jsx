@@ -528,8 +528,8 @@ export default function OwnFullAttendance() {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    fetchAttendanceData();
-  }, [fetchAttendanceData]);
+  fetchAttendanceData(selectedMonth);
+}, [fetchAttendanceData, selectedMonth]);
 
   const parts = selectedMonth.split("-");
   const year = parseInt(parts[0], 10);

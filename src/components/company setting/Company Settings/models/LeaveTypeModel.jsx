@@ -43,7 +43,7 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
     name: '',
     description: '',
     category: 'paid',
-    maxDays: '',
+    maxDays: 0,
     isCarryForward: false, 
     documentsRequired: '',
     advanceNotice: '',
@@ -82,7 +82,7 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
       name: '',
       description: '',
       category: 'paid',
-      maxDays: '',
+      maxDays: 0,
       isCarryForward: false,
       documentsRequired: '',
       advanceNotice: '',
@@ -134,7 +134,7 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
       name: data.name || '',
       description: data.description || '',
       category: data.category || 'paid',
-      maxDays: data.maxDays?.toString() || '',
+      maxDays: data.maxDays || 0,
       isCarryForward: data.isCarryForward || false,
       documentsRequired: data.documentsRequired === 'Not Required' ? '' : (data.documentsRequired || ''),
       advanceNotice: data.advanceNotice || '',
@@ -156,14 +156,14 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === 'checkbox' ? checked : value,
+      [name]: name === "maxDays" ? parseFloat(value) : value
     }));
     
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
 
-    // Clear carry forward days if category is changed to unpaid or mixed
     if (name === 'category' && value !== 'paid') {
       setFormData(prev => ({ ...prev, isCarryForward: false }));
     }
@@ -215,9 +215,10 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
   }
     setIsSubmitting(true);
     try {
+      console.log(formData.maxDays)
       const submitData = {
         ...formData,
-        maxDays: parseInt(formData.maxDays),
+        maxDays: parseFloat(formData.maxDays),
         isCarryForward: formData.isCarryForward || false,
         policies: formData.policies.filter(policy => policy.trim()),
         documentsRequired: formData.documentsRequired || 'Not Required'
@@ -478,6 +479,7 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
                   disabled={isLoadingEdit}
                   min="1"
                   max="365"
+                  step="any"
                   className={`w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all duration-200 ${
                     errors.maxDays ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
                   }`}
