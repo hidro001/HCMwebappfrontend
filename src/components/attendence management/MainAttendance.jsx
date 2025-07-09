@@ -75,10 +75,16 @@ const Dashboard = () => {
    }))
     : [];
 
+    console.log(attendanceData,'ad')
+
     const {totalEmployees, presentCount, absentCount} = attendanceData
 
+    console.log(presentCount, 'presentCount ')
+
     const percentageCount = (total, data) => {
+      console.log(total, data)
       return ((data / total) * 100).toFixed(2);
+
     }
 
     useEffect(() => {
@@ -91,8 +97,7 @@ const Dashboard = () => {
           setAttendanceData(res.data.data);
         } catch (error) {
           toast.error(error.response?.data?.message || "Failed to Get Department Attendance.");
-        } finally {
-          
+        } finally {    
         }
     };
 

@@ -11,8 +11,8 @@ export default function AttendancePolicies() {
   const {
     attendancePolicies,
     monthsBetweenHikesOrAdvances,
-    fetchAttendancePolicies,
-    updateAttendancePolicies,
+    fetchCompanyPolicies,
+    updateCompanyPolicies,
   } = useCompanySettingsStore();
 
   const [localPolicies, setLocalPolicies] = useState(attendancePolicies);
@@ -20,8 +20,8 @@ export default function AttendancePolicies() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    fetchAttendancePolicies();
-  }, [fetchAttendancePolicies]);
+    fetchCompanyPolicies();
+  }, [fetchCompanyPolicies]);
 
   useEffect(() => {
     setLocalPolicies(attendancePolicies);
@@ -45,7 +45,7 @@ export default function AttendancePolicies() {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      await updateAttendancePolicies({
+      await updateCompanyPolicies({
         attendancePolicies: localPolicies,
         monthsBetweenHikesOrAdvances: Number(localMonths),
       });

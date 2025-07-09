@@ -8,19 +8,13 @@ const LeaveApprovalModal = ({
   onClose, 
   selectedLeave, 
   approvalAction,
-  onSubmit
+  onApprovalSubmit 
 }) => {
   const [rejectionReason, setRejectionReason] = useState("");
 
-  console.log('stat')
   const handleSubmit = () => {
-    onSubmit(rejectionReason);
+    onApprovalSubmit(approvalAction, rejectionReason);
     setRejectionReason("");
-  };
-
-  const handleClose = () => {
-    setRejectionReason("");
-    onClose();
   };
 
   if (!selectedLeave) return null;
@@ -28,7 +22,7 @@ const LeaveApprovalModal = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <BaseModal isOpen={isOpen} onClose={handleClose}>
+        <BaseModal isOpen={isOpen} onClose={onClose}>
           <motion.div
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -41,7 +35,7 @@ const LeaveApprovalModal = ({
                   {approvalAction === "approve" ? "Approve" : "Reject"} Leave Request
                 </h3>
                 <button
-                  onClick={handleClose}
+                  onClick={onClose}
                   className="text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                 >
                   <FaTimes size={20} />
@@ -75,7 +69,7 @@ const LeaveApprovalModal = ({
 
               <div className="flex gap-3">
                 <button
-                  onClick={handleClose}
+                  onClick={onClose}
                   className="flex-1 border px-4 py-2 rounded-lg font-medium transition-colors border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   Cancel

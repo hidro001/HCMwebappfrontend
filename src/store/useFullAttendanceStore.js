@@ -63,7 +63,7 @@ const useFullAttendanceStore = create((set, get) => ({
   hasRealData: false,
 
 
-  fetchAllData: async (employeeId) => {
+  fetchAllData: async (employeeId, selectedMonth) => {
     try {
       set({ isLoading: true, error: null });
 
@@ -99,6 +99,7 @@ const useFullAttendanceStore = create((set, get) => ({
       const attendanceResponse = await axiosInstance.get(`/attendance-user/employee`, {
         params: {
           employee_Id: employeeId,
+          selectedMonth : selectedMonth
         },
       });
       if (!attendanceResponse.data?.success) {
@@ -106,6 +107,7 @@ const useFullAttendanceStore = create((set, get) => ({
           attendanceResponse.data?.message || "Failed to fetch attendance data"
         );
       }
+      const monthSummary = attendanceResponse.data.monthSummary;
       const uniqueData = attendanceResponse.data.data.reduce((acc, current) => {
         if (!acc.find((item) => item.date === current.date)) {
           acc.push(current);
@@ -129,6 +131,7 @@ const useFullAttendanceStore = create((set, get) => ({
         userProfileData: userData,
         approvedLeaves: approvedLeavesData,
         attendanceData: uniqueData,
+        userAttendanceSummary: monthSummary,
         companySettings: settingsData,
         attendancePolicies: attendancePoliciesData,
         isLoading: false,
@@ -168,51 +171,6 @@ const useFullAttendanceStore = create((set, get) => ({
       }
     }
 
-    // 3) map each day => row
-    // return allDays.map((dateObj, idx) => {
-    //   const dateStr = dateObj.toISOString().split("T")[0];
-    //   const dayName = dateObj.toLocaleDateString("en-US", { weekday: "long" });
-
-    //   // find record if any
-    //   const record = attendanceData.find((r) => r.date === dateStr);
-
-    //   let status = "Absent";
-    //   if (holidaySet.has(dateStr)) {
-    //     status = "Holiday";
-    //   } else if (approvedLeavesSet.has(dateStr)) {
-    //     status = "Holiday"; // or “Paid Leave”
-    //   } else if (record?.login && record?.logout) {
-    //     // parse hours
-    //     const login24 = convertTo24Hour(record.login);
-    //     const logout24 = convertTo24Hour(record.logout);
-    //     const start = new Date(`1970-01-01T${login24}`);
-    //     const end = new Date(`1970-01-01T${logout24}`);
-    //     const hoursWorked = (end - start) / 36e5;
-
-    //     const fullDayHours = attendancePolicies?.fullDayHours || 9;
-    //     const halfDayHours = attendancePolicies?.halfDayHours || 5;
-    //     const minHours = attendancePolicies?.minimumWorkingHours || 4.5;
-
-    //     if (hoursWorked >= fullDayHours) status = "Present";
-    //     else if (hoursWorked >= minHours && hoursWorked <= halfDayHours) status = "Half Day";
-    //     else if (hoursWorked > 0 && hoursWorked < minHours) status = "Not Even Half Day";
-    //     else status = "Present"; // fallback
-    //   } else {
-    //     // if future date => “------”
-    //     if (dateObj > new Date()) status = "------";
-    //   }
-
-    //   return {
-    //     sl: idx + 1,
-    //     date: dateStr,
-    //     day: dayName,
-    //     logInTime: record?.login || "------",
-    //     logOutTime: record?.logout || "------",
-    //     totalBreak: record?.breaks?.length ? `${record.breaks.length} break(s)` : "--",
-    //     status,
-    //   };
-    // });
-
     return allDays.map((dateObj, idx) => {
       const dateStr = dateObj.toISOString().split("T")[0];
       const dayName = dateObj.toLocaleDateString("en-US", { weekday: "long" });
@@ -241,25 +199,24 @@ const useFullAttendanceStore = create((set, get) => ({
       if (holidaySet.has(dateStr)) {
         status = "Holiday";
       } else if (approvedLeavesSet.has(dateStr)) {
-        status = "Holiday"; // or “Paid Leave”
+        status = "Leave"; 
       } else if (record?.login && record?.logout) {
-        // parse hours
+
         const login24 = convertTo24Hour(record.login);
         const logout24 = convertTo24Hour(record.logout);
-        const start = new Date(`1970-01-01T${login24}`);
-        const end = new Date(`1970-01-01T${logout24}`);
-        const hoursWorked = (end - start) / 36e5;
-    
+        const [h1,m1,s1]=login24.split(':').map(Number);
+        const [h2,m2,s2]=logout24.split(':').map(Number);
+        const hoursWorked = ((h2*3600 + m2*60 + s2) - (h1*3600 + m1*60 + s1)) / 3600;
+
         const fullDayHours = attendancePolicies?.fullDayHours || 9;
         const halfDayHours = attendancePolicies?.halfDayHours || 5;
         const minHours = attendancePolicies?.minimumWorkingHours || 4.5;
     
         if (hoursWorked >= fullDayHours) status = "Present";
-        else if (hoursWorked >= minHours && hoursWorked <= halfDayHours) status = "Half Day";
-        else if (hoursWorked > 0 && hoursWorked < minHours) status = "Not Even Half Day";
-        else status = "Present"; // fallback
+        else if (hoursWorked >= minHours && hoursWorked >= halfDayHours && hoursWorked <fullDayHours) status = "Half Day";
+        else if (hoursWorked > 0 && hoursWorked < minHours) status = "Less than half day ";
+        else status = "Present"; 
       } else {
-        // future date check => “------”
         if (dateObj > new Date()) status = "------";
       }
     
@@ -269,7 +226,6 @@ const useFullAttendanceStore = create((set, get) => ({
         day: dayName,
         logInTime: record?.login || "------",
         logOutTime: record?.logout || "------",
-        // Show total break minutes (or “--” if none):
         totalBreak: totalBreakMinutes > 0 ? `${totalBreakMinutes} minutes` : "--",
         status,
       };

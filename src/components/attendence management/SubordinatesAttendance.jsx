@@ -559,7 +559,6 @@ export default function SubordinatesAttendance() {
     : [];
 
 
-    console.log(subordinateStats, 'data')
 
   const filteredEmployees = employeesData.filter((emp) => {
     if (selectedDepartment !== "Department" && emp.department !== selectedDepartment) {
@@ -707,81 +706,7 @@ export default function SubordinatesAttendance() {
       </motion.div>
 
        <AttendanceCards attendanceData={subordinateStats} data='team'/>
-      {/* Stats Overview Cards */}
-      {/* <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8"
-      > */}
-        {/* Total Subordinates Card */}
-        {/* <motion.div
-          variants={cardVariants}
-          className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-6 shadow-lg text-white relative overflow-hidden"
-        >
-          <div className="absolute -right-6 -top-6 opacity-20 text-6xl">
-            <FiUsers size={80} />
-          </div>
-          <div className="relative z-10">
-            <p className="text-blue-100 text-sm uppercase tracking-wider font-medium mb-1">Total Team Members</p>
-            <h3 className="text-4xl font-bold mb-2">
-              {subordinateStats?.totalSubordinates ?? 0}
-            </h3>
-            <p className="text-blue-100 text-sm">Active employees</p>
-          </div>
-        </motion.div> */}
-
-        {/* Present Card */}
-        {/* <motion.div
-          variants={cardVariants}
-          className="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl p-6 shadow-lg text-white relative overflow-hidden"
-        >
-          <div className="absolute -right-6 -top-6 opacity-20 text-6xl">
-            <BsPersonCheckFill size={80} />
-          </div>
-          <div className="relative z-10">
-            <p className="text-emerald-100 text-sm uppercase tracking-wider font-medium mb-1">Present Today</p>
-            <h3 className="text-4xl font-bold mb-2">
-              {subordinateStats?.presentCount ?? 0}
-            </h3>
-            <p className="text-emerald-100 text-sm">On time check-ins</p>
-          </div>
-        </motion.div> */}
-
-        {/* Late Card */}
-        {/* <motion.div
-          variants={cardVariants}
-          className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl p-6 shadow-lg text-white relative overflow-hidden"
-        >
-          <div className="absolute -right-6 -top-6 opacity-20 text-6xl">
-            <BsClockHistory size={80} />
-          </div>
-          <div className="relative z-10">
-            <p className="text-amber-100 text-sm uppercase tracking-wider font-medium mb-1">Late Arrivals</p>
-            <h3 className="text-4xl font-bold mb-2">
-              {subordinateStats?.lateCount ?? 0}
-            </h3>
-            <p className="text-amber-100 text-sm">Delayed check-ins</p>
-          </div>
-        </motion.div> */}
-
-        {/* On Leave Card */}
-        {/* <motion.div
-          variants={cardVariants}
-          className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-xl p-6 shadow-lg text-white relative overflow-hidden"
-        >
-          <div className="absolute -right-6 -top-6 opacity-20 text-6xl">
-            <BsPersonXFill size={80} />
-          </div>
-          <div className="relative z-10">
-            <p className="text-purple-100 text-sm uppercase tracking-wider font-medium mb-1">On Leave</p>
-            <h3 className="text-4xl font-bold mb-2">
-              {subordinateStats?.onLeaveCount ?? 0}
-            </h3>
-            <p className="text-purple-100 text-sm">Approved absences</p>
-          </div>
-        </motion.div>
-      </motion.div> */}
+      
 
       {/* Filters Bar */}
       <motion.div 

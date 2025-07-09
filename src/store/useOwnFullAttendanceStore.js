@@ -246,7 +246,7 @@ export const useOwnFullAttendanceStore = create(
       error: null,
 
 
-      fetchAttendanceData: async () => {
+      fetchAttendanceData: async (selectedMonth) => {
         try {
           const userProfileRes = await axiosInstance.get("/user/profile");
           if (!userProfileRes.data.success) {
@@ -273,7 +273,11 @@ export const useOwnFullAttendanceStore = create(
             (leave) => leave.employee?.employee_Id === currentEmployeeId
           );
 
-          const attendanceRes = await axiosInstance.get("/attendance-user");
+          const attendanceRes = await axiosInstance.get("/attendance-user", 
+              {  params: {
+                month: selectedMonth, 
+              },}
+          );
           if (!attendanceRes.data.success) {
             throw new Error(
               attendanceRes.data.message || "Failed to fetch attendance data"
