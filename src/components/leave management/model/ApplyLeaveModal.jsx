@@ -249,6 +249,17 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves, leaveDate =''  }) => 
     }
   };
 
+
+
+  const removeFile = () => {
+    setFormData(prev => ({
+      ...prev,
+      documents: null
+    }));
+    const fileInput = document.getElementById('documents');
+    if (fileInput) fileInput.value = '';
+  };
+
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -259,7 +270,7 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves, leaveDate =''  }) => 
         }));
         return;
       }
-      
+
       const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
       if (!allowedTypes.includes(file.type)) {
         setErrors(prev => ({
@@ -268,12 +279,12 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves, leaveDate =''  }) => 
         }));
         return;
       }
-      
+
       setFormData(prev => ({
         ...prev,
         documents: file
       }));
-      
+
       if (errors.documents) {
         setErrors(prev => ({
           ...prev,
@@ -283,14 +294,6 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves, leaveDate =''  }) => 
     }
   };
 
-  const removeFile = () => {
-    setFormData(prev => ({
-      ...prev,
-      documents: null
-    }));
-    const fileInput = document.getElementById('documents');
-    if (fileInput) fileInput.value = '';
-  };
 
   const validateForm = () => {
     const newErrors = {};
@@ -357,9 +360,19 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves, leaveDate =''  }) => 
         newErrors.reason_For_Leave = 'Reason must be at least 10 characters';
       }
 
-      // if (documentRequirement.required && !formData.documents) {
-      //   newErrors.documents = 'Required document must be uploaded';
-      // }
+    
+
+       if (formData.documents) {
+    const file = formData.documents;
+
+    if (file.size > 5 * 1024 * 1024) {
+      newErrors.documents = 'File size must be less than 5MB';
+    }
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/jpg'];
+    if (!allowedTypes.includes(file.type)) {
+      newErrors.documents = 'Only PDF, JPG, and PNG files are allowed';
+    }
+  }
 
       if (!formData.emergencyContact.trim()) {
         newErrors.emergencyContact = 'Emergency contact is required';
@@ -396,6 +409,7 @@ const ApplyLeaveModal = ({ show, onClose, totalPaidLeaves, leaveDate =''  }) => 
       if (formData.documents) {
         submitData.append('documents', formData.documents);
       }
+      console.log(submitData, 'dfsd')
 
       const result = await applyLeave(submitData); 
       if(result){
