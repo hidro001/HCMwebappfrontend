@@ -96,7 +96,7 @@ import {
 import EmployeeFullStatisticsPage from "../pages/attendence management/EmployeeFullStatisticsPage";
 import MainLayout from "./MainLayout";
 
-import { helpConfigs } from "../config/HelpConfig";
+
 
 import {
   Footer,
@@ -123,7 +123,6 @@ import ReviewEmployeePage from "../pages/emp-registration/emp-review/ReviewEmplo
 import ManagerTabOverview from "../pages/emp-registration/emp-review/manager-tabs/ManagerTabOverview";
 import SuperAdminRegistration from "../components/SuperAdminRegistration/SuperAdminRegistration";
 import RegistrationLogin from "../pages/emp-registration/RegistrationLogin";
-
 
 const router = createBrowserRouter([
   {
@@ -159,7 +158,14 @@ const router = createBrowserRouter([
       </MainLayout>
     ),
     children: [
-          // Dashboards
+      //notifications
+      {
+        path: "notifications",
+        element: <NotificationsPage />,
+        handle: { helpKey: " notifications" },
+      },
+
+      // Dashboards
       {
         path: "super-employee",
         element: <SuperAdminDashboardPage />,
@@ -175,6 +181,538 @@ const router = createBrowserRouter([
         element: <EmployeeDashboardPage />,
         handle: { helpKey: " employeeDashboard" },
       },
+
+      //Announcements
+
+      {
+        path: "add-announcement",
+        element: <MakeAnnouncement />,
+        handle: { helpKey: " addAnnouncement" },
+      },
+      {
+        path: "view-announcement",
+        element: <ViewAnnouncements />,
+        handle: { helpKey: " viewAnnouncement" },
+      },
+
+      // Synergy
+      {
+        path: "engagement-feed",
+        element: <FeedPage />,
+        handle: { helpKey: " engagementFeed" },
+      },
+      {
+        path: "engagement-permission-dashboard",
+        element: <EngPermissionDashboardPage />,
+        handle: { helpKey: " engagementPermissionDashboard" },
+      },
+
+      // Manage Employees
+      {
+        path: "employees/management",
+        element: <EmployessMainPage />,
+        handle: { helpKey: " employeesManagement" },
+      },
+      {
+        path: "add-employee",
+        element: <AddEmployeePage />,
+        handle: { helpKey: " addEmployee" },
+      },
+      {
+        path: "add-employee-manager",
+        element: <AddEmployeeManagerPage />,
+        handle: { helpKey: " addEmployeeManager" },
+      },
+      {
+        path: "supordinates-employees",
+        element: <SubordinatesEmployessPage />,
+        handle: { helpKey: " subordinatesEmployees" },
+      },
+      {
+        path: "all-employess",
+        element: <AllEmployessPage />,
+        handle: { helpKey: " allEmployees" },
+      },
+      {
+        path: "update-employee/:id",
+        element: <UpdateEmployeePage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "update-employee-manager/:id",
+        element: <UpdateEmployeeManagerPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "employees/details/:id",
+        element: <ViewEmployeePage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "assign-assets",
+        element: <AssignAssetsPage />,
+        handle: { helpKey: " assignAssets" },
+      },
+
+      {
+        path: "disciplinary-actions",
+        element: <AllDisciplinaryActionsPage />,
+        handle: { helpKey: " disciplinaryActions" },
+      },
+      {
+        path: "disciplinary-actions/all-users",
+        element: <UsersListForDisciplinaryPage />,
+        handle: { helpKey: " disciplinaryActionsAllUsers" },
+      },
+
+      // Ticket Management
+      {
+        path: "manage-tickets",
+        element: <ManageTicketsPage />,
+        handle: { helpKey: " AllTickets" },
+      },
+      {
+        path: "raise-ticket",
+        element: <RaiseTicketsPage />,
+        handle: { helpKey: " AllTickets" },
+      },
+      {
+        path: "all-tickets",
+        element: <AllTicketsPage />,
+        handle: { helpKey: " AllTickets" },
+      },
+      {
+        path: "employee-tickets/:employeeId",
+        element: <EmployeeTicketsPage />,
+      },
+      {
+        path: "posh-manage",
+        element: <PoshManagePage />,
+        handle: { helpKey: " poshManage" },
+      },
+      {
+        path: "file-posh",
+        element: <FilePoshPage />,
+        handle: { helpKey: " filePosh" },
+      },
+
+      //attendance management
+
+      {
+        path: "attendance-dashboard",
+        element: <AttendanceDashboardPage />,
+        handle: { helpKey: " attendanceDashboard" },
+      },
+      {
+        path: "subordinates-attendance",
+        element: <SubordinatesAttendancePage />,
+        handle: { helpKey: " subordinatesAttendance" },
+      },
+      {
+        path: "view-attendance",
+        element: <OwmFullAttendancePage />,
+        handle: { helpKey: " viewAttendance" },
+      },
+      {
+        path: "all-employee-attendance",
+        element: <AllEmployeeAttendancePage />,
+        handle: { helpKey: " allEmployeeAttendance" },
+      },
+      {
+        path: "attendance/:empID",
+        element: <EmployeeFullAttendancePage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "statistics/:empID",
+        element: <EmployeeFullStatisticsPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "statistics/:empID/:date",
+        element: <EmployeeDailyStats />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "request-hike-advance-reimbursement",
+        element: <RequestDashboardPage />,
+        handle: { helpKey: " requestHikeAdvanceReimbursement" },
+      },
+      // Payroll
+      {
+        path: "payroll-main",
+        element: <MainPage />,
+        handle: { helpKey: " payrollMain" },
+      },
+      {
+        path: "manage-payroll",
+        element: <ManagePayrollPage />,
+        handle: { helpKey: " managePayroll" },
+      },
+      {
+        path: "manage-claims",
+        element: <ManageClaimsPage />,
+        handle: { helpKey: " manageClaims" },
+      },
+      {
+        path: "payroll/employee/:employeeId",
+        element: <EmployeeDetails />,
+        handle: { helpKey: " payrollEmployeeDetails" },
+      },
+
+      // Task Management
+      {
+        path: "main-task",
+        element: <TaskMainPage />,
+        handle: { helpKey: " taskMain" },
+      },
+      {
+        path: "view-daily-task",
+        element: <ViewDailyTaskPage />,
+        handle: { helpKey: " viewDailyTask" },
+      },
+      {
+        path: "assigned-task",
+        element: <AssignedTaskPage />,
+        handle: { helpKey: " assignedTask" },
+      },
+      {
+        path: "assigned-task/employee",
+        element: <AssignedTaskEmployeePage />,
+        handle: { helpKey: " assignedTaskEmployee" },
+      },
+      {
+        path: "employee-tasks/:employeeId",
+        element: <IndividualAssignedTasks />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "daily-task",
+        element: <DailyTaskPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "employee-particular-tasks/:employeeId",
+        element: <EmployeeDailyTaskDetail />,
+        handle: { helpKey: " " },
+      },
+      // Recruitment
+      {
+        path: "recruitment-main",
+        element: <RecruitDashboardPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "all-vacancies",
+        element: <AllVacanciesPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "create-vacancies",
+        element: <CreateVacancyPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "referral-list",
+        element: <ReferralListPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "vancancies-list",
+        element: <VacanciesListPage />,
+        handle: { helpKey: " " },
+      },
+      // Resignation & FNF
+      {
+        path: "employee-resignation-history",
+        element: <EmployeeResignationHistoryPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "submit-resignation",
+        element: <SubmitResignationPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "resignation-approvals",
+        element: <ResignationApprovalPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "fnf-request-hr",
+        element: <FNFApprovalPage />,
+        handle: { helpKey: " " },
+      },
+
+      // Company Info & Settings
+      {
+        path: "company-info",
+        element: <CompanyInfoPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "company-settings",
+        element: <CompanySettingPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "add-hierarchy",
+        element: <AddHierarchyPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "update-policies",
+        element: <CompanyPoliciesPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "post-induction",
+        element: <CompanyInductionPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "break-settings",
+        element: <BreakSettingsPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "training-material",
+        element: <TrainingMaterialsPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "admin-panel-training",
+        element: <AdminPanelTrainingPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "induction-ppt",
+        element: <CompanyInductionViewPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "company-policies",
+        element: <CompanyPoliciesViewPage />,
+        handle: { helpKey: " " },
+      },
+
+      // Performance Management old
+      {
+        path: "performance-dashboard",
+        element: <PerformanceManagementDashboardPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "set-kpis",
+        element: <SetKpiForDesignationPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "team-performance",
+        element: <TeamsPerformancePage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "post-top-performers",
+        element: <PostPerformerPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "top-performers",
+        element: <ViewPerformerPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "all-emp-ratings",
+        element: <AllEmpRatingsPage />,
+        handle: { helpKey: " " },
+      },
+
+      // KPI Quant-Qualitative and Performance Management  have to set kpis daily, weekely,monthly,yearly
+      {
+        path: "set-kpis-new",
+        element: <SetKpisNewPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "rate-team-members",
+        element: <RatingDashboardPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "team-members-performance",
+        element: <TeamRatingsAdvancedPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "employee/:employeeId/ratings",
+        element: <EmployeeIndividualRatings />,
+      },
+      {
+        path: "my-performance",
+        element: <MyPerformanceAdvancedPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "all-employess-ratings",
+        element: <AllEmployeeRatingsPage />,
+        handle: { helpKey: " " },
+      },
+
+      // KPI Quant-Qualitative according to Razor in this only set kpis daily and weekely,monthly yearly calculated automatically
+      {
+        path: "set-kpis-daily",
+        element: <SetKpisNewPageRazor />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "rate-team-members-daily",
+        element: <RatingDashboardPageRazor />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "employee-advanced/:employeeId",
+        element: <EmployeeRatingAdvancedPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "employee-advanced-aggregate/:employeeId",
+        element: <EmployeeRatingAdvancedPageRazor />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "my-performance-aggregate",
+        element: <MyPerformanceAdvancedPageRazor />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "team-members-performance-aggregate",
+        element: <TeamRatingsAdvancedPageRazor />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "all-employess-ratings-aggregate",
+        element: <AllEmployeeRatingsPageRazor />,
+        handle: { helpKey: " " },
+      },
+
+      {
+        path: "performance-analytics",
+        element: <ManagerDashboardPage />,
+        handle: { helpKey: " " },
+      },
+
+      {
+        path: "all-performance-analytics",
+        element: <SuperAdminDashboardAnlyticsPage />,
+        handle: { helpKey: " " },
+      },
+
+      // ------------------------------ Company Analytics RACI------------------------------
+
+      {
+        path: "raci-dashboard",
+        element: <RaciDashboardPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "raci-business",
+        element: <RaciBusinessPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "raci-operations",
+        element: <RaciOperationsPage />,
+        handle: { helpKey: " " },
+      },
+
+      // Productivity Lenses
+      {
+        path: "main-dashboard",
+        element: <ProductivityLensAll />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "productivity-dashboard",
+        element: <ProductivityDashboardPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "team-productivity",
+        element: <TeamProductivityPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "all-employee-productivity",
+        element: <ProductivityLensAll />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "subordinate-productivity",
+        element: <SubordinateProductivityLens />,
+        handle: { helpKey: " " },
+      },
+
+      // Leaves Management
+      {
+        path: "leave-history",
+        element: <EmployeeLeaveHistoryPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "manage-leave-history",
+        element: <ManageLeavesPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "all-leave-history",
+        element: <AllLeavePage />,
+        handle: { helpKey: " " },
+      },
+
+      // Organization Chart
+      {
+        path: "organization-chart",
+        element: <EmployeeTreemapPage />,
+        handle: { helpKey: " " },
+      },
+      // Profile
+      {
+        path: "my-profile",
+        element: <MyProfilePage />,
+        handle: { helpKey: " " },
+      },
+
+      // Chats
+      { path: "chats", element: <ChatPage />, handle: { helpKey: " " } },
+
+      // Geo Location
+      {
+        path: "field-worker",
+        element: <FiledworkerPage />,
+        handle: { helpKey: " " },
+      },
+      {
+        path: "geo-location",
+        element: <GeolocationPage />,
+        handle: { helpKey: " " },
+      },
+
+      //registration
+
+      {
+        path: "registration/add-new-employee",
+        element: <AddNewEmployeePage />,
+      },
+
+      {
+        path: "registration/review-employee",
+        element: <ReviewEmployeePage />,
+      },
+      {
+        path: "registration/review-employee/:empid",
+        element: <ManagerTabOverview />,
+      },
     ],
   },
   {
@@ -185,4 +723,3 @@ const router = createBrowserRouter([
 ]);
 
 export default router;
-
