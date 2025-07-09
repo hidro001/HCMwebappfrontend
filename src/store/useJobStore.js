@@ -12,8 +12,6 @@ const useJobStore = create((set) => ({
     try {
       set({ loading: true, error: null, successMessage: null });
 
-      // POST to your backend
-
     const response = await axiosInstance.post('/recruitment/jobs', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
