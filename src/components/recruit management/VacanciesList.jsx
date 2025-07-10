@@ -192,6 +192,24 @@ export default function VacanciesList() {
           icon: FaFileAlt,
           iconColor: "text-gray-600 dark:text-gray-400"
         };
+      case "Approved" :
+        return {
+          color: "bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800",
+          icon: FaCheckCircle,
+          iconColor: "text-green-600 dark:text-green-400"
+        };
+        case "Rejected":
+        return {
+          color: "bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800",
+          icon: FaTimes,
+          iconColor: "text-red-600 dark:text-red-400"
+        };
+      case "Pending":
+        return {
+          color: "bg-gray-100 dark:bg-gray-700/50 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-600",
+          icon: FaFileAlt,
+          iconColor: "text-gray-600 dark:text-gray-400"
+        };
       default:
         return {
           color: "bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800",
@@ -200,6 +218,40 @@ export default function VacanciesList() {
         };
     }
   };
+
+  const getApprovalStatusConfig = (status) => {
+  switch (status) {
+    case "Approved":
+      return {
+        color:
+          "bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300 border-green-200 dark:border-green-800",
+        icon: FaCheckCircle,
+        iconColor: "text-green-600 dark:text-green-400",
+      };
+    case "Rejected":
+      return {
+        color:
+          "bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300 border-red-200 dark:border-red-800",
+        icon: FaTimes,
+        iconColor: "text-red-600 dark:text-red-400",
+      };
+    case "Pending":
+      return {
+        color:
+          "bg-gray-100 dark:bg-gray-700/50 text-gray-800 dark:text-gray-300 border-gray-200 dark:border-gray-600",
+        icon: FaClock,
+        iconColor: "text-gray-600 dark:text-gray-400",
+      };
+    default:
+      return {
+        color:
+          "bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800",
+        icon: FaFileAlt,
+        iconColor: "text-blue-600 dark:text-blue-400",
+      };
+  }
+};
+
 
   const exportData = currentTableData.map((vac, idx) => {
     const rowIndex = (currentPage - 1) * pageSize + (idx + 1);
@@ -452,6 +504,9 @@ export default function VacanciesList() {
                           <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Status
                           </th>
+                          <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                            Approval Status
+                          </th>
                           <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                             Actions
                           </th>
@@ -470,6 +525,7 @@ export default function VacanciesList() {
                                 : "Not specified";
                             const postedDate = new Date(vac.createdAt).toLocaleDateString("en-GB");
                             const statusConfig = getStatusConfig(vac.vacancyStatus);
+                            const approvalStatusConfig = getApprovalStatusConfig(vac.approvalStatus);
 
                             return (
                               <motion.tr
@@ -526,6 +582,12 @@ export default function VacanciesList() {
                                   <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium border ${statusConfig.color}`}>
                                     <statusConfig.icon className={`text-xs ${statusConfig.iconColor}`} />
                                     <span>{vac.vacancyStatus}</span>
+                                  </span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                 <span className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs font-medium border ${approvalStatusConfig.color}`}>
+                                    <approvalStatusConfig.icon className={`text-xs ${approvalStatusConfig.iconColor}`} />
+                                    <span>{vac.approvalStatus}</span>
                                   </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap text-right">
