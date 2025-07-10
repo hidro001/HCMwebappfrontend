@@ -628,7 +628,7 @@ const router = createBrowserRouter([
       // Productivity Lenses
       {
         path: "main-dashboard",
-        element: <ProductivityLensAll />,
+        element: <MainDashboardPage />,
         handle: { helpKey: "productivityMain" },
       },
       {
