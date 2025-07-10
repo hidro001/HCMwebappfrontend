@@ -558,8 +558,6 @@ export default function SubordinatesAttendance() {
       }))
     : [];
 
-
-
   const filteredEmployees = employeesData.filter((emp) => {
     if (selectedDepartment !== "Department" && emp.department !== selectedDepartment) {
       return false;

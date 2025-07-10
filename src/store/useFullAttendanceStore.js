@@ -1,5 +1,3 @@
-
-
 import { create } from "zustand";
 import { toast } from "react-hot-toast";
 import { jsPDF } from "jspdf";
@@ -8,18 +6,28 @@ import axiosInstance from "../service/axiosInstance";
 
 function convertTo24Hour(timeStr) {
   if (!timeStr) return null;
-  const [timePart, ampm] = timeStr.split(" ");
-  if (!timePart || !ampm) return null;
-
-  let [hh, mm, ss] = timePart.split(":");
-  hh = parseInt(hh, 10) || 0;
-  mm = parseInt(mm, 10) || 0;
-  ss = parseInt(ss, 10) || 0;
-
-  if (ampm.toUpperCase() === "PM" && hh !== 12) hh += 12;
-  if (ampm.toUpperCase() === "AM" && hh === 12) hh = 0;
-
-  return `${String(hh).padStart(2, "0")}:${String(mm).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
+  // If it ends with AM/PM, do the usual conversion
+  const ampmMatch = timeStr.match(/\b(AM|PM)$/i);
+  if (ampmMatch) {
+    const [timePart, ampm] = timeStr.split(" ");
+    let [hh, mm, ss = "00"] = timePart.split(":");
+    hh = parseInt(hh,10) || 0;
+    mm = parseInt(mm,10) || 0;
+    ss = parseInt(ss,10) || 0;
+    if (/PM/i.test(ampm) && hh < 12) hh += 12;
+    if (/AM/i.test(ampm) && hh === 12) hh = 0;
+    return [hh,mm,ss].map(n=>String(n).padStart(2,"0")).join(":");
+  }
+  // Otherwise assume it's already 24-hour; ensure it has seconds
+  const parts = timeStr.split(":");
+  if (parts.length === 2) {
+    // e.g. "14:30" ⇒ "14:30:00"
+    return `${parts[0].padStart(2,"0")}:${parts[1].padStart(2,"0")}:00`;
+  }
+  if (parts.length === 3) {
+    return parts.map(p=>p.padStart(2,"0")).join(":"); 
+  }
+  return null;
 }
 
 
@@ -38,15 +46,13 @@ function getAllDaysInMonth(year, month) {
   let current = new Date(year, month - 1, 1, 12, 0, 0, 0);
 
   while (current.getMonth() === month - 1) {
-    days.push(new Date(current.getTime())); 
+    days.push(new Date(current.getTime()));
     current.setDate(current.getDate() + 1);
   }
   return days;
 }
 
-
 const useFullAttendanceStore = create((set, get) => ({
-
   userProfileData: null,
   approvedLeaves: [],
   attendanceData: [],
@@ -62,25 +68,30 @@ const useFullAttendanceStore = create((set, get) => ({
   isLoading: false,
   hasRealData: false,
 
-
   fetchAllData: async (employeeId, selectedMonth) => {
     try {
       set({ isLoading: true, error: null });
 
-      const userProfileResponse = await axiosInstance.get(`/user/profile/${employeeId}`);
+      const userProfileResponse = await axiosInstance.get(
+        `/user/profile/${employeeId}`
+      );
       if (!userProfileResponse.data?.success) {
         throw new Error(
-          userProfileResponse.data?.message || "Failed to fetch user profile data"
+          userProfileResponse.data?.message ||
+            "Failed to fetch user profile data"
         );
       }
       const userData = userProfileResponse.data.data;
 
-      const approvedLeavesResponse = await axiosInstance.get(`/leaves/employee/`, {
-        params: {
-          status: "approved",
-          employee_Id: employeeId,
-        },
-      });
+      const approvedLeavesResponse = await axiosInstance.get(
+        `/leaves/employee/`,
+        {
+          params: {
+            status: "approved",
+            employee_Id: employeeId,
+          },
+        }
+      );
       let approvedLeavesData = [];
       if (Array.isArray(approvedLeavesResponse.data)) {
         approvedLeavesData = approvedLeavesResponse.data;
@@ -96,12 +107,15 @@ const useFullAttendanceStore = create((set, get) => ({
         approvedLeavesData = approvedLeavesResponse.data.leave;
       }
 
-      const attendanceResponse = await axiosInstance.get(`/attendance-user/employee`, {
-        params: {
-          employee_Id: employeeId,
-          selectedMonth : selectedMonth
-        },
-      });
+      const attendanceResponse = await axiosInstance.get(
+        `/attendance-user/employee`,
+        {
+          params: {
+            employee_Id: employeeId,
+            selectedMonth: selectedMonth,
+          },
+        }
+      );
       if (!attendanceResponse.data?.success) {
         throw new Error(
           attendanceResponse.data?.message || "Failed to fetch attendance data"
@@ -121,7 +135,8 @@ const useFullAttendanceStore = create((set, get) => ({
       );
       if (!companySettingsResponse.data?.success) {
         throw new Error(
-          companySettingsResponse.data?.message || "Failed to fetch company settings"
+          companySettingsResponse.data?.message ||
+            "Failed to fetch company settings"
         );
       }
       const settingsData = companySettingsResponse.data.data || {};
@@ -150,15 +165,20 @@ const useFullAttendanceStore = create((set, get) => ({
   },
 
   getMonthlyAttendanceView: (year, month) => {
-    const { attendanceData, approvedLeaves, companySettings, attendancePolicies } = get();
+    const {
+      attendanceData,
+      approvedLeaves,
+      companySettings,
+      attendancePolicies,
+    } = get();
 
     // 1) build array of all days in (year, month)
     const allDays = getAllDaysInMonth(year, month);
 
     // 2) build sets for holiday & leaves
     const holidaySet = new Set(
-      (companySettings?.holidays || []).map((h) =>
-        new Date(h.date).toISOString().split("T")[0]
+      (companySettings?.holidays || []).map(
+        (h) => new Date(h.date).toISOString().split("T")[0]
       )
     );
 
@@ -174,10 +194,10 @@ const useFullAttendanceStore = create((set, get) => ({
     return allDays.map((dateObj, idx) => {
       const dateStr = dateObj.toISOString().split("T")[0];
       const dayName = dateObj.toLocaleDateString("en-US", { weekday: "long" });
-    
+
       // find record if any
       const record = attendanceData.find((r) => r.date === dateStr);
-    
+
       // compute total break minutes
       let totalBreakMinutes = 0;
       if (record?.breaks && record.breaks.length > 0) {
@@ -188,49 +208,73 @@ const useFullAttendanceStore = create((set, get) => ({
             const breakDuration = (breakEndTime - breakStartTime) / 60000; // minutes
             if (breakDuration > 0) {
               totalBreakMinutes += Math.floor(breakDuration);
-
             }
           }
         });
       }
-      
-    
+
       let status = "Absent";
       if (holidaySet.has(dateStr)) {
         status = "Holiday";
       } else if (approvedLeavesSet.has(dateStr)) {
-        status = "Leave"; 
+        status = "Leave";
       } else if (record?.login && record?.logout) {
-
         const login24 = convertTo24Hour(record.login);
         const logout24 = convertTo24Hour(record.logout);
-        const [h1,m1,s1]=login24.split(':').map(Number);
-        const [h2,m2,s2]=logout24.split(':').map(Number);
-        const hoursWorked = ((h2*3600 + m2*60 + s2) - (h1*3600 + m1*60 + s1)) / 3600;
+        const [h1, m1, s1] = login24.split(":").map(Number);
+        const [h2, m2, s2] = logout24.split(":").map(Number);
+        const hoursWorked =
+          (h2 * 3600 + m2 * 60 + s2 - (h1 * 3600 + m1 * 60 + s1)) / 3600;
 
         const fullDayHours = attendancePolicies?.fullDayHours || 9;
         const halfDayHours = attendancePolicies?.halfDayHours || 5;
         const minHours = attendancePolicies?.minimumWorkingHours || 4.5;
-    
+
+        console.log(
+          "hoursWorked",
+          hoursWorked,
+          "fullDayHours",
+          fullDayHours,
+          "halfDayHours",
+          halfDayHours,
+          "minHours",
+          minHours
+        );
         if (hoursWorked >= fullDayHours) status = "Present";
-        else if (hoursWorked >= minHours && hoursWorked >= halfDayHours && hoursWorked <fullDayHours) status = "Half Day";
-        else if (hoursWorked > 0 && hoursWorked < minHours) status = "Less than half day ";
-        else status = "Present"; 
+        else if (
+          hoursWorked >= minHours &&
+          hoursWorked >= halfDayHours &&
+          hoursWorked < fullDayHours
+        )
+          status = "Half Day";
+        else if (
+          hoursWorked > 0 &&
+          hoursWorked >= minHours &&
+          hoursWorked < halfDayHours
+        )
+          status = "Less than half day ";
+        else if (
+          hoursWorked > 0 &&
+          hoursWorked < minHours &&
+          hoursWorked < halfDayHours
+        )
+          status = "Absent";
+        else status = "Present";
       } else {
         if (dateObj > new Date()) status = "------";
       }
-    
+
       return {
         sl: idx + 1,
         date: dateStr,
         day: dayName,
         logInTime: record?.login || "------",
         logOutTime: record?.logout || "------",
-        totalBreak: totalBreakMinutes > 0 ? `${totalBreakMinutes} minutes` : "--",
+        totalBreak:
+          totalBreakMinutes > 0 ? `${totalBreakMinutes} minutes` : "--",
         status,
       };
     });
-    
   },
 
   calculateTotalShifts: (year, month) => {
@@ -279,10 +323,14 @@ const useFullAttendanceStore = create((set, get) => ({
         const shiftStartTime = shiftTimingDetails?.startTime || "09:00";
         const grace = attendancePolicies?.gracePeriodMinutes || 15;
         if (rec.login && shiftStartTime) {
-          const shiftStart = new Date(`1970-01-01T${convertTo24Hour(shiftStartTime)}`);
+          const shiftStart = new Date(
+            `1970-01-01T${convertTo24Hour(shiftStartTime)}`
+          );
           shiftStart.setMinutes(shiftStart.getMinutes() + grace);
 
-          const loginTime = new Date(`1970-01-01T${convertTo24Hour(rec.login)}`);
+          const loginTime = new Date(
+            `1970-01-01T${convertTo24Hour(rec.login)}`
+          );
           return loginTime > shiftStart;
         }
       }
@@ -360,7 +408,6 @@ const useFullAttendanceStore = create((set, get) => ({
     }).length;
   },
 
-
   generatePDF: () => {
     const doc = new jsPDF();
     doc.text("Hello from the PDF logic in Zustand store!", 10, 10);
@@ -368,71 +415,71 @@ const useFullAttendanceStore = create((set, get) => ({
     toast.success("PDF downloaded successfully!");
   },
 
-   getTimelineSegments(record) {
+  getTimelineSegments(record) {
     const segments = [];
     const login = convertTo24Hour(record?.login);
     const logout = convertTo24Hour(record?.logout);
     if (!login || !logout) return [];
-  
+
     const workStart = new Date(`1970-01-01T${login}`);
     const workEnd = new Date(`1970-01-01T${logout}`);
-  
-    const breaks = (record?.breaks || []).map(br => ({
-      start: new Date(br.start),
-      end: new Date(br.end)
-    })).sort((a, b) => a.start - b.start);
-  
+
+    const breaks = (record?.breaks || [])
+      .map((br) => ({
+        start: new Date(br.start),
+        end: new Date(br.end),
+      }))
+      .sort((a, b) => a.start - b.start);
+
     let pointer = new Date(workStart);
-  
+
     for (const br of breaks) {
       // Add working time before break
       if (br.start > pointer) {
         segments.push({
           start: pointer.toTimeString().slice(0, 5),
           end: br.start.toTimeString().slice(0, 5),
-          type: "Working"
+          type: "Working",
         });
       }
-  
+
       // Add break time
       segments.push({
         start: br.start.toTimeString().slice(0, 5),
         end: br.end.toTimeString().slice(0, 5),
-        type: "Break"
+        type: "Break",
       });
-  
+
       pointer = new Date(br.end); // move pointer forward
     }
-  
+
     // Add final working time after last break
     if (pointer < workEnd) {
       segments.push({
         start: pointer.toTimeString().slice(0, 5),
         end: workEnd.toTimeString().slice(0, 5),
-        type: "Working"
+        type: "Working",
       });
     }
-  
+
     return segments;
   },
 
   fetchInsights: async (employeeId, mode, date = "") => {
-  set({ loading: true, error: null });
-  try {
-    const res = await axiosInstance.get(
-      `/break/employee-attendance-analytics/${employeeId}?interval=${mode}&date=${date}`
-    );
-    set({ insights: res.data.data });
-  } catch (err) {
-    set({ error: err.message });
-    toast.error(err.message);
-  } finally {
-    set({ loading: false });
-  }
-},
-insights: null,
-
-  
+    set({ loading: true, error: null });
+    try {
+      const res = await axiosInstance.get(
+        `/break/employee-attendance-analytics/${employeeId}?interval=${mode}&date=${date}`
+      );
+      set({ insights: res.data.data });
+    } catch (err) {
+      set({ error: err.message });
+      toast.error(err.message);
+    } finally {
+      set({ loading: false });
+    }
+  },
+  insights: null,
 }));
 
 export default useFullAttendanceStore;
