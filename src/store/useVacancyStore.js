@@ -7,10 +7,16 @@ const useVacancyStore = create((set) => ({
   error: null,
 
   // Fetch all vacancies (GET /jobs)
-  fetchAllVacancies: async () => {
+  fetchAllVacancies: async (approvalStatus = '') => {
     set({ loading: true, error: null });
+    let response;
     try {
-      const response = await axiosInstance.get('/recruitment/jobs');
+      if(approvalStatus.length >0){
+        response = await axiosInstance.get(`/recruitment/jobs?approvalStatus=${approvalStatus}`);
+      }else{
+       response = await axiosInstance.get('/recruitment/jobs');
+
+      }
       // response.data.data should be the array of jobs
       set({ vacancies: response.data.data, loading: false });
     } catch (err) {

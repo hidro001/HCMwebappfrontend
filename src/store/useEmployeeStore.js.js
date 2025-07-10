@@ -116,10 +116,16 @@ const useEmployeeStore = create((set, get) => ({
     }
   },
 
-  loadAllEmployees: async () => {
+  loadAllEmployees: async (department= '') => {
     try {
       set({ loadingAllEmployees: true });
-      const data = await fetchAllEmployees();
+      let data
+      if(department.length >0){
+       data = await fetchAllEmployees(department);
+
+      }else{
+       data = await fetchAllEmployees();
+      }
       const employeeOptions = data.map((emp) => ({
         value: emp._id,
         label: `${emp.first_Name} ${emp.last_Name} (${emp.employee_Id}) (${emp.permission_role})`,

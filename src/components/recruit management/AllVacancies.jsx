@@ -39,10 +39,9 @@ export default function AllVacancies() {
   const [viewMode, setViewMode] = useState("cards");
   
   useEffect(() => {
-    fetchAllVacancies();
+    fetchAllVacancies('Approved');
   }, [fetchAllVacancies]);
 
-  // Transform the API response data to the structure our UI expects.
   useEffect(() => {
     if (!loading && storeVacancies?.length) {
       const transformed = storeVacancies.map((job) => ({
@@ -70,7 +69,6 @@ export default function AllVacancies() {
     }
   }, [storeVacancies, loading]);
 
-  // Map the API's vacancyStatus to our UI status values.
   function mapStatus(backendStatus = "") {
     const s = backendStatus.toLowerCase();
     if (s === "open") return "OPEN";
@@ -127,14 +125,12 @@ export default function AllVacancies() {
     setIsDetailsModalOpen(false);
   };
 
-  // Filter vacancies based on the selected tab, filter values, and search term.
   const filteredVacancies = vacanciesData.filter((vac) => {
-    // Tab filtering
+
     if (selectedTab === "OPEN" && vac.status !== "OPEN") return false;
     if (selectedTab === "COMPLETED" && vac.status !== "COMPLETED") return false;
     if (selectedTab === "DRAFT" && vac.status !== "DRAFT") return false;
-    
-    // Filter panel filtering
+
     if (filters.department !== "All Department" && vac.department !== filters.department)
       return false;
     if (filters.positionType !== "All Positions" && vac.positionType !== filters.positionType)
@@ -150,7 +146,6 @@ export default function AllVacancies() {
     )
       return false;
     
-    // Search term filtering
     if (searchTerm && !vac.title.toLowerCase().includes(searchTerm.toLowerCase()) &&
         !vac.department.toLowerCase().includes(searchTerm.toLowerCase()) &&
         !vac.location.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -159,7 +154,6 @@ export default function AllVacancies() {
     return true;
   });
 
-  // Helper function to format salary with the correct currency symbol
   const formatSalary = (salary, currency) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
