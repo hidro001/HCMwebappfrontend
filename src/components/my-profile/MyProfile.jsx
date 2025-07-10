@@ -61,7 +61,6 @@ function MyProfile() {
     }
   };
 
-
   useEffect(() => {
     if (!employeeId) {
       console.warn("⚠️ No employeeId in auth store");
