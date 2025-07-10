@@ -560,11 +560,11 @@ const handleDateClick = (date) => {
 };
 
 
-const safeDisplayDate = (dateStr) => {
-  return new Date(dateStr + 'T00:00:00Z').toLocaleDateString();
-};
 
 
+    const safeDisplayDate = (dateStr) => {
+      return new Date(dateStr + 'T00:00:00Z').toLocaleDateString();
+    };
 
     const navigateMonth = (direction) => {
       setCurrentMonth(prev => {
@@ -914,7 +914,7 @@ const safeDisplayDate = (dateStr) => {
                     </div>
 
                     {/* Half Day Period Selection */}
-                
+                  
                     {formData.isHalfDay &&  (
                       <div className="mb-6 space-y-4">
                         <div>
