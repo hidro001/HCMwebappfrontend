@@ -1288,13 +1288,13 @@ const router = createBrowserRouter([
       {
         path: "organization-chart",
         element: <EmployeeTreemapPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "organizationChart" },
       },
       // Profile
       {
         path: "my-profile",
         element: <MyProfilePage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "" },
       },
 
       // Chats

@@ -173,6 +173,7 @@ import { GrDocumentPerformance } from "react-icons/gr";
 import { MdTrackChanges } from "react-icons/md";
 import { ChatBubble } from "@mui/icons-material";
 import { LuFileCheck2 } from "react-icons/lu";
+import { RiOrganizationChart } from "react-icons/ri";
 
 export const helpConfigs = {
   // ------------------------------ Dashboard ------------------------------
@@ -1125,6 +1126,20 @@ export const helpConfigs = {
       "Track your training progress",
     ],
   },
+
+  // ------------------------------ Organization Chart ------------------------------
+    organizationChart: {
+    title: "Organization Chart",
+    description: "View and explore your company's hierarchy and reporting lines.",
+    icon: RiOrganizationChart,
+    defaultExpanded: false,
+    quickTips: [
+      "View hierarchical structure visually",
+      "Expand nodes for more details",
+      "Search by name or department",
+      "Download chart as image"
+    ]
+  }
 };
 
 // Helper function to render help section from config
