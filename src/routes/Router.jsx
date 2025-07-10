@@ -819,27 +819,27 @@ const router = createBrowserRouter([
       {
         path: "employees/management",
         element: <EmployessMainPage />,
-        handle: { helpKey: " employeesManagement" },
+        handle: { helpKey: "mainEmployeeManagement" },
       },
       {
         path: "add-employee",
         element: <AddEmployeePage />,
-        handle: { helpKey: " addEmployee" },
+        handle: { helpKey: "addEmployee" },
       },
       {
         path: "add-employee-manager",
         element: <AddEmployeeManagerPage />,
-        handle: { helpKey: " addEmployeeManager" },
+        handle: { helpKey: "addEmployeeManager" },
       },
       {
         path: "supordinates-employees",
         element: <SubordinatesEmployessPage />,
-        handle: { helpKey: " subordinatesEmployees" },
+        handle: { helpKey: "subordinatesEmployees" },
       },
       {
         path: "all-employess",
         element: <AllEmployessPage />,
-        handle: { helpKey: " allEmployees" },
+        handle: { helpKey: "allEmployees" },
       },
       {
         path: "update-employee/:id",
@@ -859,35 +859,35 @@ const router = createBrowserRouter([
       {
         path: "assign-assets",
         element: <AssignAssetsPage />,
-        handle: { helpKey: " assignAssets" },
+        handle: { helpKey: "assetManagement" },
       },
 
       {
         path: "disciplinary-actions",
         element: <AllDisciplinaryActionsPage />,
-        handle: { helpKey: " disciplinaryActions" },
+        handle: { helpKey: "takeDisciplinaryActions" },
       },
       {
         path: "disciplinary-actions/all-users",
         element: <UsersListForDisciplinaryPage />,
-        handle: { helpKey: " disciplinaryActionsAllUsers" },
+        handle: { helpKey: "allDisciplinaryActions" },
       },
 
       // Ticket Management
       {
         path: "manage-tickets",
         element: <ManageTicketsPage />,
-        handle: { helpKey: " AllTickets" },
+        handle: { helpKey: "manageTickets" },
       },
       {
         path: "raise-ticket",
         element: <RaiseTicketsPage />,
-        handle: { helpKey: " AllTickets" },
+        handle: { helpKey: "raiseTicket" },
       },
       {
         path: "all-tickets",
         element: <AllTicketsPage />,
-        handle: { helpKey: " AllTickets" },
+        handle: { helpKey: "allTickets" },
       },
       {
         path: "employee-tickets/:employeeId",
@@ -896,12 +896,12 @@ const router = createBrowserRouter([
       {
         path: "posh-manage",
         element: <PoshManagePage />,
-        handle: { helpKey: " poshManage" },
+        handle: { helpKey: "poshManage" },
       },
       {
         path: "file-posh",
         element: <FilePoshPage />,
-        handle: { helpKey: " filePosh" },
+        handle: { helpKey: "filePosh" },
       },
 
       //attendance management
@@ -909,22 +909,22 @@ const router = createBrowserRouter([
       {
         path: "attendance-dashboard",
         element: <AttendanceDashboardPage />,
-        handle: { helpKey: " attendanceDashboard" },
+        handle: { helpKey: "attendanceMain" },
       },
       {
         path: "subordinates-attendance",
         element: <SubordinatesAttendancePage />,
-        handle: { helpKey: " subordinatesAttendance" },
+        handle: { helpKey: "subordinatesAttendance" },
       },
       {
         path: "view-attendance",
         element: <OwmFullAttendancePage />,
-        handle: { helpKey: " viewAttendance" },
+        handle: { helpKey: "viewAttendance" },
       },
       {
         path: "all-employee-attendance",
         element: <AllEmployeeAttendancePage />,
-        handle: { helpKey: " allEmployeeAttendance" },
+        handle: { helpKey: "allEmployeeAttendance" },
       },
       {
         path: "attendance/:empID",
@@ -944,23 +944,23 @@ const router = createBrowserRouter([
       {
         path: "request-hike-advance-reimbursement",
         element: <RequestDashboardPage />,
-        handle: { helpKey: " requestHikeAdvanceReimbursement" },
+        handle: { helpKey: "requestHikeAdvanceReimbursement" },
       },
       // Payroll
       {
         path: "payroll-main",
         element: <MainPage />,
-        handle: { helpKey: " payrollMain" },
+        handle: { helpKey: "payrollMain" },
       },
       {
         path: "manage-payroll",
         element: <ManagePayrollPage />,
-        handle: { helpKey: " managePayroll" },
+        handle: { helpKey: "managePayroll" },
       },
       {
         path: "manage-claims",
         element: <ManageClaimsPage />,
-        handle: { helpKey: " manageClaims" },
+        handle: { helpKey: "manageClaims" },
       },
       {
         path: "payroll/employee/:employeeId",
@@ -972,22 +972,22 @@ const router = createBrowserRouter([
       {
         path: "main-task",
         element: <TaskMainPage />,
-        handle: { helpKey: " taskMain" },
+        handle: { helpKey: "taskMain" },
       },
       {
         path: "view-daily-task",
         element: <ViewDailyTaskPage />,
-        handle: { helpKey: " viewDailyTask" },
+        handle: { helpKey: "viewDailyTask" },
       },
       {
         path: "assigned-task",
         element: <AssignedTaskPage />,
-        handle: { helpKey: " assignedTask" },
+        handle: { helpKey: "assignTask" },
       },
       {
         path: "assigned-task/employee",
         element: <AssignedTaskEmployeePage />,
-        handle: { helpKey: " assignedTaskEmployee" },
+        handle: { helpKey: "assignedTask" },
       },
       {
         path: "employee-tasks/:employeeId",
@@ -997,111 +997,117 @@ const router = createBrowserRouter([
       {
         path: "daily-task",
         element: <DailyTaskPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "dailyTask" },
       },
       {
         path: "employee-particular-tasks/:employeeId",
         element: <EmployeeDailyTaskDetail />,
         handle: { helpKey: " " },
       },
+
+
+
+
       // Recruitment
       {
         path: "recruitment-main",
         element: <RecruitDashboardPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "recruitmentMain" },
       },
       {
         path: "all-vacancies",
         element: <AllVacanciesPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "allVacancies" },
       },
       {
         path: "create-vacancies",
         element: <CreateVacancyPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "createVacancy" },
       },
       {
         path: "referral-list",
         element: <ReferralListPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "referralList" },
       },
       {
         path: "vancancies-list",
         element: <VacanciesListPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "vacanciesList" },
       },
+
+
       // Resignation & FNF
       {
         path: "employee-resignation-history",
         element: <EmployeeResignationHistoryPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "resignationDashboard" },
       },
       {
         path: "submit-resignation",
         element: <SubmitResignationPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "submitResignation" },
       },
       {
         path: "resignation-approvals",
         element: <ResignationApprovalPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "resignationApprovals" },
       },
       {
         path: "fnf-request-hr",
         element: <FNFApprovalPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "hrFnfApprovals" },
       },
 
       // Company Info & Settings
       {
         path: "company-info",
         element: <CompanyInfoPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "companyInfo" },
       },
       {
         path: "company-settings",
         element: <CompanySettingPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "companySettings" },
       },
       {
         path: "add-hierarchy",
         element: <AddHierarchyPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "addHierarchy" },
       },
       {
         path: "update-policies",
         element: <CompanyPoliciesPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "updatePolicies" },
       },
       {
         path: "post-induction",
         element: <CompanyInductionPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "updateInduction" },
       },
       {
         path: "break-settings",
         element: <BreakSettingsPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "productivityLensSettings" },
       },
       {
         path: "training-material",
         element: <TrainingMaterialsPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "trainingMaterial" },
       },
       {
         path: "admin-panel-training",
         element: <AdminPanelTrainingPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "updateTrainingMaterials" },
       },
       {
         path: "induction-ppt",
         element: <CompanyInductionViewPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "inductionPPTs" },
       },
       {
         path: "company-policies",
         element: <CompanyPoliciesViewPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "companyPolicies" },
       },
 
       // Performance Management old
@@ -1167,16 +1173,16 @@ const router = createBrowserRouter([
         handle: { helpKey: " " },
       },
 
-      // KPI Quant-Qualitative according to Razor in this only set kpis daily and weekely,monthly yearly calculated automatically
+      // KPI Quant-Qualitative according to Razor company in this only set kpis daily and weekely,monthly yearly calculated automatically
       {
         path: "set-kpis-daily",
         element: <SetKpisNewPageRazor />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "setKPIs" },
       },
       {
         path: "rate-team-members-daily",
         element: <RatingDashboardPageRazor />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "rateTeamMembers" },
       },
       {
         path: "employee-advanced/:employeeId",
@@ -1191,29 +1197,29 @@ const router = createBrowserRouter([
       {
         path: "my-performance-aggregate",
         element: <MyPerformanceAdvancedPageRazor />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "myPerformance" },
       },
       {
         path: "team-members-performance-aggregate",
         element: <TeamRatingsAdvancedPageRazor />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "teamMembersPerformance" },
       },
       {
         path: "all-employess-ratings-aggregate",
         element: <AllEmployeeRatingsPageRazor />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "allEmployeesRating" },
       },
 
       {
         path: "performance-analytics",
         element: <ManagerDashboardPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "teamPerformanceAnalytics" },
       },
 
       {
         path: "all-performance-analytics",
         element: <SuperAdminDashboardAnlyticsPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "empPerformanceAnalytics" },
       },
 
       // ------------------------------ Company Analytics RACI------------------------------
@@ -1221,61 +1227,61 @@ const router = createBrowserRouter([
       {
         path: "raci-dashboard",
         element: <RaciDashboardPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "companyAnalyticsMain" },
       },
       {
         path: "raci-business",
         element: <RaciBusinessPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "raciBusiness" },
       },
       {
         path: "raci-operations",
         element: <RaciOperationsPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "raciOperations" },
       },
 
       // Productivity Lenses
       {
         path: "main-dashboard",
         element: <ProductivityLensAll />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "productivityMain" },
       },
       {
         path: "productivity-dashboard",
         element: <ProductivityDashboardPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "productivityDashboard" },
       },
       {
         path: "team-productivity",
         element: <TeamProductivityPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "teamProductivity" },
       },
       {
         path: "all-employee-productivity",
         element: <ProductivityLensAll />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "allEmployeeProductivity" },
       },
       {
         path: "subordinate-productivity",
         element: <SubordinateProductivityLens />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "subordinateProductivity" },
       },
 
       // Leaves Management
       {
         path: "leave-history",
         element: <EmployeeLeaveHistoryPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "leavesHistory" },
       },
       {
         path: "manage-leave-history",
         element: <ManageLeavesPage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "manageLeaves" },
       },
       {
         path: "all-leave-history",
         element: <AllLeavePage />,
-        handle: { helpKey: " " },
+        handle: { helpKey: "allSubordinateLeaves" },
       },
 
       // Organization Chart
@@ -1292,7 +1298,7 @@ const router = createBrowserRouter([
       },
 
       // Chats
-      { path: "chats", element: <ChatPage />, handle: { helpKey: " " } },
+      { path: "chats", element: <ChatPage />, handle: { helpKey: "chats" } },
 
       // Geo Location
       {
