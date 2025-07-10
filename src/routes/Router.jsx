@@ -1005,9 +1005,6 @@ const router = createBrowserRouter([
         handle: { helpKey: " " },
       },
 
-
-
-
       // Recruitment
       {
         path: "recruitment-main",
@@ -1034,7 +1031,6 @@ const router = createBrowserRouter([
         element: <VacanciesListPage />,
         handle: { helpKey: "vacanciesList" },
       },
-
 
       // Resignation & FNF
       {
@@ -1283,18 +1279,17 @@ const router = createBrowserRouter([
         element: <AllLeavePage />,
         handle: { helpKey: "allSubordinateLeaves" },
       },
-
-      // Organization Chart
-      {
-        path: "organization-chart",
-        element: <EmployeeTreemapPage />,
-        handle: { helpKey: "organizationChart" },
-      },
       // Profile
       {
         path: "my-profile",
         element: <MyProfilePage />,
         handle: { helpKey: "" },
+      },
+      // Organization Chart
+      {
+        path: "organization-chart",
+        element: <EmployeeTreemapPage />,
+        handle: { helpKey: "organizationChart" },
       },
 
       // Chats
