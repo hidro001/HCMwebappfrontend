@@ -163,7 +163,8 @@ import {
   FaClipboardList,
   FaUserClock,
   FaBell,
-  FaHome
+  FaHome,
+  FaDiceD20
 } from "react-icons/fa";
 import HelpSection from "../components/common/HelpSection";
 
@@ -204,6 +205,31 @@ dashboardSuperEmployee: {
       "Stay updated with team announcements",
       "Access performance and task insights",
       "Use quick links for easy navigation"
+    ]
+  },
+   engagementFeed: {
+    title: "Engagement Feed",
+    description: "View and interact with all team updates, announcements, and feedback in one central feed.",
+    icon: FaDiceD20,
+    defaultExpanded: false,
+    quickTips: [
+      "Scroll to see recent engagement posts",
+      "Like and reply to team updates",
+      "Filter posts by category or team",
+      "Share announcements and achievements"
+    ]
+  },
+
+  engagementPermissionDashboard: {
+    title: "Permission Dashboard",
+    description: "Manage user access to the Engage system by assigning and reviewing permissions for each role.",
+    icon: FaDiceD20,
+    defaultExpanded: false,
+    quickTips: [
+      "Assign roles to manage content access",
+      "Use search to find specific users",
+      "Review permission logs regularly",
+      "Update permissions as teams evolve"
     ]
   }
 };

@@ -769,7 +769,7 @@ const router = createBrowserRouter([
     children: [
       // Dashboards
       {
-        path: "super-employee",
+        path: "super-employee-dashboard",
         element: <SuperAdminDashboardPage />,
         handle: { helpKey: "dashboardSuperEmployee" },
       },
@@ -807,12 +807,12 @@ const router = createBrowserRouter([
       {
         path: "engagement-feed",
         element: <FeedPage />,
-        handle: { helpKey: " engagementFeed" },
+        handle: { helpKey: "engagementFeed" },
       },
       {
         path: "engagement-permission-dashboard",
         element: <EngPermissionDashboardPage />,
-        handle: { helpKey: " engagementPermissionDashboard" },
+        handle: { helpKey: "engagementPermissionDashboard" },
       },
 
       // Manage Employees

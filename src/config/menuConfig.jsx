@@ -38,7 +38,7 @@ export const menuItems = [
     options: [
       {
         name: "Dashboard",
-        link: "/dashboard/super-employee",
+        link: "/dashboard/super-employee-dashboard",
         permission: "dashboard-super",
       },
       {
