@@ -7,7 +7,6 @@ import { toast } from 'react-hot-toast'
 const useCompanySettingsStore = create((set, get) => ({
 
   attendancePolicies: {
-    // default fallback if needed
     fullDayHours: 9,
     halfDayHours: 5,
     minimumWorkingHours: 4.5,
@@ -30,15 +29,16 @@ const useCompanySettingsStore = create((set, get) => ({
     calcSalaryBasedOn: 'WORKING_DAYS',
   },
   monthsBetweenHikesOrAdvances: 12,
+  leavePolicies: {},
 
-  fetchAttendancePolicies: async () => {
+  fetchCompanyPolicies: async () => {
     try {
-      // Fetch company settings
       const res = await axiosInstance.get('/company-settings/settings')
       if (res.data?.success && res.data?.data) {
         const settingsData = res.data.data
         set({
           attendancePolicies: settingsData.attendancePolicies || {},
+          leavePolicies: settingsData.leavePolicies || {},
           monthsBetweenHikesOrAdvances: settingsData.monthsBetweenHikesOrAdvances ?? 12,
         })
       } else {
@@ -50,14 +50,15 @@ const useCompanySettingsStore = create((set, get) => ({
     }
   },
 
-  updateAttendancePolicies: async (updatedSettings) => {
+
+  updateCompanyPolicies: async (updatedSettings) => {
     try {
       await axiosInstance.post(
         '/company-settings/settings',
         updatedSettings
       )
       toast.success('Attendance Policies updated successfully.')
-      get().fetchAttendancePolicies()
+      get().fetchCompanyPolicies()
     } catch (error) {
       console.error(error)
       toast.error('Failed to update Attendance Policies.')

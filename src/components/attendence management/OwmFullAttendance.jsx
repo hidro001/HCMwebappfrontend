@@ -528,8 +528,8 @@ export default function OwnFullAttendance() {
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    fetchAttendanceData();
-  }, [fetchAttendanceData]);
+  fetchAttendanceData(selectedMonth);
+}, [fetchAttendanceData, selectedMonth]);
 
   const parts = selectedMonth.split("-");
   const year = parseInt(parts[0], 10);
@@ -1343,7 +1343,6 @@ export default function OwnFullAttendance() {
                 )}
               </div>
 
-              {/* Pagination */}
               {totalPages > 1 && (
                 <div className="bg-gray-50 dark:bg-gray-800 px-6 py-4 flex items-center justify-between border-t border-gray-200 dark:border-gray-700">
                   <div className="text-sm text-gray-700 dark:text-gray-300">
@@ -1399,7 +1398,6 @@ export default function OwnFullAttendance() {
               )}
             </motion.div>
 
-            {/* KEEPING ORIGINAL PAYROLL SUMMARY TABLE */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -1512,8 +1510,6 @@ export default function OwnFullAttendance() {
           </div>
         </main>
       </div>
-
-    
         <AnimatePresence>
             <BaseModal isOpen={missedPunchModalOpen} onClose={!missedPunchModalOpen}>
               <motion.div
@@ -1652,106 +1648,11 @@ export default function OwnFullAttendance() {
             </BaseModal>
           
         </AnimatePresence>
-
         <AnimatePresence>
-            {/* <BaseModal isOpen={onLeave} onClose={!onLeave}>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                >
-                <motion.div
-                  initial={{ scale: 0.95, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.95, opacity: 0 }}
-                  className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md border border-gray-200 dark:border-gray-700"
-                >
-                  <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 rounded-full flex items-center justify-center">
-                          <FiClock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                        </div>
-                        <div>
-                          <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
-                            Request Leave
-                          </h2>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Date: {selectedDateForPunch?.date}
-                          </p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setPunchInTime("");
-                          setPunchOutTime("");
-                          setPunchReason("");
-                          setOnLeave(false);
-                        }}
-                        className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-                      >
-                        <FiX className="w-5 h-5 text-gray-500 dark:text-gray-400" />
-                      </button>
-                    </div>
-                  </div>
-
-                  
-
-                  <div className="p-6 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => {
-                        setPunchInTime("");
-                        setPunchOutTime("");
-                        setPunchReason("");
-                        setOnLeave(false);
-                      }}
-                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
-                    >
-                      Cancel
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={async () => {
-                        try {
-                          await axiosInstance.post(
-                            "/attendance-user/missed-punch-request",
-                            {
-                              date: selectedDateForPunch?.date,
-                              punchIn: punchInTime,
-                              punchOut: punchOutTime,
-                              reason: punchReason,
-                            }
-                          );
-                          toast.success(
-                            "Missed Punch request submitted successfully!"
-                          );
-                        } catch (error) {
-                          console.error(error);
-                          toast.error("Failed to submit missed punch request.");
-                        } finally {
-                          setPunchInTime("");
-                          setPunchOutTime("");
-                          setPunchReason("");
-                          setOnLeave(false);
-                        }
-                      }}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white rounded-lg transition-colors flex items-center gap-2"
-                    >
-                      <FiCheckCircle className="w-4 h-4" />
-                      Submit Request
-                    </motion.button>
-                  </div>
-                </motion.div>
-              </motion.div>
-            </BaseModal> */}
             {selectedDateForPunch &&
            <ApplyLeaveModal show={onLeave} onClose={handleClose} leaveDate={selectedDateForPunch.date} />
            }
         </AnimatePresence>
-      
       <ConfirmationDialog
         open={confirmDialogOpen}
         title="Download Payslip PDF"

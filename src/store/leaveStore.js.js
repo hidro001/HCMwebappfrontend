@@ -22,14 +22,14 @@ const useLeaveStore = create((set, get) => ({
   // Update the active status (this now becomes our single source of truth)
   setActiveStatus: (status) => set({ activeStatus: status }),
 
-  // Fetch leaves by status
+
   fetchLeaves: async (status) => {
     set({ isLoading: true });
     try {
       const response = await axiosInstance.get(
         `/leaves/employee/?status=${status}`
       );
-      // Assume the leaves array is in response.data or response.data.data
+    
       set({ leaves: response.data || [] });
     } catch (error) {
       console.error("Error fetching leaves:", error);
@@ -40,7 +40,7 @@ const useLeaveStore = create((set, get) => ({
     }
   },
 
-  // Fetch user profile
+
   fetchUserProfile: async () => {
     try {
       const response = await axiosInstance.get("/user/profile");
@@ -57,7 +57,7 @@ const useLeaveStore = create((set, get) => ({
     }
   },
 
-  // Fetch company settings
+
   fetchCompanySettings: async () => {
     try {
       const response = await axiosInstance.get(
@@ -78,14 +78,12 @@ const useLeaveStore = create((set, get) => ({
     }
   },
 
-
-  // Initialize the store (user profile, company settings, leave system, etc.)
   initializeData: async () => {
     try {
       const userProfile = await get().fetchUserProfile();
       const companySettings = await get().fetchCompanySettings();
 
-      // Match leave system based on employee type
+     
       const employmentTypes = companySettings.employmentTypes || [];
       const leaveSystems = companySettings.leaveSystems || [];
       const employmentType = employmentTypes.find(
@@ -143,8 +141,9 @@ const useLeaveStore = create((set, get) => ({
     try {
       const response = await axiosInstance.post(
         "/leaves/apply",
-        leaveData
-      );
+        leaveData,{ 
+         headers: { "Content-Type": "multipart/form-data" },
+      });
       if (response.status === 201) {
         toast.success("Leave applied successfully");
         // Refresh leaves list after applying
