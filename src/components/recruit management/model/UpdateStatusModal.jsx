@@ -200,17 +200,34 @@ export default function UpdateStatusModal({ referral, onClose, onSubmit }) {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0 }
   };
+   const overlayVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+    exit: { opacity: 0 }
+  };
 
   if (!referral) return null;
 
   return (
     <BaseModal isOpen={Boolean(referral)} onClose={onClose}>
+
+        <AnimatePresence>
+              
+                <motion.div
+                  variants={overlayVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="w-full flex items-center justify-center p-4 "
+                  onClick={onClose}
+                >
+
       <motion.div
         variants={modalVariants}
         initial="hidden"
         animate="visible"
         exit="exit"
-        className="bg-white dark:bg-gray-800 w-full max-w-2xl rounded-2xl shadow-2xl relative max-h-[90vh] overflow-hidden"
+        className="bg-white dark:bg-gray-800 w-full max-w-2xl rounded-2xl shadow-2xl relative max-h-[90vh]  overflow-y-scroll"
       >
         {/* Header */}
         <div className="bg-blue-50 dark:bg-blue-900/20 p-6 border-b border-gray-200 dark:border-gray-700">
@@ -443,6 +460,12 @@ export default function UpdateStatusModal({ referral, onClose, onSubmit }) {
           </div>
         </div>
       </motion.div>
+
+ </motion.div>
+                 
+               </AnimatePresence>  
+
+
     </BaseModal>
   );
 }

@@ -95,24 +95,13 @@
 
 
 import React from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   FaTimes,
-  FaUser,
-  FaEnvelope,
-  FaPhone,
-  FaMapMarkerAlt,
   FaLinkedin,
-  FaFileAlt,
-  FaBriefcase,
-  FaBuilding,
   FaCheckCircle,
   FaClock,
-  FaExclamationTriangle,
-  FaEye,
-  FaExternalLinkAlt,
   FaUserPlus,
-  FaCalendarAlt
 } from "react-icons/fa";
 import {
   HiUser,
@@ -201,6 +190,12 @@ export default function ViewReferralModal({ referral, onClose }) {
     visible: { opacity: 1, y: 0 }
   };
 
+   const overlayVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+    exit: { opacity: 0 }
+  };
+
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
     try {
@@ -216,6 +211,17 @@ export default function ViewReferralModal({ referral, onClose }) {
 
   return (
     <BaseModal isOpen={Boolean(referral)} onClose={onClose}>
+       <AnimatePresence>
+                    
+                      <motion.div
+                        variants={overlayVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        className="w-full flex items-center justify-center p-4 "
+                        onClick={onClose}
+                      >
+
       <motion.div
         variants={modalVariants}
         initial="hidden"
@@ -533,6 +539,11 @@ export default function ViewReferralModal({ referral, onClose }) {
           </div>
         </div>
       </motion.div>
+
+  </motion.div>
+                
+               </AnimatePresence> 
+
     </BaseModal>
   );
 }
