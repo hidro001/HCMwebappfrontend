@@ -110,6 +110,7 @@ export const useHierarchyStore = create((set) => ({
         const mapped = response.data.data.map((item) => ({
           _id: item.id,
           designation: item.designation,
+          notice_period: item.notice_period,
         }));
         set({ designations: mapped });
       } else {
@@ -126,12 +127,13 @@ export const useHierarchyStore = create((set) => ({
     }
   },
 
-  addDesignation: async (designationName) => {
+  addDesignation: async (designationName,notice_period ) => {
     set({ loading: true, error: null });
     try {
       // POST /designations/add expects { designation_name: "X" }
       const response = await axiosInstance.post("/designation/add", {
         designation_name: designationName,
+        notice_period: notice_period,
       });
       if (response.data.success) {
         // Suppose server returns { id: "...", designation_name: "..." }
@@ -139,6 +141,7 @@ export const useHierarchyStore = create((set) => ({
         const newDes = {
           _id: created.id || created._id,
           designation: created.designation_name,
+          notice_period: created.notice_period,
         };
         set((state) => ({
           designations: [...state.designations, newDes],
@@ -155,7 +158,7 @@ export const useHierarchyStore = create((set) => ({
     }
   },
 
-  updateDesignation: async (designationId, newName) => {
+  updateDesignation: async (designationId, newName, newNoticePeriod) => {
     set({ loading: true, error: null });
     try {
       // PUT /designations/:id expects { designation_name: "X" }
@@ -163,6 +166,7 @@ export const useHierarchyStore = create((set) => ({
         `/designation/${designationId}`,
         {
           designation_name: newName,
+          notice_period: newNoticePeriod,
         }
       );
       if (response.data.success) {
@@ -174,6 +178,7 @@ export const useHierarchyStore = create((set) => ({
               ? {
                   _id: updated.id || designationId,
                   designation: updated.designation_name,
+                   notice_period: updated.notice_period,
                 }
               : des
           ),
@@ -248,7 +253,6 @@ export const useHierarchyStore = create((set) => ({
     }
   },
 
-  // -------------- ADD ROLE --------------
   addRole: async (roleName, permissionArray) => {
     set({ loading: true, error: null });
     try {
@@ -290,7 +294,6 @@ export const useHierarchyStore = create((set) => ({
     }
   },
 
-  // -------------- UPDATE ROLE --------------
   updateRole: async (roleId, updatedRoleName, updatedPermissionArray) => {
     set({ loading: true, error: null });
     try {
@@ -333,7 +336,6 @@ export const useHierarchyStore = create((set) => ({
     }
   },
 
-  // -------------- DELETE ROLE --------------
   deleteRole: async (roleId) => {
     set({ loading: true, error: null });
     try {

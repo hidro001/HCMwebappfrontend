@@ -452,6 +452,13 @@ export default function ReferralModal({ isOpen, onClose, vacancy }) {
     onClose();
   };
 
+   const overlayVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+    exit: { opacity: 0 }
+  };
+
+
   const steps = [
     {
       title: "Personal Information",
@@ -507,400 +514,414 @@ export default function ReferralModal({ isOpen, onClose, vacancy }) {
     <>
       {isLoading && <FullScreenLoader />}
       <BaseModal isOpen={isOpen} onClose={handleClose}>
-        <motion.div
-          variants={modalVariants}
-          initial="hidden"
-          animate="visible"
-          exit="exit"
-          className="bg-white dark:bg-gray-800 w-full max-w-2xl rounded-2xl shadow-2xl relative max-h-[90vh] overflow-hidden"
-        >
-          {/* Header */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 p-6 border-b border-gray-200 dark:border-gray-700">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={handleClose}
-              className="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
-            >
-              <HiX className="h-5 w-5" />
-            </motion.button>
-            
-            <div className="flex items-center space-x-4">
-              <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
-                <HiUserAdd className="text-blue-600 dark:text-blue-400 text-2xl" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  Refer a Candidate
-                </h2>
-                <div className="flex items-center space-x-2 mt-1">
-                  <HiBriefcase className="text-gray-500 dark:text-gray-400" />
-                  <p className="text-gray-600 dark:text-gray-400">
-                    {vacancy.title} • {vacancy.department}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Progress Steps */}
-            <div className="mt-6">
-              <div className="flex items-center justify-between">
-                {steps.map((step, index) => (
-                  <div key={index} className="flex items-center">
-                    <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200 ${
-                      currentStep > index + 1
-                        ? "bg-green-500 border-green-500 text-white"
-                        : currentStep === index + 1
-                        ? "bg-blue-500 border-blue-500 text-white"
-                        : "bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400"
-                    }`}>
-                      {currentStep > index + 1 ? (
-                        <FaCheck className="text-xs" />
-                      ) : (
-                        <span className="text-sm font-medium">{index + 1}</span>
-                      )}
-                    </div>
-                    {index < steps.length - 1 && (
-                      <div className={`w-16 h-1 mx-2 rounded-full transition-all duration-200 ${
-                        currentStep > index + 1
-                          ? "bg-green-500"
-                          : "bg-gray-200 dark:bg-gray-700"
-                      }`} />
-                    )}
-                  </div>
-                ))}
-              </div>
-              <div className="mt-3">
-                <h3 className="font-semibold text-gray-900 dark:text-white">
-                  {steps[currentStep - 1].title}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {steps[currentStep - 1].description}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Form Content */}
-          <div className="p-6 overflow-y-auto max-h-[60vh]">
-            <form onSubmit={handleSubmit}>
-              <AnimatePresence mode="wait">
-                {/* Step 1: Personal Information */}
-                {currentStep === 1 && (
-                  <motion.div
-                    key="step1"
-                    variants={stepVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    className="space-y-6"
+       <AnimatePresence>
+              {isOpen && (
+                <motion.div
+                  variants={overlayVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  className="w-full flex items-center justify-center p-4 "
+                  onClick={handleClose}
+                >
+              <motion.div
+                variants={modalVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="bg-white dark:bg-gray-800 w-full max-w-2xl rounded-2xl shadow-2xl relative max-h-[90vh] overflow-y-scroll"
+              >
+                {/* Header */}
+                <div className="bg-blue-50 dark:bg-blue-900/20 p-6 border-b border-gray-200 dark:border-gray-700">
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={handleClose}
+                    className="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
                   >
-                    {/* Name */}
-                    <div>
-                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <HiUser className="text-blue-500" />
-                        <span>Full Name <span className="text-red-500">*</span></span>
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={referralData.name}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                          errors.name ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-600'
-                        }`}
-                        placeholder="Enter candidate's full name"
-                        required
-                      />
-                      {errors.name && (
-                        <motion.p
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center space-x-1"
-                        >
-                          <FaExclamationTriangle className="text-xs" />
-                          <span>{errors.name}</span>
-                        </motion.p>
-                      )}
+                    <HiX className="h-5 w-5" />
+                  </motion.button>
+                  
+                  <div className="flex items-center space-x-4">
+                    <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-xl">
+                      <HiUserAdd className="text-blue-600 dark:text-blue-400 text-2xl" />
                     </div>
-
-                    {/* Email */}
                     <div>
-                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <HiMail className="text-blue-500" />
-                        <span>Email Address <span className="text-red-500">*</span></span>
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={referralData.email}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                          errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-600'
-                        }`}
-                        placeholder="candidate@example.com"
-                        required
-                      />
-                      {errors.email && (
-                        <motion.p
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center space-x-1"
-                        >
-                          <FaExclamationTriangle className="text-xs" />
-                          <span>{errors.email}</span>
-                        </motion.p>
-                      )}
-                    </div>
-
-                    {/* Phone */}
-                    <div>
-                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <HiPhone className="text-blue-500" />
-                        <span>Phone Number</span>
-                      </label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={referralData.phone}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                          errors.phone ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-600'
-                        }`}
-                        placeholder="+1 (555) 123-4567"
-                      />
-                      {errors.phone && (
-                        <motion.p
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center space-x-1"
-                        >
-                          <FaExclamationTriangle className="text-xs" />
-                          <span>{errors.phone}</span>
-                        </motion.p>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Step 2: Location & Profile */}
-                {currentStep === 2 && (
-                  <motion.div
-                    key="step2"
-                    variants={stepVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    className="space-y-6"
-                  >
-                    {/* Address */}
-                    <div>
-                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <HiLocationMarker className="text-blue-500" />
-                        <span>Address</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="address"
-                        value={referralData.address}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        placeholder="123 Main Street, City, State"
-                      />
-                    </div>
-
-                    {/* Location */}
-                    <div>
-                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <FaMapMarkerAlt className="text-blue-500" />
-                        <span>Preferred Location</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="location"
-                        value={referralData.location}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        placeholder="Remote, San Francisco, New York..."
-                      />
-                    </div>
-
-                    {/* LinkedIn */}
-                    <div>
-                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <FaLinkedin className="text-blue-500" />
-                        <span>LinkedIn Profile</span>
-                      </label>
-                      <input
-                        type="url"
-                        name="linkedIn"
-                        value={referralData.linkedIn}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                          errors.linkedIn ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-600'
-                        }`}
-                        placeholder="https://linkedin.com/in/username"
-                      />
-                      {errors.linkedIn && (
-                        <motion.p
-                          initial={{ opacity: 0, y: -10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center space-x-1"
-                        >
-                          <FaExclamationTriangle className="text-xs" />
-                          <span>{errors.linkedIn}</span>
-                        </motion.p>
-                      )}
-                    </div>
-                  </motion.div>
-                )}
-
-                {/* Step 3: Documents & Notes */}
-                {currentStep === 3 && (
-                  <motion.div
-                    key="step3"
-                    variants={stepVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="exit"
-                    className="space-y-6"
-                  >
-                    {/* Resume Upload */}
-                    <div>
-                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <HiDocument className="text-blue-500" />
-                        <span>Resume/CV</span>
-                      </label>
-                      <div
-                        className={`relative border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200 ${
-                          dragActive
-                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10'
-                            : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
-                        }`}
-                        onDragEnter={handleDrag}
-                        onDragLeave={handleDrag}
-                        onDragOver={handleDrag}
-                        onDrop={handleDrop}
-                      >
-                        <input
-                          type="file"
-                          name="resume"
-                          onChange={handleChange}
-                          accept=".pdf,.doc,.docx"
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                        />
-                        {referralData.resume ? (
-                          <div className="flex items-center justify-center space-x-2">
-                            <HiDocument className="text-green-500 text-xl" />
-                            <span className="text-green-600 dark:text-green-400 font-medium">
-                              {referralData.resume.name}
-                            </span>
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
-                              type="button"
-                              onClick={() => setReferralData(prev => ({ ...prev, resume: null }))}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <HiX />
-                            </motion.button>
-                          </div>
-                        ) : (
-                          <div className="space-y-2">
-                            <HiUpload className="mx-auto text-3xl text-gray-400" />
-                            <p className="text-gray-600 dark:text-gray-400">
-                              <span className="font-medium text-blue-600 dark:text-blue-400">Click to upload</span> or drag and drop
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              PDF, DOC, DOCX up to 5MB
-                            </p>
-                          </div>
-                        )}
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                        Refer a Candidate
+                      </h2>
+                      <div className="flex items-center space-x-2 mt-1">
+                        <HiBriefcase className="text-gray-500 dark:text-gray-400" />
+                        <p className="text-gray-600 dark:text-gray-400">
+                          {vacancy.title} • {vacancy.department}
+                        </p>
                       </div>
                     </div>
+                  </div>
 
-                    {/* Notes */}
-                    <div>
-                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        <HiAnnotation className="text-blue-500" />
-                        <span>Additional Notes</span>
-                      </label>
-                      <textarea
-                        name="notes"
-                        value={referralData.notes}
-                        onChange={handleChange}
-                        rows={4}
-                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
-                        placeholder="Any additional information about the candidate..."
-                      />
+                  {/* Progress Steps */}
+                  <div className="mt-6">
+                    <div className="flex items-center justify-between">
+                      {steps.map((step, index) => (
+                        <div key={index} className="flex items-center">
+                          <div className={`flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-200 ${
+                            currentStep > index + 1
+                              ? "bg-green-500 border-green-500 text-white"
+                              : currentStep === index + 1
+                              ? "bg-blue-500 border-blue-500 text-white"
+                              : "bg-gray-200 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400"
+                          }`}>
+                            {currentStep > index + 1 ? (
+                              <FaCheck className="text-xs" />
+                            ) : (
+                              <span className="text-sm font-medium">{index + 1}</span>
+                            )}
+                          </div>
+                          {index < steps.length - 1 && (
+                            <div className={`w-16 h-1 mx-2 rounded-full transition-all duration-200 ${
+                              currentStep > index + 1
+                                ? "bg-green-500"
+                                : "bg-gray-200 dark:bg-gray-700"
+                            }`} />
+                          )}
+                        </div>
+                      ))}
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </form>
-          </div>
+                    <div className="mt-3">
+                      <h3 className="font-semibold text-gray-900 dark:text-white">
+                        {steps[currentStep - 1].title}
+                      </h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
+                        {steps[currentStep - 1].description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
-          {/* Footer */}
-          <div className="bg-gray-50 dark:bg-gray-700/50 p-6 border-t border-gray-200 dark:border-gray-700">
-            <div className="flex items-center justify-between">
-              <div className="flex space-x-3">
-                {currentStep > 1 && (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    type="button"
-                    onClick={() => setCurrentStep(currentStep - 1)}
-                    className="px-6 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200 font-medium"
-                  >
-                    Previous
-                  </motion.button>
-                )}
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  type="button"
-                  onClick={handleClose}
-                  className="px-6 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200 font-medium"
-                >
-                  Cancel
-                </motion.button>
-              </div>
+                {/* Form Content */}
+                <div className="p-6 overflow-y-auto max-h-[60vh]">
+                  <form onSubmit={handleSubmit}>
+                    <AnimatePresence mode="wait">
+                      {/* Step 1: Personal Information */}
+                      {currentStep === 1 && (
+                        <motion.div
+                          key="step1"
+                          variants={stepVariants}
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                          className="space-y-6"
+                        >
+                          {/* Name */}
+                          <div>
+                            <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              <HiUser className="text-blue-500" />
+                              <span>Full Name <span className="text-red-500">*</span></span>
+                            </label>
+                            <input
+                              type="text"
+                              name="name"
+                              value={referralData.name}
+                              onChange={handleChange}
+                              className={`w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                                errors.name ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-600'
+                              }`}
+                              placeholder="Enter candidate's full name"
+                              required
+                            />
+                            {errors.name && (
+                              <motion.p
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center space-x-1"
+                              >
+                                <FaExclamationTriangle className="text-xs" />
+                                <span>{errors.name}</span>
+                              </motion.p>
+                            )}
+                          </div>
 
-              <div className="flex space-x-3">
-                {currentStep < 3 ? (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    type="button"
-                    onClick={() => setCurrentStep(currentStep + 1)}
-                    disabled={!canProceedToNextStep()}
-                    className="flex items-center space-x-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-xl transition-all duration-200 font-medium disabled:cursor-not-allowed"
-                  >
-                    <span>Next</span>
-                    <motion.div
-                      animate={{ x: canProceedToNextStep() ? 0 : -5 }}
-                      transition={{ duration: 0.2 }}
-                    >
-                      →
-                    </motion.div>
-                  </motion.button>
-                ) : (
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={isLoading || Object.keys(errors).length > 0}
-                    className="flex items-center space-x-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-xl transition-all duration-200 font-medium disabled:cursor-not-allowed"
-                  >
-                    <HiUserAdd />
-                    <span>{isLoading ? 'Submitting...' : 'Submit Referral'}</span>
-                  </motion.button>
-                )}
-              </div>
-            </div>
-          </div>
-        </motion.div>
+                          {/* Email */}
+                          <div>
+                            <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              <HiMail className="text-blue-500" />
+                              <span>Email Address <span className="text-red-500">*</span></span>
+                            </label>
+                            <input
+                              type="email"
+                              name="email"
+                              value={referralData.email}
+                              onChange={handleChange}
+                              className={`w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                                errors.email ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-600'
+                              }`}
+                              placeholder="candidate@example.com"
+                              required
+                            />
+                            {errors.email && (
+                              <motion.p
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center space-x-1"
+                              >
+                                <FaExclamationTriangle className="text-xs" />
+                                <span>{errors.email}</span>
+                              </motion.p>
+                            )}
+                          </div>
+
+                          {/* Phone */}
+                          <div>
+                            <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              <HiPhone className="text-blue-500" />
+                              <span>Phone Number</span>
+                            </label>
+                            <input
+                              type="tel"
+                              name="phone"
+                              value={referralData.phone}
+                              onChange={handleChange}
+                              className={`w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                                errors.phone ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-600'
+                              }`}
+                              placeholder="+1 (555) 123-4567"
+                            />
+                            {errors.phone && (
+                              <motion.p
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center space-x-1"
+                              >
+                                <FaExclamationTriangle className="text-xs" />
+                                <span>{errors.phone}</span>
+                              </motion.p>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {/* Step 2: Location & Profile */}
+                      {currentStep === 2 && (
+                        <motion.div
+                          key="step2"
+                          variants={stepVariants}
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                          className="space-y-6"
+                        >
+                          {/* Address */}
+                          <div>
+                            <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              <HiLocationMarker className="text-blue-500" />
+                              <span>Address</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="address"
+                              value={referralData.address}
+                              onChange={handleChange}
+                              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              placeholder="123 Main Street, City, State"
+                            />
+                          </div>
+
+                          {/* Location */}
+                          <div>
+                            <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              <FaMapMarkerAlt className="text-blue-500" />
+                              <span>Preferred Location</span>
+                            </label>
+                            <input
+                              type="text"
+                              name="location"
+                              value={referralData.location}
+                              onChange={handleChange}
+                              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              placeholder="Remote, San Francisco, New York..."
+                            />
+                          </div>
+
+                          {/* LinkedIn */}
+                          <div>
+                            <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              <FaLinkedin className="text-blue-500" />
+                              <span>LinkedIn Profile</span>
+                            </label>
+                            <input
+                              type="url"
+                              name="linkedIn"
+                              value={referralData.linkedIn}
+                              onChange={handleChange}
+                              className={`w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
+                                errors.linkedIn ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-600'
+                              }`}
+                              placeholder="https://linkedin.com/in/username"
+                            />
+                            {errors.linkedIn && (
+                              <motion.p
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="mt-1 text-sm text-red-600 dark:text-red-400 flex items-center space-x-1"
+                              >
+                                <FaExclamationTriangle className="text-xs" />
+                                <span>{errors.linkedIn}</span>
+                              </motion.p>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+
+                      {/* Step 3: Documents & Notes */}
+                      {currentStep === 3 && (
+                        <motion.div
+                          key="step3"
+                          variants={stepVariants}
+                          initial="hidden"
+                          animate="visible"
+                          exit="exit"
+                          className="space-y-6"
+                        >
+                          {/* Resume Upload */}
+                          <div>
+                            <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              <HiDocument className="text-blue-500" />
+                              <span>Resume/CV</span>
+                            </label>
+                            <div
+                              className={`relative border-2 border-dashed rounded-xl p-6 text-center transition-all duration-200 ${
+                                dragActive
+                                  ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10'
+                                  : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500'
+                              }`}
+                              onDragEnter={handleDrag}
+                              onDragLeave={handleDrag}
+                              onDragOver={handleDrag}
+                              onDrop={handleDrop}
+                            >
+                              <input
+                                type="file"
+                                name="resume"
+                                onChange={handleChange}
+                                accept=".pdf,.doc,.docx"
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                              />
+                              {referralData.resume ? (
+                                <div className="flex items-center justify-center space-x-2">
+                                  <HiDocument className="text-green-500 text-xl" />
+                                  <span className="text-green-600 dark:text-green-400 font-medium">
+                                    {referralData.resume.name}
+                                  </span>
+                                  <motion.button
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    type="button"
+                                    onClick={() => setReferralData(prev => ({ ...prev, resume: null }))}
+                                    className="text-red-500 hover:text-red-700"
+                                  >
+                                    <HiX />
+                                  </motion.button>
+                                </div>
+                              ) : (
+                                <div className="space-y-2">
+                                  <HiUpload className="mx-auto text-3xl text-gray-400" />
+                                  <p className="text-gray-600 dark:text-gray-400">
+                                    <span className="font-medium text-blue-600 dark:text-blue-400">Click to upload</span> or drag and drop
+                                  </p>
+                                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                                    PDF, DOC, DOCX up to 5MB
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Notes */}
+                          <div>
+                            <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                              <HiAnnotation className="text-blue-500" />
+                              <span>Additional Notes</span>
+                            </label>
+                            <textarea
+                              name="notes"
+                              value={referralData.notes}
+                              onChange={handleChange}
+                              rows={4}
+                              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                              placeholder="Any additional information about the candidate..."
+                            />
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </form>
+                </div>
+
+                {/* Footer */}
+                <div className="bg-gray-50 dark:bg-gray-700/50 p-6 border-t border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center justify-between">
+                    <div className="flex space-x-3">
+                      {currentStep > 1 && (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          type="button"
+                          onClick={() => setCurrentStep(currentStep - 1)}
+                          className="px-6 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200 font-medium"
+                        >
+                          Previous
+                        </motion.button>
+                      )}
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        type="button"
+                        onClick={handleClose}
+                        className="px-6 py-2.5 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-200 font-medium"
+                      >
+                        Cancel
+                      </motion.button>
+                    </div>
+
+                    <div className="flex space-x-3">
+                      {currentStep < 3 ? (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          type="button"
+                          onClick={() => setCurrentStep(currentStep + 1)}
+                          disabled={!canProceedToNextStep()}
+                          className="flex items-center space-x-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white rounded-xl transition-all duration-200 font-medium disabled:cursor-not-allowed"
+                        >
+                          <span>Next</span>
+                          <motion.div
+                            animate={{ x: canProceedToNextStep() ? 0 : -5 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            →
+                          </motion.div>
+                        </motion.button>
+                      ) : (
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          type="button"
+                          onClick={handleSubmit}
+                          disabled={isLoading || Object.keys(errors).length > 0}
+                          className="flex items-center space-x-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-xl transition-all duration-200 font-medium disabled:cursor-not-allowed"
+                        >
+                          <HiUserAdd />
+                          <span>{isLoading ? 'Submitting...' : 'Submit Referral'}</span>
+                        </motion.button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+
+         </motion.div>
+                 )}
+               </AnimatePresence>     
       </BaseModal>
     </>
   );
