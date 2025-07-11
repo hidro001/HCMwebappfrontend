@@ -28,8 +28,14 @@ export async function fetchDepartments() {
 /**
  * Fetch All Employees (for manager assignment)
  */
-export async function fetchAllEmployees() {
-  const response = await axiosInstance.get("/user/get-all");
+export async function fetchAllEmployees(department ='') {
+  let response;
+  if(department.length >0){
+     response = await axiosInstance.get(`/user/get-all?department=${department}`);
+  }
+  else{
+     response = await axiosInstance.get("/user/get-all");
+  }
   return response.data?.data || [];
 }
 
