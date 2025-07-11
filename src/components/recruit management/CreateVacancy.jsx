@@ -77,10 +77,9 @@ export default function CreateVacancy() {
   const { createJob, loading, error, successMessage } = useJobStore();
   const allEmployees = useEmployeeStore((state) => state.allEmployees);
   const loadingAllEmployees = useEmployeeStore((state) => state.loadingAllEmployees);
-const [workExperienceOther, setWorkExperienceOther] = useState(false);
-const [educationOther, setEducationOther] = useState(false);
-const [suitableForOther, setSuitableForOther] = useState(false);
-
+  const [workExperienceOther, setWorkExperienceOther] = useState(false);
+  const [educationOther, setEducationOther] = useState(false);
+  const [suitableForOther, setSuitableForOther] = useState(false);
   const [departments, setDepartments] = useState([]);
   const [deptError, setDeptError] = useState(null);
   const [currentStep, setCurrentStep] = useState(1);
@@ -90,10 +89,10 @@ const [suitableForOther, setSuitableForOther] = useState(false);
   const watchedFields = watch();
 
   useEffect(() => {
-    const employeeId = localStorage.getItem("employeeId");
+    const designation = localStorage.getItem("designation");
     const fetchDepartments = async () => {
       try {
-        const response = await axiosInstance.get(`/department-allocations/users/${employeeId}`);
+        const response = await axiosInstance.get(`/designation/add/${designation}`);
         const validDepartments = response.data.departmentAlocated.filter(
           (dept) => !dept.includes("[") && !dept.includes("]")
         );
@@ -103,10 +102,10 @@ const [suitableForOther, setSuitableForOther] = useState(false);
       }
     };
 
-    if (employeeId) {
+    if (designation) {
       fetchDepartments();
     } else {
-      setDeptError("No employeeId found in localStorage.");
+      setDeptError("No designation found in localStorage.");
     }
   }, []);
 

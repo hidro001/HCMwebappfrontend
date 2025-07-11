@@ -27,10 +27,11 @@ const LeaveDetailsModal = ({
   isOpen, 
   onClose, 
   selectedLeave, 
-  onApprovalAction 
+  onApprovalAction = ''
 }) => {
   if (!selectedLeave) return null;
 
+  console.log('das')
   return (
     <AnimatePresence>
       {isOpen && (

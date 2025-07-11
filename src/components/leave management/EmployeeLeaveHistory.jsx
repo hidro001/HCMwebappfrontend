@@ -31,7 +31,6 @@ import LeaveDetailsModal from "./model/LeaveDetailsModal";
 import useLeaveStore from "../../store/leaveStore.js";
 import ExportButtons from "../common/PdfExcel"; 
 import { getEmployeeLeaveCount } from "../../service/leaveService.js";
-import BaseModal from "../common/BaseModal.jsx";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -992,7 +991,11 @@ export default function EmployeeLeaveHistory() {
           </div>
         )}
 
-        <LeaveDetailsModal leave={selectedLeave} onClose={() => setSelectedLeave(null)} />
+        <LeaveDetailsModal 
+         isOpen={selectedLeave} 
+         onClose={() => setSelectedLeave(null)} 
+         selectedLeave={selectedLeave} />
+
         <ApplyLeaveModal 
           show={showApplyModal} 
           onClose={() => setShowApplyModal(false)} 
