@@ -59,8 +59,7 @@ const stepVariants = {
 };
 
 export default function CreateVacancy() {
-  const {
-    register,
+  const { register,
     handleSubmit,
     formState: { errors },
     reset,
@@ -78,6 +77,9 @@ export default function CreateVacancy() {
   const { createJob, loading, error, successMessage } = useJobStore();
   const allEmployees = useEmployeeStore((state) => state.allEmployees);
   const loadingAllEmployees = useEmployeeStore((state) => state.loadingAllEmployees);
+const [workExperienceOther, setWorkExperienceOther] = useState(false);
+const [educationOther, setEducationOther] = useState(false);
+const [suitableForOther, setSuitableForOther] = useState(false);
 
   const [departments, setDepartments] = useState([]);
   const [deptError, setDeptError] = useState(null);
@@ -156,7 +158,6 @@ const onSubmit = async (data) => {
     const formData = new FormData();
     formData.append("jobTitle", data.jobTitle);
     formData.append("jobDepartment", data.jobDepartment);
-    formData.append("departmentLocation", data.departmentLocation ?? ""); 
     formData.append("jobDescription", data.jobDescription ?? "");
 
     (data.employmentType || []).forEach((val) => formData.append("employmentType", val));
@@ -172,12 +173,31 @@ const onSubmit = async (data) => {
     formData.append("jobLocations", data.jobLocations ?? "");
     formData.append("payPeriod", data.payPeriod ?? "");
     formData.append("multipleCandidates", data.multipleCandidates ? "true" : "false");
-    formData.append("vacancyStatus", data.vacancyStatus ?? "");
+    formData.append("vacancyStatus", "Open");
     formData.append("openingDate", data.openingDate ?? "");
     formData.append("closingDate", data.closingDate ?? "");
-    formData.append("workExperience", data.workExperience ?? "");
-    formData.append("education", data.education ?? "");
+    // formData.append("workExperience", data.workExperience ?? "");
+    // formData.append("education", data.education ?? "");
     formData.append("responsibilities", data.responsibilities ?? "");
+    // Check for dynamic fields
+    if (data.workExperience === "Other" && data.workExperienceOther) {
+      formData.append("workExperience", data.workExperienceOther);
+    } else {
+      formData.append("workExperience", data.workExperience);
+    }
+
+    if (data.education === "Other" && data.educationOther) {
+      formData.append("education", data.educationOther);
+    } else {
+      formData.append("education", data.education);
+    }
+
+    if (data.suitableFor.includes("Other") && data.suitableForOther) {
+      formData.append("suitableFor", data.suitableForOther);
+    } else {
+      data.suitableFor.forEach((value) => formData.append("suitableFor", value));
+    }
+
     formData.append("duties", data.duties ?? "");
     formData.append("isPromotionOpportunity", data.isPromotionOpportunity ? "true" : "false");  
     formData.append("eligibilityCriteria", data.eligibilityCriteria ?? ""); 
@@ -221,7 +241,7 @@ const onSubmit = async (data) => {
       title: "Contact & Status",
       description: "Contact info and vacancy status",
       icon: HiPhone,
-      fields: ['contactPerson', 'vacancyStatus']
+      fields: ['contactPerson']
     }
   ];
 
@@ -351,7 +371,7 @@ const onSubmit = async (data) => {
           )}
 
           {/* Form Content */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form  className="space-y-6">
             <AnimatePresence mode="wait">
               {/* Step 1: Basic Information */}
               {currentStep === 1 && (
@@ -469,20 +489,7 @@ const onSubmit = async (data) => {
                       </div>
                     </div>
 
-                    {/* Department Location */}
-                    <div className="space-y-2">
-                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                        <HiLocationMarker className="text-blue-500" />
-                        <span>Department Location</span>
-                      </label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Head Office"
-                        {...register("departmentLocation")}
-                        className="w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                      />
-                    </div>
-
+                    
                     {/* Job Description */}
                     <div className="space-y-2">
                       <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -597,21 +604,7 @@ const onSubmit = async (data) => {
 
                     {/* Dates and Status */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <h3 className="font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
-                          <HiCalendar className="text-blue-500" />
-                          <span>Vacancy Status</span>
-                        </h3>
-                        <select
-                          {...register("vacancyStatus")}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        >
-                          <option value="">Choose Status</option>
-                          <option value="Draft">Draft</option>
-                          <option value="Open">Open</option>
-                          <option value="Closed">Closed</option>
-                        </select>
-                      </div>
+                      
                       <div className="space-y-4">
                         <h3 className="font-semibold text-gray-900 dark:text-white">Important Dates</h3>
                         <div className="space-y-3">
@@ -656,7 +649,7 @@ const onSubmit = async (data) => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Work Experience */}
-                      <div className="space-y-2">
+                      {/* <div className="space-y-2">
                         <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                           <FaGraduationCap className="text-blue-500" />
                           <span>Work Experience</span>
@@ -670,10 +663,35 @@ const onSubmit = async (data) => {
                           <option value="3-5 years">3-5 years</option>
                           <option value="5+ years">5+ years</option>
                         </select>
+                      </div> */}
+                       <div className="space-y-2">
+                        <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                          <FaGraduationCap className="text-blue-500" />
+                          <span>Work Experience</span>
+                        </label>
+                        <select
+                          {...register("workExperience")}
+                          onChange={(e) => setWorkExperienceOther(e.target.value === "Other")}
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        >
+                          <option value="no experience required">No experience required</option>
+                          <option value="1-2 years">1-2 years</option>
+                          <option value="3-5 years">3-5 years</option>
+                          <option value="5+ years">5+ years</option>
+                          <option value="Other">Other</option>
+                        </select>
+                        {workExperienceOther && (
+                          <input
+                            type="text"
+                            placeholder="Enter your work experience"
+                            className="w-full mt-2 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            {...register("workExperienceOther")}
+                          />
+                        )}
                       </div>
 
                       {/* Education */}
-                      <div className="space-y-2">
+                      {/* <div className="space-y-2">
                         <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                           <HiAcademicCap className="text-blue-500" />
                           <span>Education Level</span>
@@ -686,11 +704,36 @@ const onSubmit = async (data) => {
                           <option value="Graduate">Graduate</option>
                           <option value="Postgraduate">Postgraduate</option>
                         </select>
+                      </div> */}
+                       <div className="space-y-2">
+                        <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                          <HiAcademicCap className="text-blue-500" />
+                          <span>Education Level</span>
+                        </label>
+                        <select
+                          {...register("education")}
+                          onChange={(e) => setEducationOther(e.target.value === "Other")}
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        >
+                          <option value="Higher">Higher Secondary</option>
+                          <option value="Graduate">Graduate</option>
+                          <option value="Postgraduate">Postgraduate</option>
+                          <option value="Other">Other</option>
+                        </select>
+                        {educationOther && (
+                          <input
+                            type="text"
+                            placeholder="Enter your education level"
+                            className="w-full mt-2 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            {...register("educationOther")}
+                          />
+                        )}
                       </div>
+
                     </div>
 
                     {/* Suitable For */}
-                    <div className="space-y-2">
+                    {/* <div className="space-y-2">
                       <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         <HiUser className="text-blue-500" />
                         <span>Position Suitable For</span>
@@ -715,7 +758,54 @@ const onSubmit = async (data) => {
                           </motion.label>
                         ))}
                       </div>
+                    </div> */}
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <HiUser className="text-blue-500" />
+                      <span>Position Suitable For</span>
+                    </label>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Select who this position is most suitable for
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {["Fresher", "Internship", "Freelancer"].map((role) => (
+                        <motion.label
+                          key={role}
+                          whileHover={{ scale: 1.02 }}
+                          className="flex items-center space-x-2 p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200"
+                        >
+                          <input
+                            type="checkbox"
+                            value={role}
+                            {...register("suitableFor")}
+                            className="form-checkbox h-4 w-4 text-blue-600 rounded"
+                          />
+                          <span className="text-sm text-gray-700 dark:text-gray-300">{role}</span>
+                        </motion.label>
+                      ))}
+                      <motion.label
+                        whileHover={{ scale: 1.02 }}
+                        className="flex items-center space-x-2 p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200"
+                      >
+                        <input
+                          type="checkbox"
+                          value="Other"
+                          {...register("suitableFor")}
+                          className="form-checkbox h-4 w-4 text-blue-600 rounded"
+                          onChange={(e) => setSuitableForOther(e.target.checked)}
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Other</span>
+                      </motion.label>
+                      {suitableForOther && (
+                        <input
+                          type="text"
+                          placeholder="Enter suitable position"
+                          className="w-full mt-2 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          {...register("suitableForOther")}
+                        />
+                      )}
                     </div>
+                  </div>
 
                     {/* Responsibilities */}
                     <div className="space-y-2">
@@ -762,6 +852,9 @@ const onSubmit = async (data) => {
                         {...register("isPromotionOpportunity")}
                         className="form-checkbox h-5 w-5 text-blue-600 rounded"
                       />
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Select this option if the job opening is intended as a promotion opportunity for existing employees.
+                      </p>
                     </div>
 
                     {/* Eligibility Criteria */}
@@ -906,6 +999,7 @@ const onSubmit = async (data) => {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       type="button"
+                      
                       onClick={() => setCurrentStep(currentStep - 1)}
                       className="flex items-center space-x-2 px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 font-medium"
                     >
@@ -930,8 +1024,9 @@ const onSubmit = async (data) => {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      type="submit"
+                       type="button"
                       disabled={loading}
+                      onClick={handleSubmit(onSubmit)} 
                       className="flex items-center space-x-2 px-8 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
                     >
                       <HiSave />

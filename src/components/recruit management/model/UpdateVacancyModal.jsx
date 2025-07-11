@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaSave,
@@ -30,65 +30,80 @@ import useVacancyStore from "../../../store/useVacancyStore";
 import BaseModal from "../../common/BaseModal";
 
 export default function UpdateVacancyModal({ vacancy, onClose }) {
-  const { updateVacancy } = useVacancyStore();
+  const { updateVacancy, successJobUpdateMessage, errorJobUpdateMessage } = useVacancyStore();
 
   const [jobTitle, setJobTitle] = useState(vacancy.jobTitle || "");
   const [jobDepartment, setJobDepartment] = useState(vacancy.jobDepartment || "");
   const [jobDescription, setJobDescription] = useState(vacancy.jobDescription || "");
   const [vacancyStatus, setVacancyStatus] = useState(vacancy.vacancyStatus || "Draft");
   const [approvalStatus, setApprovalStatus] = useState(vacancy.approvalStatus || "Pending");
-  const [salaryRange, setSalaryRange] = useState(["", ""]);
+  // const [salaryRange, setSalaryRange] = useState(["", ""]);
+  const [salaryRange, setSalaryRange] = useState(() => {
+  const range = vacancy.salaryRange;
+  return Array.isArray(range) && range.length === 2 ? range : ["", ""];
+});
+
   const [currency, setCurrency] = useState(vacancy.currency || "USD");
   const [selectedFile, setSelectedFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
-  }, [error]);
+ useEffect(() => {
+  if (successJobUpdateMessage) {
+    toast.success(successJobUpdateMessage);
+    useVacancyStore.setState({ successJobUpdateMessage: null });
+  }
+}, [successJobUpdateMessage]);
 
-  useEffect(() => {
-    if (successMessage) {
-      toast.success(successMessage);
-    }
-  }, [successMessage]);
+useEffect(() => {
+  if (errorJobUpdateMessage) {
+    toast.error(errorJobUpdateMessage);
+    useVacancyStore.setState({ errorJobUpdateMessage: null });
+  }
+}, [errorJobUpdateMessage]);
 
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!jobTitle.trim()) {
-      newErrors.jobTitle = "Job title is required";
-    }
-    
-    if (!jobDepartment.trim()) {
-      newErrors.jobDepartment = "Department is required";
-    }
-    
-    const minSalary = parseFloat(salaryRange[0]);
-    const maxSalary = parseFloat(salaryRange[1]);
 
-    if (!salaryRange[0] || isNaN(minSalary)) {
-      newErrors.salaryRangeMin = "Minimum salary is required";
-    } else if (minSalary < 0) {
-      newErrors.salaryRangeMin = "Minimum salary cannot be negative";
-    }
+const validateForm = () => {
+  const newErrors = {};
 
-    if (!salaryRange[1] || isNaN(maxSalary)) {
-      newErrors.salaryRangeMax = "Maximum salary is required";
-    } else if (maxSalary < 0) {
-      newErrors.salaryRangeMax = "Maximum salary cannot be negative";
-    }
+  if (!jobTitle.trim()) {
+    newErrors.jobTitle = "Job title is required";
+  }
 
-    if (!newErrors.salaryRangeMin && !newErrors.salaryRangeMax && minSalary > maxSalary) {
-      newErrors.salaryRange = "Minimum salary cannot be greater than maximum salary";
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  if (!jobDepartment.trim()) {
+    newErrors.jobDepartment = "Department is required";
+  }
+
+  const minSalary = parseFloat(salaryRange[0]);
+  const maxSalary = parseFloat(salaryRange[1]);
+
+  if (!salaryRange[0] || isNaN(minSalary)) {
+    newErrors.salaryRangeMin = "Minimum salary is required";
+  } else if (minSalary < 0) {
+    newErrors.salaryRangeMin = "Minimum salary cannot be negative";
+  }
+
+  if (!salaryRange[1] || isNaN(maxSalary)) {
+    newErrors.salaryRangeMax = "Maximum salary is required";
+  } else if (maxSalary < 0) {
+    newErrors.salaryRangeMax = "Maximum salary cannot be negative";
+  }
+
+  if (!newErrors.salaryRangeMin && !newErrors.salaryRangeMax && minSalary > maxSalary) {
+    newErrors.salaryRange = "Minimum salary cannot be greater than maximum salary";
+  }
+
+  setErrors(newErrors);
+
+  // Show errors using toast
+  Object.values(newErrors).forEach((error) => {
+    toast.error(error); // Show each error individually
+  });
+
+  return Object.keys(newErrors).length === 0;
+};
+
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -147,7 +162,7 @@ export default function UpdateVacancyModal({ vacancy, onClose }) {
     if (!validateForm()) {
       return;
     }
-
+console.log('asdf')
     setIsLoading(true);
     try {
       let payload;
@@ -175,7 +190,7 @@ export default function UpdateVacancyModal({ vacancy, onClose }) {
 
       await updateVacancy(vacancy._id, payload);
       
-      onClose();
+     handleClose()
     } catch (err) {
       console.error("Error updating vacancy:", err);
     } finally {
@@ -210,6 +225,20 @@ export default function UpdateVacancyModal({ vacancy, onClose }) {
           icon: HiClock
         };
     }
+  };
+
+  const handleClose = () => {
+  // Reset local states if needed
+  setJobTitle(vacancy.jobTitle || "");
+  setJobDepartment(vacancy.jobDepartment || "");
+  setJobDescription(vacancy.jobDescription || "");
+  setSalaryRange(["", ""]);
+  setSelectedFile(null);
+  setErrors({});
+  setCurrency(vacancy.currency || "USD");
+  useVacancyStore.setState({ successJobUpdateMessage: null, errorJobUpdateMessage: null });
+
+  onClose();
   };
 
   const statusConfig = getStatusConfig(vacancyStatus);

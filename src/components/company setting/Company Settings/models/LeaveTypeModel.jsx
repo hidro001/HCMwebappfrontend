@@ -171,9 +171,6 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
     }
   };
 
-  console.log('isCarryForward:', formData.isCarryForward);
-
-
   const handlePolicyChange = (index, value) => {
     const newPolicies = [...formData.policies];
     newPolicies[index] = value;
