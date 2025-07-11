@@ -30,6 +30,7 @@ import axiosInstance from "../../service/axiosInstance";
 import { toast } from "react-hot-toast";
 import FullScreenLoader from "../common/FullScreenLoader";
 import useEmployeeStore from "../../store/useEmployeeStore.js";
+import useAuthStore from "../../store/store";
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -70,6 +71,13 @@ export default function CreateVacancy() {
     loadAllEmployees,
   } = useEmployeeStore();
 
+  const currentUser = useAuthStore();
+
+  
+  
+  const departments = currentUser?.departmentAlocated;
+
+ 
   useEffect(() => {
       loadAllEmployees("HR");
   }, []);
@@ -80,7 +88,7 @@ export default function CreateVacancy() {
   const [workExperienceOther, setWorkExperienceOther] = useState(false);
   const [educationOther, setEducationOther] = useState(false);
   const [suitableForOther, setSuitableForOther] = useState(false);
-  const [departments, setDepartments] = useState([]);
+  // const [departments, setDepartments] = useState([]);
   const [deptError, setDeptError] = useState(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [uploadedFile, setUploadedFile] = useState(null);
@@ -88,26 +96,28 @@ export default function CreateVacancy() {
 
   const watchedFields = watch();
 
-  useEffect(() => {
-    const designation = localStorage.getItem("designation");
-    const fetchDepartments = async () => {
-      try {
-        const response = await axiosInstance.get(`/designation/add/${designation}`);
-        const validDepartments = response.data.departmentAlocated.filter(
-          (dept) => !dept.includes("[") && !dept.includes("]")
-        );
-        setDepartments(validDepartments);
-      } catch (err) {
-        setDeptError("Failed to fetch departments.");
-      }
-    };
+  
 
-    if (designation) {
-      fetchDepartments();
-    } else {
-      setDeptError("No designation found in localStorage.");
-    }
-  }, []);
+  // useEffect(() => {
+  //   const designation = localStorage.getItem("designation");
+  //   const fetchDepartments = async () => {
+  //     try {
+  //       const response = await axiosInstance.get(`/designation/add/${designation}`);
+  //       const validDepartments = response.data.departmentAlocated.filter(
+  //         (dept) => !dept.includes("[") && !dept.includes("]")
+  //       );
+  //       setDepartments(validDepartments);
+  //     } catch (err) {
+  //       setDeptError("Failed to fetch departments.");
+  //     }
+  //   };
+
+  //   if (designation) {
+  //     fetchDepartments();
+  //   } else {
+  //     setDeptError("No designation found in localStorage.");
+  //   }
+  // }, []);
 
   useEffect(() => {
     if (error) {
