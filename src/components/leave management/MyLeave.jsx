@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FaChevronLeft, FaChevronRight, FaTimes, FaCheck, FaTimes as FaCross, FaClock } from "react-icons/fa";
+import LeaveDetailsModal from "./model/LeaveDetailsModal";
 
 
 const BaseModal = ({ isOpen, onClose, children }) => {
@@ -232,143 +233,12 @@ const MyLeave = ({ leaves = [], isLoading = false }) => {
         </div>
       </div>
 
-      {/* Leave Details Modal */}
-      <AnimatePresence>
-        {selectedLeave && (
-          <BaseModal isOpen={true} onClose={() => setSelectedLeave(null)}>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl mx-auto p-6"
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Leave Details</h2>
-                <button 
-                  onClick={() => setSelectedLeave(null)} 
-                  className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                >
-                  <FaTimes size={18} />
-                </button>
-              </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                    Leave Type
-                  </label>
-                  <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getColorClasses(selectedLeave.leaveType?.color).bg} ${getColorClasses(selectedLeave.leaveType?.color).text}`}>
-                    {selectedLeave.leaveType?.name}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                      From
-                    </label>
-                    <p className="text-gray-900 dark:text-white">
-                      {new Date(selectedLeave.leave_From).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                      To
-                    </label>
-                    <p className="text-gray-900 dark:text-white">
-                      {new Date(selectedLeave.leave_To || selectedLeave.leave_From).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                      Duration
-                    </label>
-                    <p className="text-gray-900 dark:text-white">
-                      {selectedLeave.no_Of_Days} day(s)
-                      {selectedLeave.is_Half_Day && <span className="text-orange-600 ml-1">(Half Day)</span>}
-                    </p>
-                  </div>
-                </div>
-
-                {selectedLeave.is_Half_Day && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                        Half-Day Session
-                      </label>
-                      <p className="text-gray-900 dark:text-white capitalize">
-                        {selectedLeave.half_Day_Session || 'Not specified'}
-                      </p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                        Half-Day Position
-                      </label>
-                      <p className="text-gray-900 dark:text-white capitalize">
-                        {selectedLeave.half_Day_Position || 'Not specified'}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                    Reason
-                  </label>
-                  <p className="text-gray-900 dark:text-white">
-                    {selectedLeave.reason_For_Leave}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                    Work Handover
-                  </label>
-                  <p className="text-gray-900 dark:text-white">
-                    {selectedLeave.workHandover || "Not specified"}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                    Emergency Contact
-                  </label>
-                  <p className="text-gray-900 dark:text-white">
-                    {selectedLeave.emergencyContact}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                    Leave Category
-                  </label>
-                  <p className="text-gray-900 dark:text-white">
-                    {selectedLeave.is_Paid ? 'Paid Leave' : 'Unpaid Leave'}
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-500 dark:text-gray-400 mb-1">
-                    Status
-                  </label>
-                  <div className="flex items-center gap-2">
-                    {getStatusIcon(selectedLeave.leave_Status)}
-                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                      selectedLeave.leave_Status === "approved"
-                        ? "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400"
-                        : selectedLeave.leave_Status === "pending"
-                        ? "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400"
-                        : "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400"
-                    }`}>
-                      {selectedLeave.leave_Status.charAt(0).toUpperCase() + selectedLeave.leave_Status.slice(1)}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          </BaseModal>
-        )}
-      </AnimatePresence>
+      <LeaveDetailsModal
+              isOpen={selectedLeave}
+              onClose={() => setSelectedLeave(null)}
+              selectedLeave={selectedLeave}
+            />
     </div>
   );
 };

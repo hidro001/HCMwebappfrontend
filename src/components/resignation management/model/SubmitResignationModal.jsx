@@ -218,6 +218,27 @@ export default function SubmitResignationModal({ isOpen, onClose, onSubmit }) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [formData, setFormData] = useState(null);
 
+useEffect(() => {
+    const employeeId = localStorage.getItem("employeeId");
+    const fetchDepartments = async () => {
+      try {
+        const response = await axiosInstance.get(`/department-allocations/users/${employeeId}`);
+        const validDepartments = response.data.departmentAlocated.filter(
+          (dept) => !dept.includes("[") && !dept.includes("]")
+        );
+        setDepartments(validDepartments);
+      } catch (err) {
+        setDeptError("Failed to fetch departments.");
+      }
+    };
+
+    if (employeeId) {
+      fetchDepartments();
+    } else {
+      setDeptError("No employeeId found in localStorage.");
+    }
+  }, []);
+
   // Watch form values for real-time validation
   const resignationDate = watch("resignationDate");
   const lastWorkingDay = watch("lastWorkingDay");
