@@ -811,7 +811,7 @@ export default function OwnFullAttendance() {
         icon: FiSun,
         iconColor: "text-yellow-500 dark:text-yellow-400",
       },
-      "Not Even Half Day": {
+      "Reduced Hours": {
         bg: "bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20",
         text: "text-purple-700 dark:text-purple-400",
         border: "border-purple-200 dark:border-purple-700",
@@ -1263,7 +1263,7 @@ const renderLateStatusBadge = (lateCategory, graceUsedCount) => {
                   <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700">
                     <tr>
                       {[
-                        "S.L",
+                        "Category",
                         "Date",
                         "Day",
                         "Check In/Out",
