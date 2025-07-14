@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  FiX,
-  FiCalendar,
-  FiMessageSquare,
-  FiAlertCircle,
-  FiFileText,
-  FiSend,
-  FiInfo,
-} from "react-icons/fi";
+import { FiX, FiCalendar, FiMessageSquare, FiAlertCircle, FiFileText, FiSend, FiInfo,} from "react-icons/fi";
 import BaseModal from "../../../components/common/BaseModal";
 import ConfirmationDialog from "../../../components/common/ConfirmationDialog";
 import useResignationStore from "../../../store/useResignationStore";
 import toast from "react-hot-toast";
-import axiosInstance from "../../../service/axiosInstance.js";
+import useDesignationStore from "../../../store/designationStore.js"
+import useAuthStore from "../../../store/store";
+
 
 const modalVariants = {
   hidden: { 
@@ -64,7 +58,9 @@ const fieldVariants = {
 };
 
 export default function SubmitResignationModal({ isOpen, onClose, onSubmit }) {
+
   const { submitResignation, loading } = useResignationStore();
+  const {desNotice, fetchDesNoticePeriod } = useDesignationStore()
   const { 
     register, 
     handleSubmit, 
@@ -73,76 +69,116 @@ export default function SubmitResignationModal({ isOpen, onClose, onSubmit }) {
     watch 
   } = useForm();
   
+   const currentUser = useAuthStore();
+   const designation = currentUser?.designation;
+ 
   const [error, setError] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [formData, setFormData] = useState(null);
+  const [calculatedLastWorkingDay, setCalculatedLastWorkingDay] = useState("");
 
-useEffect(() => {
-    const employeeId = localStorage.getItem("employeeId");
-    const fetchDepartments = async () => {
-      try {
-        const response = await axiosInstance.get(`/department-allocations/users/${employeeId}`);
-        const validDepartments = response.data.departmentAlocated.filter(
-          (dept) => !dept.includes("[") && !dept.includes("]")
-        );
-        setDepartments(validDepartments);
-      } catch (err) {
-        setDeptError("Failed to fetch departments.");
-      }
-    };
+  console.log(desNotice, 's')
 
-    if (employeeId) {
-      fetchDepartments();
-    } else {
-      setDeptError("No employeeId found in localStorage.");
-    }
-  }, []);
-
-  // Watch form values for real-time validation
   const resignationDate = watch("resignationDate");
   const lastWorkingDay = watch("lastWorkingDay");
-
-  // Calculate notice period
-  const getNoticePeriod = () => {
-    if (resignationDate && lastWorkingDay) {
-      const start = new Date(resignationDate);
-      const end = new Date(lastWorkingDay);
-      const diffTime = Math.abs(end - start);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays;
+  
+ useEffect(() => {
+    if (designation) {
+      fetchDesNoticePeriod(designation)
+    } else {
+      toast.error("No employeeId found in localStorage.");
     }
-    return 0;
-  };
+    
+  }, [fetchDesNoticePeriod, designation]);
+
+useEffect(() => {
+  if (resignationDate && desNotice !== null && desNotice !== undefined) {
+    const date = new Date(resignationDate);
+    date.setDate(date.getDate() + Number(desNotice));
+    setCalculatedLastWorkingDay(date.toISOString().split("T")[0]);
+  }
+}, [resignationDate, desNotice]);
+
+
+  // const getNoticePeriod = () => {
+  //   if (resignationDate && lastWorkingDay) {
+  //     const start = new Date(resignationDate);
+  //     const end = new Date(lastWorkingDay);
+  //     const diffTime = Math.abs(end - start);
+  //     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  //     return diffDays;
+  //   }
+  //   return 0;
+  // };
+
+  const lastWorkingDayUser = watch("lastWorkingDayUser");
+
+const getNoticePeriod = () => {
+  if (resignationDate && lastWorkingDayUser) {
+    const start = new Date(resignationDate);
+    const end = new Date(lastWorkingDayUser);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  }
+  return 0;
+};
+
 
   const noticePeriod = getNoticePeriod();
 
-  // Form submission handler
-  const onFormSubmit = (data) => {
-    setError(null);
+  // const onFormSubmit = (data) => {
+  //   setError(null);
     
-    // Validate dates
-    if (new Date(data.resignationDate) > new Date(data.lastWorkingDay)) {
-      setError("Last working day must be after resignation date.");
-      return;
-    }
+  //   if (new Date(data.resignationDate) > new Date(data.lastWorkingDay)) {
+  //     setError("Last working day must be after resignation date.");
+  //     return;
+  //   }
 
-    // Check if resignation date is in the past
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const resignationDateObj = new Date(data.resignationDate);
+  //   const today = new Date();
+  //   today.setHours(0, 0, 0, 0);
+  //   const resignationDateObj = new Date(data.resignationDate);
     
-    if (resignationDateObj < today) {
-      setError("Resignation date cannot be in the past.");
-      return;
-    }
+  //   if (resignationDateObj < today) {
+  //     setError("Resignation date cannot be in the past.");
+  //     return;
+  //   }
 
-    setFormData(data);
-    setShowConfirm(true);
+  //   setFormData(data);
+  //   setShowConfirm(true);
+  // };
+
+const onFormSubmit = (data) => {
+  console.log(data, 'data')
+  setError(null);
+
+  if (!resignationDate) {
+    setError("Resignation date is required.");
+    return;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const resignationDateObj = new Date(data.resignationDate);
+
+  if (resignationDateObj < today) {
+    setError("Resignation date cannot be in the past.");
+    return;
+  }
+
+  const fullData = {
+    ...data,
+    lastWorkingDayCompany: calculatedLastWorkingDay,
   };
+console.log(fullData,'full')
+  setFormData(fullData);
+  setShowConfirm(true);
+};
 
-  // Confirmation handler
+
   const handleConfirmSubmit = async () => {
     try {
+      console.log(formData, 'submit')
       await submitResignation(formData);
       toast.success("Resignation submitted successfully!");
       setShowConfirm(false);
@@ -155,7 +191,6 @@ useEffect(() => {
     }
   };
 
-  // Close handler
   const handleClose = () => {
     reset();
     setError(null);
@@ -174,7 +209,6 @@ useEffect(() => {
           exit="exit"
           className="relative bg-white dark:bg-gray-800 w-full max-w-2xl  h-[90vh] rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-auto"
         >
-          {/* Header */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
             <div className="flex items-center justify-between">
               <div>
@@ -195,9 +229,7 @@ useEffect(() => {
             </div>
           </div>
 
-          {/* Content */}
           <div className="p-6">
-            {/* Error Message */}
             <AnimatePresence>
               {error && (
                 <motion.div
@@ -252,7 +284,7 @@ useEffect(() => {
               </motion.div>
 
               {/* Last Working Day */}
-              <motion.div variants={fieldVariants}>
+              {/* <motion.div variants={fieldVariants}>
                 <label
                   htmlFor="lastWorkingDay"
                   className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
@@ -273,7 +305,39 @@ useEffect(() => {
                     {errors.lastWorkingDay.message}
                   </p>
                 )}
-              </motion.div>
+              </motion.div> */}
+
+              {/* Auto-calculated Last Working Day */}
+<motion.div variants={fieldVariants}>
+  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+    <FiCalendar className="w-4 h-4 inline mr-2" />
+    Last Working Day (Based on Notice Period)
+  </label>
+  <input
+    type="date"
+    value={calculatedLastWorkingDay}
+    disabled
+    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+  />
+</motion.div>
+
+{/* User-selected Custom Last Working Day */}
+<motion.div variants={fieldVariants}>
+  <label
+    htmlFor="lastWorkingDayUser"
+    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+  >
+    <FiCalendar className="w-4 h-4 inline mr-2" />
+    Custom Last Working Day (Optional)
+  </label>
+  <input
+    id="lastWorkingDayUser"
+    type="date"
+    {...register("lastWorkingDayUser")}
+    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+  />
+</motion.div>
+
 
               {/* Notice Period Info */}
               {resignationDate && lastWorkingDay && noticePeriod > 0 && (
@@ -383,11 +447,20 @@ useEffect(() => {
               <p>Please confirm the following resignation details:</p>
               <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg text-sm space-y-2">
                 <p><strong>Resignation Date:</strong> {formData.resignationDate ? new Date(formData.resignationDate).toLocaleDateString() : 'N/A'}</p>
-                <p><strong>Last Working Day:</strong> {formData.lastWorkingDay ? new Date(formData.lastWorkingDay).toLocaleDateString() : 'N/A'}</p>
-                <p><strong>Notice Period:</strong> {getNoticePeriod()} days</p>
+                {/* <p><strong>Last Working Day:</strong> {formData.lastWorkingDay ? new Date(formData.lastWorkingDay).toLocaleDateString() : 'N/A'}</p> */}
+                {/* <p><strong>Notice Period:</strong> {getNoticePeriod()} days</p>
                 {formData.comments && (
                   <p><strong>Reason:</strong> {formData.comments}</p>
-                )}
+                )} */}
+
+              <p><strong>Resignation Date:</strong> {formData.resignationDate ? new Date(formData.resignationDate).toLocaleDateString() : 'N/A'}</p>
+<p><strong>Auto Last Working Day:</strong> {formData.lastWorkingDayAuto}</p>
+{formData.lastWorkingDayUser && (
+  <p><strong>Custom Last Working Day:</strong> {new Date(formData.lastWorkingDayUser).toLocaleDateString()}</p>
+)}
+<p><strong>Notice Period:</strong> {getNoticePeriod()} days</p>
+
+
               </div>
               <p className="text-amber-600 dark:text-amber-400 text-sm">
                 ⚠️ Once submitted, this resignation will require manager approval and cannot be easily modified.

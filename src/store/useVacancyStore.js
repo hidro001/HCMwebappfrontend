@@ -3,8 +3,12 @@ import axiosInstance from '../service/axiosInstance'; // or wherever your axiosI
 
 const useVacancyStore = create((set) => ({
   vacancies: [],
+  vacanById:[],
+  summaryById: [],
+  loadingById: false,
   loading: false,
   error: null,
+  errorById: null,
   successJobUpdateMessage: null,
   errorJobUpdateMessage: null,
 
@@ -27,12 +31,20 @@ const useVacancyStore = create((set) => ({
       });
     }
   },
-  fetchVacancyById: async (id) => {
+
+  fetchVacancyById: async () => {
+    set({ loadingById: true, errorById : null });
+    console.log('fetchVacancy')
+    let response;
     try {
-      const response = await axiosInstance.get(`/recruitment/jobs/${id}`);
-      return response.data.data; // return the job object
+       response = await axiosInstance.get(`/recruitment/jobs/employee`);
+      set({ vacanById: response.data.data, summaryById: response.data.summary, loadingById: false });
     } catch (err) {
       console.error('Error fetching job by ID:', err);
+      set({
+        errorById: err?.response?.data?.message || 'Error fetching jobs',
+        loadingById: false,
+      });
       throw err;
     }
   },
