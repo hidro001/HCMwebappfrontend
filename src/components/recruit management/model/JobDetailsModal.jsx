@@ -45,13 +45,6 @@ import React from "react";
 import { motion } from "framer-motion";
 import {
   FaBriefcase,
-  FaMapMarkerAlt,
-  FaDollarSign,
-  FaCalendarAlt,
-  FaClock,
-  FaUsers,
-  FaBuilding,
-  FaTimes,
   FaCheckCircle,
   FaClipboardList,
   FaDraftingCompass,
@@ -103,7 +96,7 @@ export default function JobDetailsModal({ isOpen, onClose, vacancy }) {
         };
     }
   };
-
+console.log(vacancy, 'ca')
   const formatSalary = (salary, currency = 'USD') => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",

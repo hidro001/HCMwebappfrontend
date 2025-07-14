@@ -26,9 +26,7 @@ import {
   HiFilter,
   HiCalendar,
   HiOfficeBuilding,
-  HiDownload,
   HiCurrencyDollar,
-  HiLocationMarker,
   HiBriefcase,
   HiUser
 } from "react-icons/hi";
@@ -78,6 +76,7 @@ const cardVariants = {
 };
 
 export default function VacanciesList() {
+ 
   const { vacancies, loading, error, fetchAllVacancies, deleteVacancy } =
     useVacancyStore();
 

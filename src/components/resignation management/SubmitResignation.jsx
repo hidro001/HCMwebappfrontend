@@ -462,7 +462,7 @@ export default function SubmitResignation() {
                             {new Date(row.resignationDate).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                            {new Date(row.lastWorkingDay).toLocaleDateString()}
+                            {new Date(row.approvers?.[0].approvedLastWorkingDay).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-900 dark:text-white max-w-xs truncate">
                             {row.comments || "No comments"}
@@ -539,8 +539,10 @@ export default function SubmitResignation() {
                             <span className="font-medium">Last Working:</span>
                             <p className="text-gray-900 dark:text-white">
                               {new Date(
-                                row.lastWorkingDay
+                                row.approvers?.[0].approvedLastWorkingDay
                               ).toLocaleDateString()}
+
+                          
                             </p>
                           </div>
                         </div>

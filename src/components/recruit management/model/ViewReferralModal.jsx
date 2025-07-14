@@ -211,16 +211,16 @@ export default function ViewReferralModal({ referral, onClose }) {
 
   return (
     <BaseModal isOpen={Boolean(referral)} onClose={onClose}>
-       <AnimatePresence>
+      <AnimatePresence>
                     
-                      <motion.div
-                        variants={overlayVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        className="w-full flex items-center justify-center p-4 "
-                        onClick={onClose}
-                      >
+      <motion.div
+        variants={overlayVariants}
+        initial="hidden"
+        animate="visible"
+        exit="exit"
+        className="w-full flex items-center justify-center p-4 "
+        onClick={onClose}
+      >
 
       <motion.div
         variants={modalVariants}

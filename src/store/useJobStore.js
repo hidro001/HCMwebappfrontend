@@ -1,4 +1,3 @@
-// src/store/useJobStore.js
 import { create } from 'zustand';
 import axiosInstance from '../service/axiosInstance';
 
@@ -7,7 +6,6 @@ const useJobStore = create((set) => ({
   error: null,
   successMessage: null,
 
-  // Action to create a job
   createJob: async (formData) => {
     try {
       set({ loading: true, error: null, successMessage: null });
@@ -37,6 +35,7 @@ const useJobStore = create((set) => ({
       throw err; // re-throw so the component can also handle it if needed
     }
   },
+  
 }));
 
 export default useJobStore;

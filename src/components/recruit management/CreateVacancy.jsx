@@ -7,6 +7,7 @@ import {
   FaPhone,
   FaEdit,
   FaCheck,
+  FaTimes,
   FaExclamationTriangle,
 } from "react-icons/fa";
 import {
@@ -26,11 +27,11 @@ import {
   HiClipboardList
 } from "react-icons/hi";
 import useJobStore from "../../store/useJobStore";
-import axiosInstance from "../../service/axiosInstance";
 import { toast } from "react-hot-toast";
 import FullScreenLoader from "../common/FullScreenLoader";
 import useEmployeeStore from "../../store/useEmployeeStore.js";
 import useAuthStore from "../../store/store";
+import BaseModal from "../common/BaseModal.jsx";
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -59,7 +60,30 @@ const stepVariants = {
   exit: { opacity: 0, x: -50 }
 };
 
-export default function CreateVacancy() {
+ const modalVariants = {
+    hidden: { opacity: 0, scale: 0.8, y: 50 },
+    visible: { 
+      opacity: 1, 
+      scale: 1, 
+      y: 0,
+      transition: { duration: 0.3, ease: "easeOut" }
+    },
+    exit: { 
+      opacity: 0, 
+      scale: 0.8, 
+      y: 50,
+      transition: { duration: 0.2 }
+    }
+  };
+
+
+  const overlayVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+    exit: { opacity: 0 }
+  };
+
+export default function CreateVacancy( { show, onClose  }) {
   const { register,
     handleSubmit,
     formState: { errors },
@@ -72,11 +96,8 @@ export default function CreateVacancy() {
   } = useEmployeeStore();
 
   const currentUser = useAuthStore();
-
-  
   
   const departments = currentUser?.department;
-
  
   useEffect(() => {
       loadAllEmployees("HR");
@@ -249,15 +270,35 @@ const onSubmit = async (data) => {
     return Math.round((completedFields.length / allFields.length) * 100);
   };
 
+  const handleCancel = () => {
+    reset();      
+    setUploadedFile(null);
+    setCurrentStep(1);
+    onClose();
+  };
+
   return (
-    <>
+    <BaseModal isOpen={show} onClose={handleCancel}>
       {loading && <FullScreenLoader />}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-        className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 lg:p-8 rounded-2xl"
-      >
+      <AnimatePresence>
+                    
+                      <motion.div
+                        variants={overlayVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                        className="w-full flex items-center justify-center p-4 "
+                        onClick={onClose}
+                      >
+
+       <motion.div
+             variants={modalVariants}
+             initial="hidden"
+             animate="visible"
+             exit="exit"
+             onClick={(e) => e.stopPropagation()}
+             className="bg-white dark:bg-gray-800 w-full max-w-4xl rounded-2xl shadow-2xl relative max-h-[94vh] overflow-y-scroll"
+           >
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
           <motion.div
@@ -271,6 +312,13 @@ const onSubmit = async (data) => {
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white">
                 Create New Vacancy
               </h1>
+
+              <button
+                                  onClick={handleCancel}
+                                  className="p-2 rounded-full transition-all duration-200 hover:bg-gray-200 text-gray-600 hover:text-gray-800 border border-gray-300 hover:border-gray-400 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-white dark:border-gray-600 dark:hover:border-gray-500"
+                                >
+                                  <FaTimes size={20} />
+                                </button>
             </div>
             <p className="text-gray-600 dark:text-gray-400 text-lg">
               Post a new job opening and find the perfect candidates
@@ -1032,7 +1080,9 @@ const onSubmit = async (data) => {
           </form>
         </div>
       </motion.div>
-    </>
+      </motion.div>
+      </AnimatePresence>
+    </BaseModal>
   );
 }
 

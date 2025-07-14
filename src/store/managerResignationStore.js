@@ -41,9 +41,9 @@ const useResignationStore = create((set, get) => ({
     }
   },
 
-  approveResignation: async (id) => {
+  approveResignation: async (id, data) => {
     try {
-      const response = await axiosInstance.post(`/resignation/${id}/approve`);
+      const response = await axiosInstance.post(`/resignation/${id}/approve`, data);
       toast.success(response.data?.message || "Resignation approved successfully.");
       // Remove the approved resignation from pending list
       const updatedPending = get().managerPending.filter(
