@@ -14,6 +14,7 @@ import BaseModal from "../../../components/common/BaseModal";
 import ConfirmationDialog from "../../../components/common/ConfirmationDialog";
 import useResignationStore from "../../../store/useResignationStore";
 import toast from "react-hot-toast";
+import axiosInstance from "../../../service/axiosInstance.js";
 
 const modalVariants = {
   hidden: { 

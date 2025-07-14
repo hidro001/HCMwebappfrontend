@@ -30,6 +30,7 @@ import axiosInstance from "../../service/axiosInstance";
 import { toast } from "react-hot-toast";
 import FullScreenLoader from "../common/FullScreenLoader";
 import useEmployeeStore from "../../store/useEmployeeStore.js";
+import useAuthStore from "../../store/store";
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -70,6 +71,13 @@ export default function CreateVacancy() {
     loadAllEmployees,
   } = useEmployeeStore();
 
+  const currentUser = useAuthStore();
+
+  
+  
+  const departments = currentUser?.department;
+
+ 
   useEffect(() => {
       loadAllEmployees("HR");
   }, []);
@@ -80,34 +88,13 @@ export default function CreateVacancy() {
   const [workExperienceOther, setWorkExperienceOther] = useState(false);
   const [educationOther, setEducationOther] = useState(false);
   const [suitableForOther, setSuitableForOther] = useState(false);
-  const [departments, setDepartments] = useState([]);
+  // const [departments, setDepartments] = useState([]);
   const [deptError, setDeptError] = useState(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
 
   const watchedFields = watch();
-
-  useEffect(() => {
-    const designation = localStorage.getItem("designation");
-    const fetchDepartments = async () => {
-      try {
-        const response = await axiosInstance.get(`/designation/add/${designation}`);
-        const validDepartments = response.data.departmentAlocated.filter(
-          (dept) => !dept.includes("[") && !dept.includes("]")
-        );
-        setDepartments(validDepartments);
-      } catch (err) {
-        setDeptError("Failed to fetch departments.");
-      }
-    };
-
-    if (designation) {
-      fetchDepartments();
-    } else {
-      setDeptError("No designation found in localStorage.");
-    }
-  }, []);
 
   useEffect(() => {
     if (error) {
@@ -465,7 +452,7 @@ const onSubmit = async (data) => {
                           <HiOfficeBuilding className="text-blue-500" />
                           <span>Department <span className="text-red-500">*</span></span>
                         </label>
-                        <select
+                        {/* <select
                           {...register("jobDepartment", { required: true })}
                           className={`w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                             errors.jobDepartment ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
@@ -478,7 +465,14 @@ const onSubmit = async (data) => {
                               {dept}
                             </option>
                           ))}
-                        </select>
+                        </select> */}
+                        <input
+                        type="text"
+                        {...register("jobDepartment", { required: true })}
+                        value={departments}
+                        disabled={true}
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      />
                         {errors.jobDepartment && (
                           <p className="text-red-500 text-xs flex items-center space-x-1">
                             <FaExclamationTriangle />
