@@ -1,7 +1,8 @@
 
 import { create } from 'zustand';
 import axiosInstance from '../service/axiosInstance';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
+import toast from 'react-hot-toast';
 
 const useResignationStore = create((set, get) => ({
   // Common state
@@ -11,7 +12,7 @@ const useResignationStore = create((set, get) => ({
 
   // Employee-specific state
   resignation: null,
-  employeeFnf: null, // <-- FNF record for the employee
+  employeeFnf: null, 
 
   // Superadmin-specific state
   chartData: null,
@@ -109,7 +110,6 @@ const useResignationStore = create((set, get) => ({
     try {
       const res = await axiosInstance.post('/fnf/request', {});
       toast.success(res.data.message);
-      // Refresh resignation & FNF details after requesting
       await get().fetchEmployeeResignations();
       await get().fetchEmployeeFnf();
       return res.data;
