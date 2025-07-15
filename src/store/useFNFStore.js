@@ -4,7 +4,7 @@ import axiosInstance from "../service/axiosInstance";
 import { toast } from "react-toastify";
 
 const useFNFStore = create((set, get) => ({
-  // State
+
   pendingFnfs: [],
   approvedFnfs: [],
   loading: false,

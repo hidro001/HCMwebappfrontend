@@ -26,7 +26,7 @@ const useDesignationStore = create((set) => ({
       const response = await axiosInstance.get(`/designation/${designation}`);
       console.log(response , 'afds')
       set({ 
-        desNotice: response.data.data.notice_period || 0, 
+        desNotice: response.data.data[0].notice_period || 0, 
         loading: false,
         error: null
       });

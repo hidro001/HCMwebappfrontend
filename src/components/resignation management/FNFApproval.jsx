@@ -137,7 +137,7 @@ export default function FNFApproval() {
   const onApproveSubmit = async (data) => {
     try {
       await approveFNF(selectedFNF._id, data);
-      toast.success("FNF approved successfully!");
+      // toast.success("FNF approved successfully!");
     } catch (error) {
       toast.error("Error approving FNF. Please try again.");
     } finally {
@@ -206,9 +206,8 @@ export default function FNFApproval() {
   ? new Date(fnf.resignation.lastWorkingDayCompany).toLocaleDateString()
   : "N/A",
 
-      "Requested At": fnf.requestedAt
-        ? new Date(fnf.requestedAt).toLocaleString()
-        : "N/A",
+      "Requested At":   fnf.createdAt ?  new Date(fnf.createdAt).toLocaleString()
+             : "N/A",
       "Created At": fnf.createdAt
         ? new Date(fnf.createdAt).toLocaleString()
         : "N/A",
@@ -233,9 +232,8 @@ export default function FNFApproval() {
       "Last Working Day": fnf.resignation?.lastWorkingDay
         ? new Date(fnf.resignation.lastWorkingDay).toLocaleDateString()
         : "N/A",
-      "Requested At": fnf.requestedAt
-        ? new Date(fnf.requestedAt).toLocaleString()
-        : "N/A",
+      "Requested At":  fnf.createdAt ?  new Date(fnf.createdAt).toLocaleString()
+             : "N/A",
       "Processed By": fnf.processedBy
         ? `${fnf.processedBy.first_Name} ${fnf.processedBy.last_Name} (${fnf.processedBy.employee_Id})`
         : "N/A",
@@ -284,7 +282,9 @@ export default function FNFApproval() {
 </td>
 
       <td className="py-4 px-6 text-sm text-gray-600 dark:text-gray-400">
-        {fnf.requestedAt ? new Date(fnf.requestedAt).toLocaleString() : "N/A"}
+        {/* {fnf.requestedAt ? new Date(fnf.requestedAt).toLocaleString() : "N/A"} */}
+        {  fnf.createdAt ?  new Date(fnf.createdAt).toLocaleString()
+             : "N/A"}
       </td>
       <td className="py-4 px-6 text-sm text-gray-600 dark:text-gray-400">
         {fnf.createdAt ? new Date(fnf.createdAt).toLocaleString() : "N/A"}
@@ -306,7 +306,7 @@ export default function FNFApproval() {
         </span>
       </td>
       <td className="py-4 px-6">
-        {fnf.status === "FNF Requested" && (
+        {fnf.status === "Pending" && (
           <div className="flex items-center space-x-3">
             <button
               onClick={() => openApproveModal(fnf)}
@@ -357,7 +357,9 @@ export default function FNFApproval() {
     : "N/A"}
       </td>
       <td className="py-4 px-6 text-sm text-gray-600 dark:text-gray-400">
-        {fnf.requestedAt ? new Date(fnf.requestedAt).toLocaleString() : "N/A"}
+        {/* {fnf.requestedAt ? new Date(fnf.requestedAt).toLocaleString() : "N/A"} */}
+        {  fnf.createdAt ?  new Date(fnf.createdAt).toLocaleString()
+             : "N/A"}
       </td>
       <td className="py-4 px-6 text-sm text-gray-600 dark:text-gray-400">
         {fnf.processedBy
@@ -391,6 +393,7 @@ export default function FNFApproval() {
   );
 
   const renderPendingCard = (fnf, index) => (
+    
     <div
       key={fnf._id}
       className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm hover:shadow-md transition-all duration-200"
@@ -445,12 +448,14 @@ export default function FNFApproval() {
         <div className="flex justify-between">
           <span className="text-gray-600 dark:text-gray-400">Requested At:</span>
           <span className="text-gray-900 dark:text-gray-100">
-            {fnf.requestedAt ? new Date(fnf.requestedAt).toLocaleDateString() : "N/A"}
+            {/* {fnf.requestedAt ? new Date(fnf.requestedAt).toLocaleDateString() : "N/A"} */}
+            { fnf.createdAt ?  new Date(fnf.createdAt).toLocaleString()
+             : "N/A"}
           </span>
         </div>
       </div>
 
-      {fnf.status === "FNF Requested" && (
+      {fnf.status === "Pending" && (
         <div className="flex space-x-2 mt-4">
           <button
             onClick={() => openApproveModal(fnf)}
@@ -977,7 +982,7 @@ export default function FNFApproval() {
       {/* Approve Modal */}
       {approveOpen && (
         <BaseModal isOpen={approveOpen} onClose={() => setApproveOpen(false)}>
-          <div className="bg-white dark:bg-gray-800 p-6 lg:p-8 rounded-xl shadow-2xl w-full max-w-md mx-auto border">
+          <div className="bg-white dark:bg-gray-800 h-[90vh] p-6 lg:p-8 rounded-xl shadow-2xl w-full max-w-md mx-auto border overflow-y-auto">
             <div className="text-center mb-6">
               <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <FaCheck className="w-8 h-8 text-white" />
@@ -986,84 +991,143 @@ export default function FNFApproval() {
               <p className="text-gray-600 dark:text-gray-400 mt-2">Enter the final settlement details</p>
             </div>
             
-            <form onSubmit={handleSubmit(onApproveSubmit)} className="space-y-4">
+            <form onSubmit={handleSubmit(onApproveSubmit)} className="space-y-6">
+
+
+              {/* FNF Amount */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                <label className="block text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">
                   FNF Amount (₹)
                 </label>
                 <input
                   type="number"
                   step="0.01"
-                  placeholder="0.00"
-                  {...register("fnfAmount", { required: "FNF Amount is required", min: 0 })}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  placeholder="Enter FNF amount"
+                  {...register("fnfAmount", {
+                    required: "FNF Amount is required",
+                    min: 0,
+                  })}
+                  className="w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 />
                 {errors.fnfAmount && (
                   <p className="text-red-500 text-sm mt-1">{errors.fnfAmount.message}</p>
                 )}
               </div>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  Deductions (₹)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  {...register("deductions", { required: "Deductions amount is required", min: 0 })}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                />
-                {errors.deductions && (
-                  <p className="text-red-500 text-sm mt-1">{errors.deductions.message}</p>
-                )}
-              </div>
+                {/* Deductions */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">
+                    Deductions (₹)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    placeholder="Enter deductions"
+                    {...register("deductions", {
+                      required: "Deductions amount is required",
+                      min: 0,
+                    })}
+                    className="w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                  {errors.deductions && (
+                    <p className="text-red-500 text-sm mt-1">{errors.deductions.message}</p>
+                  )}
+                </div>
+          
+              
+                {/* Net Payable */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">
+                    Net Payable (₹)
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    placeholder="Net amount payable"
+                    {...register("netPayable", {
+                      required: "Net payable amount is required",
+                      min: 0,
+                    })}
+                    className="w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                  />
+                  {errors.netPayable && (
+                    <p className="text-red-500 text-sm mt-1">{errors.netPayable.message}</p>
+                  )}
+                </div>
+             </div>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  Net Payable (₹)
-                </label>
-                <input
-                  type="number"
-                  step="0.01"
-                  placeholder="0.00"
-                  {...register("netPayable", { required: "Net payable amount is required", min: 0 })}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                />
-                {errors.netPayable && (
-                  <p className="text-red-500 text-sm mt-1">{errors.netPayable.message}</p>
-                )}
-              </div>
+                  {/* Resignation Date (read-only) */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">
+                      Resignation Date
+                    </label>
+                    <input
+                      type="text"
+                      value={new Date(selectedFNF.resignation.resignationDate).toLocaleDateString()}
+                      disabled
+                      className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 cursor-not-allowed"
+                    />
+                  </div>
 
+                  {/* Approved Date (read-only) */}
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">
+                      Approved Date
+                    </label>
+                    <input
+                      type="text"
+                      value={new Date(selectedFNF.resignation.approvers[0].approvedLastWorkingDay).toLocaleDateString()}
+                      disabled
+                      className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 cursor-not-allowed"
+                    />
+                  </div>
+            </div>
+
+            <div>
+                    <label className="block text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">
+                      Company Notice Period Date
+                    </label>
+                    <input
+                      type="text"
+                      value={new Date(selectedFNF.resignation.lastWorkingDayCompany).toLocaleDateString()}
+                      disabled
+                      className="w-full px-4 py-3 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-600 dark:text-gray-400 cursor-not-allowed"
+                    />
+                  </div>
+              {/* Comments */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                <label className="block text-sm font-semibold text-gray-800 dark:text-gray-100 mb-1">
                   Comments (Optional)
                 </label>
                 <textarea
                   placeholder="Add any additional comments..."
-                  rows="3"
+                  rows="4"
                   {...register("comments")}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+                  className="w-full px-4 py-3 border rounded-lg bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
                 />
               </div>
 
-              <div className="flex space-x-4 pt-4">
+              {/* Action Buttons */}
+              <div className="flex justify-end space-x-4 pt-4">
                 <Button
                   onClick={() => setApproveOpen(false)}
                   variant="outlined"
-                  className="flex-1 py-3 text-gray-600 border-gray-300 hover:bg-gray-50"
+                  className="py-2 px-6 text-gray-700 border-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                   Cancel
                 </Button>
                 <Button
                   type="submit"
                   variant="contained"
-                  className="flex-1 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700"
+                  className="py-2 px-6 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white"
                 >
                   Approve FNF
                 </Button>
               </div>
             </form>
+    
           </div>
         </BaseModal>
       )}
