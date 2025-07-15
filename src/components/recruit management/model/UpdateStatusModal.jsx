@@ -213,14 +213,13 @@ export default function UpdateStatusModal({ referral, onClose, onSubmit }) {
 
         <AnimatePresence>
               
-                <motion.div
-                  variants={overlayVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  className="w-full flex items-center justify-center p-4 "
-                  onClick={onClose}
-                >
+        <motion.div
+          variants={overlayVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          className="w-full flex items-center justify-center p-4 "
+        >
 
       <motion.div
         variants={modalVariants}

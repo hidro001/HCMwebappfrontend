@@ -219,7 +219,6 @@ export default function ViewReferralModal({ referral, onClose }) {
         animate="visible"
         exit="exit"
         className="w-full flex items-center justify-center p-4 "
-        onClick={onClose}
       >
 
       <motion.div

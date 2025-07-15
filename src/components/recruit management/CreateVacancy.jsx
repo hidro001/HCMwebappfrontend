@@ -282,23 +282,22 @@ const onSubmit = async (data) => {
       {loading && <FullScreenLoader />}
       <AnimatePresence>
                     
-                      <motion.div
-                        variants={overlayVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        className="w-full flex items-center justify-center p-4 "
-                        onClick={onClose}
-                      >
+       <motion.div
+         variants={overlayVariants}
+         initial="hidden"
+         animate="visible"
+         exit="exit"
+         className="w-full flex items-center justify-center p-4 "
+       >
 
        <motion.div
-             variants={modalVariants}
-             initial="hidden"
-             animate="visible"
-             exit="exit"
-             onClick={(e) => e.stopPropagation()}
-             className="bg-white dark:bg-gray-800 w-full max-w-4xl rounded-2xl shadow-2xl relative max-h-[94vh] overflow-y-scroll"
-           >
+          variants={modalVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+         onClick={(e) => e.stopPropagation()}
+         className="bg-white dark:bg-gray-800 w-full max-w-4xl rounded-2xl shadow-2xl relative max-h-[94vh] overflow-y-scroll"
+       >
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
           <motion.div

@@ -306,7 +306,7 @@ export default function FNFApproval() {
         </span>
       </td>
       <td className="py-4 px-6">
-        {fnf.status === "Pending" && (
+        {fnf.status === "FNF Requested" && (
           <div className="flex items-center space-x-3">
             <button
               onClick={() => openApproveModal(fnf)}
@@ -455,7 +455,7 @@ export default function FNFApproval() {
         </div>
       </div>
 
-      {fnf.status === "Pending" && (
+      {fnf.status === "FNF Requested" && (
         <div className="flex space-x-2 mt-4">
           <button
             onClick={() => openApproveModal(fnf)}
