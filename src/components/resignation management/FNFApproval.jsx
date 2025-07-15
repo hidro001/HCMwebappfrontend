@@ -137,7 +137,7 @@ export default function FNFApproval() {
   const onApproveSubmit = async (data) => {
     try {
       await approveFNF(selectedFNF._id, data);
-      toast.success("FNF approved successfully!");
+      // toast.success("FNF approved successfully!");
     } catch (error) {
       toast.error("Error approving FNF. Please try again.");
     } finally {
