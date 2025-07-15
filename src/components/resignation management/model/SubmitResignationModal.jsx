@@ -77,7 +77,6 @@ export default function SubmitResignationModal({ isOpen, onClose, onSubmit }) {
   const [formData, setFormData] = useState(null);
   const [calculatedLastWorkingDay, setCalculatedLastWorkingDay] = useState("");
 
-  console.log(desNotice, 's')
 
   const resignationDate = watch("resignationDate");
   const lastWorkingDay = watch("lastWorkingDay");
@@ -149,7 +148,7 @@ const getNoticePeriod = () => {
   // };
 
 const onFormSubmit = (data) => {
-  console.log(data, 'data')
+  
   setError(null);
 
   if (!resignationDate) {
@@ -170,7 +169,6 @@ const onFormSubmit = (data) => {
     ...data,
     lastWorkingDayCompany: calculatedLastWorkingDay,
   };
-console.log(fullData,'full')
   setFormData(fullData);
   setShowConfirm(true);
 };
@@ -178,7 +176,6 @@ console.log(fullData,'full')
 
   const handleConfirmSubmit = async () => {
     try {
-      console.log(formData, 'submit')
       await submitResignation(formData);
       toast.success("Resignation submitted successfully!");
       setShowConfirm(false);
