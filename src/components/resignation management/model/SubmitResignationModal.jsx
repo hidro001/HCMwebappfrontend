@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import { FiX, FiCalendar, FiMessageSquare, FiAlertCircle, FiFileText, FiSend, FiInfo,} from "react-icons/fi";
