@@ -169,7 +169,7 @@ const LeaveDetailsModal = ({
                   </div>
                 )}
 
-                {selectedLeave.leave_Status === "pending" && (
+                {selectedLeave.leave_Status === "pending" && onApprovalAction.length >0  && (
                   <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700 transition-colors">
                     <button
                       onClick={() => onApprovalAction(selectedLeave, "approve")}

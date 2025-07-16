@@ -96,7 +96,7 @@ export default function JobDetailsModal({ isOpen, onClose, vacancy }) {
         };
     }
   };
-console.log(vacancy, 'ca')
+  
   const formatSalary = (salary, currency = 'USD') => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",

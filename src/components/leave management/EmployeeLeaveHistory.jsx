@@ -994,7 +994,9 @@ export default function EmployeeLeaveHistory() {
         <LeaveDetailsModal 
          isOpen={selectedLeave} 
          onClose={() => setSelectedLeave(null)} 
-         selectedLeave={selectedLeave} />
+         selectedLeave={selectedLeave} 
+         
+         />
 
         <ApplyLeaveModal 
           show={showApplyModal} 

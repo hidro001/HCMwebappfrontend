@@ -515,14 +515,14 @@ export default function ReferralModal({ isOpen, onClose, vacancy }) {
       {isLoading && <FullScreenLoader />}
       <BaseModal isOpen={isOpen} onClose={handleClose}>
        <AnimatePresence>
-              {isOpen && (
-                <motion.div
-                  variants={overlayVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="exit"
-                  className="w-full flex items-center justify-center p-4 "
-                >
+          {isOpen && (
+            <motion.div
+              variants={overlayVariants}
+              initial="hidden"
+              animate="visible"
+              exit="exit"
+              className="w-full flex items-center justify-center p-4 "
+            >
               <motion.div
                 variants={modalVariants}
                 initial="hidden"
