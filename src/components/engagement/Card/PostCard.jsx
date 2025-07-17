@@ -7,9 +7,10 @@ import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdEdit  } from "react-icons/md";
 import DOMPurify from "dompurify";
 import { FaArrowUp } from "react-icons/fa";
+import PostCreateBox from "../CreateBox/PostCreateBox";
 
 
 const reactionEmojis = [
@@ -22,6 +23,7 @@ const reactionEmojis = [
 ];
 
 const PostCard = ({ post }) => {
+
   const user = useAuthStore((state) => state);
   const userId = user._id;
   const permissions = user.permissionRole || [];
@@ -44,6 +46,8 @@ const PostCard = ({ post }) => {
   const [showReact, setShowReact] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [editPostId, setEditPostId] = useState('');
+  const [openPostModal, setOpenPostModal] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const [isAddingComment, setIsAddingComment] = useState(false);
   const [loadingLikes, setLoadingLikes] = useState(new Set());
@@ -57,7 +61,7 @@ const PostCard = ({ post }) => {
   };
   document.addEventListener("click", handleClickOutside);
   return () => document.removeEventListener("click", handleClickOutside);
-}, []);
+  }, []);
 
   const handleLike = async () => {
     setIsLiking(true);
@@ -125,7 +129,7 @@ const PostCard = ({ post }) => {
   } finally {
     setIsLiking(false);
   }
-};
+  };
 
   const handleDeletePost = async () => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
@@ -139,6 +143,13 @@ const PostCard = ({ post }) => {
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const handleEditPost = async () => {
+    setEditPostId(post._id);
+    setOpenPostModal(true)
+    console.log(editPostId)
+    console.log(openPostModal)
   };
 
   const handleAddComment = async (e) => {
@@ -276,6 +287,11 @@ useEffect(() => {
     userId === post.author?._id ||
     userId === post.author?.employee_Id;
 
+  const canEditPost =
+    permissions.includes("editAnyPost") ||
+    userId === post.author?._id ||
+    userId === post.author?.employee_Id;
+
   return (
     <>
       <motion.div
@@ -307,6 +323,15 @@ useEffect(() => {
               })}
             </p>
           </div>
+           {canEditPost && (
+            <button onClick={handleEditPost}  className="p-1 rounded-full">
+              {isDeleting ? (
+                <span className="loader h-4 w-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin"></span>
+              ) : (
+                <MdEdit  className="w-4 h-4 text-green-600" />
+              )}
+            </button>
+          )}
           {canDeletePost && (
             <button onClick={handleDeletePost} disabled={isDeleting} className="p-1 rounded-full">
               {isDeleting ? (
@@ -573,7 +598,22 @@ useEffect(() => {
           ))}
         </div>
       )}
-      </motion.div></motion.div>
+        {openPostModal && (
+  <PostCreateBox
+    isOpen={true}
+    editPostId={editPostId}
+    onSuccess={() => {
+      setOpenPostModal(false);
+      refreshFeed();       // make sure these exist
+      refreshStatus(true); // or remove them if unnecessary
+    }}
+    onClose={() => setOpenPostModal(false)}
+  />
+)}
+
+      </motion.div>
+
+      </motion.div>
       )}
     </>
   );

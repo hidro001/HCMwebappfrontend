@@ -54,6 +54,9 @@ const toUTCISOStringLocal = (dateStr, timeStr) => {
 };
 
 const PostCreateBox = ({ onSuccess, onClose }) => {
+
+  console.log( onSuccess, onClose , 's')
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [mediaFiles, setMediaFiles] = useState([]);
