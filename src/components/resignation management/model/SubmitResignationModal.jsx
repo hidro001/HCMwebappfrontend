@@ -1,161 +1,14 @@
-
-
-// import React, { useState } from "react";
-// import { useForm } from "react-hook-form";
-// import ConfirmationDialog from "../../../components/common/ConfirmationDialog";
-// import useResignationStore from "../../../store/useResignationStore";
-
-// // 1) Import from react-hot-toast
-// import toast from "react-hot-toast";
-
-// export default function SubmitResignationModal({ isOpen, onClose, onSubmit }) {
-//   const { submitResignation } = useResignationStore();
-//   const { register, handleSubmit, reset } = useForm();
-//   const [error, setError] = useState(null);
-//   const [showConfirm, setShowConfirm] = useState(false);
-//   const [formData, setFormData] = useState(null);
-
-//   // When the form is submitted, validate dates and then show a confirmation dialog
-//   const onFormSubmit = (data) => {
-//     setError(null);
-//     if (new Date(data.resignationDate) > new Date(data.lastWorkingDay)) {
-//       setError("Last working day must be after resignation date.");
-//       return;
-//     }
-//     setFormData(data);
-//     setShowConfirm(true);
-//   };
-
-//   // When the confirmation is accepted, call the store's submitResignation
-//   const handleConfirmSubmit = async () => {
-//     try {
-//       await submitResignation(formData);
-//       toast.success("Resignation submitted successfully!"); // <-- success toast
-//       setShowConfirm(false);
-//       reset();
-//       onSubmit();
-//     } catch (err) {
-//       // If for some reason your store doesn't already handle errors, you can:
-//       toast.error("Failed to submit resignation. Please try again."); // <-- error toast
-//     }
-//   };
-
-//   if (!isOpen) return null;
-
-//   return (
-//     <>
-//       <div className="fixed inset-0 z-20 flex items-center justify-center bg-black bg-opacity-50">
-//         <div className="bg-white dark:bg-gray-800 w-full max-w-md mx-4 p-6 rounded-lg shadow-lg relative">
-//           <h2 className="text-xl font-bold mb-4 text-blue-600 dark:text-blue-400">
-//             Submit Resignation
-//           </h2>
-//           {/* Close Button */}
-//           <button
-//             onClick={onClose}
-//             className="absolute top-2 right-2 text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100"
-//           >
-//             ✕
-//           </button>
-//           {/* Error Message */}
-//           {error && (
-//             <p className="text-red-600 bg-red-100 dark:bg-red-800 dark:text-red-300 p-2 rounded-md text-sm">
-//               {error}
-//             </p>
-//           )}
-//           <form onSubmit={handleSubmit(onFormSubmit)}>
-//             {/* Resignation Date */}
-//             <div className="mt-2">
-//               <label
-//                 htmlFor="resignationDate"
-//                 className="block font-semibold mb-1"
-//               >
-//                 Resignation Date
-//               </label>
-//               <input
-//                 id="resignationDate"
-//                 type="date"
-//                 {...register("resignationDate", { required: true })}
-//                 className="w-full px-3 py-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-//               />
-//             </div>
-//             {/* Last Working Day */}
-//             <div className="mt-4">
-//               <label
-//                 htmlFor="lastWorkingDay"
-//                 className="block font-semibold mb-1"
-//               >
-//                 Last Working Day
-//               </label>
-//               <input
-//                 id="lastWorkingDay"
-//                 type="date"
-//                 {...register("lastWorkingDay", { required: true })}
-//                 className="w-full px-3 py-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-//               />
-//             </div>
-//             {/* Comments */}
-//             <div className="mt-4">
-//               <label htmlFor="comments" className="block font-semibold mb-1">
-//                 Comments
-//               </label>
-//               <textarea
-//                 id="comments"
-//                 placeholder="Write Comment..."
-//                 {...register("comments")}
-//                 className="w-full px-3 py-2 border rounded-md dark:bg-gray-900 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-//               />
-//             </div>
-//             <div className="flex justify-end mt-6 space-x-2">
-//               <button
-//                 type="button"
-//                 onClick={onClose}
-//                 className="px-4 py-2 rounded-lg bg-gray-300 dark:bg-gray-700 text-gray-800 dark:text-gray-100 hover:bg-gray-400 dark:hover:bg-gray-600"
-//               >
-//                 Cancel
-//               </button>
-//               <button
-//                 type="submit"
-//                 className="px-4 py-2 bg-blue-500 dark:bg-blue-700 text-white rounded-lg hover:bg-blue-600 dark:hover:bg-blue-800"
-//               >
-//                 Submit
-//               </button>
-//             </div>
-//           </form>
-//         </div>
-//       </div>
-
-//       {/* Confirmation Dialog */}
-//       <ConfirmationDialog
-//         open={showConfirm}
-//         title="Confirm Resignation"
-//         message="Are you sure you want to submit your resignation?"
-//         onConfirm={handleConfirmSubmit}
-//         onCancel={() => setShowConfirm(false)}
-//         confirmText="Yes, Submit"
-//         cancelText="Cancel"
-//       />
-//     </>
-//   );
-// }
-
-
-
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
-import {
-  FiX,
-  FiCalendar,
-  FiMessageSquare,
-  FiAlertCircle,
-  FiFileText,
-  FiSend,
-  FiInfo,
-} from "react-icons/fi";
+import { FiX, FiCalendar, FiMessageSquare, FiAlertCircle, FiFileText, FiSend, FiInfo,} from "react-icons/fi";
 import BaseModal from "../../../components/common/BaseModal";
 import ConfirmationDialog from "../../../components/common/ConfirmationDialog";
 import useResignationStore from "../../../store/useResignationStore";
 import toast from "react-hot-toast";
+import useDesignationStore from "../../../store/designationStore.js"
+import useAuthStore from "../../../store/store";
+
 
 const modalVariants = {
   hidden: { 
@@ -205,7 +58,9 @@ const fieldVariants = {
 };
 
 export default function SubmitResignationModal({ isOpen, onClose, onSubmit }) {
+
   const { submitResignation, loading } = useResignationStore();
+  const {desNotice, fetchDesNoticePeriod } = useDesignationStore()
   const { 
     register, 
     handleSubmit, 
@@ -214,53 +69,111 @@ export default function SubmitResignationModal({ isOpen, onClose, onSubmit }) {
     watch 
   } = useForm();
   
+   const currentUser = useAuthStore();
+   const designation = currentUser?.designation;
+ 
   const [error, setError] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [formData, setFormData] = useState(null);
+  const [calculatedLastWorkingDay, setCalculatedLastWorkingDay] = useState("");
 
-  // Watch form values for real-time validation
+
   const resignationDate = watch("resignationDate");
   const lastWorkingDay = watch("lastWorkingDay");
-
-  // Calculate notice period
-  const getNoticePeriod = () => {
-    if (resignationDate && lastWorkingDay) {
-      const start = new Date(resignationDate);
-      const end = new Date(lastWorkingDay);
-      const diffTime = Math.abs(end - start);
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return diffDays;
+  
+ useEffect(() => {
+    if (designation) {
+      fetchDesNoticePeriod(designation)
+    } else {
+      toast.error("No employeeId found in localStorage.");
     }
-    return 0;
-  };
+    
+  }, [fetchDesNoticePeriod, designation]);
+
+useEffect(() => {
+  if (resignationDate && desNotice !== null && desNotice !== undefined) {
+    const date = new Date(resignationDate);
+    date.setDate(date.getDate() + Number(desNotice));
+    setCalculatedLastWorkingDay(date.toISOString().split("T")[0]);
+  }
+}, [resignationDate, desNotice]);
+
+
+  // const getNoticePeriod = () => {
+  //   if (resignationDate && lastWorkingDay) {
+  //     const start = new Date(resignationDate);
+  //     const end = new Date(lastWorkingDay);
+  //     const diffTime = Math.abs(end - start);
+  //     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  //     return diffDays;
+  //   }
+  //   return 0;
+  // };
+
+  const lastWorkingDayUser = watch("lastWorkingDayUser");
+
+const getNoticePeriod = () => {
+  if (resignationDate && lastWorkingDayUser) {
+    const start = new Date(resignationDate);
+    const end = new Date(lastWorkingDayUser);
+    const diffTime = Math.abs(end - start);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  }
+  return 0;
+};
+
 
   const noticePeriod = getNoticePeriod();
 
-  // Form submission handler
-  const onFormSubmit = (data) => {
-    setError(null);
+  // const onFormSubmit = (data) => {
+  //   setError(null);
     
-    // Validate dates
-    if (new Date(data.resignationDate) > new Date(data.lastWorkingDay)) {
-      setError("Last working day must be after resignation date.");
-      return;
-    }
+  //   if (new Date(data.resignationDate) > new Date(data.lastWorkingDay)) {
+  //     setError("Last working day must be after resignation date.");
+  //     return;
+  //   }
 
-    // Check if resignation date is in the past
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const resignationDateObj = new Date(data.resignationDate);
+  //   const today = new Date();
+  //   today.setHours(0, 0, 0, 0);
+  //   const resignationDateObj = new Date(data.resignationDate);
     
-    if (resignationDateObj < today) {
-      setError("Resignation date cannot be in the past.");
-      return;
-    }
+  //   if (resignationDateObj < today) {
+  //     setError("Resignation date cannot be in the past.");
+  //     return;
+  //   }
 
-    setFormData(data);
-    setShowConfirm(true);
+  //   setFormData(data);
+  //   setShowConfirm(true);
+  // };
+
+const onFormSubmit = (data) => {
+  
+  setError(null);
+
+  if (!resignationDate) {
+    setError("Resignation date is required.");
+    return;
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const resignationDateObj = new Date(data.resignationDate);
+
+  if (resignationDateObj < today) {
+    setError("Resignation date cannot be in the past.");
+    return;
+  }
+
+  const fullData = {
+    ...data,
+    lastWorkingDayCompany: calculatedLastWorkingDay,
   };
+  setFormData(fullData);
+  setShowConfirm(true);
+};
 
-  // Confirmation handler
+
   const handleConfirmSubmit = async () => {
     try {
       await submitResignation(formData);
@@ -275,7 +188,6 @@ export default function SubmitResignationModal({ isOpen, onClose, onSubmit }) {
     }
   };
 
-  // Close handler
   const handleClose = () => {
     reset();
     setError(null);
@@ -294,7 +206,6 @@ export default function SubmitResignationModal({ isOpen, onClose, onSubmit }) {
           exit="exit"
           className="relative bg-white dark:bg-gray-800 w-full max-w-2xl  h-[90vh] rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-700 overflow-auto"
         >
-          {/* Header */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-700 dark:to-gray-600 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
             <div className="flex items-center justify-between">
               <div>
@@ -315,9 +226,7 @@ export default function SubmitResignationModal({ isOpen, onClose, onSubmit }) {
             </div>
           </div>
 
-          {/* Content */}
           <div className="p-6">
-            {/* Error Message */}
             <AnimatePresence>
               {error && (
                 <motion.div
@@ -372,7 +281,7 @@ export default function SubmitResignationModal({ isOpen, onClose, onSubmit }) {
               </motion.div>
 
               {/* Last Working Day */}
-              <motion.div variants={fieldVariants}>
+              {/* <motion.div variants={fieldVariants}>
                 <label
                   htmlFor="lastWorkingDay"
                   className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
@@ -393,7 +302,39 @@ export default function SubmitResignationModal({ isOpen, onClose, onSubmit }) {
                     {errors.lastWorkingDay.message}
                   </p>
                 )}
-              </motion.div>
+              </motion.div> */}
+
+              {/* Auto-calculated Last Working Day */}
+<motion.div variants={fieldVariants}>
+  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+    <FiCalendar className="w-4 h-4 inline mr-2" />
+    Last Working Day (Based on Notice Period)
+  </label>
+  <input
+    type="date"
+    value={calculatedLastWorkingDay}
+    disabled
+    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 cursor-not-allowed"
+  />
+</motion.div>
+
+{/* User-selected Custom Last Working Day */}
+<motion.div variants={fieldVariants}>
+  <label
+    htmlFor="lastWorkingDayUser"
+    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+  >
+    <FiCalendar className="w-4 h-4 inline mr-2" />
+    Custom Last Working Day (Optional)
+  </label>
+  <input
+    id="lastWorkingDayUser"
+    type="date"
+    {...register("lastWorkingDayUser")}
+    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+  />
+</motion.div>
+
 
               {/* Notice Period Info */}
               {resignationDate && lastWorkingDay && noticePeriod > 0 && (
@@ -503,11 +444,20 @@ export default function SubmitResignationModal({ isOpen, onClose, onSubmit }) {
               <p>Please confirm the following resignation details:</p>
               <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg text-sm space-y-2">
                 <p><strong>Resignation Date:</strong> {formData.resignationDate ? new Date(formData.resignationDate).toLocaleDateString() : 'N/A'}</p>
-                <p><strong>Last Working Day:</strong> {formData.lastWorkingDay ? new Date(formData.lastWorkingDay).toLocaleDateString() : 'N/A'}</p>
-                <p><strong>Notice Period:</strong> {getNoticePeriod()} days</p>
+                {/* <p><strong>Last Working Day:</strong> {formData.lastWorkingDay ? new Date(formData.lastWorkingDay).toLocaleDateString() : 'N/A'}</p> */}
+                {/* <p><strong>Notice Period:</strong> {getNoticePeriod()} days</p>
                 {formData.comments && (
                   <p><strong>Reason:</strong> {formData.comments}</p>
-                )}
+                )} */}
+
+              <p><strong>Resignation Date:</strong> {formData.resignationDate ? new Date(formData.resignationDate).toLocaleDateString() : 'N/A'}</p>
+<p><strong>Auto Last Working Day:</strong> {formData.lastWorkingDayAuto}</p>
+{formData.lastWorkingDayUser && (
+  <p><strong>Custom Last Working Day:</strong> {new Date(formData.lastWorkingDayUser).toLocaleDateString()}</p>
+)}
+<p><strong>Notice Period:</strong> {getNoticePeriod()} days</p>
+
+
               </div>
               <p className="text-amber-600 dark:text-amber-400 text-sm">
                 ⚠️ Once submitted, this resignation will require manager approval and cannot be easily modified.

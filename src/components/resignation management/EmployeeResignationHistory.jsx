@@ -633,8 +633,8 @@ export default function EmployeeResignationHistory() {
       resignationDate: r.resignationDate
         ? new Date(r.resignationDate).toLocaleDateString()
         : "N/A",
-      lastWorkingDay: r.lastWorkingDay
-        ? new Date(r.lastWorkingDay).toLocaleDateString()
+      lastWorkingDay: r?.approvers?.[0].approvedLastWorkingDay
+        ? new Date(r?.approvers?.[0].approvedLastWorkingDay).toLocaleDateString()
         : "N/A",
       reason: r.comments || "N/A",
       department: r.employee?.department || "N/A",

@@ -9,16 +9,17 @@ import {
   FiBell,
 } from "react-icons/fi";
 import { HiOutlineSparkles } from "react-icons/hi2";
+import { useDashboardStore } from "../../../store/useDashboardStore";
 
 // Import all your individual components
 import Heading from "./Heading";
-import DashboardStatCards from "./DashboardStatCards";
-import EmployeeStatusChart from "./EmployeeStatusChart";
-import DepartmentChart from "./DepartmentChart";
+import DashboardStatCards from "./DashboardStatCards";//
+import EmployeeStatusChart from "./EmployeeStatusChart"; //
+import DepartmentChart from "./DepartmentChart"; //
 import WhoIsInCard from "./WhoIsInCard";
 import MonthlyHiringChart from "./MonthlyHiringChart";
-import DemographicCard from "./DemographicCard";
-import AttendanceCard from "./AttendanceCard";
+import DemographicCard from "./DemographicCard"; //
+import AttendanceCard from "./AttendanceCard"; //
 import AnnouncementCard from "./AnnouncementCard";
 import ProductLense from "./ProductLense";
 import { registerFcmToken } from "../../../utils/registerFcmToken";

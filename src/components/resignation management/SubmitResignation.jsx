@@ -12,16 +12,11 @@ import {
   FiDollarSign,
   FiEye,
   FiPlus,
-  FiRefreshCw,
-  FiX,
   FiUsers,
   FiMessageSquare,
-  FiHome,
-  FiBriefcase,
   FiEdit3,
   FiTrash2,
 } from "react-icons/fi";
-
 import SubmitResignationModal from "./model/SubmitResignationModal";
 import ConfirmationDialog from "../../components/common/ConfirmationDialog";
 import useResignationStore from "../../store/useResignationStore";
@@ -46,10 +41,6 @@ const cardVariants = {
 };
 
 
-
-// ----------------------------------
-// Main SubmitResignation component
-// ----------------------------------
 export default function SubmitResignation() {
   const {
     resignations,
@@ -79,9 +70,10 @@ export default function SubmitResignation() {
   const handleWithdrawResignation = async () => {
     try {
       await withdrawResignation();
-      toast.success("Resignation withdrawn successfully!");
+      // toast.success("Resignation withdrawn successfully!");
     } catch (err) {
-      toast.error("Error withdrawing resignation.");
+      // toast.error("Error withdrawing resignation.");
+      console.log(error)
     } finally {
       setShowWithdrawConfirm(false);
     }
@@ -90,7 +82,7 @@ export default function SubmitResignation() {
   const handleRequestFNF = async () => {
     try {
       await requestFNF();
-      toast.success("FNF requested successfully!");
+      // toast.success("FNF requested successfully!");
     } catch (err) {
       toast.error(err.response?.data?.message || "Error requesting FNF.");
     } finally {
@@ -130,7 +122,6 @@ export default function SubmitResignation() {
     }
   };
 
-  // Loading state
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -299,6 +290,8 @@ export default function SubmitResignation() {
           </motion.div>
 
           {/* FNF Details Card */}
+           { employeeFnf?.status !== 'Rejected' &&  resignation?.status === "Approved" && (
+
           <motion.div variants={itemVariants}>
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
               <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-gray-700 dark:to-gray-600 px-6 py-4 border-b border-gray-200 dark:border-gray-600">
@@ -351,6 +344,20 @@ export default function SubmitResignation() {
 
                     {/* Action Buttons */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
+                       {employeeFnf?.status === "Processed" || employeeFnf?.status === "FNF Requested"   &&(
+                        <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => setShowFnfModal(true)}
+                        className="px-4 py-3 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 font-medium rounded-lg transition-colors duration-200 flex items-center justify-center"
+                      >
+                        <FiEye className="w-4 h-4 mr-2" />
+                        View Details
+                      </motion.button>
+                       )}
+
+                       {employeeFnf?.status === "Pending"  &&(
+
                       <motion.button
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
@@ -360,16 +367,7 @@ export default function SubmitResignation() {
                         <FiEdit3 className="w-4 h-4 mr-2" />
                         Request FNF
                       </motion.button>
-
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setShowFnfModal(true)}
-                        className="px-4 py-3 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-500 font-medium rounded-lg transition-colors duration-200 flex items-center justify-center"
-                      >
-                        <FiEye className="w-4 h-4 mr-2" />
-                        View Details
-                      </motion.button>
+                       )}
                     </div>
                   </div>
                 ) : (
@@ -388,6 +386,7 @@ export default function SubmitResignation() {
               </div>
             </div>
           </motion.div>
+          )}
         </motion.div>
 
         {/* Resignation Records */}
@@ -467,7 +466,7 @@ export default function SubmitResignation() {
                             {new Date(row.resignationDate).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                            {new Date(row.lastWorkingDay).toLocaleDateString()}
+                            {new Date(row.approvers?.[0].approvedLastWorkingDay).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4 text-sm text-gray-900 dark:text-white max-w-xs truncate">
                             {row.comments || "No comments"}
@@ -544,8 +543,10 @@ export default function SubmitResignation() {
                             <span className="font-medium">Last Working:</span>
                             <p className="text-gray-900 dark:text-white">
                               {new Date(
-                                row.lastWorkingDay
+                                row.approvers?.[0].approvedLastWorkingDay
                               ).toLocaleDateString()}
+
+                          
                             </p>
                           </div>
                         </div>

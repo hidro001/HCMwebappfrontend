@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useForm, FormProvider, useFieldArray } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-hot-toast";
-import useEmployeeStore from "../../../store/useEmployeeStore.js";
+import useEmployeeStore from "../../../store/useEmployeeStore";
 import { createEmployee, updateEmployee } from "../../../service/employeeService.js";
 import ConfirmationDialog from "../../common/ConfirmationDialog";
 import TabButton from "../common/TabButton";

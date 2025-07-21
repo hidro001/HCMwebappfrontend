@@ -1,6 +1,6 @@
 
 
-const GreetCard = ({ post, type }) => {
+const GreetCard = ({ post, type, tagline }) => {
   const fullName = `${post.first_Name} ${post.last_Name}`;
   const expiryDate = post.expire_date || "";
   const userAvatar = post.user_Avatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png";
@@ -11,17 +11,18 @@ const GreetCard = ({ post, type }) => {
 
   if (type === "birthday") {
     heading = `Happy Birthday, ${fullName}! `;
-    message = `Wishing you a wonderful day filled with happiness and a year filled with joy. Enjoy your special day! 🎉`;
+    message = tagline;
   } else if (type === "anniversary") {
     heading = `Happy Work Anniversary, ${fullName}! 🎊`;
-    message = `Congratulations on completing ${yearswithus} amazing years with us!`;
+    message =`${tagline} ${yearswithus ? `(${yearswithus} year${yearswithus > 1 ? 's' : ''})` : ''}`;
+
   } else {
     heading = "Greetings!";
     message = "Wishing you all the best!";
   }
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-gray-700 p-6 max-w-md mx-auto border border-gray-200 dark:border-gray-600">
+    <div className="bg-white dark:bg-gray-800 w-[90%] rounded-lg shadow-md dark:shadow-gray-700 p-6 max-w-md mx-auto border border-gray-200 dark:border-gray-600">
       <div className="flex items-center space-x-4 mb-4">
         <img
           src={userAvatar}

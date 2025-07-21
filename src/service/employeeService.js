@@ -47,18 +47,14 @@ export async function fetchPermissionRoles() {
   return response.data?.data || [];
 }
 
-/**
- * Fetch Company Info (Addresses)
- */
+
 export async function fetchCompanyInfo() {
   const response = await axiosInstance.get("/company-settings/info/getCompany");
   const companyArray = response.data?.data || [];
   return companyArray.length > 0 ? companyArray[0] : null;
 }
 
-/**
- * Fetch Designations
- */
+
 export async function fetchDesignations() {
   const response = await axiosInstance.get("/designation/get");
   return response.data?.data || [];
@@ -70,9 +66,6 @@ export async function fetchLeaveTypes() {
 }
 
 
-/**
- * Final Create Employee call (POST) with FormData
- */
 export async function createEmployee(formData) {
   // This is the final POST as in your old code (superadmin/register)
   const response = await axiosInstance.post("/user-management/register", formData, {

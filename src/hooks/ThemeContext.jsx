@@ -1,4 +1,3 @@
-// src/contexts/ThemeContext.js
 import  { createContext, useState, useEffect, useMemo, useCallback } from "react";
 import { ThemeProvider as MuiThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";

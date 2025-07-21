@@ -4,11 +4,14 @@ import { toast } from "react-toastify";
 
 const useFeedStore = create((set, get) => ({
   feed: [],
+  feedById:[],
   page: 1,
   pages: 1,
   isLoading: false,
   hasMore: true,
   error: null,
+  errorById: null,
+  isLoadingById: false,
 
   fetchFeed: async (currentPage = 1) => {
     try {
@@ -36,6 +39,44 @@ const useFeedStore = create((set, get) => ({
       set({ isLoading: false });
     }
   },
+
+  
+  // fetchFeedById: async (id) => {
+  //   try {
+  //     const response = await axiosInstance.get(`/feed/${id}`);
+  //     set({feedById : response.data})
+  //   } catch (error) {
+  //     console.error("Error fetching feed:", error);
+  //     set({ errorById: "Failed to load feed. Please try again." });
+  //     toast.error("Failed to load feed. Please try again.");
+  //   } finally {
+  //     set({ isLoadingById: false });
+  //   }
+  // },
+
+  fetchFeedById: async (id) => {
+  try {
+    const response = await axiosInstance.get(`/feed/${id}`);
+    const data = response.data;
+
+    // Ensure it's an object and not an empty array
+    if (data && !Array.isArray(data) && typeof data === "object") {
+      set({ feedById: data });
+    } else {
+      set({ feedById: null });
+      toast.error("Invalid feed data received.");
+    }
+  } catch (error) {
+    console.error("Error fetching feed:", error);
+    set({ errorById: "Failed to load feed. Please try again." });
+    toast.error("Failed to load feed. Please try again.");
+  } finally {
+    set({ isLoadingById: false });
+  }
+},
+
+
+  clearFeedById: () => set({ feedById: null, isLoadingById: false, errorById: null }),
 
   refreshFeed: () => {
     set({ feed: [], page: 1, pages: 1, hasMore: true });
@@ -74,7 +115,6 @@ const useFeedStore = create((set, get) => ({
       feed: state.feed.filter((poll) => poll._id !== pollId),
     })),
 
-  // Comment Methods
   addComment: (postId, comment) =>
     set((state) => ({
       feed: state.feed.map((post) =>
@@ -110,9 +150,7 @@ const useFeedStore = create((set, get) => ({
       ),
     })),
 
-  // **New Methods for Socket.io Events**
 
-  // For updating likes on a post
   updatePostLikes: (postId, likes) =>
     set((state) => ({
       feed: state.feed.map((post) =>
@@ -122,7 +160,6 @@ const useFeedStore = create((set, get) => ({
       ),
     })),
 
-  // For adding a comment to a post
   addCommentToPost: (postId, comment) =>
     set((state) => ({
       feed: state.feed.map((post) =>
@@ -132,7 +169,6 @@ const useFeedStore = create((set, get) => ({
       ),
     })),
 
-  // For updating a comment in a post
   updateCommentInPost: (postId, updatedComment) =>
     set((state) => ({
       feed: state.feed.map((post) =>
@@ -147,7 +183,6 @@ const useFeedStore = create((set, get) => ({
       ),
     })),
 
-  // For deleting a comment from a post
   deleteCommentFromPost: (postId, commentId) =>
     set((state) => ({
       feed: state.feed.map((post) =>
@@ -160,7 +195,6 @@ const useFeedStore = create((set, get) => ({
       ),
     })),
 
-  // **New Method for Updating Poll Votes**
   updatePollVotes: (pollId, userId, optionId) =>
     set((state) => ({
       feed: state.feed.map((poll) => {
