@@ -29,7 +29,7 @@ import {
 import useJobStore from "../../store/useJobStore";
 import { toast } from "react-hot-toast";
 import FullScreenLoader from "../common/FullScreenLoader";
-import useEmployeeStore from "../../store/useEmployeeStore.js";
+import useEmployeeStore from "../../store/useEmployeeStore";
 import useAuthStore from "../../store/store";
 import BaseModal from "../common/BaseModal.jsx";
 

@@ -21,7 +21,6 @@ function MyProfile() {
     str ? new Date(str).toLocaleDateString() : "N/A";
   const orNA = (value) => (value ? value : "N/A");
   const boolToYesNo = (val) => {
-    // Some fields come back as "Yes"/"No" or booleans. Adjust as needed:
     if (typeof val === "boolean") return val ? "Yes" : "No";
     if (val === "Yes" || val === "No") return val;
     return val ? "Yes" : "No";
@@ -29,7 +28,6 @@ function MyProfile() {
   const arrayToCommaList = (arr) =>
     arr && arr.length > 0 ? arr.join(", ") : "N/A";
 
-  // Renders assigned_to objects as "John Cena (EMP123)" etc.
   const renderAssignedTo = (assignedArr) => {
     if (!assignedArr || assignedArr.length === 0) return "N/A";
     return assignedArr

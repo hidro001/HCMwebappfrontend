@@ -4,16 +4,7 @@ import {
   FaUsers,
   FaUserCheck,
   FaUserTimes,
-  FaChevronRight,
-  FaEye,
-  FaArrowUp,
-  FaArrowDown,
 } from "react-icons/fa";
-import {
-  HiOutlineSparkles,
-  HiArrowTrendingUp,
-  HiArrowTrendingDown,
-} from "react-icons/hi2";
 import { useDashboardStore } from "../../../store/useDashboardStore";
 import AttendanceModal from "./AttendanceModel";
 
@@ -38,7 +29,6 @@ function DashboardStatCards() {
     fetchDashboardStats();
   }, [fetchDashboardStats]);
 
-  // Separate arrays for logged in / not logged in
   const loggedInUsers = attendanceDetails.filter((user) => user.isPresent);
   const notLoggedInUsers = attendanceDetails.filter((user) => !user.isPresent);
 

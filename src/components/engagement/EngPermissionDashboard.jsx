@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { FaTrash, FaEdit, FaBan, FaCheck } from "react-icons/fa";
 import { motion } from "framer-motion";
-
 import BaseModal from "../common/BaseModal"; 
-
 import {
   getPermissions,
   createPermission,
@@ -19,7 +17,6 @@ import {
   banUser,
   unbanUser,
 } from "../../service/service";
-
 import useAuthStore from "../../store/store";
 import useEngagementStore from "../../store/engagementStore";
 

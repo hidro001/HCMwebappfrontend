@@ -16,14 +16,12 @@ export const useDashboardStore = create((set) => ({
   ageDistribution: [],
   totalSalaries: 0,
   topDesignations: [],
-  attendanceDetails: [],          // NEW
-  attendanceDetailsLoading: false, // NEW
-  hiringDetails: [],              // NEW
-  hiringDetailsLoading: false,    // NEW
+  attendanceDetails: [],          
+  attendanceDetailsLoading: false, 
+  hiringDetails: [],              
+  hiringDetailsLoading: false,    
 
-  // ----------------------------
-  // Fetches main dashboard stats
-  // ----------------------------
+  
   fetchDashboardStats: async () => {
     try {
       const response = await axiosInstance.get("/dashboard-stats/super-admin");

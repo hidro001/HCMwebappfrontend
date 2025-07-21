@@ -19,7 +19,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import EmployeeFormTabs from "../../../components/Employeee Management/EmployeeFormTabs/EmployeeFormTabs";
-import useEmployeeStore from "../../../store/useEmployeeStore.js";
+import useEmployeeStore from "../../../store/useEmployeeStore";
 
 import * as XLSX from "xlsx";
 import FileSaver from "file-saver";

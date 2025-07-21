@@ -1,34 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { 
-  FaTimes, 
-  FaImage, 
-  FaVideo, 
-  FaCalendarAlt, 
-  FaClock, 
-  FaRocket,
-  FaLayerGroup,
-  FaBuilding,
-  FaChevronDown,
-  FaSearch,
-  FaPlus,
-  FaTrashAlt,
-  FaEye,
-  FaInfinity,
-  FaMagic,
-  FaCheck
+import { FaTimes, FaImage, FaVideo, FaCalendarAlt, FaClock, FaRocket, FaLayerGroup,
+ FaBuilding, FaChevronDown, FaSearch, FaTrashAlt, FaInfinity, FaMagic, FaCheck
 } from "react-icons/fa";
-import { 
-  HiSparkles, 
-  HiLightningBolt, 
-  HiGlobeAlt,
-  HiChip,
-  HiCollection,
-  HiDocument,
-  HiPhotograph,
-  HiFilm
-} from "react-icons/hi";
+import { HiSparkles, HiLightningBolt, HiGlobeAlt, HiChip, HiCollection,
+   HiDocument, HiPhotograph, HiFilm } from "react-icons/hi";
 import axiosInstance from "../../../service/axiosInstance.js";
+import useFeedStore from "../../../store/feedStore.js";
 import { toast } from "react-hot-toast";
 import ReactQuill from "react-quill";
 import DOMPurify from "dompurify";
@@ -36,11 +14,11 @@ import "react-quill/dist/quill.snow.css";
 import BaseModal from "../../common/BaseModal.jsx";
 import useDepartmentStore from "../../../store/departmentStore.js";
 import ConfirmationDialog from "../../common/ConfirmationDialog.jsx";
+import Slider from "react-slick";
 
 const toUTCISOStringLocal = (dateStr, timeStr) => {
   const [year, month, day] = dateStr.split("-");
   const [hours, minutes] = timeStr.split(":");
-
   const localDate = new Date();
   localDate.setFullYear(+year);
   localDate.setMonth(+month - 1);
@@ -49,13 +27,13 @@ const toUTCISOStringLocal = (dateStr, timeStr) => {
   localDate.setMinutes(+minutes);
   localDate.setSeconds(0);
   localDate.setMilliseconds(0);
-
   return localDate.toISOString();
 };
 
-const PostCreateBox = ({ onSuccess, onClose }) => {
+const PostCreateBox = ({ onSuccess, onClose, editPostId = '' }) => {
 
-  console.log( onSuccess, onClose , 's')
+  const {feedById, fetchFeedById } = useFeedStore()
+  const { departments } = useDepartmentStore();
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -70,7 +48,69 @@ const PostCreateBox = ({ onSuccess, onClose }) => {
   const [manualExpiryDate, setManualExpiryDate] = useState("");
   const [manualExpiryTime, setManualExpiryTime] = useState("");
   const [showConfirmClose, setShowConfirmClose] = useState(false);
+  const [hasInitialized, setHasInitialized] = useState(false);
+  const [isOpenDepartment, setIsOpenDepartment] = useState(false);
+  const [serverMedia, setServerMedia] = useState([]); 
+  const [search, setSearch] = useState("");
 
+  useEffect(() => {
+    fetchFeedById(editPostId)
+  }, [fetchFeedById, editPostId])
+ 
+
+  useEffect(() => {
+    if ( feedById && !Array.isArray(feedById) && typeof feedById === "object"
+         && editPostId && !hasInitialized
+      ) {
+        setHasInitialized(true);
+        setTitle(feedById.title || "");
+        setDescription(feedById.description || "");
+
+        if (Array.isArray(feedById.media)) {
+          const previews = feedById.media.map((url) => {
+            const isImage = /\.(jpg|jpeg|png|gif|bmp|svg|webp|avif)$/i.test(url);
+            return {
+              url,
+              type: isImage ? "image" : "video",
+              name: url.split("/").pop(),
+              fromServer: true,
+            };
+          });
+          setServerMedia(previews);
+          setMediaPreviews(previews);
+        }
+
+        if (Array.isArray(feedById.department)) {
+          const selected = departments.filter((dept) =>
+            feedById.department.includes(dept._id)
+          );
+          setDepartment(selected);
+        }
+
+        setCategory(feedById.categories || "General");
+
+        if (feedById.scheduleDate) {
+          const schedule = new Date(feedById.scheduleDate);
+          setDate(schedule.toISOString().split("T")[0]);
+          setTime(schedule.toTimeString().slice(0, 5)); 
+        }
+
+        if (!feedById.expiryDate) {
+          setExpiry("no expiry");
+        } else {
+          const expiryDate = new Date(feedById.expiryDate);
+          setExpiry("Manual");
+          setManualExpiryDate(expiryDate.toISOString().split("T")[0]);
+          setManualExpiryTime(expiryDate.toTimeString().slice(0, 5));
+        }
+      }
+  }, [feedById, editPostId, hasInitialized, departments]);
+
+  const getMediaType = (url) => {
+    if (/\.(jpg|jpeg|png|gif|bmp|svg|webp|avif)$/i.test(url)) return "image";
+    if (/\.(mp4|webm|mov|avi|mkv)$/i.test(url)) return "video";
+    return "unsupported";
+  };
 
   useEffect(() => {
     const addDarkModeStyles = () => {
@@ -125,7 +165,6 @@ const PostCreateBox = ({ onSuccess, onClose }) => {
 
     addDarkModeStyles();
 
-    // Listen for theme changes
     const observer = new MutationObserver(() => {
       addDarkModeStyles();
     });
@@ -143,11 +182,6 @@ const PostCreateBox = ({ onSuccess, onClose }) => {
       }
     };
   }, []);
-
-  const [search, setSearch] = useState("");
-  const [isOpenDepartment, setIsOpenDepartment] = useState(false);
-
-  const { departments } = useDepartmentStore();
 
   const ALL_DEPT_ID = "all-department";
   const allDepartmentsOption = {
@@ -179,28 +213,76 @@ const PostCreateBox = ({ onSuccess, onClose }) => {
     ),
   ];
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e, fileType) => {
     const files = Array.from(e.target.files);
-    setMediaFiles((prev) => [...prev, ...files]);
+    e.target.value = null;
 
-    const previews = files.map((file) => ({
-      url: URL.createObjectURL(file),
-      type: file.type.startsWith("image") ? "image" : "video",
-      name: file.name,
-    }));
+    const newFiles = [];
+    const newPreviews = [];
 
-    setMediaPreviews((prev) => [...prev, ...previews]);
+    files.forEach((file) => {
+      const uniqueKey = file.name + file.lastModified;
+
+      // Avoid duplicates
+      const exists = mediaPreviews.some((m) => m.name + m.lastModified === uniqueKey);
+      if (!exists) {
+        newFiles.push(file);
+        newPreviews.push({
+          url: URL.createObjectURL(file),
+          type: fileType,
+          name: file.name,
+          lastModified: file.lastModified,
+        });
+      }
+    });
+
+    setMediaFiles((prev) => [...prev, ...newFiles]);
+    setMediaPreviews((prev) => [...prev, ...newPreviews]);
   };
 
   const handleRemoveMedia = (index) => {
-    const updatedFiles = [...mediaFiles];
-    updatedFiles.splice(index, 1);
-    setMediaFiles(updatedFiles);
+    const removed = mediaPreviews[index];
 
-    const updatedPreviews = [...mediaPreviews];
-    updatedPreviews.splice(index, 1);
-    setMediaPreviews(updatedPreviews);
+    if (!removed.fromServer && removed.url.startsWith("blob:")) {
+      URL.revokeObjectURL(removed.url);
+    }
+
+    setMediaPreviews((prev) =>
+      prev.filter((_, i) => i !== index)
+    );
+
+    setMediaFiles((prev) =>
+      prev.filter((file) =>
+        file.name !== removed.name || file.lastModified !== removed.lastModified
+      )
+    );
+
+    if (removed.fromServer) {
+      setServerMedia((prev) =>
+        prev.filter((m) => m.url !== removed.url)
+      );
+    }
   };
+
+  const NextArrow = ({ onClick }) => (
+    <button
+      className="absolute top-1/2 right-3 transform -translate-y-1/2 z-50 bg-white dark:bg-gray-800 p-2 rounded-full shadow hover:scale-105 transition"
+      onClick={onClick}
+      aria-label="Next"
+    >
+      <FaChevronDown className="rotate-[-90deg] text-gray-800 dark:text-white" />
+    </button>
+  );
+
+  const PrevArrow = ({ onClick }) => (
+    <button
+      className="absolute top-1/2 left-3 transform -translate-y-1/2 z-50 bg-white dark:bg-gray-800 p-2 rounded-full shadow hover:scale-105 transition"
+      onClick={onClick}
+      aria-label="Previous"
+    >
+      <FaChevronDown className="rotate-[90deg] text-gray-800 dark:text-white" />
+    </button>
+  );
 
   const resetForm = () => {
     setTitle("");
@@ -225,10 +307,13 @@ const PostCreateBox = ({ onSuccess, onClose }) => {
     }
   };
 
+
   const handleConfirmClose = () => {
     setShowConfirmClose(false);
     resetForm();
-    onClose();
+    useFeedStore.getState().clearFeedById(); 
+    setHasInitialized(false);                
+    onClose();                             
   };
 
   const handleSubmit = async (e) => {
@@ -263,6 +348,8 @@ const PostCreateBox = ({ onSuccess, onClose }) => {
       selectedDepartments = departments;
     }
 
+    
+
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
@@ -273,14 +360,26 @@ const PostCreateBox = ({ onSuccess, onClose }) => {
       formData.append("schedule", scheduleDateISO);
     }
     formData.append("expiry", expiryValue);
+    if (editPostId.length > 0) {
+      const remainingUrls = serverMedia.map((m) => m.url);
+      formData.append("remainingMediaUrls", JSON.stringify(remainingUrls));
+    }
 
     mediaFiles.forEach((file) => formData.append("mediaFiles", file));
 
     try {
       setIsLoading(true);
+       if(editPostId.length === 0 ){
       await axiosInstance.post("/posts", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+    }
+
+      if(editPostId.length > 0 ){
+        await axiosInstance.put(`/posts/${editPostId}`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+       });
+      }
       toast.success("Post created successfully!");
       resetForm();
       if (onSuccess) onSuccess();
@@ -432,7 +531,7 @@ const PostCreateBox = ({ onSuccess, onClose }) => {
                       type="file"
                       accept="image/*"
                       multiple
-                      onChange={handleFileChange}
+                      onChange={(e) => handleFileChange(e, "image")}
                       className="hidden"
                     />
                     <div className="flex flex-col items-center space-y-3">
@@ -455,7 +554,7 @@ const PostCreateBox = ({ onSuccess, onClose }) => {
                       type="file"
                       accept="video/*"
                       multiple
-                      onChange={handleFileChange}
+                      onChange={(e) => handleFileChange(e, "video")}
                       className="hidden"
                     />
                     <div className="flex flex-col items-center space-y-3">
@@ -789,6 +888,73 @@ const PostCreateBox = ({ onSuccess, onClose }) => {
                 </AnimatePresence>
               </motion.div>
 
+    {mediaPreviews.length > 0 && (
+  <div>
+    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">
+      Preview Post
+    </h3>
+
+    <div className="relative w-full max-w-2xl mx-auto mt-4 rounded-xl overflow-hidden shadow-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+      <Slider
+        key={mediaPreviews.length}
+        dots={true}
+        infinite={false}
+        speed={500}
+        slidesToShow={1}
+        slidesToScroll={1}
+        arrows={true}
+        nextArrow={<NextArrow />}
+        prevArrow={<PrevArrow />}
+        initialSlide={0}
+      >
+        {mediaPreviews.map((media, index) => {
+          const mediaType = media.type;
+          return (
+           <div
+              key={`${media.name}-${media.lastModified}`}
+              // className="relative w-full max-w-md mx-auto aspect-[4/5] bg-gray-100 dark:bg-gray-800 overflow-hidden flex items-center justify-center"
+            className="relative w-auto h-[40vh] aspect-[4/5] bg-gray-100 dark:bg-gray-800 flex items-center justify-center"
+
+            >
+
+              {mediaType === "image" ? (
+                // <img
+                //   src={media.url}
+                //   alt={`preview-${index}`}
+                //   className="object-contain max-h-full w-auto max-w-full rounded-lg shadow"
+                // />
+                <img
+                  src={media.url}
+                  alt={`preview-${index}`}
+                  className="object-contain w-full h-full rounded-lg"
+                />
+
+              ) : mediaType === "video" ? (
+                // <video
+                //   src={media.url}
+                //   controls
+                //   className="max-h-full max-w-full rounded-lg shadow"
+                // />
+                <video
+                  src={media.url}
+                  controls
+                  className="object-contain w-full h-full rounded-lg"
+                />
+
+              ) : (
+                <p className="text-red-500 text-sm">Unsupported media</p>
+              )}
+            </div>
+          );
+        })}
+      </Slider>
+    </div>
+  </div>
+)}
+
+
+
+
               {/* Action Buttons */}
               <motion.div variants={itemVariants} className="flex flex-col-reverse sm:flex-row gap-4 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <motion.button
@@ -821,7 +987,7 @@ const PostCreateBox = ({ onSuccess, onClose }) => {
                     ) : (
                       <>
                         <FaRocket className="w-5 h-5" />
-                        <span>Publish Post</span>
+                        <span>{editPostId.length > 0 ? 'Edit Post' :'Publish Post'}</span>
                         <HiSparkles className="w-4 h-4" />
                       </>
                     )}

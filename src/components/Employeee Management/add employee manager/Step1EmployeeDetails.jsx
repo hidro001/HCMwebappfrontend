@@ -4,7 +4,7 @@ import { useFormContext, useWatch } from "react-hook-form";
 import FormField from "../common/FormField";
 import FormTextArea from "../common/FormTextArea";
 import FormReactSelect from "../common/FormReactSelect"; // <-- Our new react-select component
-import useEmployeeStore from "../../../store/useEmployeeStore.js";
+import useEmployeeStore from "../../../store/useEmployeeStore";
 import PermissionModal from "../common/PermissionModal";
 // import { availablePermissionManager } from "../../../service/availablePermissions";
 import { availablePermissionManager } from "../../../service/availablePermissions";

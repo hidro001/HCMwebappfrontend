@@ -142,3 +142,15 @@ html {
 .no-scrollbar::-webkit-scrollbar{
   width: 0px;
 }
+
+
+.slick-dots li button:before {
+  font-size: 10px !important;
+  color: #cbd5e1 !important; 
+  opacity: 0.6 !important;
+}
+
+.slick-dots li.slick-active button:before {
+  color: #c6ccca !important;
+  opacity: 1 !important;
+}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import useEmployeeStore from "../../../store/useEmployeeStore.js";
+import useEmployeeStore from "../../../store/useEmployeeStore";
 import { toast } from "react-hot-toast";
 import EmployeeFormTabs from "../../../components/Employeee Management/EmployeeFormTabs/EmployeeFormTabs";
 
