@@ -11,23 +11,16 @@ import {
 import { useDashboardStore } from "../../../store/useDashboardStore";
 import DepartmentModal from "./DepartmentModal";
 
-function DepartmentChart() {
+function DepartmentChart( {totalUsers, employeesPerDepartment = []}) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [openModal, setOpenModal] = useState(false); // NEW
   // Pull state + method from Zustand
   const {
-    totalUsers,
-    employeesPerDepartment = [],
     fetchDashboardStats,
     attendanceDetails,
     attendanceDetailsLoading,
     fetchAttendanceDetails,
   } = useDashboardStore();
-
-  // Fetch data on mount
-  useEffect(() => {
-    fetchDashboardStats();
-  }, [fetchDashboardStats]);
 
   useEffect(() => {
     if (openModal && attendanceDetails.length === 0) {

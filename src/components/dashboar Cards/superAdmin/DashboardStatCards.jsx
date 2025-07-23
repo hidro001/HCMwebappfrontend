@@ -8,12 +8,8 @@ import {
 import { useDashboardStore } from "../../../store/useDashboardStore";
 import AttendanceModal from "./AttendanceModel";
 
-function DashboardStatCards() {
+function DashboardStatCards({totalUsers, usersLoggedInToday, employeesOnLeaveToday}) {
   const {
-    totalUsers,
-    usersLoggedInToday,
-    employeesOnLeaveToday,
-    fetchDashboardStats,
     fetchAttendanceDetails,
     attendanceDetails = [],
     attendanceDetailsLoading,
@@ -24,10 +20,6 @@ function DashboardStatCards() {
   const [isAttendanceModalVisible, setIsAttendanceModalVisible] =
     useState(false);
   const [hoveredCard, setHoveredCard] = useState(null);
-
-  useEffect(() => {
-    fetchDashboardStats();
-  }, [fetchDashboardStats]);
 
   const loggedInUsers = attendanceDetails.filter((user) => user.isPresent);
   const notLoggedInUsers = attendanceDetails.filter((user) => !user.isPresent);

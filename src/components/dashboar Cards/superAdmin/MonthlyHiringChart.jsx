@@ -11,22 +11,17 @@ import { useDashboardStore } from "../../../store/useDashboardStore";
 import { Line, Bar } from "react-chartjs-2";
 import HiringModal from "./HiringModal";
 
-function MonthlyHiringChart() {
+function MonthlyHiringChart({monthlyHiringTrend}) {
   const {
-    monthlyHiringTrend,
-    fetchDashboardStats,
     fetchHiringDetails,
     hiringDetails,
     hiringDetailsLoading,
   } = useDashboardStore();
   const [chartType, setChartType] = useState("line");
   const [isHovered, setIsHovered] = useState(false);
-  const [openModal, setOpenModal] = useState(false); // NEW
-  const [selectedMY, setSelectedMY] = useState(null); // {month,year}
+  const [openModal, setOpenModal] = useState(false); 
+  const [selectedMY, setSelectedMY] = useState(null); 
 
-  useEffect(() => {
-    fetchDashboardStats();
-  }, [fetchDashboardStats]);
 
   useEffect(() => {
     if (openModal && selectedMY) {
