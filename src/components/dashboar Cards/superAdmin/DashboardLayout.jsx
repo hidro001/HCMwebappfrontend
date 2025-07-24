@@ -44,9 +44,28 @@ const slideUpVariants = {
 };
 
 function SuperAdminDashboard() {
+
+   const {
+      totalUsers,
+      usersLoggedInToday,
+      employeesOnLeaveToday,
+     maleCount,
+    femaleCount,
+    ageDistribution,
+    employeesPerDepartment=[],
+    monthlyHiringTrend,
+    employeesPerEmployeeType=[],
+      fetchDashboardStats,
+
+  } = useDashboardStore();
+
   useEffect(() => {
     registerFcmToken();
   }, []);
+
+   useEffect(() => {
+      fetchDashboardStats();
+    }, [fetchDashboardStats]);
 
   return (
     <motion.div
@@ -77,7 +96,7 @@ function SuperAdminDashboard() {
                   </h2>
                   <HiOutlineSparkles className="h-6 w-6 text-yellow-500" />
                 </div>
-                <DashboardStatCards />
+                <DashboardStatCards  totalUsers={totalUsers} usersLoggedInToday={usersLoggedInToday} employeesOnLeaveToday={employeesOnLeaveToday} />
               </motion.section>
 
               {/* Product Lens Section */}
@@ -99,10 +118,10 @@ function SuperAdminDashboard() {
                 {/* Responsive Grid for Charts */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                   <div className="transition-transform duration-200 hover:scale-[1.01]">
-                    <EmployeeStatusChart />
+                    <EmployeeStatusChart totalUsers={totalUsers} employeesPerEmployeeType={employeesPerEmployeeType} />
                   </div>
                   <div className="transition-transform duration-200 hover:scale-[1.01]">
-                    <DepartmentChart />
+                    <DepartmentChart totalUsers={totalUsers} employeesPerDepartment={employeesPerDepartment} />
                   </div>
                 </div>
 
@@ -115,7 +134,7 @@ function SuperAdminDashboard() {
 
                 {/* Monthly Hiring Chart */}
                 <div className="transition-transform duration-200 hover:scale-[1.005]">
-                  <MonthlyHiringChart />
+                  <MonthlyHiringChart monthlyHiringTrend={monthlyHiringTrend} />
                 </div>
               </section>
             </div>
@@ -125,11 +144,11 @@ function SuperAdminDashboard() {
               {/* Sidebar Cards */}
               <div className="space-y-6">
                 <div className="transition-transform duration-200 hover:scale-[1.01]">
-                  <DemographicCard />
+                  <DemographicCard totalUsers={totalUsers}  maleCount={maleCount} femaleCount={femaleCount} ageDistribution={ageDistribution} />
                 </div>
 
                 <div className="transition-transform duration-200 hover:scale-[1.01]">
-                  <AttendanceCard />
+                  <AttendanceCard totalUsers={totalUsers} usersLoggedInToday={usersLoggedInToday} employeesOnLeaveToday={employeesOnLeaveToday} />
                 </div>
 
                 {/* <div className="transition-transform duration-200 hover:scale-[1.01]">

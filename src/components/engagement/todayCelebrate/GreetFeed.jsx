@@ -3,6 +3,8 @@ import Slider from 'react-slick';
 import useGreetStore from "../../../store/greetStore";
 import GreetCard from '../Card/GreetCard.jsx';
 import UpComingGreet from '../Card/upComingGreetCard.jsx';
+import { RiRobot2Line, RiTimeLine } from "react-icons/ri";
+
 
 const getRandomTagline = (type) => {
   const upCominBirthdayTaglines = [
@@ -90,8 +92,8 @@ const GreetFeed = () => {
 
   if (error) return <div className="p-4 bg-red-100 text-red-700 mb-4">{error}</div>;
   if (isLoading) return <p className="text-center py-10">Loading...</p>;
-  if (combinedList.length === 0) return <p className="text-center py-10 text-gray-500">No items to display.</p>;
-  if (combinedUpComingList.length === 0) return <p className="text-center py-10 text-gray-500">No items to display.</p>;
+  // if (combinedList.length === 0) return <p className="text-center py-10 text-gray-500">No items to display.</p>;
+  // if (combinedUpComingList.length === 0) return <p className="text-center py-10 text-gray-500">No items to display.</p>;
 
   const NextArrow = ({ onClick }) => (
     <div
@@ -146,7 +148,7 @@ const GreetFeed = () => {
  
   return (
     <div className="w-full mx-auto py-6 px-4 space-y-10">
-      {greet && (greet.birthdays.length > 0 || greet.anniversaries.length > 0) && (
+      {greet && (greet.birthdays.length > 0 || greet.anniversaries.length > 0) ? (
      
       <Slider {...todaySettings}>
         {combinedList.map((item, index) => (
@@ -155,9 +157,26 @@ const GreetFeed = () => {
           </div>
         ))}
       </Slider>
-      )}
+      ):(
+         <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+                      <div className="bg-gradient-to-tr from-blue-200 to-purple-300 dark:from-blue-900/30 dark:to-purple-900/30 p-6 rounded-full shadow-lg">
+                        <RiRobot2Line className="w-14 h-14 text-gray-400 dark:text-gray-500" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300">
+                        No content yet
+                      </h3>
+                      {/* <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Be the first to share something amazing with your team!
+                      </p> */}
+                      <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500">
+                        <RiTimeLine className="w-4 h-4" />
+                        <span>Waiting...</span>
+                      </div>
+          </div>
+      )
+      }
 
-      {upComingGreet && (upComingGreet.birthdays.length > 0 || upComingGreet.anniversaries.length > 0) && (
+      {upComingGreet && (upComingGreet.birthdays.length > 0 || upComingGreet.anniversaries.length > 0) ? (
         <div>
           <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-4">Upcoming Greetings </h2>
           <div className="relative  pb-8">
@@ -170,6 +189,22 @@ const GreetFeed = () => {
             </Slider>
           </div>
         </div>
+      ):(
+         <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+                      <div className="bg-gradient-to-tr from-blue-200 to-purple-300 dark:from-blue-900/30 dark:to-purple-900/30 p-6 rounded-full shadow-lg">
+                        <RiRobot2Line className="w-14 h-14 text-gray-400 dark:text-gray-500" />
+                      </div>
+                      <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300">
+                        No content yet
+                      </h3>
+                      {/* <p className="text-sm text-gray-500 dark:text-gray-400">
+                        Be the first to share something amazing with your team!
+                      </p> */}
+                      <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500">
+                        <RiTimeLine className="w-4 h-4" />
+                        <span>Waiting...</span>
+                      </div>
+          </div>
       )}
     </div>
   );

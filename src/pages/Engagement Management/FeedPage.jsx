@@ -23,8 +23,7 @@ const FeedPage = () => {
         </button>
       </div>
 
-      <div
-        className={`
+      <div className={`
           w-full lg:w-[20%]  
           ${showFilters ? 'block' : 'hidden'} 
           lg:block

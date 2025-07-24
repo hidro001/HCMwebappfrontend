@@ -8,62 +8,43 @@ import {
   HiOutlineChartBar,
 } from "react-icons/hi";
 import { useDashboardStore } from "../../../store/useDashboardStore";
-import LocationModal from "./LocationModal"; // NEW
+import LocationModal from "./LocationModal"; 
 
-function EmployeeStatusChart() {
+function EmployeeStatusChart({ totalUsers, employeesPerEmployeeType = [],}) {
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Pull state + method from Zustand
   const {
-    totalUsers,
-    employeesPerEmployeeType = [],
     fetchDashboardStats,
     attendanceDetails,
     attendanceDetailsLoading,
     fetchAttendanceDetails,
   } = useDashboardStore();
 
-  // Fetch data on mount
-  useEffect(() => {
-    fetchDashboardStats();
-  }, [fetchDashboardStats]);
-
-  // Handle refresh with animation
   const handleRefresh = async () => {
     setIsRefreshing(true);
     await fetchDashboardStats();
     setTimeout(() => setIsRefreshing(false), 1000);
   };
 
-  const [openModal, setOpenModal] = useState(false); // NEW
+  const [openModal, setOpenModal] = useState(false); 
 
-  // pull the people list only when the modal is launched
   useEffect(() => {
     if (openModal && attendanceDetails.length === 0) {
       fetchAttendanceDetails();
     }
   }, [openModal]);
 
-  // Prepare chart data
   const labels = employeesPerEmployeeType.map(
     (item) => item.employee_Type || "Unknown"
   );
   const dataValues = employeesPerEmployeeType.map((item) => item.count);
 
-  // Dynamic colors with better palette
+  
   const colors = [
-    "#3B82F6", // blue-500
-    "#EF4444", // red-500
-    "#10B981", // emerald-500
-    "#F59E0B", // amber-500
-    "#8B5CF6", // violet-500
-    "#EC4899", // pink-500
-    "#06B6D4", // cyan-500
-    "#84CC16", // lime-500
+    "#3B82F6", "#EF4444", "#10B981", "#F59E0B", "#8B5CF6", "#EC4899", "#06B6D4", "#84CC16",
   ];
   const backgroundColors = dataValues.map((_, i) => colors[i % colors.length]);
 
-  // Chart data object
   const data = {
     labels,
     datasets: [
