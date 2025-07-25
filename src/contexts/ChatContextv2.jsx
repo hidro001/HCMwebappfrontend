@@ -10,6 +10,8 @@ import { fetchChatHistory, fetchAllMember } from "../service/chatService";
 import useAuthStore from "../store/store";
 import { initSocket } from "../service/socketService.js";
 import axios from "axios";
+import { toast } from "react-hot-toast";
+import GroupSettingsModal from "../components/chats/chatv2/GroupSettingsModal.jsx";
 
 export const ChatContextv2 = createContext();
 
@@ -46,6 +48,19 @@ export function ChatProviderv2({ children }) {
   const [groupsLoading, setGroupsLoading] = useState(false);
   const [groupsError, setGroupsError] = useState(null);
   const [groups, setGroups] = useState([]);
+  /* ───────────────────────────────────────────────
+     GROUP‑SETTINGS  (admin can edit / delete group)
+     ─────────────────────────────────────────────── */
+  const [settingsGroup, setSettingsGroup] = useState(null);
+
+  /** Am I the admin of this group? */
+  const isGroupAdmin = useCallback(
+    (group) => group && group.admin === employeeId,
+    [employeeId]
+  );
+
+  const openGroupSettingsModal = (group) => setSettingsGroup(group);
+  const closeGroupSettingsModal = () => setSettingsGroup(null);
 
   const activeConversation = selectedUser || selectedConversation;
   const [messages, setMessages] = useState([]);
@@ -92,11 +107,11 @@ export function ChatProviderv2({ children }) {
   //   loadMembers();
   // }, [loadMembers]);
 
-   useEffect(() => {
-   // Don’t call fetchMembers until we have a valid storeEmployeeId
-   if (!storedId) return;
-   loadMembers();
- }, [loadMembers, storedId]);
+  useEffect(() => {
+    // Don’t call fetchMembers until we have a valid storeEmployeeId
+    if (!storedId) return;
+    loadMembers();
+  }, [loadMembers, storedId]);
 
   useEffect(() => {
     if (!employeeId) return;
@@ -183,6 +198,29 @@ export function ChatProviderv2({ children }) {
       }
     });
 
+    socket.on("groupInfoUpdated", ({ groupId, groupName, groupIcon }) => {
+      setGroups((prev) =>
+        prev.map((g) =>
+          g._id === groupId ? { ...g, groupName, groupIcon } : g
+        )
+      );
+      // refresh title if the renamed group is open
+      if (activeConversation?.isGroup && activeConversation._id === groupId) {
+        setSelectedConversation((prev) =>
+          prev ? { ...prev, groupName, groupIcon } : prev
+        );
+      }
+    });
+
+    /* group was deleted */
+    socket.on("groupDeleted", ({ groupId }) => {
+      setGroups((prev) => prev.filter((g) => g._id !== groupId));
+      if (activeConversation?.isGroup && activeConversation._id === groupId) {
+        setSelectedConversation(null);
+        setMessages([]);
+      }
+    });
+
     return () => {
       socket.disconnect();
       socketRef.current = null;
@@ -246,6 +284,87 @@ export function ChatProviderv2({ children }) {
       setGroupsLoading(false);
     });
   }, [employeeId]);
+
+  /** add member */
+  const addMemberToGroup = useCallback(
+    (groupId, newMemberId) => {
+      if (!socketRef.current) return;
+      socketRef.current.emit(
+        "addMemberToGroup",
+        { groupId, adminId: employeeId, newMemberId },
+        (res) => {
+          res.success
+            ? toast.success("Member added")
+            : toast.error(res.message);
+          if (res.success) fetchUserGroups();
+        }
+      );
+    },
+    [employeeId, fetchUserGroups]
+  );
+
+  /** remove member */
+  const removeMemberFromGroup = useCallback(
+    (groupId, memberId) => {
+      if (!socketRef.current) return;
+      socketRef.current.emit(
+        "removeMemberFromGroup",
+        { groupId, adminId: employeeId, memberId },
+        (res) => {
+          res.success
+            ? toast.success("Member removed")
+            : toast.error(res.message);
+          if (res.success) fetchUserGroups();
+        }
+      );
+    },
+    [employeeId, fetchUserGroups]
+  );
+
+  /** rename / change icon */
+  const updateGroupInfo = useCallback(
+    (groupId, newName, newIcon) => {
+      if (!socketRef.current) return;
+      socketRef.current.emit(
+        "updateGroupInfo",
+        { groupId, adminId: employeeId, newName, newIcon },
+        (res) => {
+          res.success
+            ? toast.success("Group updated")
+            : toast.error(res.message);
+          if (res.success) fetchUserGroups();
+        }
+      );
+    },
+    [employeeId, fetchUserGroups]
+  );
+
+  /** delete group */
+  const deleteGroup = useCallback(
+    (groupId) => {
+      if (!socketRef.current) return;
+      socketRef.current.emit(
+        "deleteGroup",
+        { groupId, adminId: employeeId },
+        (res) => {
+          res.success
+            ? toast.success("Group deleted")
+            : toast.error(res.message);
+          if (res.success) {
+            fetchUserGroups();
+            if (
+              activeConversation?.isGroup &&
+              activeConversation._id === groupId
+            ) {
+              setSelectedConversation(null);
+              setMessages([]);
+            }
+          }
+        }
+      );
+    },
+    [employeeId, activeConversation, fetchUserGroups]
+  );
 
   const requestFileURL = useCallback((fileName) => {
     return new Promise((resolve, reject) => {
@@ -469,6 +588,14 @@ export function ChatProviderv2({ children }) {
       fetchUserGroups,
       requestFileURL,
       createGroupUIFlow,
+      isGroupAdmin,
+      openGroupSettingsModal,
+      closeGroupSettingsModal,
+      addMemberToGroup,
+      removeMemberFromGroup,
+      updateGroupInfo,
+      deleteGroup,
+      selectedGroup: activeConversation?.isGroup ? activeConversation : null,
     }),
     [
       employeeId,
@@ -498,12 +625,26 @@ export function ChatProviderv2({ children }) {
       selectUser,
       activeConversation,
       requestFileURL,
+      isGroupAdmin,
+      openGroupSettingsModal,
+      closeGroupSettingsModal,
+      addMemberToGroup,
+      removeMemberFromGroup,
+      updateGroupInfo,
+      deleteGroup,
+      activeConversation,
     ]
   );
 
   return (
     <ChatContextv2.Provider value={contextValue}>
       {children}
+      {settingsGroup && (
+        <GroupSettingsModal
+          group={settingsGroup}
+          onClose={closeGroupSettingsModal}
+        />
+      )}
     </ChatContextv2.Provider>
   );
 }

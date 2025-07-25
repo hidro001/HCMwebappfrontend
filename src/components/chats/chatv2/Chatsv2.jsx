@@ -326,8 +326,6 @@
 
 // export default Chatsv2;
 
-
-
 import { CiSearch } from "react-icons/ci";
 import { CiSquarePlus } from "react-icons/ci";
 import ConversationList from "./ConversationList";
@@ -343,13 +341,16 @@ import { useContext } from "react";
 import { ChatContextv2 } from "../../../contexts/ChatContextv2";
 import fallbackAvatar from "../../../assets/logo/logo-eye.webp";
 
+import { FaEdit } from "react-icons/fa";
+
 function Chatsv2() {
   const [active, setactive] = useState("chats");
   const [members, setmembers] = useState([]);
   const [myprofile, setmyProfile] = useState();
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { userstatus } = useContext(ChatContextv2);
+  const { userStatus, selectedGroup, isGroupAdmin, openGroupSettingsModal } =
+    useContext(ChatContextv2);
   const employeeId = localStorage.getItem("employeeId");
 
   useEffect(() => {
@@ -410,7 +411,23 @@ function Chatsv2() {
               <CiSquarePlus className="w-5 h-5 text-gray-600 dark:text-gray-300" />
             </button>
           </div>
-
+          {selectedGroup && isGroupAdmin(selectedGroup) && (
+            <>
+              {" "}
+              {/* DEBUG helper */}
+              {console.log("▶ EDIT‑BTN visible for", selectedGroup.groupName)}
+              <button
+                className="p-2 w-10 h-10 rounded-full bg-orange-400/20 hover:bg-orange-400/40
+                 dark:bg-orange-500/30 dark:hover:bg-orange-500/50
+                 border border-orange-400 dark:border-orange-500
+                 flex items-center justify-center transition-all duration-200 shadow-lg"
+                title="Edit group"
+                onClick={() => openGroupSettingsModal(selectedGroup)}
+              >
+                <FaEdit className="w-6 h-6 text-orange-600 dark:text-orange-200" />
+              </button>
+            </>
+          )}
           {/* Categories Section */}
           <div className="categories mb-3">
             <div className="categories-inner flex justify-center bg-gray-100 dark:bg-gray-800 p-1 rounded-xl gap-0.5 border border-gray-200 dark:border-gray-600">

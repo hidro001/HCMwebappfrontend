@@ -21,7 +21,9 @@ function GroupSettingsModal({ group, onClose }) {
 
   // Filter out existing members
   const existingIds = new Set(group.members || []);
-  const possibleNewMembers = members.filter((m) => !existingIds.has(m.employeeId));
+  const possibleNewMembers = members.filter(
+    (m) => !existingIds.has(m.employeeId)
+  );
 
   // Remove a member
   const handleRemove = (memberId) => {
@@ -48,10 +50,15 @@ function GroupSettingsModal({ group, onClose }) {
   // Permanently delete the group
   const handleDelete = () => {
     if (deleteConfirm !== "DELETE") {
-      alert('Type "DELETE" in the box if you really want to delete this group.');
+      alert(
+        'Type "DELETE" in the box if you really want to delete this group.'
+      );
       return;
     }
-    if (!window.confirm("Are you sure you want to permanently delete this group?")) return;
+    if (
+      !window.confirm("Are you sure you want to permanently delete this group?")
+    )
+      return;
     deleteGroup(group._id);
     onClose();
   };
@@ -136,7 +143,10 @@ function GroupSettingsModal({ group, onClose }) {
                 Current Members ({group.members?.length || 0})
               </p>
               {group.members?.map((mId) => (
-                <div key={mId} className="flex items-center justify-between mb-1">
+                <div
+                  key={mId}
+                  className="flex items-center justify-between mb-1"
+                >
                   <span className="text-xs text-gray-700 dark:text-gray-200">
                     {mId}
                     {mId === group.admin && (
@@ -178,7 +188,8 @@ function GroupSettingsModal({ group, onClose }) {
           </>
         ) : (
           <div className="text-sm text-gray-600 dark:text-gray-300">
-            You are <strong>not</strong> the admin, so you cannot update this group.
+            You are <strong>not</strong> the admin, so you cannot update this
+            group.
           </div>
         )}
       </div>
