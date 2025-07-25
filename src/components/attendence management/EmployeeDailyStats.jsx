@@ -1584,7 +1584,7 @@
 //   Tooltip,
 //   Legend,
 //   Bar,
-//    Brush,    
+//    Brush,
 // } from "recharts";
 // import { Bar as SimpleBar } from "recharts"; // <-- we’ll use this for the new graph
 
@@ -2637,7 +2637,6 @@
 //   );
 // }
 
-
 import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -2699,37 +2698,58 @@ import {
 // Browser Icons Component
 const BrowserIcon = ({ browser, className = "w-6 h-6" }) => {
   const browserName = browser.toLowerCase();
-  if (browserName.includes('chrome')) {
+  if (browserName.includes("chrome")) {
     return (
       <svg className={className} viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="10" fill="#4285F4"/>
-        <circle cx="12" cy="12" r="4" fill="white"/>
-        <path d="M12 2C6.48 2 2 6.48 2 12h8l2-3.5L14 12h8c0-5.52-4.48-10-10-10z" fill="#EA4335"/>
-        <path d="M12 12l-2 3.5L2 12c0 5.52 4.48 10 10 10l4-7h-4z" fill="#34A853"/>
-        <path d="M16 12l-4 7c5.52 0 10-4.48 10-10h-8l2 3z" fill="#FBBC04"/>
+        <circle cx="12" cy="12" r="10" fill="#4285F4" />
+        <circle cx="12" cy="12" r="4" fill="white" />
+        <path
+          d="M12 2C6.48 2 2 6.48 2 12h8l2-3.5L14 12h8c0-5.52-4.48-10-10-10z"
+          fill="#EA4335"
+        />
+        <path
+          d="M12 12l-2 3.5L2 12c0 5.52 4.48 10 10 10l4-7h-4z"
+          fill="#34A853"
+        />
+        <path d="M16 12l-4 7c5.52 0 10-4.48 10-10h-8l2 3z" fill="#FBBC04" />
       </svg>
     );
-  } else if (browserName.includes('firefox')) {
+  } else if (browserName.includes("firefox")) {
     return (
       <svg className={className} viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="10" fill="#FF7139"/>
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="#FF9500"/>
+        <circle cx="12" cy="12" r="10" fill="#FF7139" />
+        <path
+          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
+          fill="#FF9500"
+        />
       </svg>
     );
-  } else if (browserName.includes('edge')) {
+  } else if (browserName.includes("edge")) {
     return (
       <svg className={className} viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="10" fill="#0078D4"/>
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" fill="#0078D4"/>
-        <path d="M9 9c0-1.66 1.34-3 3-3s3 1.34 3 3v6c0 1.66-1.34 3-3 3s-3-1.34-3-3V9z" fill="white"/>
+        <circle cx="12" cy="12" r="10" fill="#0078D4" />
+        <path
+          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"
+          fill="#0078D4"
+        />
+        <path
+          d="M9 9c0-1.66 1.34-3 3-3s3 1.34 3 3v6c0 1.66-1.34 3-3 3s-3-1.34-3-3V9z"
+          fill="white"
+        />
       </svg>
     );
-  } else if (browserName.includes('safari')) {
+  } else if (browserName.includes("safari")) {
     return (
       <svg className={className} viewBox="0 0 24 24" fill="none">
-        <circle cx="12" cy="12" r="10" fill="#006CFF"/>
-        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="#006CFF"/>
-        <path d="M12 7l1.5 4.5L18 13l-4.5 1.5L12 19l-1.5-4.5L6 13l4.5-1.5L12 7z" fill="white"/>
+        <circle cx="12" cy="12" r="10" fill="#006CFF" />
+        <path
+          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
+          fill="#006CFF"
+        />
+        <path
+          d="M12 7l1.5 4.5L18 13l-4.5 1.5L12 19l-1.5-4.5L6 13l4.5-1.5L12 7z"
+          fill="white"
+        />
       </svg>
     );
   }
@@ -2850,158 +2870,167 @@ export default function EmployeeDailyStats() {
   }, [timeline, attendanceRecord, date]);
 
   // Enhanced timeline visualization data
- /* ────────────────────────────────────────────────────────────
+  /* ────────────────────────────────────────────────────────────
    Enhanced timeline – split into app sessions + browser sessions
    ──────────────────────────────────────────────────────────── */
-const enhancedTimelineData = useMemo(() => {
-  if (!combinedTimeline.length) return [];
+  const enhancedTimelineData = useMemo(() => {
+    if (!combinedTimeline.length) return [];
 
-  const browserRegex = /chrome|edge|firefox|brave|opera|safari/i;
-  const segments     = [];
+    const browserRegex = /chrome|edge|firefox|brave|opera|safari/i;
+    const segments = [];
 
-  let currentBrowser     = null;
-  let browserStartTime   = null;
-  let websitesInBrowser  = [];
+    let currentBrowser = null;
+    let browserStartTime = null;
+    let websitesInBrowser = [];
 
- combinedTimeline.forEach((item, idx) => {
-  /* ─────────────────────────────────────────────
+    combinedTimeline.forEach((item, idx) => {
+      /* ─────────────────────────────────────────────
      1. rows that are tagged as an APP **or** BROWSER
      ───────────────────────────────────────────── */
-  if (item.type === "app" || item.type === "browser") {
-    /* close a running browser‑session first */
-    if (currentBrowser) {
-      segments.push({
-        type     : "browser-session",
-        browser  : currentBrowser,
-        startTime: browserStartTime,
-        endTime  : combinedTimeline[idx - 1].endTime,
-        websites : [...websitesInBrowser],
-        duration : Math.round(
-          (new Date(`2000-01-01T${combinedTimeline[idx - 1].endTime}`) -
-           new Date(`2000-01-01T${browserStartTime}`)) / 60000
-        )
-      });
-      currentBrowser    = null;
-      websitesInBrowser = [];
-    }
+      if (item.type === "app" || item.type === "browser") {
+        /* close a running browser‑session first */
+        if (currentBrowser) {
+          segments.push({
+            type: "browser-session",
+            browser: currentBrowser,
+            startTime: browserStartTime,
+            endTime: combinedTimeline[idx - 1].endTime,
+            websites: [...websitesInBrowser],
+            duration: Math.round(
+              (new Date(`2000-01-01T${combinedTimeline[idx - 1].endTime}`) -
+                new Date(`2000-01-01T${browserStartTime}`)) /
+                60000
+            ),
+          });
+          currentBrowser = null;
+          websitesInBrowser = [];
+        }
 
-    /* does this APP row itself represent a browser window?          */
-    if (browserRegex.test(item.name)) {
-      currentBrowser   = item.name;          // start new browser‑session
-      browserStartTime = item.startTime;
-    } else {
-      segments.push({                         // ordinary native app
-        type     : "app",
-        name     : item.name,
-        startTime: item.startTime,
-        endTime  : item.endTime,
-        duration : item.duration
-      });
-    }
-    return;                                   // next timeline row
-  }
+        /* does this APP row itself represent a browser window?          */
+        if (browserRegex.test(item.name)) {
+          currentBrowser = item.name; // start new browser‑session
+          browserStartTime = item.startTime;
+        } else {
+          segments.push({
+            // ordinary native app
+            type: "app",
+            name: item.name,
+            startTime: item.startTime,
+            endTime: item.endTime,
+            duration: item.duration,
+          });
+        }
+        return; // next timeline row
+      }
 
-  /* ─────────────────────────────────────────────
+      /* ─────────────────────────────────────────────
      2. WEBSITE rows – always belong to a browser
      (the back‑end often emits only website rows,
       never the parent browser window)
      ───────────────────────────────────────────── */
-  if (item.type === "website") {
-    if (!currentBrowser) {                    // start a generic session
-      currentBrowser   = "Browser";           // fallback label
-      browserStartTime = item.startTime;
-    }
-    websitesInBrowser.push({
-      name     : item.name,
-      startTime: item.startTime,
-      endTime  : item.endTime,
-      duration : item.duration
-    });
-    return;
-  }
+      if (item.type === "website") {
+        if (!currentBrowser) {
+          // start a generic session
+          currentBrowser = "Browser"; // fallback label
+          browserStartTime = item.startTime;
+        }
+        websitesInBrowser.push({
+          name: item.name,
+          startTime: item.startTime,
+          endTime: item.endTime,
+          duration: item.duration,
+        });
+        return;
+      }
 
-  /* ─────────────────────────────────────────────
+      /* ─────────────────────────────────────────────
      3. BREAK *or* NO‑ACTIVITY rows
      close any running browser‑session first
      ───────────────────────────────────────────── */
-  if (item.type === "break" || item.type === "noActivity") {
+      if (item.type === "break" || item.type === "noActivity") {
+        if (currentBrowser) {
+          segments.push({
+            type: "browser-session",
+            browser: currentBrowser,
+            startTime: browserStartTime,
+            endTime: combinedTimeline[idx - 1].endTime,
+            websites: [...websitesInBrowser],
+            duration: Math.round(
+              (new Date(`2000-01-01T${combinedTimeline[idx - 1].endTime}`) -
+                new Date(`2000-01-01T${browserStartTime}`)) /
+                60000
+            ),
+          });
+          currentBrowser = null;
+          websitesInBrowser = [];
+        }
+        segments.push({ ...item, type: "break" }); // treat no‑activity as break
+      }
+    });
+
+    /* tail – day ended while a browser was open */
     if (currentBrowser) {
       segments.push({
-        type     : "browser-session",
-        browser  : currentBrowser,
+        type: "browser-session",
+        browser: currentBrowser,
         startTime: browserStartTime,
-        endTime  : combinedTimeline[idx - 1].endTime,
-        websites : [...websitesInBrowser],
-        duration : Math.round(
-          (new Date(`2000-01-01T${combinedTimeline[idx - 1].endTime}`) -
-           new Date(`2000-01-01T${browserStartTime}`)) / 60000
-        )
+        endTime: combinedTimeline[combinedTimeline.length - 1].endTime,
+        websites: [...websitesInBrowser],
+        duration: Math.round(
+          (new Date(
+            `2000-01-01T${
+              combinedTimeline[combinedTimeline.length - 1].endTime
+            }`
+          ) -
+            new Date(`2000-01-01T${browserStartTime}`)) /
+            60000
+        ),
       });
-      currentBrowser    = null;
-      websitesInBrowser = [];
     }
-    segments.push({ ...item, type: "break" });  // treat no‑activity as break
-  }
-});
 
-/* tail – day ended while a browser was open */
-if (currentBrowser) {
-  segments.push({
-    type     : "browser-session",
-    browser  : currentBrowser,
-    startTime: browserStartTime,
-    endTime  : combinedTimeline[combinedTimeline.length - 1].endTime,
-    websites : [...websitesInBrowser],
-    duration : Math.round(
-      (new Date(`2000-01-01T${combinedTimeline[combinedTimeline.length - 1].endTime}`) -
-       new Date(`2000-01-01T${browserStartTime}`)) / 60000
-    )
-  });
-}
-
-
-  return segments;
-}, [combinedTimeline]);
-
+    return segments;
+  }, [combinedTimeline]);
 
   // Browser Sessions Graph Data
- /*────────────────  PER‑SESSION BAR‑CHART DATA  ────────────────*/
-/*────────────────  PER‑SESSION BAR‑CHART DATA  ────────────────*/
-const sessionGraphData = useMemo(() => {
-  if (!enhancedTimelineData.length) return [];
+  /*────────────────  PER‑SESSION BAR‑CHART DATA  ────────────────*/
+  /*────────────────  PER‑SESSION BAR‑CHART DATA  ────────────────*/
+  const sessionGraphData = useMemo(() => {
+    if (!enhancedTimelineData.length) return [];
 
-  const labelCount = {};                 // keep labels unique on the X‑axis
+    const labelCount = {}; // keep labels unique on the X‑axis
 
-  return enhancedTimelineData.flatMap((seg, idx) => {
-    if (seg.type === "break") return [];
+    return enhancedTimelineData.flatMap((seg, idx) => {
+      if (seg.type === "break") return [];
 
-    const baseLabel = seg.type === "app" ? seg.name : seg.browser;
-    const count     = (labelCount[baseLabel] ?? 0) + 1;
-    labelCount[baseLabel] = count;
+      const baseLabel = seg.type === "app" ? seg.name : seg.browser;
+      const count = (labelCount[baseLabel] ?? 0) + 1;
+      labelCount[baseLabel] = count;
 
-    return [{
-      key      : idx,
-      label    : count === 1 ? baseLabel : `${baseLabel} #${count}`, // X‑axis value
-      rawLabel : baseLabel,                                          // nice name for tooltip
-      minutes  : seg.duration,                                       // bar height
-      start    : seg.startTime,
-      end      : seg.endTime,
-      type     : seg.type,                                           // for colouring
-      sites    : seg.type === "browser-session"
-                   ? Array.from(new Set(seg.websites.map(w => w.name))) // dedup sites
-                   : []
-    }];
-  });
-}, [enhancedTimelineData]);
-
+      return [
+        {
+          key: idx,
+          label: count === 1 ? baseLabel : `${baseLabel} #${count}`, // X‑axis value
+          rawLabel: baseLabel, // nice name for tooltip
+          minutes: seg.duration, // bar height
+          start: seg.startTime,
+          end: seg.endTime,
+          type: seg.type, // for colouring
+          sites:
+            seg.type === "browser-session"
+              ? Array.from(new Set(seg.websites.map((w) => w.name))) // dedup sites
+              : [],
+        },
+      ];
+    });
+  }, [enhancedTimelineData]);
 
   // Timeline bar chart data for enhanced view
   const timelineBarData = useMemo(() => {
     const hourlyData = {};
-    
+
     // Initialize hours
     for (let i = 0; i < 24; i++) {
-      const hour = i.toString().padStart(2, '0');
+      const hour = i.toString().padStart(2, "0");
       hourlyData[hour] = {
         hour: `${hour}:00`,
         browsers: {},
@@ -3010,32 +3039,33 @@ const sessionGraphData = useMemo(() => {
       };
     }
 
-    enhancedTimelineData.forEach(segment => {
-      const startHour = parseInt(segment.startTime.split(':')[0]);
-      const endHour = parseInt(segment.endTime.split(':')[0]);
-      
+    enhancedTimelineData.forEach((segment) => {
+      const startHour = parseInt(segment.startTime.split(":")[0]);
+      const endHour = parseInt(segment.endTime.split(":")[0]);
+
       for (let hour = startHour; hour <= endHour; hour++) {
-        const hourKey = hour.toString().padStart(2, '0');
+        const hourKey = hour.toString().padStart(2, "0");
         if (!hourlyData[hourKey]) continue;
 
         if (segment.type === "browser-session") {
           if (!hourlyData[hourKey].browsers[segment.browser]) {
             hourlyData[hourKey].browsers[segment.browser] = 0;
           }
-          hourlyData[hourKey].browsers[segment.browser] += 
+          hourlyData[hourKey].browsers[segment.browser] +=
             hour === startHour || hour === endHour ? segment.duration / 2 : 60;
         } else if (segment.type === "app") {
-          hourlyData[hourKey].apps += 
+          hourlyData[hourKey].apps +=
             hour === startHour || hour === endHour ? segment.duration / 2 : 60;
         } else if (segment.type === "break") {
-          hourlyData[hourKey].breaks += 
+          hourlyData[hourKey].breaks +=
             hour === startHour || hour === endHour ? segment.duration / 2 : 60;
         }
       }
     });
 
-    return Object.values(hourlyData).filter(h => {
-      const hasActivity = Object.keys(h.browsers).length > 0 || h.apps > 0 || h.breaks > 0;
+    return Object.values(hourlyData).filter((h) => {
+      const hasActivity =
+        Object.keys(h.browsers).length > 0 || h.apps > 0 || h.breaks > 0;
       return hasActivity;
     });
   }, [enhancedTimelineData]);
@@ -3073,9 +3103,9 @@ const sessionGraphData = useMemo(() => {
       : text;
   };
 
-   const browserSessionsData = useMemo(() => {
+  const browserSessionsData = useMemo(() => {
     const sessions = [];
-    
+
     enhancedTimelineData.forEach((segment, idx) => {
       if (segment.type === "browser-session") {
         sessions.push({
@@ -3094,48 +3124,53 @@ const sessionGraphData = useMemo(() => {
   }, [enhancedTimelineData]);
 
   /*──────────── Tooltip for per‑session bars ───────────*/
-const SessionTooltip = ({ active, payload }) => {
-  if (!active || !payload?.length) return null;
-  const p = payload[0].payload;
-  return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-4 text-sm">
-      <div className="font-semibold mb-1">{p.label}</div>
-      <div>⏰ {p.start} – {p.end}</div>
-      <div>🕒 {p.minutes} min</div>
-      {p.sites.length > 0 && (
-        <>
-          <hr className="my-2" />
-          <div className="font-medium mb-1">Websites inside:</div>
-          <ul className="list-disc list-inside space-y-1">
-            {p.sites.map((s,i)=><li key={i}>{s}</li>)}
-          </ul>
-        </>
-      )}
-    </div>
-  );
-};
-
+  const SessionTooltip = ({ active, payload }) => {
+    if (!active || !payload?.length) return null;
+    const p = payload[0].payload;
+    return (
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl p-4 text-sm">
+        <div className="font-semibold mb-1">{p.label}</div>
+        <div>
+          ⏰ {p.start} – {p.end}
+        </div>
+        <div>🕒 {p.minutes} min</div>
+        {p.sites.length > 0 && (
+          <>
+            <hr className="my-2" />
+            <div className="font-medium mb-1">Websites inside:</div>
+            <ul className="list-disc list-inside space-y-1">
+              {p.sites.map((s, i) => (
+                <li key={i}>{s}</li>
+              ))}
+            </ul>
+          </>
+        )}
+      </div>
+    );
+  };
 
   // Enhanced Timeline Tooltip
   const EnhancedTimelineTooltip = ({ active, payload }) => {
     if (!active || !payload?.length) return null;
-    
+
     const data = payload[0].payload;
     const browsers = Object.entries(data.browsers || {});
-    
+
     return (
       <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-5 min-w-[320px] border border-gray-100 dark:border-gray-700">
         <h4 className="font-bold text-gray-900 dark:text-white text-lg mb-3">
           {data.hour}
         </h4>
-        
+
         {browsers.length > 0 && (
           <div className="space-y-2 mb-3">
             {browsers.map(([browser, minutes]) => (
               <div key={browser} className="flex items-center justify-between">
                 <div className="flex items-center">
                   <BrowserIcon browser={browser} className="w-4 h-4 mr-2" />
-                  <span className="text-sm text-gray-700 dark:text-gray-300">{browser}</span>
+                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                    {browser}
+                  </span>
                 </div>
                 <span className="text-sm font-semibold text-gray-900 dark:text-white">
                   {Math.round(minutes)}m
@@ -3144,19 +3179,23 @@ const SessionTooltip = ({ active, payload }) => {
             ))}
           </div>
         )}
-        
+
         {data.apps > 0 && (
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-gray-700 dark:text-gray-300">Other Apps</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              Other Apps
+            </span>
             <span className="text-sm font-semibold text-gray-900 dark:text-white">
               {Math.round(data.apps)}m
             </span>
           </div>
         )}
-        
+
         {data.breaks > 0 && (
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-700 dark:text-gray-300">Breaks</span>
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              Breaks
+            </span>
             <span className="text-sm font-semibold text-gray-900 dark:text-white">
               {Math.round(data.breaks)}m
             </span>
@@ -3168,10 +3207,17 @@ const SessionTooltip = ({ active, payload }) => {
 
   // Productivity score visual
   const getProductivityColor = (score) => {
-    if (score >= 80) return { bg: "bg-green-500", text: "text-green-600", label: "Excellent" };
-    if (score >= 60) return { bg: "bg-blue-500", text: "text-blue-600", label: "Good" };
-    if (score >= 40) return { bg: "bg-yellow-500", text: "text-yellow-600", label: "Average" };
-    return { bg: "bg-red-500", text: "text-red-600", label: "Needs Improvement" };
+    if (score >= 80)
+      return { bg: "bg-green-500", text: "text-green-600", label: "Excellent" };
+    if (score >= 60)
+      return { bg: "bg-blue-500", text: "text-blue-600", label: "Good" };
+    if (score >= 40)
+      return { bg: "bg-yellow-500", text: "text-yellow-600", label: "Average" };
+    return {
+      bg: "bg-red-500",
+      text: "text-red-600",
+      label: "Needs Improvement",
+    };
   };
 
   const productivityStatus = getProductivityColor(productivityPercentage);
@@ -3246,7 +3292,7 @@ const SessionTooltip = ({ active, payload }) => {
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
           <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-white/10 rounded-full blur-3xl"></div>
         </div>
-        
+
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div className="mb-6 lg:mb-0">
@@ -3309,7 +3355,6 @@ const SessionTooltip = ({ active, payload }) => {
                 { id: "overview", label: "Overview", icon: FiPieChart },
                 { id: "activity", label: "Activity", icon: FiActivity },
                 { id: "timeline", label: "Timeline", icon: FiClock },
-                
               ].map(({ id, label, icon: Icon }) => (
                 <button
                   key={id}
@@ -3338,7 +3383,7 @@ const SessionTooltip = ({ active, payload }) => {
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                 Productivity Overview
               </h2>
-              
+
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 {/* Score Visualization */}
                 <div className="flex flex-col items-center justify-center">
@@ -3368,7 +3413,9 @@ const SessionTooltip = ({ active, payload }) => {
                       <div className="text-5xl font-bold text-gray-900 dark:text-white">
                         {productivityPercentage}%
                       </div>
-                      <div className={`text-sm font-medium ${productivityStatus.text}`}>
+                      <div
+                        className={`text-sm font-medium ${productivityStatus.text}`}
+                      >
                         {productivityStatus.label}
                       </div>
                     </div>
@@ -3384,13 +3431,16 @@ const SessionTooltip = ({ active, payload }) => {
                           Productive Time
                         </span>
                         <span className="text-sm font-bold text-green-600 dark:text-green-400">
-                          {productiveTime}m ({Math.round((productiveTime / totalTime) * 100)}%)
+                          {productiveTime}m (
+                          {Math.round((productiveTime / totalTime) * 100)}%)
                         </span>
                       </div>
                       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                        <div 
+                        <div
                           className="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500"
-                          style={{ width: `${(productiveTime / totalTime) * 100}%` }}
+                          style={{
+                            width: `${(productiveTime / totalTime) * 100}%`,
+                          }}
                         />
                       </div>
                     </div>
@@ -3401,13 +3451,16 @@ const SessionTooltip = ({ active, payload }) => {
                           Unproductive Time
                         </span>
                         <span className="text-sm font-bold text-red-600 dark:text-red-400">
-                          {unproductiveTime}m ({Math.round((unproductiveTime / totalTime) * 100)}%)
+                          {unproductiveTime}m (
+                          {Math.round((unproductiveTime / totalTime) * 100)}%)
                         </span>
                       </div>
                       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                        <div 
+                        <div
                           className="bg-gradient-to-r from-red-500 to-red-600 h-3 rounded-full transition-all duration-500"
-                          style={{ width: `${(unproductiveTime / totalTime) * 100}%` }}
+                          style={{
+                            width: `${(unproductiveTime / totalTime) * 100}%`,
+                          }}
                         />
                       </div>
                     </div>
@@ -3418,13 +3471,16 @@ const SessionTooltip = ({ active, payload }) => {
                           Neutral Time
                         </span>
                         <span className="text-sm font-bold text-gray-600 dark:text-gray-400">
-                          {neutralTime}m ({Math.round((neutralTime / totalTime) * 100)}%)
+                          {neutralTime}m (
+                          {Math.round((neutralTime / totalTime) * 100)}%)
                         </span>
                       </div>
                       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                        <div 
+                        <div
                           className="bg-gradient-to-r from-gray-400 to-gray-500 h-3 rounded-full transition-all duration-500"
-                          style={{ width: `${(neutralTime / totalTime) * 100}%` }}
+                          style={{
+                            width: `${(neutralTime / totalTime) * 100}%`,
+                          }}
                         />
                       </div>
                     </div>
@@ -3435,23 +3491,31 @@ const SessionTooltip = ({ active, payload }) => {
                     <div className="bg-green-50 dark:bg-green-900/20 rounded-xl p-4">
                       <FiTrendingUp className="w-6 h-6 text-green-600 dark:text-green-400 mb-2" />
                       <div className="text-2xl font-bold text-green-600 dark:text-green-400">
-                        {Math.floor(productiveTime / 60)}h {productiveTime % 60}m
+                        {Math.floor(productiveTime / 60)}h {productiveTime % 60}
+                        m
                       </div>
-                      <div className="text-xs text-green-700 dark:text-green-300">Productive</div>
+                      <div className="text-xs text-green-700 dark:text-green-300">
+                        Productive
+                      </div>
                     </div>
                     <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-4">
                       <FiCoffee className="w-6 h-6 text-red-600 dark:text-red-400 mb-2" />
                       <div className="text-2xl font-bold text-red-600 dark:text-red-400">
-                        {Math.floor(unproductiveTime / 60)}h {unproductiveTime % 60}m
+                        {Math.floor(unproductiveTime / 60)}h{" "}
+                        {unproductiveTime % 60}m
                       </div>
-                      <div className="text-xs text-red-700 dark:text-red-300">Unproductive</div>
+                      <div className="text-xs text-red-700 dark:text-red-300">
+                        Unproductive
+                      </div>
                     </div>
                     <div className="bg-gray-50 dark:bg-gray-700/20 rounded-xl p-4">
                       <FiActivity className="w-6 h-6 text-gray-600 dark:text-gray-400 mb-2" />
                       <div className="text-2xl font-bold text-gray-600 dark:text-gray-400">
                         {Math.floor(neutralTime / 60)}h {neutralTime % 60}m
                       </div>
-                      <div className="text-xs text-gray-700 dark:text-gray-300">Neutral</div>
+                      <div className="text-xs text-gray-700 dark:text-gray-300">
+                        Neutral
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -3471,7 +3535,9 @@ const SessionTooltip = ({ active, payload }) => {
                   <div className="space-y-4">
                     <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                       <div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">Check In</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                          Check In
+                        </div>
                         <div className="text-xl font-bold text-gray-900 dark:text-white">
                           {attendanceRecord.login}
                         </div>
@@ -3481,7 +3547,9 @@ const SessionTooltip = ({ active, payload }) => {
 
                     <div className="flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
                       <div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400">Check Out</div>
+                        <div className="text-sm text-gray-600 dark:text-gray-400">
+                          Check Out
+                        </div>
                         <div className="text-xl font-bold text-gray-900 dark:text-white">
                           {attendanceRecord.logout || "Active"}
                         </div>
@@ -3491,49 +3559,58 @@ const SessionTooltip = ({ active, payload }) => {
                       ) : (
                         <div className="flex items-center">
                           <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse mr-2"></div>
-                          <span className="text-sm font-medium text-green-600 dark:text-green-400">Active</span>
+                          <span className="text-sm font-medium text-green-600 dark:text-green-400">
+                            Active
+                          </span>
                         </div>
                       )}
                     </div>
 
-                    {attendanceRecord.breaks && attendanceRecord.breaks.length > 0 && (
-                      <div className="mt-4">
-                        <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-3">
-                          Break Sessions ({attendanceRecord.breaks.length})
-                        </h4>
-                        <div className="space-y-2 max-h-40 overflow-y-auto">
-                          {attendanceRecord.breaks.map((br, i) => (
-                            <div
-                              key={i}
-                              className="flex justify-between items-center p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg"
-                            >
-                              <div className="flex items-center">
-                                <FiCoffee className="w-4 h-4 text-amber-600 dark:text-amber-400 mr-2" />
-                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                                  {new Date(br.start).toLocaleTimeString([], {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
-                                  {" - "}
-                                  {new Date(br.end).toLocaleTimeString([], {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                  })}
+                    {attendanceRecord.breaks &&
+                      attendanceRecord.breaks.length > 0 && (
+                        <div className="mt-4">
+                          <h4 className="font-semibold text-gray-700 dark:text-gray-300 mb-3">
+                            Break Sessions ({attendanceRecord.breaks.length})
+                          </h4>
+                          <div className="space-y-2 max-h-40 overflow-y-auto">
+                            {attendanceRecord.breaks.map((br, i) => (
+                              <div
+                                key={i}
+                                className="flex justify-between items-center p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg"
+                              >
+                                <div className="flex items-center">
+                                  <FiCoffee className="w-4 h-4 text-amber-600 dark:text-amber-400 mr-2" />
+                                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                    {new Date(br.start).toLocaleTimeString([], {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                    {" - "}
+                                    {new Date(br.end).toLocaleTimeString([], {
+                                      hour: "2-digit",
+                                      minute: "2-digit",
+                                    })}
+                                  </span>
+                                </div>
+                                <span className="text-sm font-bold text-amber-600 dark:text-amber-400">
+                                  {Math.round(
+                                    (new Date(br.end) - new Date(br.start)) /
+                                      60000
+                                  )}
+                                  m
                                 </span>
                               </div>
-                              <span className="text-sm font-bold text-amber-600 dark:text-amber-400">
-                                {Math.round((new Date(br.end) - new Date(br.start)) / 60000)}m
-                              </span>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
                   </div>
                 ) : (
                   <div className="text-center py-8">
                     <FiInfo className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500 dark:text-gray-400">No attendance data available</p>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No attendance data available
+                    </p>
                   </div>
                 )}
               </div>
@@ -3558,14 +3635,22 @@ const SessionTooltip = ({ active, payload }) => {
                         }
                         acc[session.browser].totalTime += session.duration;
                         acc[session.browser].sessions += 1;
-                        session.websites.forEach(w => acc[session.browser].websites.add(w.name));
+                        session.websites.forEach((w) =>
+                          acc[session.browser].websites.add(w.name)
+                        );
                         return acc;
                       }, {})
                     ).map(([browser, data]) => (
-                      <div key={browser} className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl">
+                      <div
+                        key={browser}
+                        className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl"
+                      >
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center">
-                            <BrowserIcon browser={browser} className="w-6 h-6 mr-3" />
+                            <BrowserIcon
+                              browser={browser}
+                              className="w-6 h-6 mr-3"
+                            />
                             <span className="font-semibold text-gray-900 dark:text-white">
                               {browser}
                             </span>
@@ -3575,7 +3660,8 @@ const SessionTooltip = ({ active, payload }) => {
                           </span>
                         </div>
                         <div className="text-sm text-gray-600 dark:text-gray-400">
-                          {data.sessions} sessions • {data.websites.size} unique sites
+                          {data.sessions} sessions • {data.websites.size} unique
+                          sites
                         </div>
                       </div>
                     ))}
@@ -3583,7 +3669,9 @@ const SessionTooltip = ({ active, payload }) => {
                 ) : (
                   <div className="text-center py-8">
                     <FiGlobe className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500 dark:text-gray-400">No browser activity recorded</p>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No browser activity recorded
+                    </p>
                   </div>
                 )}
               </div>
@@ -3618,7 +3706,8 @@ const SessionTooltip = ({ active, payload }) => {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center">
                                 <div className="font-semibold text-gray-900 dark:text-white">
-                                  {expandedApps[i] || !shouldShowExpandButton(app.appName)
+                                  {expandedApps[i] ||
+                                  !shouldShowExpandButton(app.appName)
                                     ? app.appName
                                     : truncateText(app.appName)}
                                 </div>
@@ -3648,7 +3737,9 @@ const SessionTooltip = ({ active, payload }) => {
                 ) : (
                   <div className="text-center py-12">
                     <FiMonitor className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500 dark:text-gray-400">No applications used</p>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No applications used
+                    </p>
                   </div>
                 )}
               </div>
@@ -3679,16 +3770,23 @@ const SessionTooltip = ({ active, payload }) => {
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center">
                                 <div className="font-semibold text-gray-900 dark:text-white">
-                                  {expandedWebsites[i] || !shouldShowExpandButton(formatUrl(site.url))
+                                  {expandedWebsites[i] ||
+                                  !shouldShowExpandButton(formatUrl(site.url))
                                     ? formatUrl(site.url)
                                     : truncateText(formatUrl(site.url))}
                                 </div>
-                                {shouldShowExpandButton(formatUrl(site.url)) && (
+                                {shouldShowExpandButton(
+                                  formatUrl(site.url)
+                                ) && (
                                   <button
                                     onClick={() => toggleWebsiteExpansion(i)}
                                     className="ml-2 text-emerald-600 hover:text-emerald-700"
                                   >
-                                    {expandedWebsites[i] ? <FiEyeOff /> : <FiEye />}
+                                    {expandedWebsites[i] ? (
+                                      <FiEyeOff />
+                                    ) : (
+                                      <FiEye />
+                                    )}
                                   </button>
                                 )}
                               </div>
@@ -3709,7 +3807,9 @@ const SessionTooltip = ({ active, payload }) => {
                 ) : (
                   <div className="text-center py-12">
                     <FiGlobe className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500 dark:text-gray-400">No websites visited</p>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No websites visited
+                    </p>
                   </div>
                 )}
               </div>
@@ -3759,35 +3859,45 @@ const SessionTooltip = ({ active, payload }) => {
                   <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6">
                     Browser Activity Timeline
                   </h3>
-                  
-                {sessionGraphData.length > 0 ? (
-  <div className="overflow-x-auto">
-    <ResponsiveContainer minWidth={600} height={260}>
-      <BarChart data={sessionGraphData}>
-        <XAxis dataKey="label" stroke="#6b7280" />
-        <YAxis stroke="#6b7280" />
-        <Tooltip content={<SessionTooltip />} />
 
-        {/* one bar per session; browsers coloured differently */}
-       <Bar dataKey="minutes" radius={[4, 4, 0, 0]}>
-  {sessionGraphData.map(row => (
-    <Cell
-      key={row.key}
-      fill={row.type === "browser-session" ? "#6366f1" /* browsers */ : "#10b981" /* apps */}
-    />
-  ))}
-</Bar>
+                  {sessionGraphData.length > 0 ? (
+                    <div className="overflow-x-auto">
+                      <ResponsiveContainer minWidth={600} height={260}>
+                        <BarChart data={sessionGraphData}>
+                          <XAxis dataKey="label" stroke="#6b7280" />
+                          <YAxis stroke="#6b7280" />
+                          <Tooltip content={<SessionTooltip />} />
 
+                          {/* one bar per session; browsers coloured differently */}
+                          <Bar dataKey="minutes" radius={[4, 4, 0, 0]}>
+                            {sessionGraphData.map((row) => (
+                              <Cell
+                                key={row.key}
+                                fill={
+                                  row.type === "browser-session"
+                                    ? "#6366f1" /* browsers */
+                                    : "#10b981" /* apps */
+                                }
+                              />
+                            ))}
+                          </Bar>
 
-        {/* pan / zoom when there are many sessions */}
-        <Brush dataKey="label" height={20} travellerWidth={8} stroke="#6366f1" />
-      </BarChart>
-    </ResponsiveContainer>
-  </div>
-)  : (
+                          {/* pan / zoom when there are many sessions */}
+                          <Brush
+                            dataKey="label"
+                            height={20}
+                            travellerWidth={8}
+                            stroke="#6366f1"
+                          />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  ) : (
                     <div className="text-center py-12">
                       <FiClock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                      <p className="text-gray-500 dark:text-gray-400">No timeline data available</p>
+                      <p className="text-gray-500 dark:text-gray-400">
+                        No timeline data available
+                      </p>
                     </div>
                   )}
                 </div>
@@ -3801,13 +3911,17 @@ const SessionTooltip = ({ active, payload }) => {
                     >
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center">
-                          <BrowserIcon browser={session.browser} className="w-8 h-8 mr-3" />
+                          <BrowserIcon
+                            browser={session.browser}
+                            className="w-8 h-8 mr-3"
+                          />
                           <div>
                             <h4 className="text-lg font-bold text-gray-900 dark:text-white">
                               {session.browser} Session
                             </h4>
                             <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {session.startTime} - {session.endTime} ({session.duration}m)
+                              {session.startTime} - {session.endTime} (
+                              {session.duration}m)
                             </p>
                           </div>
                         </div>
@@ -3866,30 +3980,39 @@ const SessionTooltip = ({ active, payload }) => {
                         return (
                           <div key={idx} className="relative flex items-start">
                             {/* Timeline dot */}
-                            <div className="absolute left-6 w-4 h-4 rounded-full border-4 border-white dark:border-gray-800 shadow-sm z-10"
+                            <div
+                              className="absolute left-6 w-4 h-4 rounded-full border-4 border-white dark:border-gray-800 shadow-sm z-10"
                               style={{
-                                backgroundColor: isBreak ? '#F59E0B' : isWebsite ? '#10B981' : '#6366F1'
+                                backgroundColor: isBreak
+                                  ? "#F59E0B"
+                                  : isWebsite
+                                  ? "#10B981"
+                                  : "#6366F1",
                               }}
                             ></div>
 
                             {/* Content */}
                             <div className="ml-16 flex-1">
-                              <div className={`p-6 rounded-2xl shadow-md transition-all duration-300 hover:shadow-lg ${
-                                isBreak
-                                  ? "bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900/30"
-                                  : isWebsite
-                                  ? "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-900/30"
-                                  : "bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-900/30"
-                              }`}>
+                              <div
+                                className={`p-6 rounded-2xl shadow-md transition-all duration-300 hover:shadow-lg ${
+                                  isBreak
+                                    ? "bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900/30"
+                                    : isWebsite
+                                    ? "bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-900/30"
+                                    : "bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-900/30"
+                                }`}
+                              >
                                 <div className="flex items-start justify-between">
                                   <div>
-                                    <h4 className={`text-lg font-bold mb-2 ${
-                                      isBreak
-                                        ? "text-amber-700 dark:text-amber-300"
-                                        : isWebsite
-                                        ? "text-emerald-700 dark:text-emerald-300"
-                                        : "text-indigo-700 dark:text-indigo-300"
-                                    }`}>
+                                    <h4
+                                      className={`text-lg font-bold mb-2 ${
+                                        isBreak
+                                          ? "text-amber-700 dark:text-amber-300"
+                                          : isWebsite
+                                          ? "text-emerald-700 dark:text-emerald-300"
+                                          : "text-indigo-700 dark:text-indigo-300"
+                                      }`}
+                                    >
                                       {block.name}
                                     </h4>
                                     <div className="flex items-center space-x-4 text-sm">
@@ -3902,13 +4025,15 @@ const SessionTooltip = ({ active, payload }) => {
                                       </span>
                                     </div>
                                   </div>
-                                  <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
-                                    isBreak
-                                      ? "bg-amber-200 text-amber-800 dark:bg-amber-700/30 dark:text-amber-200"
-                                      : isWebsite
-                                      ? "bg-emerald-200 text-emerald-800 dark:bg-emerald-700/30 dark:text-emerald-200"
-                                      : "bg-indigo-200 text-indigo-800 dark:bg-indigo-700/30 dark:text-indigo-200"
-                                  }`}>
+                                  <span
+                                    className={`px-3 py-1 rounded-full text-xs font-bold uppercase ${
+                                      isBreak
+                                        ? "bg-amber-200 text-amber-800 dark:bg-amber-700/30 dark:text-amber-200"
+                                        : isWebsite
+                                        ? "bg-emerald-200 text-emerald-800 dark:bg-emerald-700/30 dark:text-emerald-200"
+                                        : "bg-indigo-200 text-indigo-800 dark:bg-indigo-700/30 dark:text-indigo-200"
+                                    }`}
+                                  >
                                     {block.type}
                                   </span>
                                 </div>
@@ -3922,15 +4047,15 @@ const SessionTooltip = ({ active, payload }) => {
                 ) : (
                   <div className="text-center py-16">
                     <FiClock className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-500 dark:text-gray-400">No timeline data available</p>
+                    <p className="text-gray-500 dark:text-gray-400">
+                      No timeline data available
+                    </p>
                   </div>
                 )}
               </div>
             )}
           </div>
         )}
-
-      
 
         {/* Action Footer */}
         <div className="mt-12 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-3xl shadow-2xl p-8 text-white relative overflow-hidden">
@@ -3947,20 +4072,24 @@ const SessionTooltip = ({ active, payload }) => {
               <div className="flex flex-wrap justify-center lg:justify-start gap-3">
                 <div className="bg-white/20 backdrop-blur-sm rounded-full px-5 py-2.5 flex items-center">
                   <FiZap className="mr-2" />
-                  <span className="font-medium">{productiveTime}m productive</span>
+                  <span className="font-medium">
+                    {productiveTime}m productive
+                  </span>
                 </div>
                 <div className="bg-white/20 backdrop-blur-sm rounded-full px-5 py-2.5 flex items-center">
                   <FiCoffee className="mr-2" />
-                  <span className="font-medium">{unproductiveTime}m unproductive</span>
+                  <span className="font-medium">
+                    {unproductiveTime}m unproductive
+                  </span>
                 </div>
                 <div className="bg-white/20 backdrop-blur-sm rounded-full px-5 py-2.5 flex items-center">
                   <FiTrendingUp className="mr-2" />
-                  <span className="font-medium">{productivityPercentage}% efficiency</span>
+                  <span className="font-medium">
+                    {productivityPercentage}% efficiency
+                  </span>
                 </div>
               </div>
             </div>
-
-           
           </div>
         </div>
       </div>
