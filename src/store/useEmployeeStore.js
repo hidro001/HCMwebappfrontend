@@ -1,4 +1,3 @@
-// src/store/useEmployeeStore.js
 import { create } from "zustand";
 import {
   fetchShiftTimings,
@@ -17,7 +16,7 @@ import { toast } from "react-hot-toast";
 import { getEmployeeByIdApi } from "../service/getAllEmployeesApi";
 
 const useEmployeeStore = create((set, get) => ({
-  // Data States
+
   shiftTimings: [],
   employmentTypes: [],
   departments: [],
@@ -116,10 +115,16 @@ const useEmployeeStore = create((set, get) => ({
     }
   },
 
-  loadAllEmployees: async () => {
+  loadAllEmployees: async (department= '') => {
     try {
       set({ loadingAllEmployees: true });
-      const data = await fetchAllEmployees();
+      let data
+      if(department.length >0){
+       data = await fetchAllEmployees(department);
+
+      }else{
+       data = await fetchAllEmployees();
+      }
       const employeeOptions = data.map((emp) => ({
         value: emp._id,
         label: `${emp.first_Name} ${emp.last_Name} (${emp.employee_Id}) (${emp.permission_role})`,
@@ -201,9 +206,8 @@ const useEmployeeStore = create((set, get) => ({
 
       set({ leaveTypes: leaveTypesOptions });
       
-      console.log("leaveTypes:", leaveTypesOptions); // ✅ Use local variable
-// OR
-console.log("leaveTypes:", get().leaveTypes); 
+      console.log("leaveTypes:", leaveTypesOptions); 
+
     } catch (error) {
       console.error("Error fetching leaves:", error);
       set({ leaveTypes: [] });
@@ -211,12 +215,10 @@ console.log("leaveTypes:", get().leaveTypes);
       set({ loadingLeaveTypes: false });
     }
   },
-  // To store a single employee in the store (if you like):
   selectedEmployee: null,
   loadingSelectedEmployee: false,
   error: null,
 
-  // Action: fetch employee by ID
   loadEmployeeById: async (id) => {
     set({ loadingSelectedEmployee: true, error: null });
     try {

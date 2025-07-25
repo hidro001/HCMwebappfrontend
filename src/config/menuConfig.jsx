@@ -256,7 +256,7 @@ export const menuItems = [
     options: [
       {
         name: "Main",
-        link: "/dashboard/main",
+        link: "/dashboard/payroll-main",
         permission: "payroll-main", // NEW
         textAnimation: { x: 10 },
       },
@@ -667,7 +667,7 @@ export const menuItems = [
         textAnimation: { x: 10 },
       },
       {
-        name: " All Leaves ",
+        name: " All Subordinate Leaves ",
         link: "/dashboard/all-leave-history",
         permission: "leave-view-all",
         textAnimation: { x: 10 },

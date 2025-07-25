@@ -4,7 +4,7 @@ import { useAnimate } from "framer-motion";
 import { toast } from "react-hot-toast";
 import FormField from "./common/FormField";
 import FormReactSelect from "./common/FormReactSelect";
-import useEmployeeStore from "../../../../store/useEmployeeStore.js";
+import useEmployeeStore from "../../../../store/useEmployeeStore";
 import PermissionModal from "./common/PermissionModal";
 import { availablePermissionManager } from "../../../../service/availablePermissions";
 import axiosInstance from "../../../../service/axiosInstance.js";

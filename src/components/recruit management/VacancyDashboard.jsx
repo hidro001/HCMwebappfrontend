@@ -25,9 +25,12 @@ import {
   HiSortAscending,
   HiSortDescending
 } from "react-icons/hi";
-import  MyLeave from './MyLeave.jsx';
-import ApplyLeaveModal from "./model/ApplyLeaveModal";
-import LeaveDetailsModal from "./model/LeaveDetailsModal";
+// import ApplyLeaveModal from "./model/ApplyLeaveModal";
+import ViewVacancyModal from "./model/ViewVacancyModal.jsx"
+import CreateVacancy from "./CreateVacancy.jsx"
+// import LeaveDetailsModal from "./model/LeaveDetailsModal";
+import useAuthStore from "../../store/store";
+import useVacancyStore from "../../store/useVacancyStore";
 import useLeaveStore from "../../store/leaveStore.js";
 import ExportButtons from "../common/PdfExcel"; 
 import { getEmployeeLeaveCount } from "../../service/leaveService.js";
@@ -212,12 +215,33 @@ const ModernMonthPicker = ({ value, onChange, placeholder = "Select Month" }) =>
 
 const StatusBadge = ({ status }) => {
   const getStatusStyle = (status) => {
-    switch (status?.toLowerCase()) {
-      case 'approved':
+    switch (status) {
+      case 'Filled':
         return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
-      case 'pending':
+      case 'Open':
         return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
-      case 'rejected':
+      case 'Closed':
+        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+      default:
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
+    }
+  };
+
+  return (
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusStyle(status)}`}>
+      {status?.charAt(0).toUpperCase() + status?.slice(1)}
+    </span>
+  );
+};
+
+const ApprovalBadge = ({ status }) => {
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case 'Approved':
+        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
+      case 'Pending':
+        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
+      case 'Rejected':
         return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
       default:
         return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300';
@@ -342,34 +366,38 @@ const Pagination = ({
   );
 };
 
-export default function EmployeeLeaveHistory() {
-  const {
-    leaves,
-    isLoading,
-    fetchLeaves,
-    activeStatus,
-    setActiveStatus,
-    initializeData,
-    userProfile,
-  } = useLeaveStore();
+export default function VacancyDashboard() {
+ 
+
+   const currentUser = useAuthStore();
+
+  const {summaryById,  vacanById, loadingById, fetchVacancyById} = useVacancyStore()
 
   const [searchText, setSearchText] = useState("");
+  const [activeStatus, setActiveStatus] = useState('all');
   const [selectedMonth, setSelectedMonth] = useState("");
   const [pageSize, setPageSize] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedLeave, setSelectedLeave] = useState(null);
+  const [selectedVacancy, setSelectedVacancy] = useState(null);
   const [showApplyModal, setShowApplyModal] = useState(false);
   const [viewMode, setViewMode] = useState('auto');
   const [sortField, setSortField] = useState('');
   const [sortDirection, setSortDirection] = useState('asc');
   const [showStatusDropdown, setShowStatusDropdown] = useState(false);
-  const [leaveCount, setLeaveCount] = useState({
-    remainingPaidLeaves: 0,
-    totalLeavesTaken: 0,
-    totalApprovedLeaveDays: 0,
+  const [vacancyCount, setVacancyCount] = useState({
+    totalCreated: 0,
+    totalApproved: 0,
+    totalRejected: 0,
   });
 
   const [screenSize, setScreenSize] = useState('desktop');
+
+  useEffect(() => {
+    fetchVacancyById()
+    setVacancyCount(summaryById);
+
+  }, [ fetchVacancyById ])
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -381,47 +409,30 @@ export default function EmployeeLeaveHistory() {
   }, []);
 
   const currentDisplayMode = viewMode === 'auto' 
-  ? (screenSize === 'desktop' ? 'table' : 'calendar')
+  ? (screenSize === 'desktop')
   : viewMode;
 
-  useEffect(() => {
-    initializeData();
-    fetchLeaves(activeStatus);
-  }, [activeStatus]);
 
-  useEffect(() => {
-    async function fetchLeaveCount() {
-      try {
-        const response = await getEmployeeLeaveCount();
-        if (response.success && response.data) {
-          setLeaveCount(response.data);
-        }
-      } catch (error) {
-        console.error("Error fetching leave count:", error);
-      }
-    }
-    fetchLeaveCount();
-  }, []);
 
   const filteredData = useMemo(() => {
-    let filtered = leaves.filter((item) => {
+    let filtered = vacanById.filter((item) => {
       const matchSearch =
-        item.leaveType?.name?.toLowerCase().includes(searchText.toLowerCase()) ||
-        new Date(item.leave_From).toLocaleDateString().toLowerCase().includes(searchText.toLowerCase()) ||
-        new Date(item.leave_To).toLocaleDateString().toLowerCase().includes(searchText.toLowerCase());
+        item.jobTitle?.toLowerCase().includes(searchText.toLowerCase()) ||
+        item.jobId.toLowerCase().includes(searchText.toLowerCase()) ||
+        item.jobDepartment.toLowerCase().includes(searchText.toLowerCase());
 
       const matchStatus =
         activeStatus.toLowerCase() === "all"
           ? true
-          : item.leave_Status.toLowerCase() === activeStatus.toLowerCase();
+          : item.approvalStatus.toLowerCase() === activeStatus.toLowerCase();
 
       let matchMonth = true;
       if (selectedMonth) {
-        const entryDate = new Date(item.leave_From);
+        const createdDate = new Date(item.createdAt);
         const [year, month] = selectedMonth.split("-");
         matchMonth =
-          entryDate.getFullYear() === parseInt(year, 10) &&
-          entryDate.getMonth() + 1 === parseInt(month, 10);
+          createdDate.getFullYear() === parseInt(year, 10) &&
+          createdDate.getMonth() + 1 === parseInt(month, 10);
       }
 
       return matchSearch && matchStatus && matchMonth;
@@ -432,10 +443,7 @@ export default function EmployeeLeaveHistory() {
         let aValue = a[sortField];
         let bValue = b[sortField];
 
-        if (sortField === 'leaveType') {
-          aValue = a.leaveType?.name || '';
-          bValue = b.leaveType?.name || '';
-        } else if (sortField === 'leave_From' || sortField === 'leave_To') {
+        if (sortField === 'createdAt') {
           aValue = new Date(aValue);
           bValue = new Date(bValue);
         }
@@ -447,7 +455,7 @@ export default function EmployeeLeaveHistory() {
     }
 
     return filtered;
-  }, [leaves, searchText, activeStatus, selectedMonth, sortField, sortDirection]);
+  }, [vacanById, searchText, activeStatus, selectedMonth, sortField, sortDirection]);
 
   const paginatedData = useMemo(() => {
     const startIndex = (currentPage - 1) * pageSize;
@@ -461,39 +469,29 @@ export default function EmployeeLeaveHistory() {
   const exportData = paginatedData.map((entry, index) => {
     const serialNo = (currentPage - 1) * pageSize + (index + 1);
     return {
-      sl: serialNo,
-      leaveType: entry.leaveType?.name || "N/A",
-      from: new Date(entry.leave_From).toLocaleDateString(),
-      to: new Date(entry.leave_To).toLocaleDateString(),
-      days: entry.no_Of_Days,
-      reasonForLeave: entry.reason_For_Leave || "N/A",
-      leaveCategory:
-        entry.is_Paid === null ? "Pending" : entry.is_Paid ? "Paid" : "Unpaid",
-      processedBy:
-        entry.leave_Status === "approved" && entry.approved_By
-          ? `Approved by ${entry.approved_By.first_Name} ${entry.approved_By.last_Name}`
-          : entry.leave_Status === "rejected" && entry.rejected_By
-          ? `Rejected by ${entry.rejected_By.first_Name} ${entry.rejected_By.last_Name}`
-          : "Pending",
-      reasonForReject: entry.reason_For_Reject || "N/A",
-      emergencyContact: entry.emergencyContact || "N/A",
-      workHandover: entry.workHandover || "N/A",
-      halfDay: entry.is_Half_Day || entry.no_Of_Days === 0.5 ? "Yes" : "No",
-      status: entry.leave_Status.charAt(0).toUpperCase() + entry.leave_Status.slice(1),
-    };
-  });
+      sl: (currentPage - 1) * pageSize + (index + 1),
+       jobTitle: entry.jobTitle,
+        jobId: entry.jobId,
+        department: entry.jobDepartment,
+        status: entry.approvalStatus,
+        createdAt: new Date(entry.createdAt).toLocaleDateString(),
+        closingDate: new Date(entry.closingDate).toLocaleDateString(),
+        type: (entry.employmentType || []).join(', '),
+        location: (entry.jobLocations || []).join(', '),
+            };
+   });
 
   const columns = [
-    { header: "S.L", dataKey: "sl", sortable: false },
-    { header: "Leave Type", dataKey: "leaveType", sortable: true },
-    { header: "From", dataKey: "leave_From", sortable: true },
-    { header: "To", dataKey: "leave_To", sortable: true },
-    { header: "Days", dataKey: "no_Of_Days", sortable: true },
-    { header: "Category", dataKey: "is_Paid", sortable: true },
-    { header: "Processed By", dataKey: "processedBy", sortable: false },
-    { header: "Half Day", dataKey: "is_Half_Day", sortable: true },
-    { header: "Status", dataKey: "leave_Status", sortable: true },
-  ];
+  { header: "S.L", dataKey: "sl", sortable: false },
+  { header: "Job Title", dataKey: "jobTitle", sortable: true },
+  { header: "Job ID", dataKey: "jobId", sortable: true },
+//   { header: "Department", dataKey: "department", sortable: true },
+  { header: "Employment Type", dataKey: "type", sortable: false },
+  { header: "Location", dataKey: "location", sortable: false },
+  { header: "Status", dataKey: "status", sortable: true },
+  { header: "Created At", dataKey: "createdAt", sortable: true },
+  { header: "Closing Date", dataKey: "closingDate", sortable: true },
+];
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -521,22 +519,22 @@ export default function EmployeeLeaveHistory() {
     </motion.div>
   );
 
-  const LeaveCard = ({ entry, index }) => (
+  const VacancyCard = ({ entry, index }) => (
     <motion.div
       variants={itemVariants}
-      onClick={() => setSelectedLeave(entry)}
+      onClick={() => setSelectedVacancy(entry)}
       className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm hover:shadow-md border border-gray-200 dark:border-gray-700 cursor-pointer transition-all duration-200"
     >
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="font-semibold text-gray-900 dark:text-white">
-            {entry.leaveType?.name || "N/A"}
+            {entry.jobTitle || "N/A"}
           </h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             #{(currentPage - 1) * pageSize + index + 1}
           </p>
         </div>
-        <StatusBadge status={entry.leave_Status} />
+        <StatusBadge status={entry.vacancyStatus} />
       </div>
 
       <div className="space-y-3">
@@ -546,7 +544,7 @@ export default function EmployeeLeaveHistory() {
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400">From</p>
               <p className="text-sm font-medium text-gray-900 dark:text-white">
-                {new Date(entry.leave_From).toLocaleDateString()}
+                {new Date(entry.openingDate).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -555,7 +553,7 @@ export default function EmployeeLeaveHistory() {
             <div>
               <p className="text-xs text-gray-500 dark:text-gray-400">To</p>
               <p className="text-sm font-medium text-gray-900 dark:text-white">
-                {new Date(entry.leave_To).toLocaleDateString()}
+                {new Date(entry.closingDate).toLocaleDateString()}
               </p>
             </div>
           </div>
@@ -566,33 +564,20 @@ export default function EmployeeLeaveHistory() {
             <div className="flex items-center space-x-1">
               <FaClock className="w-4 h-4 text-purple-500" />
               <span className="text-sm font-medium text-gray-900 dark:text-white">
-                {entry.no_Of_Days} day{entry.no_Of_Days !== 1 ? 's' : ''}
-                {(entry.is_Half_Day || entry.no_Of_Days === 0.5) && (
-                  <span className="text-orange-600 dark:text-orange-400 ml-1">(Half Day)</span>
-                )}
+                 {new Date(entry.createdAt).toLocaleDateString()}
               </span>
             </div>
           </div>
-          <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-            entry.is_Paid === null 
-              ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300'
-              : entry.is_Paid 
-              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-              : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
-          }`}>
-            {entry.is_Paid === null ? "Pending" : entry.is_Paid ? "Paid" : "Unpaid"}
+          <div className='px-2 py-1 rounded-full text-xs font-medium'>
+           <span className="text-slate-300">Job Id </span> {entry.jobId}
           </div>
         </div>
 
-        {(entry.approved_By || entry.rejected_By) && (
+        {entry.approvalStatus && (
           <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Processed By</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Processed -</p>
             <p className="text-sm text-gray-700 dark:text-gray-300">
-              {entry.leave_Status === "approved" && entry.approved_By
-                ? `${entry.approved_By.first_Name} ${entry.approved_By.last_Name}`
-                : entry.leave_Status === "rejected" && entry.rejected_By
-                ? `${entry.rejected_By.first_Name} ${entry.rejected_By.last_Name}`
-                : "Pending"}
+             <ApprovalBadge status={entry.approvalStatus} /> 
             </p>
           </div>
         )}
@@ -602,7 +587,7 @@ export default function EmployeeLeaveHistory() {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              setSelectedLeave(entry);
+              setSelectedVacancy(entry);
             }}
             className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-lg transition-colors duration-200"
           >
@@ -624,15 +609,20 @@ export default function EmployeeLeaveHistory() {
           className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0"
         >
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">My Leave History</h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-1">Track and manage your leave applications</p>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Vacancy Created History</h1>
+            {/* <p className="text-gray-600 dark:text-gray-400 mt-1">Track and manage the vacancy you have created</p> */}
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+                {searchText || selectedMonth || activeStatus !== 'all' 
+                    ? "Try adjusting your filters to see more results."
+                    : "You haven't created any vacancies yet."}
+            </p>
           </div>
           <button
             onClick={() => setShowApplyModal(true)}
             className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors duration-200"
           >
             <FaPlus className="w-4 h-4 mr-2" />
-            Apply Leaves
+            Create Vacancy
           </button>
         </motion.div>
 
@@ -643,20 +633,20 @@ export default function EmployeeLeaveHistory() {
           className="grid grid-cols-1 md:grid-cols-3 gap-6"
         >
           <StatCard
-            title="Remaining Paid Leaves"
-            value={leaveCount.remainingPaidLeaves}
+            title="Vacancy Created"
+            value={vacancyCount.totalCreated}
             icon={FaUserAlt}
             color="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800"
           />
           <StatCard
-            title="Total Leaves Asked"
-            value={leaveCount.totalLeavesTaken}
+            title="Total Vacancy Approved"
+            value={vacancyCount.totalApproved}
             icon={FaCalendarAlt}
             color="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800"
           />
           <StatCard
-            title="Approved Leaves"
-            value={leaveCount.totalApprovedLeaveDays}
+            title="Total Vacancy Rejected"
+            value={vacancyCount.totalRejected}
             icon={FaCheckCircle}
             color="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
           />
@@ -795,7 +785,6 @@ export default function EmployeeLeaveHistory() {
                   { mode: 'auto', icon: FaRedo, label: 'Auto' },
                   { mode: 'table', icon: HiViewList, label: 'Table' },
                   { mode: 'card', icon: HiViewGrid, label: 'Cards' },
-                  { mode: 'calendar', icon: FaUser, label: 'Calendar' }
                 ].map(({ mode, icon: Icon, label }) => (
                   <button
                     key={mode}
@@ -813,26 +802,19 @@ export default function EmployeeLeaveHistory() {
               </div>
             </div>
              
-            <div className="flex items-center space-x-2">
-              <ExportButtons data={exportData} columns={columns} filename="EmployeeLeaveHistory" />
-              <button
-                onClick={() => fetchLeaves(activeStatus)}
-                className="p-2 text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-              >
-                <FaRedo className="w-4 h-4" />
-              </button>
-            </div>
+           
           </div>
         </motion.div>
 
-        {isLoading ? (
+        {loadingById ? (
           <div className="flex items-center justify-center py-20">
             <div className="flex items-center space-x-3">
               <div className="w-8 h-8 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
               <span className="text-gray-600 dark:text-gray-400">Loading...</span>
             </div>
           </div>
-        ) : filteredData.length > 0 ? (
+        ) :
+         filteredData.length > 0 ? (
           <motion.div
             variants={containerVariants}
             initial="hidden"
@@ -873,52 +855,62 @@ export default function EmployeeLeaveHistory() {
                     {paginatedData.map((entry, index) => (
                       <tr
                         key={entry._id || entry.id || index}
-                        onClick={() => setSelectedLeave(entry)}
+                        onClick={() => setSelectedVacancy(entry)}
                         className="hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-colors"
                       >
                         <td className="px-6 py-4 text-sm font-medium text-gray-900 dark:text-white">
                           {(currentPage - 1) * pageSize + index + 1}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">
-                          {entry.leaveType?.name || "N/A"}
+                          {entry?.jobTitle || "N/A"}
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                          {new Date(entry.leave_From).toLocaleDateString()}
+                          {entry.jobId}
                         </td>
-                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                          {new Date(entry.leave_To).toLocaleDateString()}
+                        {/* <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                          {entry.jobDepartment}
+                        </td> */}
+                      <td className="px-6 py-4 text-sm text-gray-900 dark:text-white font-medium">
+                        <div className="flex flex-wrap gap-2">
+                            {entry.employmentType.map((type, i) => (
+                            <span
+                                key={i}
+                                className="px-2 py-1 bg-blue-100 dark:bg-blue-800 text-blue-700 dark:text-blue-200 text-xs rounded-full"
+                            >
+                                {type}
+                            </span>
+                            ))}
+                        </div>
                         </td>
+
                         <td className="px-6 py-4 text-sm text-gray-900 dark:text-white font-medium">
-                          {entry.no_Of_Days}
-                          {(entry.is_Half_Day || entry.no_Of_Days === 0.5) && (
-                            <span className="text-xs text-orange-600 dark:text-orange-400 ml-1">(Half Day)</span>
-                          )}
+                        <div className="flex flex-wrap gap-2">
+                            {entry.jobLocations.map((location, i) => (
+                            <span
+                                key={i}
+                                className="px-2 py-1 bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-200 text-xs rounded-full"
+                            >
+                                {location}
+                            </span>
+                            ))}
+                        </div>
                         </td>
-                        <td className="px-6 py-4 text-sm">
-                          <span className={`font-medium ${
-                            entry.is_Paid === null ? 'text-yellow-600' : entry.is_Paid ? 'text-green-600' : 'text-red-600'
-                          }`}>
-                            {entry.is_Paid === null ? "Pending" : entry.is_Paid ? "Paid" : "Unpaid"}
-                          </span>
+
+                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
+                           <ApprovalBadge status={entry.approvalStatus} /> 
                         </td>
                         <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                          {entry.leave_Status === "approved" && entry.approved_By
-                            ? `Approved by ${entry.approved_By.first_Name} ${entry.approved_By.last_Name}`
-                            : entry.leave_Status === "rejected" && entry.rejected_By
-                            ? `Rejected by ${entry.rejected_By.first_Name} ${entry.rejected_By.last_Name}`
-                            : "Pending"}
-                        </td>
-                        <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-400">
-                          {entry.is_Half_Day || entry.no_Of_Days === 0.5 ? "Yes" : "No"}
+                          {new Date(entry.createdAt).toLocaleDateString()}
+
                         </td>
                         <td className="px-6 py-4">
-                          <StatusBadge status={entry.leave_Status} />
+                          <StatusBadge status={entry.vacancyStatus} />
                         </td>
                         <td className="px-6 py-4 text-right">
                           <button
                             onClick={(e) => {
                               e.stopPropagation();
-                              setSelectedLeave(entry);
+                              setSelectedVacancy(entry);
                             }}
                             className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
                           >
@@ -930,16 +922,11 @@ export default function EmployeeLeaveHistory() {
                   </tbody>
                 </table>
               </div>
-            ) : currentDisplayMode === 'calendar'? (
-           <MyLeave 
-    leaves={filteredData} 
-    isLoading={isLoading}
-  />
-          ): (
+            ): (
               <div className="p-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                   {paginatedData.map((entry, index) => (
-                    <LeaveCard key={entry._id || entry.id || index} entry={entry} index={index} />
+                    <VacancyCard key={entry._id || entry.id || index} entry={entry} index={index} />
                   ))}
                 </div>
               </div>
@@ -965,7 +952,7 @@ export default function EmployeeLeaveHistory() {
             <p className="text-gray-600 dark:text-gray-400 mb-6">
               {searchText || selectedMonth || activeStatus !== 'all' 
                 ? "Try adjusting your filters to see more results."
-                : "You haven't applied for any leaves yet."}
+                : "You haven't created for any vacancy yet."}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               {(searchText || selectedMonth || activeStatus !== 'all') && (
@@ -985,23 +972,20 @@ export default function EmployeeLeaveHistory() {
                 onClick={() => setShowApplyModal(true)}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
-                Apply Leaves
+                Create Vacancy
               </button>
             </div>
           </div>
         )}
+ 
+        <ViewVacancyModal 
+         isOpen={selectedVacancy} 
+         onClose={() => setSelectedVacancy(null)} 
+         vacancy={selectedVacancy} /> 
 
-        <LeaveDetailsModal 
-         isOpen={selectedLeave} 
-         onClose={() => setSelectedLeave(null)} 
-         selectedLeave={selectedLeave} 
-         
-         />
-
-        <ApplyLeaveModal 
+        <CreateVacancy 
           show={showApplyModal} 
           onClose={() => setShowApplyModal(false)} 
-          totalPaidLeaves={leaveCount.remainingPaidLeaves} 
         />
         
       </div>

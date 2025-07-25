@@ -1,5 +1,3 @@
-
-
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import InfiniteScroll from "react-infinite-scroll-component";
@@ -37,7 +35,6 @@ const Feed = ({
     }
   };
 
-  // ✅ Filtering & Sorting logic
   const filteredSortedFeed = feed
     .filter((item) => {
       const matchesCategory =
@@ -118,7 +115,6 @@ const Feed = ({
         </InfiniteScroll>
       </div>
 
-      {/* Loading indicator (optional) */}
       {isLoading && (
         <div className="mt-4 flex justify-center">
           <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-300">
@@ -128,7 +124,6 @@ const Feed = ({
         </div>
       )}
 
-      {/* Scrollbar styles */}
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;

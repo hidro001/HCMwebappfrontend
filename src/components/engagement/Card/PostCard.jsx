@@ -7,10 +7,12 @@ import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdEdit  } from "react-icons/md";
 import DOMPurify from "dompurify";
 import { FaArrowUp } from "react-icons/fa";
-
+import PostCreateBox from "../CreateBox/PostCreateBox";
+import useEmployeeStore from "../../../store/useEmployeeStore";
+import MediaCarousel from "./MediaCarousel";
 
 const reactionEmojis = [
   { type: "good", emoji: "👍" },
@@ -22,9 +24,12 @@ const reactionEmojis = [
 ];
 
 const PostCard = ({ post }) => {
+
   const user = useAuthStore((state) => state);
+
+  const { selectedEmployee, loadingSelectedEmployee, error, loadEmployeeById } = useEmployeeStore();
+
   const userId = user._id;
-  const permissions = user.permissionRole || [];
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedReaction, setSelectedReaction] = useState(() => {
   const userReaction = post.reactions?.find(r => {
@@ -44,10 +49,17 @@ const PostCard = ({ post }) => {
   const [showReact, setShowReact] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [editPostId, setEditPostId] = useState('');
+  const [openPostModal, setOpenPostModal] = useState(false);
   const [isLiking, setIsLiking] = useState(false);
   const [isAddingComment, setIsAddingComment] = useState(false);
   const [loadingLikes, setLoadingLikes] = useState(new Set());
+  
+  useEffect(() => {
+    loadEmployeeById(userId)
+  }, [userId, loadEmployeeById])
 
+  const permissions = selectedEmployee?.engagement_permission?.permissions || [];
 
   useEffect(() => {
   const handleClickOutside = (e) => {
@@ -57,7 +69,8 @@ const PostCard = ({ post }) => {
   };
   document.addEventListener("click", handleClickOutside);
   return () => document.removeEventListener("click", handleClickOutside);
-}, []);
+  }, []);
+
 
   const handleLike = async () => {
     setIsLiking(true);
@@ -125,7 +138,7 @@ const PostCard = ({ post }) => {
   } finally {
     setIsLiking(false);
   }
-};
+  };
 
   const handleDeletePost = async () => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
@@ -139,6 +152,11 @@ const PostCard = ({ post }) => {
     } finally {
       setIsDeleting(false);
     }
+  };
+
+  const handleEditPost = async () => {
+    setEditPostId(post._id);
+    setOpenPostModal(true)
   };
 
   const handleAddComment = async (e) => {
@@ -254,6 +272,13 @@ const PostCard = ({ post }) => {
     return "unknown";
   };
 
+//   const getMediaType = (url) => {
+//   if (/\.(jpeg|jpg|png|gif|webp|svg)$/i.test(url)) return "image";
+//   if (/\.(mp4|webm|ogg|mov)$/i.test(url)) return "video";
+//   return "unknown";
+// };
+
+
 useEffect(() => {
   const scrollableDiv = document.getElementById("scrollableDiv");
   const isModalOpen = showComments || showLike || showReact;
@@ -273,6 +298,11 @@ useEffect(() => {
 
   const canDeletePost =
     permissions.includes("deleteAnyPost") ||
+    userId === post.author?._id ||
+    userId === post.author?.employee_Id;
+
+  const canEditPost =
+    permissions.includes("editAnyPost") ||
     userId === post.author?._id ||
     userId === post.author?.employee_Id;
 
@@ -307,6 +337,15 @@ useEffect(() => {
               })}
             </p>
           </div>
+           {canEditPost && (
+            <button onClick={handleEditPost}  className="p-1 rounded-full">
+              {isDeleting ? (
+                <span className="loader h-4 w-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin"></span>
+              ) : (
+                <MdEdit  className="w-4 h-4 text-green-600" />
+              )}
+            </button>
+          )}
           {canDeletePost && (
             <button onClick={handleDeletePost} disabled={isDeleting} className="p-1 rounded-full">
               {isDeleting ? (
@@ -329,45 +368,95 @@ useEffect(() => {
         />
 
         {/* Media */}
-       {Array.isArray(post.media) && post.media.length > 0 && (
-  <div className="mt-3 grid w-max 
-                      grid-cols-1 sm:grid-cols-2
-                      gap-2
-                      mx-auto               
-                      place-items-center">    
-    {post.media.map((url, idx) => {
-      const mediaType = getMediaType(url);
+        {/* {Array.isArray(post.media) && post.media.length > 0 && (
+          <div className="mt-3 grid w-max 
+                              grid-cols-1 sm:grid-cols-2
+                              gap-2
+                              mx-auto               
+                              place-items-center">    
+            {post.media.map((url, idx) => {
+              const mediaType = getMediaType(url);
 
-      if (mediaType === 'image') {
+              if (mediaType === 'image') {
+                return (
+                  <img
+                    key={idx}
+                    src={url}
+                    className="rounded max-h-40 object-cover"
+                    alt=""
+                  />
+                );
+              }
+
+              if (mediaType === 'video') {
+                return (
+                  <video
+                    key={idx}
+                    src={url}
+                    controls
+                    className="rounded max-h-32"
+                  />
+                );
+              }
+
+              return (
+                <p key={idx} className="text-xs text-red-500">
+                  Unsupported media
+                </p>
+              );
+            })}
+          </div>
+        )} */}
+
+        {/* {Array.isArray(post.media) && post.media.length > 0 && (
+  <div className="mt-3">
+    <Slider
+      dots={true}
+      infinite={false}
+      speed={500}
+      slidesToShow={1}
+      slidesToScroll={1}
+      className="w-full max-w-md mx-auto"
+    >
+      {post.media.map((url, idx) => {
+        const mediaType = getMediaType(url);
+
+        if (mediaType === "image") {
+          return (
+            <div key={idx} className="p-2">
+              <img
+                src={url}
+                alt=""
+                className="rounded max-h-64 w-full object-contain"
+              />
+            </div>
+          );
+        }
+
+        if (mediaType === "video") {
+          return (
+            <div key={idx} className="p-2">
+              <video
+                src={url}
+                controls
+                className="rounded max-h-64 w-full object-contain"
+              />
+            </div>
+          );
+        }
+
         return (
-          <img
-            key={idx}
-            src={url}
-            className="rounded max-h-40 object-cover"
-            alt=""
-          />
+          <div key={idx} className="p-2 text-red-500 text-sm">
+            Unsupported media type
+          </div>
         );
-      }
-
-      if (mediaType === 'video') {
-        return (
-          <video
-            key={idx}
-            src={url}
-            controls
-            className="rounded max-h-32"
-          />
-        );
-      }
-
-      return (
-        <p key={idx} className="text-xs text-red-500">
-          Unsupported media
-        </p>
-      );
-    })}
+      })}
+    </Slider>
   </div>
-)}
+)} */}
+      {Array.isArray(post.media) && post.media.length > 0 && (
+       <MediaCarousel media={post.media} />
+      )}
 
 
         {/* Likes & Reactions */}
@@ -573,8 +662,25 @@ useEffect(() => {
           ))}
         </div>
       )}
-      </motion.div></motion.div>
+       
+      </motion.div>
+      </motion.div>
       )}
+      {openPostModal && (
+        <PostCreateBox
+          isOpen={true}
+          editPostId={editPostId}
+          onSuccess={() => {
+            useFeedStore.getState().clearFeedById();
+            setEditPostId("");
+            setOpenPostModal(false);
+          }}
+          onClose={() => {
+             useFeedStore.getState().clearFeedById();
+             setEditPostId("");
+            setOpenPostModal(false)}}
+        />
+       )}
     </>
   );
 };

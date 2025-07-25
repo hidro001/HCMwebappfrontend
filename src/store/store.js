@@ -7,7 +7,6 @@ import { logout as logoutAPI, removeFcmToken } from "../service/service";
 const useAuthStore = create(
   persist(
     (set, get) => ({
-      // ─── State ──────────────────────────────────────────────────────────────
       isAuthenticated: false,
       _id: "",
       userRole: "",
@@ -24,9 +23,6 @@ const useAuthStore = create(
       permissions: [],
       companyInfo: null,
 
-      // ─── Actions ────────────────────────────────────────────────────────────
-
-      // 1) Full login (sets token, stores data, fetches notifications & permissions)
       login: (userData) => {
         const {
           accessToken,
@@ -100,7 +96,6 @@ const useAuthStore = create(
         }
       },
 
-      // 2) Full logout (calls backend + clears state)
       logout: async () => {
         try {
           const token    = localStorage.getItem("accessToken");
@@ -143,7 +138,6 @@ const useAuthStore = create(
         useEngagementStore.getState().resetPermissions();
       },
 
-      // 3) Local‐only clear (no network) for interceptor use
 
       clearAuthState: () => {
         set({
@@ -167,8 +161,6 @@ const useAuthStore = create(
         useNotificationStore.getState().clearNotifications();
         useEngagementStore.getState().resetPermissions();
       },
-
-      // 4) Optional helper
 
       setCompanyInfo: (companyData) => {
         const current = get().companyInfo;

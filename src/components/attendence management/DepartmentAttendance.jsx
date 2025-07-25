@@ -95,69 +95,70 @@ const AttendanceChart = ({ attendanceData }) => {
   };
 
  return ( 
- <div className="w-full max-w-5xl mx-auto">
+    <div className="w-full max-w-5xl mx-auto">
 
-    <div className="flex justify-end gap-2 mb-3">
-      {Object.keys(PALETTE).map((key) => (
-        <div key={key} className="flex items-center gap-2">
-          <span
-            className="w-5 h-3 rounded-full"
-            style={{ background: `linear-gradient(90deg, ${PALETTE[key].solid.start}, ${PALETTE[key].solid.end})` }}
-          />
-          <span className="text-xs font-medium text-gray-700 tracking-wide">{key.toUpperCase()}</span>
-        </div>
-      ))}
+      <div className="flex justify-end gap-2 mb-3">
+        {Object.keys(PALETTE).map((key) => (
+          <div key={key} className="flex items-center gap-2">
+            <span
+              className="w-5 h-3 rounded-full"
+              style={{ background: `linear-gradient(90deg, ${PALETTE[key].solid.start}, ${PALETTE[key].solid.end})` }}
+            />
+            <span className="text-xs font-medium text-gray-700 tracking-wide">{key.toUpperCase()}</span>
+          </div>
+        ))}
+      </div>
+
+      <ResponsiveContainer width="100%" height={200}>
+        <BarChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }} barCategoryGap={60} barSize={50}>
+          <defs>
+            {data.map((d) => {
+              const base = d.name.replace(/\s+/g, "");
+              const solidId = `${base}Solid`;
+              const lightId = `${base}Light`;
+              const stripeId = `${base}Stripes`;
+              const shadowId = `${base}Shadow`;
+              const {
+                solid: { start: sStart, end: sEnd },
+                light: { end: lEnd },
+              } = PALETTE[d.name];
+              return (
+                <React.Fragment key={d.name}>
+                  <linearGradient id={solidId} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={sStart} />
+                    <stop offset="100%" stopColor={sEnd} />
+                  </linearGradient>
+                  <linearGradient id={lightId} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor={PALETTE[d.name].light.start} />
+                    <stop offset="100%" stopColor={PALETTE[d.name].light.end} />
+                  </linearGradient>
+                  <pattern id={stripeId} width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+                    <line x1="0" y1="0" x2="0" y2="8" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
+                  </pattern>
+                  <filter id={shadowId} x="-30%" y="-30%" width="160%" height="160%">
+                    <feDropShadow dx="0" dy="3" stdDeviation="4" floodColor={lEnd} floodOpacity="0.35" />
+                  </filter>
+                </React.Fragment>
+              );
+            })}
+          </defs>
+
+          <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
+          <XAxis dataKey="name" tick={{ fontSize: 14, fill: "#6b7280" }} axisLine={false} tickLine={false} />
+          <YAxis tickFormatter={(v) => `${v}%`} tick={{ fontSize: 12, fill: "#6b7280" }} domain={[0, 100]} axisLine={false} tickLine={false} width={40} />
+          <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
+
+          <Bar dataKey="value" stackId="a" shape={StripedBar} isAnimationActive={false} />
+          <Bar dataKey="cap" stackId="a" radius={[8, 8, 0, 0]} isAnimationActive={false}>
+            {data.map((d, i) => {
+              const base = d.name.replace(/\s+/g, "");
+              return <Cell key={i} fill={`url(#${base}Light)`} filter={`url(#${base}Shadow)`} />;
+            })}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
     </div>
-
-    <ResponsiveContainer width="100%" height={200}>
-      <BarChart data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }} barCategoryGap={60} barSize={50}>
-        <defs>
-          {data.map((d) => {
-            const base = d.name.replace(/\s+/g, "");
-            const solidId = `${base}Solid`;
-            const lightId = `${base}Light`;
-            const stripeId = `${base}Stripes`;
-            const shadowId = `${base}Shadow`;
-            const {
-              solid: { start: sStart, end: sEnd },
-              light: { end: lEnd },
-            } = PALETTE[d.name];
-            return (
-              <React.Fragment key={d.name}>
-                <linearGradient id={solidId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={sStart} />
-                  <stop offset="100%" stopColor={sEnd} />
-                </linearGradient>
-                <linearGradient id={lightId} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={PALETTE[d.name].light.start} />
-                  <stop offset="100%" stopColor={PALETTE[d.name].light.end} />
-                </linearGradient>
-                <pattern id={stripeId} width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                  <line x1="0" y1="0" x2="0" y2="8" stroke="rgba(255,255,255,0.3)" strokeWidth="1" />
-                </pattern>
-                <filter id={shadowId} x="-30%" y="-30%" width="160%" height="160%">
-                  <feDropShadow dx="0" dy="3" stdDeviation="4" floodColor={lEnd} floodOpacity="0.35" />
-                </filter>
-              </React.Fragment>
-            );
-          })}
-        </defs>
-
-        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
-        <XAxis dataKey="name" tick={{ fontSize: 14, fill: "#6b7280" }} axisLine={false} tickLine={false} />
-        <YAxis tickFormatter={(v) => `${v}%`} tick={{ fontSize: 12, fill: "#6b7280" }} domain={[0, 100]} axisLine={false} tickLine={false} width={40} />
-        <Tooltip content={<CustomTooltip />} cursor={{ fill: "transparent" }} />
-
-        <Bar dataKey="value" stackId="a" shape={StripedBar} isAnimationActive={false} />
-        <Bar dataKey="cap" stackId="a" radius={[8, 8, 0, 0]} isAnimationActive={false}>
-          {data.map((d, i) => {
-            const base = d.name.replace(/\s+/g, "");
-            return <Cell key={i} fill={`url(#${base}Light)`} filter={`url(#${base}Shadow)`} />;
-          })}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
-  </div>)
+  )
 };
 
 export default AttendanceChart;

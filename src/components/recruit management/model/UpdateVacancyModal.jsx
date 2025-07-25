@@ -1,172 +1,4 @@
-
-
-// import React, { useState } from "react";
-// import { motion } from "framer-motion";
-// import useVacancyStore from "../../../store/useVacancyStore";
-// import BaseModal from "../../common/BaseModal";
-
-// export default function UpdateVacancyModal({ vacancy, onClose }) {
-//   const { updateVacancy } = useVacancyStore();
-
-//   // Set up state variables for each editable field
-//   const [jobTitle, setJobTitle] = useState(vacancy.jobTitle || "");
-//   const [jobDepartment, setJobDepartment] = useState(vacancy.jobDepartment || "");
-//   const [jobDescription, setJobDescription] = useState(vacancy.jobDescription || "");
-//   const [vacancyStatus, setVacancyStatus] = useState(vacancy.vacancyStatus || "Draft");
-//   const [salary, setSalary] = useState(vacancy.salary || 0);
-//   const [selectedFile, setSelectedFile] = useState(null);
-
-//   // Handle file input changes
-//   const handleFileChange = (e) => {
-//     if (e.target.files && e.target.files.length > 0) {
-//       setSelectedFile(e.target.files[0]);
-//     }
-//   };
-
-//   const handleSave = async () => {
-//     try {
-//       // Build the payload based on whether a file is selected or not.
-//       let payload;
-//       if (selectedFile) {
-//         // If uploading a file, use FormData.
-//         payload = new FormData();
-//         payload.append("vacancyStatus", vacancyStatus);
-//         payload.append("salary", salary);
-//         payload.append("jobDescription", jobDescription);
-//         payload.append("jobDepartment", jobDepartment);
-//         payload.append("jobTitle", jobTitle);
-//         payload.append("file", selectedFile); // Backend should be set up to handle this field as req.file
-//       } else {
-//         // Otherwise, send a JSON payload.
-//         payload = {
-//           vacancyStatus,
-//           salary,
-//           jobDescription,
-//           jobDepartment,
-//           jobTitle,
-//         };
-//       }
-
-//       await updateVacancy(vacancy._id, payload);
-//       alert("Vacancy updated successfully!");
-//       onClose();
-//     } catch (err) {
-//       console.error("Error updating vacancy:", err);
-//       alert("Failed to update vacancy. Check console.");
-//     }
-//   };
-
-//   if (!vacancy) return null;
-
-//   return (
-//     <BaseModal isOpen={Boolean(vacancy)} onClose={onClose}>
-//       <motion.div
-//         className="bg-white dark:bg-gray-800 dark:text-gray-100 rounded-lg shadow-lg w-full max-w-md p-4 relative"
-//         initial={{ scale: 0.95 }}
-//         animate={{ scale: 1 }}
-//         exit={{ scale: 0.95 }}
-//       >
-//         <button
-//           className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-200"
-//           onClick={onClose}
-//         >
-//           &times;
-//         </button>
-//         <h2 className="text-lg font-semibold mb-4">Update Vacancy</h2>
-        
-//         {/* Editable field for Job Title */}
-//         <div className="mb-4">
-//           <label className="block text-sm font-semibold mb-1">Job Title</label>
-//           <input
-//             type="text"
-//             className="w-full border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
-//             value={jobTitle}
-//             onChange={(e) => setJobTitle(e.target.value)}
-//           />
-//         </div>
-
-//         {/* Editable field for Department */}
-//         <div className="mb-4">
-//           <label className="block text-sm font-semibold mb-1">Department</label>
-//           <input
-//             type="text"
-//             className="w-full border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
-//             value={jobDepartment}
-//             onChange={(e) => setJobDepartment(e.target.value)}
-//           />
-//         </div>
-
-//         {/* Editable field for Job Description */}
-//         <div className="mb-4">
-//           <label className="block text-sm font-semibold mb-1">Job Description</label>
-//           <textarea
-//             className="w-full border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
-//             rows={4}
-//             value={jobDescription}
-//             onChange={(e) => setJobDescription(e.target.value)}
-//           ></textarea>
-//         </div>
-
-//         {/* Editable field for Vacancy Status */}
-//         <div className="mb-4">
-//           <label className="block text-sm font-semibold mb-1">Status</label>
-//           <select
-//             className="w-full border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
-//             value={vacancyStatus}
-//             onChange={(e) => setVacancyStatus(e.target.value)}
-//           >
-//             <option value="Draft">Draft</option>
-//             <option value="Open">Open</option>
-//             <option value="Closed">Closed</option>
-//           </select>
-//         </div>
-
-//         {/* Editable field for Salary */}
-//         <div className="mb-4">
-//           <label className="block text-sm font-semibold mb-1">Salary</label>
-//           <input
-//             type="number"
-//             className="w-full border rounded px-2 py-1 text-sm bg-white dark:bg-gray-700 dark:text-gray-100"
-//             placeholder="e.g. 400000"
-//             value={salary}
-//             onChange={(e) => setSalary(e.target.value)}
-//           />
-//         </div>
-
-//         {/* Optional File Upload */}
-//         <div className="mb-4">
-//           <label className="block text-sm font-semibold mb-1">Upload New File (optional)</label>
-//           <input
-//             type="file"
-//             className="w-full text-sm text-gray-700 dark:text-gray-100"
-//             onChange={handleFileChange}
-//           />
-//         </div>
-
-//         {/* Action buttons */}
-//         <div className="flex justify-end gap-2">
-//           <button
-//             className="px-4 py-2 border border-gray-300 dark:border-gray-500 rounded text-sm text-gray-600 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
-//             onClick={onClose}
-//           >
-//             Cancel
-//           </button>
-//           <button
-//             className="px-4 py-2 bg-blue-500 text-white text-sm rounded hover:bg-blue-600"
-//             onClick={handleSave}
-//           >
-//             Save
-//           </button>
-//         </div>
-//       </motion.div>
-//     </BaseModal>
-//   );
-// }
-
-
-
-
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaSave,
@@ -193,45 +25,86 @@ import {
   HiUpload,
   HiSave
 } from "react-icons/hi";
+import { toast } from "react-hot-toast";
 import useVacancyStore from "../../../store/useVacancyStore";
 import BaseModal from "../../common/BaseModal";
 
 export default function UpdateVacancyModal({ vacancy, onClose }) {
-  const { updateVacancy } = useVacancyStore();
+  const { updateVacancy, successJobUpdateMessage, errorJobUpdateMessage } = useVacancyStore();
 
-  // State variables for form fields
   const [jobTitle, setJobTitle] = useState(vacancy.jobTitle || "");
   const [jobDepartment, setJobDepartment] = useState(vacancy.jobDepartment || "");
   const [jobDescription, setJobDescription] = useState(vacancy.jobDescription || "");
   const [vacancyStatus, setVacancyStatus] = useState(vacancy.vacancyStatus || "Draft");
-  const [salary, setSalary] = useState(vacancy.salary || 0);
+  const [approvalStatus, setApprovalStatus] = useState(vacancy.approvalStatus || "Pending");
+  // const [salaryRange, setSalaryRange] = useState(["", ""]);
+  const [salaryRange, setSalaryRange] = useState(() => {
+  const range = vacancy.salaryRange;
+  return Array.isArray(range) && range.length === 2 ? range : ["", ""];
+});
+
   const [currency, setCurrency] = useState(vacancy.currency || "USD");
   const [selectedFile, setSelectedFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
-  // Validation function
-  const validateForm = () => {
-    const newErrors = {};
-    
-    if (!jobTitle.trim()) {
-      newErrors.jobTitle = "Job title is required";
-    }
-    
-    if (!jobDepartment.trim()) {
-      newErrors.jobDepartment = "Department is required";
-    }
-    
-    if (salary < 0) {
-      newErrors.salary = "Salary cannot be negative";
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+ useEffect(() => {
+  if (successJobUpdateMessage) {
+    toast.success(successJobUpdateMessage);
+    useVacancyStore.setState({ successJobUpdateMessage: null });
+  }
+}, [successJobUpdateMessage]);
 
-  // Handle file drag and drop
+useEffect(() => {
+  if (errorJobUpdateMessage) {
+    toast.error(errorJobUpdateMessage);
+    useVacancyStore.setState({ errorJobUpdateMessage: null });
+  }
+}, [errorJobUpdateMessage]);
+
+
+const validateForm = () => {
+  const newErrors = {};
+
+  if (!jobTitle.trim()) {
+    newErrors.jobTitle = "Job title is required";
+  }
+
+  if (!jobDepartment.trim()) {
+    newErrors.jobDepartment = "Department is required";
+  }
+
+  const minSalary = parseFloat(salaryRange[0]);
+  const maxSalary = parseFloat(salaryRange[1]);
+
+  if (!salaryRange[0] || isNaN(minSalary)) {
+    newErrors.salaryRangeMin = "Minimum salary is required";
+  } else if (minSalary < 0) {
+    newErrors.salaryRangeMin = "Minimum salary cannot be negative";
+  }
+
+  if (!salaryRange[1] || isNaN(maxSalary)) {
+    newErrors.salaryRangeMax = "Maximum salary is required";
+  } else if (maxSalary < 0) {
+    newErrors.salaryRangeMax = "Maximum salary cannot be negative";
+  }
+
+  if (!newErrors.salaryRangeMin && !newErrors.salaryRangeMax && minSalary > maxSalary) {
+    newErrors.salaryRange = "Minimum salary cannot be greater than maximum salary";
+  }
+
+  setErrors(newErrors);
+
+  // Show errors using toast
+  Object.values(newErrors).forEach((error) => {
+    toast.error(error); // Show each error individually
+  });
+
+  return Object.keys(newErrors).length === 0;
+};
+
+
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -257,7 +130,7 @@ export default function UpdateVacancyModal({ vacancy, onClose }) {
         return;
       }
       
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) { 
         alert('File size must be less than 5MB');
         return;
       }
@@ -276,7 +149,7 @@ export default function UpdateVacancyModal({ vacancy, onClose }) {
         return;
       }
       
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
+      if (file.size > 5 * 1024 * 1024) { 
         alert('File size must be less than 5MB');
         return;
       }
@@ -289,36 +162,37 @@ export default function UpdateVacancyModal({ vacancy, onClose }) {
     if (!validateForm()) {
       return;
     }
-
+console.log('asdf')
     setIsLoading(true);
     try {
       let payload;
       if (selectedFile) {
         payload = new FormData();
         payload.append("vacancyStatus", vacancyStatus);
-        payload.append("salary", salary);
+        payload.append("salaryRange", salaryRange);
         payload.append("currency", currency);
         payload.append("jobDescription", jobDescription);
         payload.append("jobDepartment", jobDepartment);
         payload.append("jobTitle", jobTitle);
+        payload.append("approvalStatus", approvalStatus);
         payload.append("file", selectedFile);
       } else {
         payload = {
           vacancyStatus,
-          salary,
+          salaryRange,
           currency,
           jobDescription,
           jobDepartment,
+          approvalStatus,
           jobTitle,
         };
       }
 
       await updateVacancy(vacancy._id, payload);
-      alert("Vacancy updated successfully!");
-      onClose();
+      
+     handleClose()
     } catch (err) {
       console.error("Error updating vacancy:", err);
-      alert("Failed to update vacancy. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -353,6 +227,20 @@ export default function UpdateVacancyModal({ vacancy, onClose }) {
     }
   };
 
+  const handleClose = () => {
+  // Reset local states if needed
+  setJobTitle(vacancy.jobTitle || "");
+  setJobDepartment(vacancy.jobDepartment || "");
+  setJobDescription(vacancy.jobDescription || "");
+  setSalaryRange(["", ""]);
+  setSelectedFile(null);
+  setErrors({});
+  setCurrency(vacancy.currency || "USD");
+  useVacancyStore.setState({ successJobUpdateMessage: null, errorJobUpdateMessage: null });
+
+  onClose();
+  };
+
   const statusConfig = getStatusConfig(vacancyStatus);
 
   const modalVariants = {
@@ -380,7 +268,7 @@ export default function UpdateVacancyModal({ vacancy, onClose }) {
         initial="hidden"
         animate="visible"
         exit="exit"
-        className="bg-white dark:bg-gray-800 w-full max-w-2xl rounded-2xl shadow-2xl relative max-h-[90vh] overflow-hidden"
+        className=" m-3 bg-white dark:bg-gray-800  rounded-2xl shadow-2xl relative  overflow-hidden"
       >
         {/* Header */}
         <div className="bg-blue-50 dark:bg-blue-900/20 p-6 border-b border-gray-200 dark:border-gray-700">
@@ -411,6 +299,7 @@ export default function UpdateVacancyModal({ vacancy, onClose }) {
         {/* Form Content */}
         <div className="p-6 overflow-y-auto max-h-[70vh]">
           <div className="space-y-6">
+
             {/* Job Title */}
             <div className="space-y-2">
               <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -482,30 +371,32 @@ export default function UpdateVacancyModal({ vacancy, onClose }) {
 
             {/* Salary and Currency */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Salary Range */}
               <div className="space-y-2">
                 <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                   <HiCurrencyDollar className="text-blue-500" />
-                  <span>Salary</span>
+                  <span>Salary Range</span>
                 </label>
-                <input
-                  type="number"
-                  value={salary}
-                  onChange={(e) => setSalary(e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                    errors.salary ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-600'
-                  }`}
-                  placeholder="Enter salary amount"
-                />
-                {errors.salary && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-red-500 text-xs flex items-center space-x-1"
-                  >
-                    <FaExclamationTriangle className="text-xs" />
-                    <span>{errors.salary}</span>
-                  </motion.p>
-                )}
+                <div className="grid grid-cols-2 gap-6">
+                  <input
+                    type="number"
+                    placeholder="Min Salary"
+                    value={salaryRange[0]}
+                    onChange={(e) =>
+                      setSalaryRange([e.target.value, salaryRange[1]])
+                    }
+                    className="w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max Salary"
+                    value={salaryRange[1]}
+                    onChange={(e) =>
+                      setSalaryRange([salaryRange[0], e.target.value])
+                    }
+                    className="w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
@@ -541,6 +432,31 @@ export default function UpdateVacancyModal({ vacancy, onClose }) {
                   <option value="Draft">Draft</option>
                   <option value="Open">Open</option>
                   <option value="Closed">Closed</option>
+                </select>
+                <div className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded ${statusConfig.bgColor}`}>
+                  <statusConfig.icon className={`${statusConfig.color} text-sm`} />
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Draft: Not visible to candidates • Open: Actively recruiting • Closed: No longer accepting applications
+              </p>
+            </div>
+
+           {/* Approval Status */}
+            <div className="space-y-2">
+              <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                <statusConfig.icon className="text-blue-500" />
+                <span>Approval Status</span>
+              </label>
+              <div className="relative">
+                <select
+                  value={approvalStatus}
+                  onChange={(e) => setApprovalStatus(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 appearance-none"
+                >
+                  <option value="Pending">Pending</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Rejected">Rejected</option>
                 </select>
                 <div className={`absolute right-3 top-1/2 transform -translate-y-1/2 p-1 rounded ${statusConfig.bgColor}`}>
                   <statusConfig.icon className={`${statusConfig.color} text-sm`} />

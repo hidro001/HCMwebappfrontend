@@ -188,6 +188,8 @@ const getStatusStyles = (status) => {
 export default function FnfDetailsModal({ isOpen, onClose, fnf }) {
   if (!isOpen) return null;
 
+  console.log(fnf , 'fsdf')
+
   return (
     <BaseModal isOpen={isOpen} onClose={onClose}>
       <motion.div
@@ -218,7 +220,7 @@ export default function FnfDetailsModal({ isOpen, onClose, fnf }) {
 
         {/* body */}
         <div className="p-6">
-          {fnf ? (
+          {fnf.status==="Processed" ? (
             <div className="space-y-6">
               {/* status */}
               <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg">

@@ -591,6 +591,7 @@ export default function OwnFullAttendance() {
     
     if (!isWorkingDay || isHoliday) {
       row.status = "Holiday";
+      row.lateCategory = "none";
       return row;
     }
 
@@ -617,13 +618,15 @@ export default function OwnFullAttendance() {
     row.hoursWorked = formatHoursWorked(hoursWorked);
 
     row.status = record.status;
-    
+    row.lateCategory = record.lateCategory || "none";
+
     return row;
   });
 
   const handleClose =() => {
     setOnLeave(false)
   }
+
   useEffect(() => {
     if (finalAttendanceData.length > 0) {
       checkFilteringIssues(finalAttendanceData, searchText);
@@ -808,7 +811,7 @@ export default function OwnFullAttendance() {
         icon: FiSun,
         iconColor: "text-yellow-500 dark:text-yellow-400",
       },
-      "Not Even Half Day": {
+      "Reduced Hours": {
         bg: "bg-gradient-to-r from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20",
         text: "text-purple-700 dark:text-purple-400",
         border: "border-purple-200 dark:border-purple-700",
@@ -852,6 +855,37 @@ export default function OwnFullAttendance() {
       </motion.span>
     );
   };
+
+const renderLateStatusBadge = (lateCategory, graceUsedCount) => {
+  let badgeText = "-";
+  let badgeColor = "bg-gray-100 text-gray-500"; 
+
+  if (typeof lateCategory === "string") {
+    if(lateCategory === "on time"){
+      badgeText = "T";
+      badgeColor = "bg-green-100 text-green-500"; 
+    }
+    if (lateCategory.toLowerCase() === "late") {
+      badgeText = "L";
+      badgeColor = "bg-red-100 text-red-500 "; 
+    } else if (lateCategory.startsWith("Grace")) {
+       const graceCount = lateCategory.split('Grace')[1]; 
+      badgeText = `G-${graceCount}`; 
+      badgeColor = "bg-yellow-100 text-yellow-500"; 
+    }
+  }
+
+  return (
+    <motion.span
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium border ${badgeColor}`}
+    >
+      {badgeText}
+    </motion.span>
+  );
+};
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-blue-900/20 dark:to-indigo-900/20">
@@ -1229,7 +1263,7 @@ export default function OwnFullAttendance() {
                   <thead className="bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800 dark:to-gray-700">
                     <tr>
                       {[
-                        "S.L",
+                        "Category",
                         "Date",
                         "Day",
                         "Check In/Out",
@@ -1259,7 +1293,7 @@ export default function OwnFullAttendance() {
                         >
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="flex items-center justify-center w-8 h-8 bg-gray-100 dark:bg-gray-700 rounded-full text-sm font-medium text-gray-600 dark:text-gray-300">
-                              {String(item.sl).padStart(2, "0")}
+                              {renderLateStatusBadge(item.lateCategory, item.graceUsedCount)} 
                             </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">

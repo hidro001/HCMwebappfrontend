@@ -7,13 +7,8 @@ import { useDashboardStore } from "../../../store/useDashboardStore";
 import { useState } from "react";
 import DemographicModal from "./DemographicModal"; // NEW
 
-function DemographicCard() {
+function DemographicCard({ totalUsers, maleCount, femaleCount, ageDistribution}) {
   const {
-    totalUsers,
-    maleCount,
-    femaleCount,
-    ageDistribution,
-    fetchDashboardStats,
     attendanceDetails,
     attendanceDetailsLoading,
     fetchAttendanceDetails,
@@ -21,9 +16,6 @@ function DemographicCard() {
 
   const [isDemoOpen, setIsDemoOpen] = useState(false);
 
-  useEffect(() => {
-    fetchDashboardStats();
-  }, [fetchDashboardStats]);
 
   useEffect(() => {
     if (isDemoOpen && attendanceDetails.length === 0) {

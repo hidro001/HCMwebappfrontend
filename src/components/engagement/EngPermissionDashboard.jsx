@@ -1,14 +1,8 @@
-
-
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { FaTrash, FaEdit, FaBan, FaCheck } from "react-icons/fa";
 import { motion } from "framer-motion";
-
-// --- Import your BaseModal component ---
-import BaseModal from "../common/BaseModal"; // <-- Update path as needed!
-
-// --- Import services ---
+import BaseModal from "../common/BaseModal"; 
 import {
   getPermissions,
   createPermission,
@@ -23,21 +17,16 @@ import {
   banUser,
   unbanUser,
 } from "../../service/service";
-
-// --- Import stores ---
 import useAuthStore from "../../store/store";
 import useEngagementStore from "../../store/engagementStore";
 
-// --- Import Socket Context ---
 import { useSocket } from "../../contexts/SocketContext";
 
 const EngPermissionDashboard = () => {
   const socket = useSocket();
 
-  // Tab state
   const [tabIndex, setTabIndex] = useState(0);
 
-  // --- Permission Management States ---
   const [permissions, setPermissions] = useState([]);
   const [newPermissionName, setNewPermissionName] = useState("");
   const [newPermissionDescription, setNewPermissionDescription] = useState("");
@@ -46,7 +35,6 @@ const EngPermissionDashboard = () => {
   const [editedPermissionDescription, setEditedPermissionDescription] =
     useState("");
 
-  // --- Role Management States ---
   const [roles, setRoles] = useState([]);
   const [newRoleName, setNewRoleName] = useState("");
   const [selectedPermissionsForRole, setSelectedPermissionsForRole] = useState(
@@ -57,16 +45,13 @@ const EngPermissionDashboard = () => {
   const [editedRoleName, setEditedRoleName] = useState("");
   const [editedRolePermissions, setEditedRolePermissions] = useState([]);
 
-  // --- User Moderation States ---
   const [users, setUsers] = useState([]);
   const [selectedRoleForUser, setSelectedRoleForUser] = useState("");
   const [editUserRoleDialogOpen, setEditUserRoleDialogOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
 
-  // --- Search State for Users ---
   const [searchTerm, setSearchTerm] = useState("");
 
-  // --- Confirmation Dialog State ---
   const [confirmationDialog, setConfirmationDialog] = useState({
     open: false,
     title: "",

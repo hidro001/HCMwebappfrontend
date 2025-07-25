@@ -12,7 +12,7 @@ const FeedPage = () => {
   const [refresh, setRefresh] = useState(false)
 
   return (
-    <div className="flex flex-col lg:flex-row w-full h-full overflow-hidden">
+    <div className="flex flex-col lg:flex-row w-full h-full overflow-hidden px-5">
 
       <div className="lg:hidden px-4 py-2">
         <button
@@ -23,9 +23,8 @@ const FeedPage = () => {
         </button>
       </div>
 
-      <div
-        className={`
-          w-full lg:w-[25%] px-3 
+      <div className={`
+          w-full lg:w-[20%]  
           ${showFilters ? 'block' : 'hidden'} 
           lg:block
         `}
@@ -37,7 +36,7 @@ const FeedPage = () => {
         />
       </div>
 
-      <div className="w-full lg:w-[55%] h-full mb-4 lg:mb-0">
+      <div className="w-full lg:w-[50%] h-full mb-4 px-5 lg:mb-0">
         <CreateCard refreshStatus={setRefresh} />
         <Feed 
           curCategory={category} 

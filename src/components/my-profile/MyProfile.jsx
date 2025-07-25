@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Toaster } from "react-hot-toast";
 import { FaArrowLeft } from "react-icons/fa";
 import { getEmployeeProfile } from "../../service/myProfileService";
+import useAuthStore from "../../store/store";
 
 function MyProfile() {
   const navigate = useNavigate();
@@ -13,15 +14,13 @@ function MyProfile() {
   const [activeTab, setActiveTab] = useState("personal");
   const [showPermissionsModal, setShowPermissionsModal] = useState(false);
 
-  // Get employeeId from localStorage instead of using URL params or a store
-  const employeeId = localStorage.getItem("employeeId");
+  const employeeId = useAuthStore((state) => state.employeeId);
 
   // Helper functions
   const formatDate = (str) =>
     str ? new Date(str).toLocaleDateString() : "N/A";
   const orNA = (value) => (value ? value : "N/A");
   const boolToYesNo = (val) => {
-    // Some fields come back as "Yes"/"No" or booleans. Adjust as needed:
     if (typeof val === "boolean") return val ? "Yes" : "No";
     if (val === "Yes" || val === "No") return val;
     return val ? "Yes" : "No";
@@ -29,7 +28,6 @@ function MyProfile() {
   const arrayToCommaList = (arr) =>
     arr && arr.length > 0 ? arr.join(", ") : "N/A";
 
-  // Renders assigned_to objects as "John Cena (EMP123)" etc.
   const renderAssignedTo = (assignedArr) => {
     if (!assignedArr || assignedArr.length === 0) return "N/A";
     return assignedArr
@@ -62,10 +60,22 @@ function MyProfile() {
   };
 
   useEffect(() => {
+    if (!employeeId) {
+      console.warn("⚠️ No employeeId in auth store");
+      setError("Employee ID not found in auth store");
+      setLoading(false);
+      return;
+    }
+
     const fetchEmployee = async () => {
       try {
         const data = await getEmployeeProfile(employeeId);
-        setEmployee(data.data);
+
+        if (data) {
+          setEmployee(data);
+        } else {
+          throw new Error("No profile data received");
+        }
       } catch (err) {
         setError("Failed to fetch employee profile");
         console.error(err);
@@ -74,12 +84,7 @@ function MyProfile() {
       }
     };
 
-    if (employeeId) {
-      fetchEmployee();
-    } else {
-      setError("Employee ID not found in localStorage");
-      setLoading(false);
-    }
+    fetchEmployee();
   }, [employeeId]);
 
   if (loading) {
@@ -453,7 +458,6 @@ function MyProfile() {
                 : {formatDate(employee.date_of_Joining)}
               </p>
 
-          
               <p>
                 <span className="font-semibold text-blue-600 dark:text-blue-400">
                   Designation / Role

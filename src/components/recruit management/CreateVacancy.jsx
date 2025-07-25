@@ -7,6 +7,7 @@ import {
   FaPhone,
   FaEdit,
   FaCheck,
+  FaTimes,
   FaExclamationTriangle,
 } from "react-icons/fa";
 import {
@@ -17,6 +18,7 @@ import {
   HiCalendar,
   HiAcademicCap,
   HiPhone,
+  HiCheck,
   HiUser,
   HiLocationMarker,
   HiSave,
@@ -25,9 +27,11 @@ import {
   HiClipboardList
 } from "react-icons/hi";
 import useJobStore from "../../store/useJobStore";
-import axiosInstance from "../../service/axiosInstance";
 import { toast } from "react-hot-toast";
 import FullScreenLoader from "../common/FullScreenLoader";
+import useEmployeeStore from "../../store/useEmployeeStore";
+import useAuthStore from "../../store/store";
+import BaseModal from "../common/BaseModal.jsx";
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -56,45 +60,62 @@ const stepVariants = {
   exit: { opacity: 0, x: -50 }
 };
 
-export default function CreateVacancy() {
-  const {
-    register,
+ const modalVariants = {
+    hidden: { opacity: 0, scale: 0.8, y: 50 },
+    visible: { 
+      opacity: 1, 
+      scale: 1, 
+      y: 0,
+      transition: { duration: 0.3, ease: "easeOut" }
+    },
+    exit: { 
+      opacity: 0, 
+      scale: 0.8, 
+      y: 50,
+      transition: { duration: 0.2 }
+    }
+  };
+
+
+  const overlayVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1 },
+    exit: { opacity: 0 }
+  };
+
+export default function CreateVacancy( { show, onClose  }) {
+  const { register,
     handleSubmit,
     formState: { errors },
+    reset,
     watch,
     setValue
   } = useForm();
+  const {
+    loadAllEmployees,
+  } = useEmployeeStore();
+
+  const currentUser = useAuthStore();
+  
+  const departments = currentUser?.department;
+ 
+  useEffect(() => {
+      loadAllEmployees("HR");
+  }, []);
 
   const { createJob, loading, error, successMessage } = useJobStore();
-
-  const [departments, setDepartments] = useState([]);
+  const allEmployees = useEmployeeStore((state) => state.allEmployees);
+  const loadingAllEmployees = useEmployeeStore((state) => state.loadingAllEmployees);
+  const [workExperienceOther, setWorkExperienceOther] = useState(false);
+  const [educationOther, setEducationOther] = useState(false);
+  const [suitableForOther, setSuitableForOther] = useState(false);
+  // const [departments, setDepartments] = useState([]);
   const [deptError, setDeptError] = useState(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
 
   const watchedFields = watch();
-
-  useEffect(() => {
-    const employeeId = localStorage.getItem("employeeId");
-    const fetchDepartments = async () => {
-      try {
-        const response = await axiosInstance.get(`/department-allocations/users/${employeeId}`);
-        const validDepartments = response.data.departmentAlocated.filter(
-          (dept) => !dept.includes("[") && !dept.includes("]")
-        );
-        setDepartments(validDepartments);
-      } catch (err) {
-        setDeptError("Failed to fetch departments.");
-      }
-    };
-
-    if (employeeId) {
-      fetchDepartments();
-    } else {
-      setDeptError("No employeeId found in localStorage.");
-    }
-  }, []);
 
   useEffect(() => {
     if (error) {
@@ -138,43 +159,70 @@ export default function CreateVacancy() {
     }
   };
 
-  const onSubmit = async (data) => {
-    try {
-      const formData = new FormData();
-      formData.append("jobTitle", data.jobTitle);
-      formData.append("jobDepartment", data.jobDepartment);
-      formData.append("jobDescription", data.jobDescription ?? "");
-      if (data.employmentType) {
-        data.employmentType.forEach((type) => {
-          formData.append("employmentType", type);
-        });
-      }
-      formData.append("jobLocations", data.jobLocations ?? "");
-      formData.append("currency", data.currency ?? "");
-      formData.append("salary", data.salary ?? "");
-      formData.append("payPeriod", data.payPeriod ?? "");
-      formData.append("multipleCandidates", data.multipleCandidates ? "true" : "false");
-      formData.append("vacancyStatus", data.vacancyStatus ?? "");
-      formData.append("openingDate", data.openingDate ?? "");
-      formData.append("closingDate", data.closingDate ?? "");
-      formData.append("workExperience", data.workExperience ?? "");
-      formData.append("education", data.education ?? "");
-      if (data.suitableFor) {
-        data.suitableFor.forEach((sf) => {
-          formData.append("suitableFor", sf);
-        });
-      }
-      formData.append("responsibilities", data.responsibilities ?? "");
-      formData.append("duties", data.duties ?? "");
-      formData.append("contactPerson", data.contactPerson ?? "");
-      formData.append("contactPhone", data.contactPhone ?? "");
-      formData.append("additionalContact", data.additionalContact ?? "");
-      formData.append("showContacts", data.showContacts ? "true" : "false");
-      if (data.jobDescriptionFile && data.jobDescriptionFile.length > 0) {
-        formData.append("jobDescriptionFile", data.jobDescriptionFile[0]);
-      }
-      await createJob(formData);
-    } catch (err) {}
+
+const onSubmit = async (data) => {
+  try{
+    const formData = new FormData();
+    formData.append("jobTitle", data.jobTitle);
+    formData.append("jobDepartment", data.jobDepartment);
+    formData.append("jobDescription", data.jobDescription ?? "");
+
+    (data.employmentType || []).forEach((val) => formData.append("employmentType", val));
+    (data.suitableFor || []).forEach((val) => formData.append("suitableFor", val));
+    (data.interviewPanel || []).forEach((val) => formData.append("interviewPanel", val)); 
+
+    const skills = typeof data.requiredSkills === "string"
+  ? data.requiredSkills.split(",").map(s => s.trim())
+  : [];
+
+   skills.forEach((val) => formData.append("requiredSkills", val));
+
+    formData.append("jobLocations", data.jobLocations ?? "");
+    formData.append("payPeriod", data.payPeriod ?? "");
+    formData.append("multipleCandidates", data.multipleCandidates ? "true" : "false");
+    formData.append("vacancyStatus", "Open");
+    formData.append("openingDate", data.openingDate ?? "");
+    formData.append("closingDate", data.closingDate ?? "");
+    // formData.append("workExperience", data.workExperience ?? "");
+    // formData.append("education", data.education ?? "");
+    formData.append("responsibilities", data.responsibilities ?? "");
+    // Check for dynamic fields
+    if (data.workExperience === "Other" && data.workExperienceOther) {
+      formData.append("workExperience", data.workExperienceOther);
+    } else {
+      formData.append("workExperience", data.workExperience);
+    }
+
+    if (data.education === "Other" && data.educationOther) {
+      formData.append("education", data.educationOther);
+    } else {
+      formData.append("education", data.education);
+    }
+
+    if (data.suitableFor.includes("Other") && data.suitableForOther) {
+      formData.append("suitableFor", data.suitableForOther);
+    } else {
+      data.suitableFor.forEach((value) => formData.append("suitableFor", value));
+    }
+
+    formData.append("duties", data.duties ?? "");
+    formData.append("isPromotionOpportunity", data.isPromotionOpportunity ? "true" : "false");  
+    formData.append("eligibilityCriteria", data.eligibilityCriteria ?? ""); 
+    formData.append("approvalStatus", data.approvalStatus ?? ""); 
+    formData.append("hiringManager", data.hiringManager ?? "");  
+    formData.append("contactPerson", data.contactPerson ?? "");
+    formData.append("contactPhone", data.contactPhone ?? "");
+    formData.append("additionalContact", data.additionalContact ?? "");
+    formData.append("showContacts", data.showContacts ? "true" : "false");
+
+    if (data.salaryRange && data.salaryRange[0]) formData.append("salaryRange", data.salaryRange[0]);  
+    if (data.salaryRange && data.salaryRange[1]) formData.append("salaryRange", data.salaryRange[1]); 
+
+    await createJob(formData);
+    reset();
+    setUploadedFile(null);
+    setCurrentStep(1);
+    }catch (err) {}
   };
 
   const steps = [
@@ -188,19 +236,19 @@ export default function CreateVacancy() {
       title: "Employment Details",
       description: "Type, location, and compensation",
       icon: HiOfficeBuilding,
-      fields: ['employmentType', 'jobLocations', 'salary']
+      fields: ['employmentType', 'suitableFor', 'jobLocations',  'payPeriod']
     },
     {
       title: "Requirements",
       description: "Experience and qualifications",
       icon: HiAcademicCap,
-      fields: ['workExperience', 'education', 'responsibilities']
+      fields: ['workExperience','requiredSkills', 'education', 'responsibilities']
     },
     {
       title: "Contact & Status",
       description: "Contact info and vacancy status",
       icon: HiPhone,
-      fields: ['contactPerson', 'vacancyStatus']
+      fields: ['contactPerson']
     }
   ];
 
@@ -217,20 +265,39 @@ export default function CreateVacancy() {
   };
 
   const getCompletionPercentage = () => {
-    const allFields = ['jobTitle', 'jobDepartment', 'jobDescription', 'employmentType', 'jobLocations', 'salary'];
+    const allFields = ['jobTitle', 'jobDepartment', 'jobDescription', 'employmentType', 'jobLocations'];
     const completedFields = allFields.filter(field => watchedFields[field]);
     return Math.round((completedFields.length / allFields.length) * 100);
   };
 
+  const handleCancel = () => {
+    reset();      
+    setUploadedFile(null);
+    setCurrentStep(1);
+    onClose();
+  };
+
   return (
-    <>
+    <BaseModal isOpen={show} onClose={handleCancel}>
       {loading && <FullScreenLoader />}
-      <motion.div
-        initial="hidden"
-        animate="visible"
-        variants={containerVariants}
-        className="min-h-screen bg-gray-50 dark:bg-gray-900 p-4 md:p-6 lg:p-8 rounded-2xl"
-      >
+      <AnimatePresence>
+                    
+       <motion.div
+         variants={overlayVariants}
+         initial="hidden"
+         animate="visible"
+         exit="exit"
+         className="w-full flex items-center justify-center p-4 "
+       >
+
+       <motion.div
+          variants={modalVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+         onClick={(e) => e.stopPropagation()}
+         className="bg-white dark:bg-gray-800 w-full max-w-4xl rounded-2xl shadow-2xl relative max-h-[94vh] overflow-y-scroll"
+       >
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
           <motion.div
@@ -244,6 +311,13 @@ export default function CreateVacancy() {
               <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white">
                 Create New Vacancy
               </h1>
+
+              <button
+                                  onClick={handleCancel}
+                                  className="p-2 rounded-full transition-all duration-200 hover:bg-gray-200 text-gray-600 hover:text-gray-800 border border-gray-300 hover:border-gray-400 dark:hover:bg-gray-700 dark:text-gray-300 dark:hover:text-white dark:border-gray-600 dark:hover:border-gray-500"
+                                >
+                                  <FaTimes size={20} />
+                                </button>
             </div>
             <p className="text-gray-600 dark:text-gray-400 text-lg">
               Post a new job opening and find the perfect candidates
@@ -330,7 +404,7 @@ export default function CreateVacancy() {
           )}
 
           {/* Form Content */}
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <form  className="space-y-6">
             <AnimatePresence mode="wait">
               {/* Step 1: Basic Information */}
               {currentStep === 1 && (
@@ -425,7 +499,7 @@ export default function CreateVacancy() {
                           <HiOfficeBuilding className="text-blue-500" />
                           <span>Department <span className="text-red-500">*</span></span>
                         </label>
-                        <select
+                        {/* <select
                           {...register("jobDepartment", { required: true })}
                           className={`w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
                             errors.jobDepartment ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'
@@ -438,7 +512,14 @@ export default function CreateVacancy() {
                               {dept}
                             </option>
                           ))}
-                        </select>
+                        </select> */}
+                        <input
+                        type="text"
+                        {...register("jobDepartment", { required: true })}
+                        value={departments}
+                        disabled={true}
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      />
                         {errors.jobDepartment && (
                           <p className="text-red-500 text-xs flex items-center space-x-1">
                             <FaExclamationTriangle />
@@ -448,6 +529,7 @@ export default function CreateVacancy() {
                       </div>
                     </div>
 
+                    
                     {/* Job Description */}
                     <div className="space-y-2">
                       <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -492,6 +574,21 @@ export default function CreateVacancy() {
                         ))}
                       </div>
                     </div>
+
+                    {/* Required Skills */}
+                    <div className="space-y-2">
+                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <HiUser className="text-blue-500" />
+                        <span>Required Skills</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. React, Node.js"
+                        {...register("requiredSkills")}
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      />
+                    </div>
+
                   </div>
                 </motion.div>
               )}
@@ -529,40 +626,6 @@ export default function CreateVacancy() {
                       />
                     </div>
 
-                    {/* Salary */}
-                    <div className="space-y-2">
-                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                        <HiCurrencyDollar className="text-blue-500" />
-                        <span>Salary Information</span>
-                      </label>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Set the compensation for this position
-                      </p>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <select
-                          {...register("currency")}
-                          className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        >
-                          <option value="INR">INR (₹)</option>
-                          <option value="USD">USD ($)</option>
-                          <option value="EUR">EUR (€)</option>
-                        </select>
-                        <input
-                          type="number"
-                          placeholder="Amount"
-                          {...register("salary")}
-                          className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        />
-                        <select
-                          {...register("payPeriod")}
-                          className="px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        >
-                          <option value="Yearly">Per Year</option>
-                          <option value="Monthly">Per Month</option>
-                        </select>
-                      </div>
-                    </div>
-
                     {/* Multiple Candidates */}
                     <motion.div
                       whileHover={{ scale: 1.01 }}
@@ -581,21 +644,7 @@ export default function CreateVacancy() {
 
                     {/* Dates and Status */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-4">
-                        <h3 className="font-semibold text-gray-900 dark:text-white flex items-center space-x-2">
-                          <HiCalendar className="text-blue-500" />
-                          <span>Vacancy Status</span>
-                        </h3>
-                        <select
-                          {...register("vacancyStatus")}
-                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
-                        >
-                          <option value="">Choose Status</option>
-                          <option value="Draft">Draft</option>
-                          <option value="Open">Open</option>
-                          <option value="Closed">Closed</option>
-                        </select>
-                      </div>
+                      
                       <div className="space-y-4">
                         <h3 className="font-semibold text-gray-900 dark:text-white">Important Dates</h3>
                         <div className="space-y-3">
@@ -640,7 +689,7 @@ export default function CreateVacancy() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Work Experience */}
-                      <div className="space-y-2">
+                      {/* <div className="space-y-2">
                         <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                           <FaGraduationCap className="text-blue-500" />
                           <span>Work Experience</span>
@@ -654,10 +703,35 @@ export default function CreateVacancy() {
                           <option value="3-5 years">3-5 years</option>
                           <option value="5+ years">5+ years</option>
                         </select>
+                      </div> */}
+                       <div className="space-y-2">
+                        <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                          <FaGraduationCap className="text-blue-500" />
+                          <span>Work Experience</span>
+                        </label>
+                        <select
+                          {...register("workExperience")}
+                          onChange={(e) => setWorkExperienceOther(e.target.value === "Other")}
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        >
+                          <option value="no experience required">No experience required</option>
+                          <option value="1-2 years">1-2 years</option>
+                          <option value="3-5 years">3-5 years</option>
+                          <option value="5+ years">5+ years</option>
+                          <option value="Other">Other</option>
+                        </select>
+                        {workExperienceOther && (
+                          <input
+                            type="text"
+                            placeholder="Enter your work experience"
+                            className="w-full mt-2 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            {...register("workExperienceOther")}
+                          />
+                        )}
                       </div>
 
                       {/* Education */}
-                      <div className="space-y-2">
+                      {/* <div className="space-y-2">
                         <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                           <HiAcademicCap className="text-blue-500" />
                           <span>Education Level</span>
@@ -670,11 +744,36 @@ export default function CreateVacancy() {
                           <option value="Graduate">Graduate</option>
                           <option value="Postgraduate">Postgraduate</option>
                         </select>
+                      </div> */}
+                       <div className="space-y-2">
+                        <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                          <HiAcademicCap className="text-blue-500" />
+                          <span>Education Level</span>
+                        </label>
+                        <select
+                          {...register("education")}
+                          onChange={(e) => setEducationOther(e.target.value === "Other")}
+                          className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                        >
+                          <option value="Higher">Higher Secondary</option>
+                          <option value="Graduate">Graduate</option>
+                          <option value="Postgraduate">Postgraduate</option>
+                          <option value="Other">Other</option>
+                        </select>
+                        {educationOther && (
+                          <input
+                            type="text"
+                            placeholder="Enter your education level"
+                            className="w-full mt-2 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            {...register("educationOther")}
+                          />
+                        )}
                       </div>
+
                     </div>
 
                     {/* Suitable For */}
-                    <div className="space-y-2">
+                    {/* <div className="space-y-2">
                       <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                         <HiUser className="text-blue-500" />
                         <span>Position Suitable For</span>
@@ -699,7 +798,54 @@ export default function CreateVacancy() {
                           </motion.label>
                         ))}
                       </div>
+                    </div> */}
+                  <div className="space-y-2">
+                    <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <HiUser className="text-blue-500" />
+                      <span>Position Suitable For</span>
+                    </label>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Select who this position is most suitable for
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                      {["Fresher", "Internship", "Freelancer"].map((role) => (
+                        <motion.label
+                          key={role}
+                          whileHover={{ scale: 1.02 }}
+                          className="flex items-center space-x-2 p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200"
+                        >
+                          <input
+                            type="checkbox"
+                            value={role}
+                            {...register("suitableFor")}
+                            className="form-checkbox h-4 w-4 text-blue-600 rounded"
+                          />
+                          <span className="text-sm text-gray-700 dark:text-gray-300">{role}</span>
+                        </motion.label>
+                      ))}
+                      <motion.label
+                        whileHover={{ scale: 1.02 }}
+                        className="flex items-center space-x-2 p-3 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer transition-all duration-200"
+                      >
+                        <input
+                          type="checkbox"
+                          value="Other"
+                          {...register("suitableFor")}
+                          className="form-checkbox h-4 w-4 text-blue-600 rounded"
+                          onChange={(e) => setSuitableForOther(e.target.checked)}
+                        />
+                        <span className="text-sm text-gray-700 dark:text-gray-300">Other</span>
+                      </motion.label>
+                      {suitableForOther && (
+                        <input
+                          type="text"
+                          placeholder="Enter suitable position"
+                          className="w-full mt-2 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          {...register("suitableForOther")}
+                        />
+                      )}
                     </div>
+                  </div>
 
                     {/* Responsibilities */}
                     <div className="space-y-2">
@@ -734,6 +880,36 @@ export default function CreateVacancy() {
                         className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
                       />
                     </div>
+
+                      {/* Promotion Opportunity */}
+                    <div className="space-y-2">
+                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <HiCheck className="text-blue-500" />
+                        <span>Is this a promotion opportunity?</span>
+                      </label>
+                      <input
+                        type="checkbox"
+                        {...register("isPromotionOpportunity")}
+                        className="form-checkbox h-5 w-5 text-blue-600 rounded"
+                      />
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Select this option if the job opening is intended as a promotion opportunity for existing employees.
+                      </p>
+                    </div>
+
+                    {/* Eligibility Criteria */}
+                    <div className="space-y-2">
+                      <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                        <HiClipboardList className="text-blue-500" />
+                        <span>Eligibility Criteria</span>
+                      </label>
+                      <textarea
+                        rows={4}
+                        placeholder="Describe eligibility criteria for this role"
+                        {...register("eligibilityCriteria")}
+                        className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-none"
+                      />
+                    </div>
                   </div>
                 </motion.div>
               )}
@@ -755,6 +931,31 @@ export default function CreateVacancy() {
                     </h2>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                      {/* Hiring Manager (Employee Selector) */}
+                      <div className="space-y-2">
+                        <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                          <HiUser className="text-blue-500" />
+                          <span>Hiring Manager</span>
+                        </label>
+                        <select
+                          {...register("hiringManager")}
+                          className="w-full px-4 py-3 border rounded-xl bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                          disabled={loadingAllEmployees}
+                        >
+                          <option value="">Choose Hiring Manager</option>
+                          {loadingAllEmployees ? (
+                            <option value="" disabled>Loading employees...</option>
+                          ) : (
+                            allEmployees.map((employee) => (
+                              <option key={employee.value} value={employee.value}>
+                                {employee.label}
+                              </option>
+                            ))
+                          )}
+                        </select>
+                      </div>
+
                       {/* Contact Person */}
                       <div className="space-y-2">
                         <label className="flex items-center space-x-2 text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -838,6 +1039,7 @@ export default function CreateVacancy() {
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       type="button"
+                      
                       onClick={() => setCurrentStep(currentStep - 1)}
                       className="flex items-center space-x-2 px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-200 font-medium"
                     >
@@ -862,8 +1064,9 @@ export default function CreateVacancy() {
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      type="submit"
+                       type="button"
                       disabled={loading}
+                      onClick={handleSubmit(onSubmit)} 
                       className="flex items-center space-x-2 px-8 py-3 bg-green-600 hover:bg-green-700 disabled:bg-gray-400 text-white rounded-xl transition-all duration-200 font-medium shadow-lg hover:shadow-xl disabled:cursor-not-allowed"
                     >
                       <HiSave />
@@ -876,6 +1079,9 @@ export default function CreateVacancy() {
           </form>
         </div>
       </motion.div>
-    </>
+      </motion.div>
+      </AnimatePresence>
+    </BaseModal>
   );
 }
+

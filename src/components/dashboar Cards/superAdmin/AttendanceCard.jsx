@@ -1,5 +1,3 @@
-
-
 import { useEffect } from "react";
 import { useDashboardStore } from "../../../store/useDashboardStore";
 import { Doughnut } from "react-chartjs-2";
@@ -14,18 +12,8 @@ import {
 } from "react-icons/fi";
 import { HiOutlineChartPie, HiOutlineSparkles } from "react-icons/hi2";
 
-function AttendanceCard() {
-  // 1) Pull data from Zustand
-  const {
-    totalUsers,
-    usersLoggedInToday,
-    employeesOnLeaveToday,
-    fetchDashboardStats,
-  } = useDashboardStore();
-
-  useEffect(() => {
-    fetchDashboardStats();
-  }, [fetchDashboardStats]);
+function AttendanceCard({totalUsers, usersLoggedInToday, employeesOnLeaveToday}) {
+  
 
   // 2) Compute derived values
   const reportedEmployers = usersLoggedInToday;

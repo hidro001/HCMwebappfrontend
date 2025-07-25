@@ -155,9 +155,11 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? checked : value,
-      [name]: name === "maxDays" ? parseFloat(value) : value
+     ...prev,
+    [name]:
+      type === 'checkbox' ? checked :
+      name === 'maxDays' ? parseFloat(value) :
+      value
     }));
     
     if (errors[name]) {
@@ -189,13 +191,46 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
     }
   };
 
+  const extractDaysFromAdvanceNotice = (advanceNotice) => {
+    if (!advanceNotice) return 0;
+    
+    const lowerNotice = advanceNotice?.toLowerCase();
+    
+    if (lowerNotice.includes('immediate') || lowerNotice.includes('same day')) {
+      return 0;
+    }
+    const dayMatch = lowerNotice.match(/(\d+)\s*days?/);
+    if (dayMatch) {
+      return parseInt(dayMatch[1], 10);
+    }
+    const weekMatch = lowerNotice.match(/(\d+)\s*weeks?/);
+    if (weekMatch) {
+      return parseInt(weekMatch[1], 10) * 7;
+    }
+    const monthMatch = lowerNotice.match(/(\d+)\s*months?/);
+    if (monthMatch) {
+      return parseInt(monthMatch[1], 10) * 30;
+    }  
+    return 0;
+  };
+
  const validateForm = () => {
   const newErrors = {};
   if (!formData.name.trim()) newErrors.name = 'Leave type name is required';
   if (!formData.description.trim()) newErrors.description = 'Description is required';
   if (!formData.maxDays || formData.maxDays <= 0) newErrors.maxDays = 'Valid maximum days is required';
 
-  if (!formData.advanceNotice.trim()) newErrors.advanceNotice = 'Advance notice is required';
+  // if (!formData.advanceNotice.trim()) newErrors.advanceNotice = 'Advance notice is required';
+
+    if (!formData.advanceNotice.trim()) {
+    newErrors.advanceNotice = 'Advance notice is required';
+  } else {
+    const parsedDays = extractDaysFromAdvanceNotice(formData.advanceNotice);
+    if (isNaN(parsedDays)) {
+      newErrors.advanceNotice = 'Please enter a valid notice like "2 weeks", "1 month", or "Immediate"';
+    }
+  }
+
   if (!formData.eligibility.trim()) newErrors.eligibility = 'Eligibility criteria is required';
 
   const validPolicies = formData.policies.filter(policy => policy.trim());
@@ -554,6 +589,11 @@ const LeaveType = ({ isOpen, onClose, editingLeaveType = null }) => {
                   }`}
                   placeholder="e.g., 2 weeks, 1 month, Immediate"
                 />
+                {formData.advanceNotice && !errors.advanceNotice && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Parsed as <strong>{extractDaysFromAdvanceNotice(formData.advanceNotice)}</strong> day(s) notice
+                  </p>
+                )}
                 {errors.advanceNotice && (
                   <motion.p
                     initial={{ opacity: 0, y: -10 }}
