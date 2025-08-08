@@ -14,10 +14,8 @@ import { ChatProviderv2 } from "./contexts/ChatContextv2";
 export default function App() {
   useEffect(() => {
     const unsubscribe = onMessage(messaging, async (payload) => {
-      console.log("📨 Foreground message received:", payload);
       const { title, body, url, type = "info" } = payload.data || {};
 
-      // 1) Show native system notification
       if (Notification.permission === "granted") {
         const reg = await navigator.serviceWorker.getRegistration();
         if (reg) {
@@ -29,24 +27,22 @@ export default function App() {
         }
       }
 
-      // 2) Show beautiful in-app notification
       toast.custom(
         (t) => (
           <PushNotificationCard
             title={title}
             body={body}
-            type={type} // Pass notification type from payload
+            type={type}
             onClose={() => toast.dismiss(t.id)}
             onClick={() => {
               toast.dismiss(t.id);
-              // Navigate to notification center or deep-link
               window.location.href = url || "/dashboard/notifications";
             }}
-            showProgress={false} // No progress bar since no auto-close
+            showProgress={false}
           />
         ),
         {
-          duration: Infinity, // Never auto-dismiss
+          duration: Infinity,
           position: "top-right",
           style: {
             background: "transparent",
@@ -56,7 +52,6 @@ export default function App() {
       );
     });
 
-    // Refresh FCM token on tab refocus
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
         registerFcmToken();
@@ -73,17 +68,6 @@ export default function App() {
 
   return (
     <>
-      {/* Custom toaster with transparent background for our custom notifications */}
-      {/* <Toaster 
-        reverseOrder={false} 
-        toastOptions={{ 
-          style: { 
-            zIndex: 9999999,
-            // background: "transparent",
-            boxShadow: "none",
-          } 
-        }} 
-      /> */}
       <Toaster
         reverseOrder={false}
         toastOptions={{

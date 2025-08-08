@@ -44,7 +44,7 @@ const ChartNode = memo(({
     if (isRoot) return "w-80 h-[120px]";
     if (level <= 1) return "w-72 h-[110px]";
     if (level <= 2) return "w-64 h-[100px]";
-    return "w-56 h-[90px]";
+    return "w-56 h-[90px]"; 
   }, [isRoot, level]);
 
   const avatarSize = useMemo(() => {
@@ -149,15 +149,6 @@ const ChartNode = memo(({
           </div>
 
           <div className="space-y-1.5">
-            {/* <div className="flex items-center space-x-2">
-              <FiBriefcase className="w-3 h-3 text-gray-500 dark:text-gray-400 flex-shrink-0" />
-              <p className={`text-gray-700 dark:text-gray-300 truncate ${
-                isRoot ? "text-sm" : "text-xs"
-              }`}>
-                {node.title}
-              </p>
-            </div> */}
-
             <div className="flex items-center space-x-2">
               <FiHome className="w-3 h-3 flex-shrink-0" style={{ color: hoverColor }} />
               <span
@@ -209,7 +200,7 @@ ChartNode.displayName = 'ChartNode';
 
 // Main component with performance optimizations
 const DynamicOrgChart = () => {
-  const { orgData, fetchEmployees, loading } = useEmployeeStore();
+  const { orgData, fetchEmployees, forceRefresh, loading } = useEmployeeStore();
   const [expandedNodes, setExpandedNodes] = useState({});
   const [emplId, setEmplId] = useState(null);
   const [showCard, setShowCard] = useState(false);
@@ -218,21 +209,13 @@ const DynamicOrgChart = () => {
   );
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  // Throttled fetch to prevent multiple calls
   useEffect(() => {
-    let timeoutId;
-    const throttledFetch = () => {
-      if (timeoutId) clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        fetchEmployees().catch(() => toast.error("Unable to fetch data"));
-      }, 100);
-    };
-    
-    throttledFetch();
-    return () => {
-      if (timeoutId) clearTimeout(timeoutId);
-    };
+    fetchEmployees().catch(() => toast.error("Unable to fetch data"));
   }, [fetchEmployees]);
+
+  const handleRefresh = async () => {
+    await forceRefresh();
+  };
 
   // Optimized dark mode observer
   useEffect(() => {
@@ -313,6 +296,7 @@ const DynamicOrgChart = () => {
     if (level > 200) return null;
     
     const color = activeColors[level % activeColors.length];
+    const hasChildren = Array.isArray(node.children) && node.children.length > 0;
     
     return (
       <TreeNode
@@ -323,7 +307,7 @@ const DynamicOrgChart = () => {
               node={node}
               onToggle={() => toggleNode(node.id, parentId, level)}
               onViewDetails={() => openEmployeeCard(node.id)}
-              hasChildren={!!node.children?.length}
+              hasChildren={hasChildren}
               expanded={!!expandedNodes[node.id]}
               hoverColor={color}
               level={level}
@@ -397,6 +381,13 @@ const DynamicOrgChart = () => {
                   <FiRotateCcw size={16} />
                 </button>
                 <button
+                  onClick={handleRefresh}
+                  disabled={loading}
+                  className="w-10 h-10 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white rounded-lg flex items-center justify-center transition-colors"
+                >
+                  <FiRotateCcw size={16} className={loading ? "animate-spin" : ""} />
+                </button>
+                <button
                   onClick={toggleFullscreen}
                   className="w-10 h-10 bg-orange-500 hover:bg-orange-600 text-white rounded-lg flex items-center justify-center transition-colors"
                 >
@@ -430,7 +421,7 @@ const DynamicOrgChart = () => {
                           onToggle={() => toggleNode(orgData.id, null, 0)}
                           onViewDetails={() => openEmployeeCard(orgData.id)}
                           expanded={!!expandedNodes[orgData.id]}
-                          hasChildren={!!orgData.children?.length}
+                          hasChildren={Array.isArray(orgData.children) && orgData.children.length > 0}
                           hoverColor={activeColors[0]}
                           level={0}
                           isRoot={true}

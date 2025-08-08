@@ -3215,6 +3215,7 @@ import useRatingStore from "../../../store/useRatingNewStore";
 import useDepartmentStore from "../../../store/departmentStore";
 import useDesignationStore from "../../../store/designationStore";
 import { getWeeksInMonth } from "./calendarUtils";
+import UserProfileModal from "./UserProfileModal";
 
 import {
   MdOutlineDateRange,
@@ -3269,6 +3270,7 @@ export default function TopPerformerCard() {
 
   // Result
   const [orgPerformer, setOrgPerformer] = useState(null);
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   // Reset date fields on frequency change
   useEffect(() => {
@@ -3575,9 +3577,7 @@ export default function TopPerformerCard() {
         </div>
       )}
 
-      {/* Results */}
       <div className="p-6">
-        {/* Loading State */}
         {loading && (
           <div className="text-center py-12">
             <div className="relative w-16 h-16 mx-auto mb-4">
@@ -3588,7 +3588,6 @@ export default function TopPerformerCard() {
           </div>
         )}
 
-        {/* Error State */}
         {error && (
           <div className="bg-red-50 dark:bg-red-900 dark:bg-opacity-20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 p-4 rounded-xl text-center">
             <div className="flex items-center justify-center mb-2">
@@ -3600,12 +3599,9 @@ export default function TopPerformerCard() {
             <p>{error}</p>
           </div>
         )}
-
-        {/* Success State */}
         {orgPerformer && !loading && (
           <div className="bg-gray-500 dark:bg-gray-900 text-white rounded-2xl shadow-xl overflow-hidden">
             <div className="p-6">
-              {/* Header */}
               <div className="flex items-start justify-between mb-6">
                 <div className="flex items-center space-x-4">
                   <div className="p-3 bg-orange-500 rounded-full">
@@ -3628,8 +3624,6 @@ export default function TopPerformerCard() {
                   )}
                 </div>
               </div>
-
-              {/* Employee Avatar and Basic Info */}
               <div className="flex items-center space-x-4 mb-6">
                 <div className="relative flex-shrink-0">
                   <div className="w-20 h-20 rounded-2xl overflow-hidden bg-indigo-700 flex items-center justify-center border-2 border-indigo-600">
@@ -3657,8 +3651,6 @@ export default function TopPerformerCard() {
                   </div>
                 </div>
               </div>
-
-              {/* Department and Designation */}
               <div className="grid grid-cols-1 gap-4 mb-6">
                 <div className="flex items-center space-x-3 bg-indigo-700 dark:bg-indigo-800 rounded-lg p-4">
                   <div className="p-2 bg-indigo-600 rounded-lg">
@@ -3690,8 +3682,6 @@ export default function TopPerformerCard() {
                   </div>
                 </div>
               </div>
-
-              {/* Stats */}
               <div className="grid grid-cols-2 gap-4 mb-6">
                 <div className="bg-indigo-700 dark:bg-indigo-800 rounded-xl p-4 text-center">
                   <div className="text-2xl font-bold text-white mb-1">{orgPerformer.ratingCount}</div>
@@ -3702,10 +3692,11 @@ export default function TopPerformerCard() {
                   <div className="text-xs text-indigo-200">Average Score</div>
                 </div>
               </div>
-
-              {/* Action Button */}
               <div className="pt-4 border-t border-indigo-600">
-                <button className="w-full flex items-center justify-center space-x-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-lg transition-all duration-200">
+                <button 
+                  onClick={() => setIsProfileModalOpen(true)}
+                  className="w-full flex items-center justify-center space-x-2 text-sm bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-3 rounded-lg transition-all duration-200"
+                >
                   <span>View Full Profile</span>
                   <BsChevronRight className="text-xs" />
                 </button>
@@ -3725,6 +3716,13 @@ export default function TopPerformerCard() {
           </div>
         )}
       </div>
+      
+      <UserProfileModal
+        isOpen={isProfileModalOpen}
+        onClose={() => setIsProfileModalOpen(false)}
+        user={orgPerformer?.employee}
+        performanceData={orgPerformer}
+      />
     </div>
   );
 }

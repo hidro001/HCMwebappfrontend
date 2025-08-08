@@ -48,7 +48,7 @@ function BulkRating() {
 
   const [availableWeeks, setAvailableWeeks] = useState([]);
 
-  // NEW: State for API error details
+
   const [errorCount, setErrorCount] = useState(0);
   const [bulkErrors, setBulkErrors] = useState([]);
 

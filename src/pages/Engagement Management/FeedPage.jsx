@@ -5,7 +5,7 @@ import GreetFeed from '../../components/engagement/todayCelebrate/GreetFeed';
 import CreateCard from '../../components/engagement/Card/CreateCard';
 
 const FeedPage = () => {
-  const [category, setCategory] = useState('All Post');
+  const [category, setCategory] = useState('All Announcement');
   const [department, setDepartment] = useState('all');
   const [sort, setSort] = useState('newest');
   const [showFilters, setShowFilters] = useState(false); 

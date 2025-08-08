@@ -91,7 +91,7 @@ export const ThemeProvider = ({ children }) => {
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
       <MuiThemeProvider theme={muiTheme}>
-        <CssBaseline /> {/* Ensures MUI components adhere to the theme */}
+        <CssBaseline />
         {children}
       </MuiThemeProvider>
     </ThemeContext.Provider>

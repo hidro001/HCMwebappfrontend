@@ -42,4 +42,13 @@ export const updateUserStatusApi = async (employeeId) => {
   return response.data;
 };
 
+/**
+ * Reassign team members when manager is deactivated
+ * This function will reassign all subordinates of a deactivated manager to the manager's manager
+ */
+export const reassignTeamMembersApi = async (managerId) => {
+  const response = await axiosInstance.post(`/user-management/reassign-team-members/${managerId}`, {});
+  return response.data;
+};
+
 

@@ -8,7 +8,7 @@ import useSocketStore from "../../store/socketStore";
 import { RiRobot2Line, RiTimeLine } from "react-icons/ri";
 
 const Feed = ({
-  curCategory = "All Post",
+  curCategory = "All Announcement",
   curDepartment = "all",
   curSort = "newest",
   onRefresh =false
@@ -38,7 +38,7 @@ const Feed = ({
   const filteredSortedFeed = feed
     .filter((item) => {
       const matchesCategory =
-        curCategory === "All Post" || item.categories === curCategory;
+        curCategory === "All Announcement" || item.categories === curCategory;
 
       const matchesDepartment =
         curDepartment === "all" || item.department.includes(curDepartment);
@@ -50,6 +50,12 @@ const Feed = ({
       const dateB = new Date(b.scheduleDate || b.createdAt);
       return curSort === "newest" ? dateB - dateA : dateA - dateB;
     });
+
+  console.log('Current category filter:', curCategory);
+  console.log('Current department filter:', curDepartment);
+  console.log('Total feed items:', feed.length);
+  console.log('Filtered feed items:', filteredSortedFeed.length);
+  console.log('Sample feed item categories:', feed.slice(0, 3).map(item => ({ id: item._id, category: item.categories })));
 
   return (
     <div className="max-w-3xl h-full py-6">

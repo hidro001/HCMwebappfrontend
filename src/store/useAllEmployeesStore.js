@@ -2,139 +2,80 @@ import { create } from "zustand";
 import { toast } from "react-hot-toast";
 import {
   getEmployeesApi,
-  getEmployeeByIdApi,
   getAllEmployeesApi,
+  getEmployeeByIdApi,
   deleteUserApi,
-  // restoreUserApi,
   updateUserStatusApi,
+  reassignTeamMembersApi,
 } from "../service/getAllEmployeesApi";
+import useEmployeeStore from "./orgStore";
+import { updateEmployee } from "../service/employeeService";
 
 const useEmployeesStore = create((set, get) => ({
-  // State
   employees: [],
   filteredEmployees: [],
+  selectedEmployee: null,
+  loadingSelectedEmployee: false,
   totalEmployeeCount: 0,
   searchTerm: "",
   sortOrder: "asc",
   loading: false,
-  error: null,
 
-  // Fetch employees from the backend
-  fetchEmployees: async () => {
-    set({ loading: true, error: null });
-    try {
-      const response = await getEmployeesApi();
-      if (response?.success) {
-        const employeesFromApi = response.data || [];
-
-        // Filter out any invalid employees if needed
-        const validEmployees = employeesFromApi.filter(
-          (employee) => employee._id
-        );
-
-        // Sort employees by first name || last name || employee_Id
-        const sortedEmployees = validEmployees.sort((a, b) =>
-          (a.first_Name || a.last_Name || a.employee_Id || "").localeCompare(
-            b.first_Name || b.last_Name || b.employee_Id || ""
-          )
-        );
-
-        set({
-          employees: sortedEmployees,
-          filteredEmployees: sortedEmployees,
-          totalEmployeeCount: response.count || sortedEmployees.length,
-        });
-      } else {
-        const errorMessage = response?.message || "Failed to fetch employees.";
-        set({ error: errorMessage });
-        toast.error(errorMessage);
-      }
-    } catch (err) {
-      console.error("Error fetching employees:", err);
-      const errMsg =
-        err?.message || "An error occurred while fetching employees.";
-      set({ error: errMsg });
-      toast.error(errMsg);
-    } finally {
-      set({ loading: false });
-    }
-  },
-
-  getAllEmployeesApi: async () => {
-    set({ loading: true, error: null });
+  // ---------- Fetch All Employees ----------
+  fetchAllEmployees: async () => {
+    set({ loading: true });
     try {
       const response = await getAllEmployeesApi();
-      if (response?.success) {
-        const employeesFromApi = response.data || [];
-
-        // Filter out any invalid employees if needed
-        const validEmployees = employeesFromApi.filter(
-          (employee) => employee._id
-        );
-
-        // Sort employees by first name || last name || employee_Id
-        const sortedEmployees = validEmployees.sort((a, b) =>
-          (a.first_Name || a.last_Name || a.employee_Id || "").localeCompare(
-            b.first_Name || b.last_Name || b.employee_Id || ""
-          )
-        );
-
+      if (response.success) {
         set({
-          employees: sortedEmployees,
-          filteredEmployees: sortedEmployees,
-          totalEmployeeCount: response.count || sortedEmployees.length,
+          employees: response.data,
+          filteredEmployees: response.data,
+          totalEmployeeCount: response.data.length,
         });
       } else {
-        const errorMessage = response?.message || "Failed to fetch employees.";
-        set({ error: errorMessage });
-        toast.error(errorMessage);
+        toast.error(response.message || "Failed to fetch employees");
       }
-    } catch (err) {
-      console.error("Error fetching employees:", err);
-      const errMsg =
-        err?.message || "An error occurred while fetching employees.";
-      set({ error: errMsg });
-      toast.error(errMsg);
+    } catch (error) {
+      toast.error("Error fetching employees");
+      console.error("Error fetching employees:", error);
     } finally {
       set({ loading: false });
     }
   },
 
-  fetchEmployeeById: async (id) => {
-    set({ loading: true, error: null });
+  // ---------- Load Employee by ID ----------
+  loadEmployeeById: async (employeeId) => {
+    set({ loadingSelectedEmployee: true });
     try {
-      const response = await getEmployeeByIdApi(id);
-
-      if (response?.success) {
-        set({
-          employee: response.data,
-          loading: false,
-        });
+      const response = await getEmployeeByIdApi(employeeId);
+      if (response.success) {
+        set({ selectedEmployee: response.data });
       } else {
-        const msg = response?.message || "Failed to load employee details";
-        set({ error: msg, loading: false });
-        toast.error(msg);
+        toast.error(response.message || "Failed to fetch employee details");
       }
     } catch (error) {
-      const errMsg = error?.message || "An error occurred";
-      set({ error: errMsg, loading: false });
-      toast.error(errMsg);
+      toast.error("Error fetching employee details");
+      console.error("Error fetching employee details:", error);
+    } finally {
+      set({ loadingSelectedEmployee: false });
     }
   },
 
-  // Handle changes in the search input
-  handleSearchChange: (searchValue) => {
-    const { employees } = get();
-    const lowerValue = searchValue.toLowerCase();
+  // ---------- Reset Selected Employee ----------
+  resetSelectedEmployee: () => {
+    set({ selectedEmployee: null });
+  },
 
-    // Filter by name or employee_Id
-    const filtered = employees.filter(
-      (employee) =>
-        `${employee.first_Name || ""} ${employee.last_Name || ""}`
-          .toLowerCase()
-          .includes(lowerValue) ||
-        (employee.employee_Id &&
-          employee.employee_Id.toLowerCase().includes(lowerValue))
+  // ---------- Search Employees ----------
+  handleSearch: (searchValue) => {
+    const { employees } = get();
+    const filtered = employees.filter((emp) =>
+      emp.first_Name?.toLowerCase().includes(searchValue.toLowerCase()) ||
+      emp.last_Name?.toLowerCase().includes(searchValue.toLowerCase()) ||
+      emp.employee_Id?.toLowerCase().includes(searchValue.toLowerCase()) ||
+      emp.designation?.toLowerCase().includes(searchValue.toLowerCase()) ||
+      emp.department?.toLowerCase().includes(searchValue.toLowerCase()) ||
+      emp.working_Email_Id?.toLowerCase().includes(searchValue.toLowerCase())
     );
 
     set({ searchTerm: searchValue, filteredEmployees: filtered });
@@ -179,12 +120,80 @@ const useEmployeesStore = create((set, get) => ({
 
   /**
    * Toggle active/inactive status for a user.
+   * If the user is a manager and is being deactivated, reassign their team members
    * employeeId => calls the service => updates store => returns success/error
    */
   toggleEmployeeStatus: async (employeeId, currentStatus) => {
     try {
       const response = await updateUserStatusApi(employeeId);
       if (response.success) {
+        // Check if this employee is a manager (has subordinates)
+        const { employees } = get();
+        const employee = employees.find(emp => emp._id === employeeId || emp.employee_Id === employeeId);
+        
+        // If the employee is being deactivated and has subordinates, reassign them
+        if (currentStatus && employee) {
+          // Find all direct subordinates
+          const subordinates = employees.filter(emp => 
+            emp.assigned_to && emp.assigned_to.some(manager => (manager._id || manager) === employee._id)
+          );
+          console.log("[DEBUG] Subordinates to reassign:", subordinates.map(s => ({ id: s._id, name: s.first_Name + ' ' + s.last_Name })));
+
+          // Helper to find the next active manager up the chain
+          function findNextActiveManager(manager) {
+            if (!manager || !manager.assigned_to || manager.assigned_to.length === 0) return null;
+            for (const mgr of manager.assigned_to) {
+              const mgrId = mgr._id || mgr; // handle both object and string
+              const mgrObj = employees.find(e => e._id === mgrId);
+              if (mgrObj) {
+                if (mgrObj.isActive) return mgrObj;
+                const next = findNextActiveManager(mgrObj);
+                if (next) return next;
+              }
+            }
+            return null;
+          }
+
+          let allSuccess = true;
+          for (const subordinate of subordinates) {
+            const nextActiveManager = findNextActiveManager(employee);
+            console.log(`[DEBUG] For subordinate ${subordinate._id} (${subordinate.first_Name} ${subordinate.last_Name}), next active manager:`, nextActiveManager ? { id: nextActiveManager._id, name: nextActiveManager.first_Name + ' ' + nextActiveManager.last_Name } : null);
+            const formData = new FormData();
+            if (nextActiveManager) {
+              // Send as array if backend expects it
+              formData.append("assigned_to", nextActiveManager._id);
+              // If backend expects array: formData.append('assigned_to[]', nextActiveManager._id);
+            }
+            // If no active manager, do not append assigned_to (or append empty if backend expects it)
+            if (!nextActiveManager) {
+              // formData.append("assigned_to", ""); // Uncomment if backend expects empty string/array
+            }
+            // Debug log what is being sent
+            for (let pair of formData.entries()) {
+              console.log(`[DEBUG] API payload for subordinate ${subordinate._id}:`, pair[0], pair[1]);
+            }
+            const updateRes = await updateEmployee(subordinate._id, formData);
+            if (updateRes.success) {
+              toast.success(`Reassigned ${subordinate.first_Name} ${subordinate.last_Name} to ${nextActiveManager ? nextActiveManager.first_Name + ' ' + nextActiveManager.last_Name : 'no manager'}`);
+            } else {
+              allSuccess = false;
+              toast.error(`Failed to reassign ${subordinate.first_Name} ${subordinate.last_Name}`);
+            }
+          }
+
+          if (subordinates.length > 0) {
+            if (allSuccess) {
+              toast.success("Manager deactivated and all team members reassigned to next active manager!");
+            } else {
+              toast.warning("Manager deactivated but some team members could not be reassigned. Please check manually.");
+            }
+          } else {
+            toast.success("User deactivated successfully!");
+          }
+        } else {
+          toast.success(`User ${currentStatus ? "deactivated" : "activated"} successfully!`);
+        }
+
         // Update local store arrays
         set((state) => {
           const updated = state.employees.map((emp) => {
@@ -198,9 +207,11 @@ const useEmployeesStore = create((set, get) => ({
             filteredEmployees: updated,
           };
         });
-        toast.success(
-          `User ${currentStatus ? "deactivated" : "activated"} successfully!`
-        );
+        
+        // Refresh org chart to reflect the status change
+        const orgStore = useEmployeeStore.getState();
+        await orgStore.forceRefresh();
+        
       } else {
         throw new Error(response.message || "Failed to update user status.");
       }

@@ -48,16 +48,13 @@ export function ChatProviderv2({ children }) {
   const [groupsLoading, setGroupsLoading] = useState(false);
   const [groupsError, setGroupsError] = useState(null);
   const [groups, setGroups] = useState([]);
-  /* ───────────────────────────────────────────────
-     GROUP‑SETTINGS  (admin can edit / delete group)
-     ─────────────────────────────────────────────── */
   const [settingsGroup, setSettingsGroup] = useState(null);
 
-  /** Am I the admin of this group? */
   const isGroupAdmin = useCallback(
     (group) => group && group.admin === employeeId,
     [employeeId]
   );
+
 
   const openGroupSettingsModal = (group) => setSettingsGroup(group);
   const closeGroupSettingsModal = () => setSettingsGroup(null);
@@ -81,6 +78,8 @@ export function ChatProviderv2({ children }) {
   const MAX_FILE_SIZE_MB = 20;
   const MAX_FILES = 10;
 
+
+
   const loadMembers = useCallback(async () => {
     setLoadingMembers(true);
     setMembersError(null);
@@ -103,25 +102,66 @@ export function ChatProviderv2({ children }) {
     }
   }, []);
 
-  // useEffect(() => {
-  //   loadMembers();
-  // }, [loadMembers]);
-
   useEffect(() => {
-    // Don’t call fetchMembers until we have a valid storeEmployeeId
     if (!storedId) return;
     loadMembers();
   }, [loadMembers, storedId]);
 
   useEffect(() => {
-    if (!employeeId) return;
+    console.log("🔧 Socket useEffect triggered:", { employeeId, hasToken: !!token });
+    if (!employeeId) {
+      console.log("❌ No employeeId, skipping socket initialization");
+      return;
+    }
+    if (!token) {
+      console.log("❌ No token, skipping socket initialization");
+      return;
+    }
     const socket = initSocket(employeeId, token);
     socketRef.current = socket;
 
     socket.on("connect", () => {
+      console.log("🔌 Socket connected, emitting events...");
+      console.log("🔌 Socket ID:", socket.id);
+      console.log("🔌 Employee ID:", employeeId);
       socket.emit("joinPersonalRoom", { employeeId });
       setLoadingConversations(true);
       socket.emit("getAllConverationUser", employeeId);
+      console.log("🔌 Events emitted: joinPersonalRoom, getAllConverationUser");
+      
+      // Fetch groups when socket connects
+      setTimeout(() => {
+        console.log("📋 Fetching groups after socket connection...");
+        if (socketRef.current && employeeId) {
+          socketRef.current.emit("getUserGroups", employeeId, (res) => {
+            console.log("📋 getUserGroups response:", res);
+            if (res.success) {
+              console.log("📋 Groups loaded:", res.data?.length || 0, "groups");
+              console.log("📋 Groups with unread counts:", res.data?.filter(g => g.unreadCount > 0) || []);
+              setGroups(res.data || []);
+            } else {
+              setGroupsError("Failed to load groups.");
+              setGroups([]);
+            }
+          });
+        }
+      }, 2000);
+      
+      // Test socket connection with a ping
+      setTimeout(() => {
+        console.log("🏓 Testing socket with ping...");
+        socket.emit("ping", { test: true });
+      }, 1000);
+    });
+
+    socket.on("connect_error", (error) => {
+      console.log("❌ Socket connection error:", error);
+      setConversationsError("Failed to connect to chat server");
+      setLoadingConversations(false);
+    });
+
+    socket.on("disconnect", (reason) => {
+      // Socket disconnected
     });
 
     socket.on("user-online", ({ userId, online }) => {
@@ -138,13 +178,22 @@ export function ChatProviderv2({ children }) {
       });
     });
 
-    socket.on("allRoomIds", (data) => {
+    socket.on("allRoomIds", (data) => { 
+      console.log("🔍 allRoomIds event received:", data);
       setLoadingConversations(false);
       if (!data.success) {
+        console.log("❌ Server returned error:", data.message);
         setConversationsError(data.message);
         return;
       }
-      // console.log("All room IDs:", data.data);
+      
+      if (!data.data || !Array.isArray(data.data)) {
+        console.log("❌ Invalid data structure:", data);
+        setConversationsError("Invalid data structure received");
+        return;
+      }
+      
+      console.log("📊 Processing", data.data.length, "conversations");
       const list = data.data.map((item) => ({
         ...item,
         employeeId: item.employee_Id,
@@ -157,9 +206,29 @@ export function ChatProviderv2({ children }) {
         isOnline: userStatus[item.employee_Id] || false,
       }));
 
-      // console.log("Fetched conversations:", list);
+      console.log("✅ Successfully loaded", list.length, "conversations");
       setConversations(list);
     });
+
+    // Test socket connection with a simple ping
+    socket.on("pong", (data) => {
+      console.log("🏓 Socket ping test successful:", data);
+    });
+
+    setTimeout(() => {
+      if (loadingConversations) {
+        console.log("⏰ Timeout: allRoomIds event was never received");
+        setConversationsError("Timeout: No response from server");
+        setLoadingConversations(false);
+
+        console.log("🔄 Trying alternative event names...");
+        socket.emit("getConversations", employeeId);
+        socket.emit("getAllConversations", employeeId);
+        socket.emit("getUserConversations", employeeId);
+      }
+    }, 10000);
+
+
 
     socket.on("receiveMessage", (msg) => {
       const { sender, receiver } = msg;
@@ -204,7 +273,6 @@ export function ChatProviderv2({ children }) {
           g._id === groupId ? { ...g, groupName, groupIcon } : g
         )
       );
-      // refresh title if the renamed group is open
       if (activeConversation?.isGroup && activeConversation._id === groupId) {
         setSelectedConversation((prev) =>
           prev ? { ...prev, groupName, groupIcon } : prev
@@ -212,12 +280,49 @@ export function ChatProviderv2({ children }) {
       }
     });
 
-    /* group was deleted */
     socket.on("groupDeleted", ({ groupId }) => {
       setGroups((prev) => prev.filter((g) => g._id !== groupId));
       if (activeConversation?.isGroup && activeConversation._id === groupId) {
         setSelectedConversation(null);
         setMessages([]);
+      }
+    });
+
+    socket.on("messageRead", ({ sender, receiver }) => {
+      const partner = sender === employeeId ? receiver : sender;
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.employeeId === partner ? { ...c, unreadCount: 0 } : c
+        )
+      );
+    });
+
+    socket.on("unreadCountUpdate", ({ partnerId, count }) => {
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.employeeId === partnerId ? { ...c, unreadCount: count } : c
+        )
+      );
+    });
+
+    socket.on("groupUnreadCountUpdate", ({ groupId, count }) => {
+      console.log("📊 Group unread count update:", { groupId, count });
+      setGroups((prev) =>
+        prev.map((g) =>
+          g._id === groupId ? { ...g, unreadCount: count } : g
+        )
+      );
+    });
+
+    // Add listener for group message read confirmation
+    socket.on("groupMessageRead", ({ groupId, userId }) => {
+      console.log("📖 Group message read:", { groupId, userId });
+      if (userId === employeeId) {
+        setGroups((prev) =>
+          prev.map((g) =>
+            g._id === groupId ? { ...g, unreadCount: 0 } : g
+          )
+        );
       }
     });
 
@@ -230,9 +335,27 @@ export function ChatProviderv2({ children }) {
   const createGroupUIFlow = (groupName, memberIds, groupIcon = "") => {
     return new Promise((resolve, reject) => {
       if (!socketRef.current) return reject("Socket not initialized");
+      
+      // Find the appropriate manager (upper level manager who is not deactivated)
+      const findAppropriateManager = (currentEmployeeId) => {
+        if (!members.length) return currentEmployeeId;
+
+        // Find current employee
+        const currentEmployee = members.find(emp => emp.employeeId === currentEmployeeId);
+        if (!currentEmployee) return currentEmployeeId;
+
+        // If current employee has managers assigned (this would need to be fetched from backend)
+        // For now, we'll use the current employee as fallback
+        // TODO: Implement proper manager hierarchy lookup
+        console.log(`👤 Using current employee as admin: ${currentEmployeeId}`);
+        return currentEmployeeId;
+      };
+
+      const appropriateAdmin = findAppropriateManager(employeeId);
+      
       const payload = {
         groupName,
-        admin: employeeId,
+        admin: appropriateAdmin,
         members: memberIds,
         groupIcon,
       };
@@ -245,19 +368,70 @@ export function ChatProviderv2({ children }) {
         }
       });
     });
+
   };
+
+ 
 
   useEffect(() => {
     const socket = socketRef.current;
     if (!socket) return;
 
     const handleGroupMessage = (msg) => {
+      console.log("📨 Group message received:", msg);
+      console.log("📨 Current active conversation:", activeConversation);
+      console.log("📨 Current employeeId:", employeeId);
+      
+      // Add message to current conversation if it's the active group
       if (
         activeConversation?.isGroup &&
         activeConversation._id === msg.groupId
       ) {
+        console.log("📨 Adding message to active group conversation");
         setMessages((prev) => [...prev, msg]);
       }
+
+      // Update group list with new message and unread count
+      setGroups((prev) => {
+        console.log("📨 Current groups:", prev.length);
+        const groupIndex = prev.findIndex((g) => g._id === msg.groupId);
+        console.log("📨 Group index found:", groupIndex);
+        
+        if (groupIndex >= 0) {
+          const updatedGroups = [...prev];
+          const group = updatedGroups[groupIndex];
+          
+          // Only increment unread count if this group is not currently active
+          // or if the message is not from the current user
+          let newUnreadCount = group.unreadCount || 0;
+          const isCurrentActiveGroup = activeConversation?.isGroup && activeConversation._id === msg.groupId;
+          const isFromCurrentUser = msg.sender === employeeId;
+          
+          console.log("📨 Unread count logic:", {
+            currentUnreadCount: newUnreadCount,
+            isCurrentActiveGroup,
+            isFromCurrentUser,
+            shouldIncrement: !isCurrentActiveGroup && !isFromCurrentUser
+          });
+          
+          if (!isCurrentActiveGroup && !isFromCurrentUser) {
+            newUnreadCount += 1;
+          }
+
+          updatedGroups[groupIndex] = {
+            ...group,
+            lastMessage: msg,
+            lastMessageTimestamp: msg.timestamp,
+            unreadCount: newUnreadCount,
+          };
+
+          console.log("📨 Updated group:", updatedGroups[groupIndex]);
+          return updatedGroups;
+        } else {
+          console.log("📨 Group not found in groups array");
+        }
+        return prev;
+      });
     };
 
     socket.on("groupMessage", handleGroupMessage);
@@ -265,7 +439,7 @@ export function ChatProviderv2({ children }) {
     return () => {
       socket.off("groupMessage", handleGroupMessage);
     };
-  }, [activeConversation]);
+  }, [activeConversation, employeeId]);
 
   const fetchUserGroups = useCallback(() => {
     if (!socketRef.current || !employeeId) return;
@@ -274,8 +448,10 @@ export function ChatProviderv2({ children }) {
     setGroupsError(null);
 
     socketRef.current.emit("getUserGroups", employeeId, (res) => {
+      console.log("📋 getUserGroups response:", res);
       if (res.success) {
-        // console.log("Fetched groups:", res.data);
+        console.log("📋 Groups loaded:", res.data?.length || 0, "groups");
+        console.log("📋 Groups with unread counts:", res.data?.filter(g => g.unreadCount > 0) || []);
         setGroups(res.data || []);
       } else {
         setGroupsError("Failed to load groups.");
@@ -285,7 +461,6 @@ export function ChatProviderv2({ children }) {
     });
   }, [employeeId]);
 
-  /** add member */
   const addMemberToGroup = useCallback(
     (groupId, newMemberId) => {
       if (!socketRef.current) return;
@@ -303,7 +478,6 @@ export function ChatProviderv2({ children }) {
     [employeeId, fetchUserGroups]
   );
 
-  /** remove member */
   const removeMemberFromGroup = useCallback(
     (groupId, memberId) => {
       if (!socketRef.current) return;
@@ -321,7 +495,6 @@ export function ChatProviderv2({ children }) {
     [employeeId, fetchUserGroups]
   );
 
-  /** rename / change icon */
   const updateGroupInfo = useCallback(
     (groupId, newName, newIcon) => {
       if (!socketRef.current) return;
@@ -339,7 +512,6 @@ export function ChatProviderv2({ children }) {
     [employeeId, fetchUserGroups]
   );
 
-  /** delete group */
   const deleteGroup = useCallback(
     (groupId) => {
       if (!socketRef.current) return;
@@ -469,11 +641,6 @@ export function ChatProviderv2({ children }) {
   }, [loadChatHistory]);
 
   const sendMessageHandler = useCallback(() => {
-    // console.log("🧠 Inside sendMessageHandler:", {
-    //   message,
-    //   activeConversation,
-    // });
-
     if (!message.trim() || !activeConversation || !socketRef.current) return;
 
     if (activeConversation.isGroup) {
@@ -486,7 +653,6 @@ export function ChatProviderv2({ children }) {
           senderName: username,
         },
         (res) => {
-          // console.log("✅ Group message sent:", res);
           if (res.success) setMessage("");
         }
       );
@@ -502,14 +668,23 @@ export function ChatProviderv2({ children }) {
 
   const joinAndMarkRoom = useCallback(
     (partnerId) => {
+      if (!socketRef.current) return;
+
       socketRef.current.emit("joinRoom", {
         sender: employeeId,
         receiver: partnerId,
       });
+
       socketRef.current.emit("markRead", {
         sender: employeeId,
         receiver: partnerId,
       });
+
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.employeeId === partnerId ? { ...c, unreadCount: 0 } : c
+        )
+      );
     },
     [employeeId]
   );
@@ -545,10 +720,18 @@ export function ChatProviderv2({ children }) {
   );
 
   const selectGroup = useCallback((group) => {
-    // console.log("Selecting group:", group);
+    console.log("🔗 Selecting group:", group);
     setSelectedConversation({ ...group, isGroup: true });
     setSelectedUser(null);
     setMessages([]);
+    
+    // Reset unread count for the selected group
+    setGroups((prev) =>
+      prev.map((g) =>
+        g._id === group._id ? { ...g, unreadCount: 0 } : g
+      )
+    );
+    
     if (socketRef.current) {
       socketRef.current.emit("joinGroupRoom", group._id);
       socketRef.current.emit("getGroupMessages", group._id, (res) => {
@@ -556,47 +739,77 @@ export function ChatProviderv2({ children }) {
           setMessages(res.data || []);
         }
       });
+      
+      // Mark group messages as read
+      socketRef.current.emit("markGroupRead", {
+        groupId: group._id,
+        userId: employeeId
+      });
     }
-  }, []);
+  }, [employeeId]);
+
+  // Manual retry logic for conversations
+  useEffect(() => {
+    if (conversations.length === 0 && !loadingConversations && !conversationsError && employeeId) {
+      const timer = setTimeout(() => {
+        console.log("🔄 Manual retry: Emitting getAllConverationUser again...");
+        if (socketRef.current && socketRef.current.connected) {
+          socketRef.current.emit("getAllConverationUser", employeeId);
+          console.log("🔄 Manual retry: Emitted getAllConverationUser again...");
+        }
+      }, 15000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [conversations.length, loadingConversations, conversationsError, employeeId]);
 
   const contextValue = useMemo(
-    () => ({
-      employeeId,
-      username,
-      userStatus,
-      members,
-      memberCount,
-      loadingMembers,
-      sendMessageHandler,
-      membersError,
-      loadMembers,
-      conversations,
-      loadingConversations,
-      conversationsError,
-      selectChat,
-      selectUser,
-      selectGroup,
-      message,
-      groups,
-      groupsLoading,
-      groupsError,
-      setMessage,
-      messages,
-      loadingMessages,
-      activeConversation,
-      sendFileHandler,
-      fetchUserGroups,
-      requestFileURL,
-      createGroupUIFlow,
-      isGroupAdmin,
-      openGroupSettingsModal,
-      closeGroupSettingsModal,
-      addMemberToGroup,
-      removeMemberFromGroup,
-      updateGroupInfo,
-      deleteGroup,
-      selectedGroup: activeConversation?.isGroup ? activeConversation : null,
-    }),
+    () => {
+      console.log("📊 Context value updated:", {
+        conversationsLength: conversations.length,
+        loadingConversations,
+        conversationsError,
+        employeeId
+      });
+      
+      return {
+        employeeId,
+        username,
+        userStatus,
+        members,
+        memberCount,
+        loadingMembers,
+        sendMessageHandler,
+        membersError,
+        loadMembers,
+        conversations,
+        loadingConversations,
+        conversationsError,
+        selectChat,
+        selectUser,
+        selectGroup,
+        message,
+        groups,
+        groupsLoading,
+        groupsError,
+        setMessage,
+        messages,
+        loadingMessages,
+        activeConversation,
+        sendFileHandler,
+        fetchUserGroups,
+        requestFileURL,
+        createGroupUIFlow,
+        isGroupAdmin,
+        openGroupSettingsModal,
+        closeGroupSettingsModal,
+        addMemberToGroup,
+        removeMemberFromGroup,
+        updateGroupInfo,
+        deleteGroup,
+        selectedGroup: activeConversation?.isGroup ? activeConversation : null,
+      };
+    },
     [
       employeeId,
       username,

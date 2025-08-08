@@ -1,9 +1,8 @@
-// src/hooks/useSocket.js
+
 import { useEffect } from 'react';
 import { io } from 'socket.io-client';
 import useAuthStore from '../store/store';
 import usePostStore from '../store/postStore';
-// import useCommentStore from '../store/commentStore';
 import useKudosStore from '../store/kudosStore';
 import usePollStore from '../store/pollStore';
 import useNotificationStore from '../store/notificationStore';

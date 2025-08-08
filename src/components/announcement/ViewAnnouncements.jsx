@@ -108,17 +108,17 @@ const ViewAnnouncements = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-50 p-6">
-      {/* Header */}
+      
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
         <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-0">
           View Announcements
         </h1>
       </div>
 
-      {/* Search, Sort, and Clear Filters */}
+      
       <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-          {/* Search Bar */}
+          
           <div className="col-span-12 md:col-span-4 flex flex-col">
             <label htmlFor="searchBar" className="text-sm font-medium mb-1">
               Search
@@ -138,7 +138,7 @@ const ViewAnnouncements = () => {
             </div>
           </div>
 
-          {/* Sort by Date */}
+          
           <div className="col-span-12 md:col-span-4 flex flex-col">
             <label htmlFor="sortOrder" className="text-sm font-medium mb-1">
               Sort by Date
@@ -154,7 +154,7 @@ const ViewAnnouncements = () => {
             </select>
           </div>
 
-          {/* Clear Filters Button */}
+          
           <div className="col-span-12 md:col-span-4 flex flex-col">
             <label className="invisible text-sm font-medium">
               Clear Filters
@@ -170,7 +170,7 @@ const ViewAnnouncements = () => {
         </div>
       </div>
 
-      {/* Announcements List */}
+      
       <div>
         {announcementsLoading ? (
           <div className="grid grid-cols-1 gap-4">
@@ -237,7 +237,7 @@ const ViewAnnouncements = () => {
         )}
       </div>
 
-      {/* Fixed Pagination Controls */}
+      
       {!announcementsLoading &&
         !announcementsError &&
         filteredAnnouncements.length > 0 && (
@@ -288,7 +288,7 @@ const ViewAnnouncements = () => {
           </div>
         )}
 
-      {/* Announcement Detail Modal */}
+      
       <AnnouncementDetailModal
         isOpen={openDetailDialog}
         onClose={() => setOpenDetailDialog(false)}

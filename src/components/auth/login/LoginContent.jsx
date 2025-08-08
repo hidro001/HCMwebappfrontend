@@ -24,7 +24,7 @@ export default function LoginContent() {
             alt="Fallback Logo"
             className="hm-logo-img"
           />
-          {/* <h6 className="text-center">Product Of Razor Infotech</h6> */}
+  
         </div>
       </Stack>
     );
@@ -40,7 +40,7 @@ export default function LoginContent() {
       }}
     >
       <div className="rzrems-logo-container">
-        {/* Display company logo with fallback */}
+
         <img
           src={companyInfo.logo || "https://ems11.s3.amazonaws.com/logo-HM+(1).png"}
           alt="Company Logo"

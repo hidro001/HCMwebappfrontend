@@ -28,15 +28,11 @@ if ("serviceWorker" in navigator) {
 }
 
 const employee = localStorage.getItem("employeeId");
-// console.log("Employee ID:", employee);
 
 createRoot(document.getElementById("root")).render(
   <ThemeProvider>
     <CallProvider currentUserId={employee}>
-      {/* <CallModal />
-      <IncomingCallModal /> */}
       <IncomingCallPortal />
-
       <CallWindow />
       <VideoCallModal />
       <ChatProviderv2>

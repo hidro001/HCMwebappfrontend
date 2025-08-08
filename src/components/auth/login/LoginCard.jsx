@@ -244,7 +244,7 @@ const LoginCard = () => {
 
   return (
     <GlassCard>
-      {/* Logo */}{" "}
+      
       <Box className="flex justify-center mb-2">
         <img
           src="https://ems11.s3.amazonaws.com/logo-HM+(1).png"
@@ -252,7 +252,7 @@ const LoginCard = () => {
           className="w-36 h-36 object-contain" // Tailwind classes for width and height
         />
       </Box>
-      {/* Heading */}
+      
       <Typography
         component="h1"
         variant="h4"
@@ -266,7 +266,7 @@ const LoginCard = () => {
       >
         Sign In
       </Typography>
-      {/* Form */}
+      
       <Box
         component="form"
         onSubmit={step === 1 ? handleLogin : handleOTPVerification}

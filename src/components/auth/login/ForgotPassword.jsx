@@ -160,7 +160,7 @@ const ForgotPassword = ({ open, handleClose }) => {
           Cancel
         </Button>
 
-        {/* Show spinner + 'Sending...' when loading */}
+
         <GradientButton type="submit" disabled={loading}>
           {loading ? (
             <>

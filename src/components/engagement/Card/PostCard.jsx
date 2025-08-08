@@ -524,11 +524,10 @@ useEffect(() => {
       exit={{ y: "100%", opacity: 0 }}
       transition={{ duration: 0.4, ease: "easeOut" }}
        className="w-full md:w-[400px] h-[58vh] flex flex-col bg-gray-50 dark:bg-gray-900 rounded-t-lg md:rounded-lg border-2 border-slate-200 dark:border-gray-400" >
-  
-      {/* Close Button */}
-      <div className="flex justify-between px-3 py-2 border-b-2 border-slate-300 drak:border-gray-400">
+
+      <div className="flex justify-between px-3 py-2 border-b-2 border-slate-300 drak:border-gray-400 h-fit overflow-y-auto">
          <p className="font-semibold  text-gray-700 dark:text-gray-300">
-              {showComments ? 'Comments...' : showLike ? 'Likes...' : 'Reacts...' }
+              {showComments ? 'Comments...' : showLike ? '' : '' }
             </p>
         <button
           onClick={() => {
@@ -620,46 +619,124 @@ useEffect(() => {
        </div>
       )}
       {showLike && (
-        <div className=" m-2 space-y-4">
+        <div className="m-2 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+          {/* Header */}
+          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-t-xl">
+            <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200">
+              Likes ({post.likes.length})
+            </h3>
+          </div>
           
-          {post.likes.length > 0 && post.likes.map((like) =>(
-            <div className="flex items-center">
-            <img
-                    src={like?.user_Avatar}
-                    alt="User"
-                    className="h-7 w-7 rounded-full object-cover mr-2 border"
-                  />
-                  <div>
-            <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-              {like.first_Name} {like.last_Name}
-            </p> <p className="text-xs">{like.designation}</p></div>
-            </div>
-          ))}
+          {/* Content */}
+          <div className="max-h-[60vh] overflow-y-auto">
+            {post.likes.length > 0 ? (
+              <div className="p-2">
+                {post.likes.map((like, index) =>(
+                  <div 
+                    key={like._id || like} 
+                    className={`flex items-center p-3 rounded-lg transition-colors duration-200 ${
+                      index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-900'
+                    } hover:bg-blue-50 dark:hover:bg-blue-900/20`}
+                  >
+                    <div className="flex-shrink-0">
+                      <img
+                        src={like?.user_Avatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png"}
+                        alt="User"
+                        className="h-10 w-10 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
+                      />
+                    </div>
+                    <div className="ml-3 flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                        {like.first_Name} {like.last_Name}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        {like.designation}
+                      </p>
+                    </div>
+                    <div className="flex-shrink-0 ml-2">
+                      <div className="w-6 h-6 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
+                        <span className="text-xs">❤️</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">👍</span>
+                </div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                  No likes yet
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-500">
+                  Be the first to like this post!
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       )}
-      {showReact && (
-        <div className="m-2 space-y-4">
 
-          {post.reactions.length > 0 && post.reactions.map((reaction) =>(
-           <div className="flex justify-between">
-            <div className="flex items-center">
-            <img
-                src={reaction?.user.user_Avatar}
-                alt="User"
-                className="h-7 w-7 rounded-full object-cover mr-2 border"
-            />
-            <div>
-              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                {reaction.user.first_Name} {reaction.user.last_Name}
-              </p> 
-              <p className="text-xs">{reaction.user.designation}</p></div>
-              
-            </div>
-            <div className=" border rounded-full bg-slate-500  text-white text-sm flex items-center justify-center w-8 h-8">
-                {reactionEmojis.find((e) => e.type === reaction.type)?.emoji || "❓"}
-             </div>
-             </div>
-          ))}
+      {showReact && (
+        <div className="m-2 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+          {/* Header */}
+          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-t-xl">
+            <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200">
+              Reactions ({post.reactions.length})
+            </h3>
+          </div>
+          
+          {/* Content */}
+          <div className="max-h-[60vh] overflow-y-auto">
+            {post.reactions.length > 0 ? (
+              <div className="p-2">
+                {post.reactions.map((reaction, index) =>(
+                  <div 
+                    key={reaction._id || `${reaction.user._id}-${reaction.type}`} 
+                    className={`flex items-center p-3 rounded-lg transition-colors duration-200 ${
+                      index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-900'
+                    } hover:bg-blue-50 dark:hover:bg-blue-900/20`}
+                  >
+                    <div className="flex-shrink-0">
+                      <img
+                        src={reaction?.user.user_Avatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png"}
+                        alt="User"
+                        className="h-10 w-10 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
+                      />
+                    </div>
+                    <div className="ml-3 flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                        {reaction.user.first_Name} {reaction.user.last_Name}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                        {reaction.user.designation}
+                      </p>
+                    </div>
+                    <div className="flex-shrink-0 ml-2">
+                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-sm">
+                        <span className="text-sm">
+                          {reactionEmojis.find((e) => e.type === reaction.type)?.emoji || "❓"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+                  <span className="text-2xl">😊</span>
+                </div>
+                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                  No reactions yet
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-500">
+                  Be the first to react to this post!
+                </p>
+              </div>
+            )}
+          </div>
         </div>
       )}
        
@@ -681,6 +758,22 @@ useEffect(() => {
             setOpenPostModal(false)}}
         />
        )}
+
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(0, 0, 0, 0.05);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: linear-gradient(180deg, #3b82f6, #8b5cf6);
+          border-radius: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(180deg, #2563eb, #7c3aed);
+        }
+      `}</style>
     </>
   );
 };

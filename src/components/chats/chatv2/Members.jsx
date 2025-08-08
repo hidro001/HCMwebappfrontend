@@ -58,7 +58,7 @@ function Members({ searchTerm }) {
                 />
                 {isOnline && (
                   <span
-                    className="absolute bottom-0 right-0 w-4 h-4 bg-[#2B85FF] rounded-full border-2 border-white"
+                    className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-white"
                     title="Online"
                   ></span>
                 )}

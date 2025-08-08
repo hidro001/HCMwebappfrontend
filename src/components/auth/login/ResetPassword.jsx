@@ -62,7 +62,7 @@ const ResetPassword = () => {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
       <div className="w-full max-w-md p-6 bg-white shadow-lg rounded-2xl dark:bg-gray-800 dark:shadow-lg">
-        {/* Logo with loading spinner */}
+
         <div className="flex justify-center mb-6">
           {logoLoading ? (
             <CircularProgress color="primary" />
@@ -76,7 +76,7 @@ const ResetPassword = () => {
           )}
         </div>
 
-        {/* Header */}
+
         <h2 className="text-center text-2xl font-bold text-gray-800 dark:text-gray-100">
           Set New Password
         </h2>
@@ -84,7 +84,7 @@ const ResetPassword = () => {
           Enter your new password below
         </p>
 
-        {/* Form */}
+
         <form onSubmit={handleResetPassword} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
@@ -132,7 +132,7 @@ const ResetPassword = () => {
             </div>
           </div>
 
-          {/* Submit Button */}
+  
           <button
             type="submit"
             disabled={loading}
@@ -142,7 +142,7 @@ const ResetPassword = () => {
           </button>
         </form>
 
-        {/* Footer */}
+
         <div className="text-center mt-6 text-sm text-gray-500 dark:text-gray-400">
           <p>
             &copy; Razor Infotech Pvt. Ltd. | Privacy Policy | Terms of Service

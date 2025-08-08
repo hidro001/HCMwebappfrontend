@@ -15,7 +15,6 @@ function HeadingWithSubtitle({ heading, subtitle }) {
   );
 }
 
-// A simple image component that fills its parent
 function Image({ src, alt }) {
   return (
     <img

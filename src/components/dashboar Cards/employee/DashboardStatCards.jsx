@@ -18,10 +18,8 @@ import {
 import { getDashboardStats } from "../../../service/dashboardService";
 
 function DashboardStatCards() {
-  // Add navigate hook
   const navigate = useNavigate();
-  
-  // Local state for the three stats
+
   const [totalLoggedIn, setTotalLoggedIn] = useState(0);
   const [totalLeavesTaken, setTotalLeavesTaken] = useState(0);
   const [totalTaskPending, setTotalTaskPending] = useState(0);

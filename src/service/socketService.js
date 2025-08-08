@@ -4,16 +4,25 @@ import useAuthStore from '../store/store';
 
 let connectedsocket;
 
-
-
 const server_url = import.meta.env.VITE_SOCKET_URL;
-
 
 let socket = null;
 
 export const initSocket = (employeeId , token) => {
-  if (socket) return socket;
+  console.log("🔧 SocketService - initSocket called:", { employeeId, hasToken: !!token, server_url });
+  
+  if (socket && socket.connected) {
+    console.log("🔧 SocketService - Returning existing connected socket");
+    return socket;
+  }
 
+  if (socket) {
+    console.log("🔧 SocketService - Disconnecting existing socket");
+    socket.disconnect();
+    socket = null;
+  }
+  
+  console.log("🔧 SocketService - Creating new socket connection");
   socket = io(server_url, {
     transports: ['websocket', 'polling'],
     reconnectionAttempts: 5,
@@ -24,18 +33,8 @@ export const initSocket = (employeeId , token) => {
     query: { userId: employeeId }
   });
 
-  socket.on('connect', () => {
-    if (employeeId) {
-      socket.emit('joinRoom', {
-        sender: employeeId,
-        receiver: employeeId,
-      });
-      socket.emit('joinPersonalRoom', { employeeId });
-    }
-  });
-
   socket.on('connect_error', (err) => {
-    console.error('Connection Error:', err);
+    console.log("🔧 SocketService - Connection error:", err);
     toast.error('Unable to connect to chat server.');
   });
 
@@ -51,7 +50,7 @@ export const initSocket = (employeeId , token) => {
 
 };
 
-// console.log(`socket only :-${connectedsocket}`)
+
 
 export const getsocket = () => connectedsocket;
 
@@ -90,7 +89,6 @@ export const subscribeToMessages = (
         data.receiver === selectedUserIdRef.current);
 
     if (isRelevant) {
-      // If it's a file message that was optimistically added, update it.
       if (data.type === 'file' && data.sender === employeeIdRef.current) {
         setMessages((prev) =>
           prev.map((msg) => {
@@ -111,7 +109,6 @@ export const subscribeToMessages = (
           })
         );
       } else {
-        // Build a new message object
         const newMsg = {
           sender: data.sender,
           type: data.type || 'text',
@@ -121,8 +118,6 @@ export const subscribeToMessages = (
           fileType: data.fileType || '',
           time: new Date(data.time).toLocaleTimeString(),
         };
-
-        // Deduplicate before adding the new message.
         setMessages((prev) => {
           const alreadyExists = prev.some(
             (msg) =>
@@ -137,7 +132,6 @@ export const subscribeToMessages = (
         });
       }
     } else {
-      // For messages not in the active conversation, update the unread count.
       if (data.receiver === employeeIdRef.current && updateUnread) {
         updateUnread(data.sender);
       }
@@ -145,7 +139,6 @@ export const subscribeToMessages = (
   });
 
   socket.on('error', (data) => {
-    console.error('Server Error:', data.message);
     toast.error(data.message);
   });
 };

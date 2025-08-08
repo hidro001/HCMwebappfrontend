@@ -1874,6 +1874,7 @@ function SubordinatesEmployees() {
   const [isToggleConfirmOpen, setIsToggleConfirmOpen] = useState(false);
   const [toggleUserId, setToggleUserId] = useState(null);
   const [toggleUserStatus, setToggleUserStatus] = useState(false);
+  const [toggleConfirmMessage, setToggleConfirmMessage] = useState("");
 
   const navigate = useNavigate();
 
@@ -1915,14 +1916,29 @@ function SubordinatesEmployees() {
 
   // Toggle Status Logic
   const openToggleDialog = (userId, currentStatus) => {
+    // Check if this employee is a manager (has subordinates)
+    const employee = filteredEmployees.find(emp => emp._id === userId || emp.employee_Id === userId);
+    const hasSubordinates = employee && filteredEmployees.some(emp => 
+      emp.assigned_to && emp.assigned_to.some(manager => manager._id === employee._id)
+    );
+    
     setToggleUserId(userId);
     setToggleUserStatus(currentStatus);
+    
+    // Update the confirmation message based on whether it's a manager being deactivated
+    if (currentStatus && hasSubordinates) {
+      setToggleConfirmMessage(`Are you sure you want to deactivate this manager? Their team members will be automatically reassigned to their manager's manager.`);
+    } else {
+      setToggleConfirmMessage(`Are you sure you want to ${currentStatus ? "deactivate" : "activate"} this employee?`);
+    }
+    
     setIsToggleConfirmOpen(true);
   };
 
   const handleCancelToggle = () => {
     setToggleUserId(null);
     setToggleUserStatus(false);
+    setToggleConfirmMessage("");
     setIsToggleConfirmOpen(false);
   };
 
@@ -1932,6 +1948,7 @@ function SubordinatesEmployees() {
     setIsToggleConfirmOpen(false);
     setToggleUserId(null);
     setToggleUserStatus(false);
+    setToggleConfirmMessage("");
   };
 
   // Pagination logic
@@ -2576,7 +2593,7 @@ function SubordinatesEmployees() {
       <ConfirmationDialog
         open={isToggleConfirmOpen}
         title="Confirm Status Change"
-        message={`Are you sure you want to ${
+        message={toggleConfirmMessage || `Are you sure you want to ${
           toggleUserStatus ? "deactivate" : "activate"
         } this employee?`}
         onConfirm={handleConfirmToggle}

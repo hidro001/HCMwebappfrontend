@@ -206,10 +206,10 @@ const MakeAnnouncement = () => {
   // -------------------- Render --------------------
   return (
     <div className="min-h-screen p-6 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-50 transition-colors">
-      {/* Full-screen loader when deleting */}
+      
       {deleteLoading && <FullScreenLoader />}
 
-      {/* Header + Add Button */}
+      
       <div className="flex flex-col md:flex-row justify-between items-center mb-6">
         <h1 className="text-2xl md:text-3xl font-bold mb-4 md:mb-0">
           Manage Announcements
@@ -225,10 +225,10 @@ const MakeAnnouncement = () => {
         </motion.button>
       </div>
 
-      {/* Search & Filters */}
+      
       <div className="bg-white dark:bg-gray-800 shadow-md rounded-xl p-4 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-start">
-          {/* Search */}
+          
           <div className="col-span-12 md:col-span-4 flex flex-col">
             <label className="text-sm font-medium mb-1">Search</label>
             <div className="flex items-center bg-gray-50 dark:bg-gray-700 rounded-md px-2">
@@ -243,7 +243,7 @@ const MakeAnnouncement = () => {
             </div>
           </div>
 
-          {/* Filter by Department */}
+          
           <div className="col-span-12 md:col-span-3 flex flex-col">
             <label className="text-sm font-medium mb-1">Filter by Department</label>
             <select
@@ -260,7 +260,7 @@ const MakeAnnouncement = () => {
             </select>
           </div>
 
-          {/* Sort by Date */}
+          
           <div className="col-span-12 md:col-span-3 flex flex-col">
             <label className="text-sm font-medium mb-1">Sort by Date</label>
             <select
@@ -273,7 +273,7 @@ const MakeAnnouncement = () => {
             </select>
           </div>
 
-          {/* Clear Filters */}
+          
           <div className="col-span-12 md:col-span-2 flex flex-col">
             <label className="invisible">Clear</label>
             <button
@@ -287,9 +287,9 @@ const MakeAnnouncement = () => {
         </div>
       </div>
 
-      {/* Announcements List */}
+      
       <div>
-        {/* Loading State */}
+        
         {announcementsLoading && (
           <div className="grid grid-cols-1 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -302,12 +302,12 @@ const MakeAnnouncement = () => {
           </div>
         )}
 
-        {/* Error State */}
+        
         {announcementsError && !announcementsLoading && (
           <p className="text-center text-red-500">{announcementsError}</p>
         )}
 
-        {/* No Results */}
+        
         {!announcementsLoading && !announcementsError && filteredAnnouncements.length === 0 && (
           <p className="text-center">No announcements found.</p>
         )}

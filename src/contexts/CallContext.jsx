@@ -362,11 +362,10 @@ export function CallProvider({ children, currentUserId }) {
     setIncomingCall(null);
   };
 
-  // NEW: allow rejecting an incoming call
   const rejectCall = () => {
     if (!incomingCall) return;
     const roomId =
-      incomingCall.roomId ?? // ✅ works with new clients
+      incomingCall.roomId ??
       incomingCall.callId;
 
     socket.current.emit("rejectCall", {
@@ -382,7 +381,7 @@ export function CallProvider({ children, currentUserId }) {
       callId: call.roomId,
       userId: currentUserId,
     });
-    socket.current.emit("leave-call", { roomId: call.roomId }); // mediasoup cleanup
+    socket.current.emit("leave-call", { roomId: call.roomId });
     localStream?.getTracks().forEach((t) => t.stop());
     setLocalStream(null);
     setRemoteStreams([]);
