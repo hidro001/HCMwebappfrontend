@@ -35,6 +35,8 @@ export default function AddGroup({ onClose }) {
     fetchAllEmployees();
   }, []);
 
+  console.log()
+
   // Function to find the upper level manager who is not deactivated
   const findAppropriateManager = (currentEmployeeId) => {
     if (!allEmployees.length) return currentEmployeeId;
@@ -90,8 +92,6 @@ export default function AddGroup({ onClose }) {
     }
 
     setCreating(true);
-
-    // Find the appropriate manager (upper level manager who is not deactivated)
     const appropriateAdmin = findAppropriateManager(employeeId);
     console.log(`👤 Creating group with admin: ${appropriateAdmin} (original: ${employeeId})`);
 
@@ -201,7 +201,7 @@ export default function AddGroup({ onClose }) {
                 <input
                   type="file"
                   accept="image/*"
-                  onChange={(e) => setGroupIcon(e.target.value)}
+                  onChange={(e) => setGroupIcon(e.target.files[0])}
                   className="w-full pl-12 pr-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent transition-all duration-200 file:mr-3 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-medium file:bg-blue-50 dark:file:bg-blue-900/30 file:text-blue-700 dark:file:text-blue-300 hover:file:bg-blue-100 dark:hover:file:bg-blue-900/50 text-sm"
                 />
               </div>

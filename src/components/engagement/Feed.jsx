@@ -11,7 +11,7 @@ const Feed = ({
   curCategory = "All Announcement",
   curDepartment = "all",
   curSort = "newest",
-  onRefresh =false
+  onRefresh = false
 }) => {
   const { feed, isLoading, error, hasMore, fetchFeed, page, refreshFeed } =
     useFeedStore();
@@ -23,9 +23,8 @@ const Feed = ({
   }, [fetchFeed, connect]);
 
   useEffect(() => {
-    if(onRefresh){
-              useFeedStore.getState().refreshFeed();
-
+    if (onRefresh) {
+      useFeedStore.getState().refreshFeed();
     }
   }, [onRefresh])
 
@@ -51,15 +50,8 @@ const Feed = ({
       return curSort === "newest" ? dateB - dateA : dateA - dateB;
     });
 
-  console.log('Current category filter:', curCategory);
-  console.log('Current department filter:', curDepartment);
-  console.log('Total feed items:', feed.length);
-  console.log('Filtered feed items:', filteredSortedFeed.length);
-  console.log('Sample feed item categories:', feed.slice(0, 3).map(item => ({ id: item._id, category: item.categories })));
-
   return (
     <div className="max-w-3xl h-full py-6">
-      {/* Error message */}
       {error && (
         <div className="mb-4 p-4 bg-red-100 text-red-700 rounded">{error}</div>
       )}
@@ -91,22 +83,37 @@ const Feed = ({
           }
           scrollableTarget="scrollableDiv"
         >
+
           {filteredSortedFeed.length === 0 && !isLoading && !error ? (
-            <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
-              <div className="bg-gradient-to-tr from-blue-200 to-purple-300 dark:from-blue-900/30 dark:to-purple-900/30 p-6 rounded-full shadow-lg">
-                <RiRobot2Line className="w-14 h-14 text-gray-400 dark:text-gray-500" />
+            feed.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center space-y-4">
+                <div className="bg-gradient-to-tr from-blue-200 to-purple-300 dark:from-blue-900/30 dark:to-purple-900/30 p-6 rounded-full shadow-lg">
+                  <RiRobot2Line className="w-14 h-14 text-gray-400 dark:text-gray-500" />
+                </div>
+                <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300">
+                  No content yet
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Be the first to share something amazing with your team!
+                </p>
+                <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500">
+                  <RiTimeLine className="w-4 h-4" />
+                  <span>Waiting for posts...</span>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300">
-                No content yet
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Be the first to share something amazing with your team!
-              </p>
-              <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500">
-                <RiTimeLine className="w-4 h-4" />
-                <span>Waiting for posts...</span>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 text-center space-y-4">
+                <div className="bg-gray-200 dark:bg-gray-800 p-6 rounded-full shadow">
+                  <RiRobot2Line className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-600 dark:text-gray-300">
+                  No posts found for this filter
+                </h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Try selecting a different category or department.
+                </p>
               </div>
-            </div>
+            )
           ) : (
             <div className="w-full space-y-4 px-1 pt-2 pb-6">
               {filteredSortedFeed.map((item) =>

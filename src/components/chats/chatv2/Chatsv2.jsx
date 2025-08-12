@@ -25,9 +25,6 @@ function Chatsv2() {
     useContext(ChatContextv2);
   const employeeId = localStorage.getItem("employeeId");
 
-  console.log("Chatsv2 - active state:", active);
-  console.log("Chatsv2 - employeeId:", employeeId);
-
   useEffect(() => {
     const users = async () => {
       const response = await axios.get(
@@ -141,7 +138,7 @@ function Chatsv2() {
 
           
 
-          <div className="conversation-list h-[40vh]">
+          <div className={`conversation-list ${active =="AddGroups" ? "h-[calc(100vh-300px)]" : "h-[calc(100vh-100px)"} overflow-y-auto`}>
             {active === "chats" ? (
               <ConversationList searchTerm={searchTerm} />
             ) : active === "Groups" ? (

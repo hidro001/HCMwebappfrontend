@@ -42,8 +42,6 @@ const useEmployeesStore = create((set, get) => ({
       set({ loading: false });
     }
   },
-
-  // ---------- Load Employee by ID ----------
   loadEmployeeById: async (employeeId) => {
     set({ loadingSelectedEmployee: true });
     try {
@@ -61,12 +59,10 @@ const useEmployeesStore = create((set, get) => ({
     }
   },
 
-  // ---------- Reset Selected Employee ----------
   resetSelectedEmployee: () => {
     set({ selectedEmployee: null });
   },
 
-  // ---------- Search Employees ----------
   handleSearch: (searchValue) => {
     const { employees } = get();
     const filtered = employees.filter((emp) =>

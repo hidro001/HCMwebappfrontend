@@ -92,9 +92,6 @@ const GreetFeed = () => {
 
   if (error) return <div className="p-4 bg-red-100 text-red-700 mb-4">{error}</div>;
   if (isLoading) return <p className="text-center py-10">Loading...</p>;
-  // if (combinedList.length === 0) return <p className="text-center py-10 text-gray-500">No items to display.</p>;
-  // if (combinedUpComingList.length === 0) return <p className="text-center py-10 text-gray-500">No items to display.</p>;
-
   const NextArrow = ({ onClick }) => (
     <div
       className="absolute top-1/2 right-4 transform -translate-y-1/2 bg-white dark:bg-gray-700 rounded-full p-2 shadow-md cursor-pointer z-10"
@@ -165,9 +162,6 @@ const GreetFeed = () => {
                       <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300">
                         No content yet
                       </h3>
-                      {/* <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Be the first to share something amazing with your team!
-                      </p> */}
                       <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500">
                         <RiTimeLine className="w-4 h-4" />
                         <span>Waiting...</span>
@@ -197,9 +191,7 @@ const GreetFeed = () => {
                       <h3 className="text-xl font-semibold text-gray-600 dark:text-gray-300">
                         No content yet
                       </h3>
-                      {/* <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Be the first to share something amazing with your team!
-                      </p> */}
+
                       <div className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500">
                         <RiTimeLine className="w-4 h-4" />
                         <span>Waiting...</span>

@@ -724,10 +724,9 @@ const handleDateClick = (date) => {
   return (
      <BaseModal isOpen={show} onClose={handleCancel}>
       <div className="">
-        <div className="h-[90vh] overflow-y-auto rounded-2xl shadow-2xl max-w-4xl w-full transition-all duration-300 bg-gradient-to-br from-blue-50 via-white to-purple-50 border border-gray-200 dark:bg-gray-700 dark:border-gray-700">
+        <div className="overflow-y-auto rounded-2xl shadow-2xl max-w-4xl w-full transition-all duration-300 bg-gradient-to-br from-blue-50 via-white to-purple-50 border border-gray-200 dark:bg-gray-700 dark:border-gray-700">
           <div className="py-8 px-4 dark:bg-gray-700">
             <div className="max-w-4xl mx-auto">
-              {/* Header */}
               <div className="text-center mb-8">
                 <div className="flex items-center justify-between mb-4">
                   <div></div>
@@ -745,12 +744,7 @@ const handleDateClick = (date) => {
                   Submit your leave request with all required details
                 </p>
               </div>
-
-              
-              {/* Main Form */}
               <form onSubmit={handleSubmit} className="rounded-2xl shadow-2xl border overflow-hidden transition-all duration-300 bg-white border-gray-200 shadow-gray-300/30 dark:bg-gray-800 dark:border-gray-600 dark:shadow-gray-900/50">
-                
-                {/* Leave Type Selection */}
                 <div className="p-8 border-b transition-all duration-300 bg-gradient-to-r from-gray-50 to-gray-100 border-gray-200 dark:bg-gradient-to-r dark:from-gray-800 dark:via-gray-800 dark:to-gray-700 dark:border-gray-600">
                   <div className='flex justify-between items-center'>
                     <h2 className="text-2xl font-bold mb-6 flex items-center text-gray-800 dark:text-gray-100">

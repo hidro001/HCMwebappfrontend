@@ -33,13 +33,6 @@ const FilterFeed = ({ onDepartmentChange, onSort }) => {
       <div className="relative ">
         <div className="relative  px-4 pb-4 ">
 
-          {/* <div className="flex items-center gap-2 mb-4">
-            <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
-              <HiOutlineAdjustmentsHorizontal className="w-4 h-4 text-white" />
-            </div>
-            <h3 className="font-semibold text-gray-800 dark:text-white">Filters & Sort</h3>
-          </div> */}
-
           <div className="grid grid-rows-1 md:grid-rows-2 gap-4">
             
             <div 
