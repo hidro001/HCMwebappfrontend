@@ -58,7 +58,6 @@ export default function NotificationsPage() {
     [notifications]
   );
 
-  // Fetch departments and notifications on mount
   useEffect(() => {
     fetchDepartments();
     fetchNotifications();
@@ -90,6 +89,8 @@ export default function NotificationsPage() {
       toast.success("Notification marked as read!");
     }
   };
+
+  console.log("📋 NotificationsPage - Notifications:", notifications);
 
   const handleDelete = (id) => {
     setConfirmDialog({
