@@ -7,7 +7,7 @@ import PropTypes from "prop-types";
 import { motion } from "framer-motion";
 import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { FaRegComment } from "react-icons/fa";
-import { MdDelete, MdEdit  } from "react-icons/md";
+import { MdDelete, MdEdit } from "react-icons/md";
 import DOMPurify from "dompurify";
 import { FaArrowUp } from "react-icons/fa";
 import PostCreateBox from "../CreateBox/PostCreateBox";
@@ -32,11 +32,11 @@ const PostCard = ({ post }) => {
   const userId = user._id;
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [selectedReaction, setSelectedReaction] = useState(() => {
-  const userReaction = post.reactions?.find(r => {
-    const reactionUserId = typeof r.user === "object" ? r.user._id : r.user;
-    return reactionUserId === userId;
-  });
-  return userReaction?.type || null;
+    const userReaction = post.reactions?.find(r => {
+      const reactionUserId = typeof r.user === "object" ? r.user._id : r.user;
+      return reactionUserId === userId;
+    });
+    return userReaction?.type || null;
   });
 
   const liked = (post.likes || []).some((likeItem) =>
@@ -54,7 +54,7 @@ const PostCard = ({ post }) => {
   const [isLiking, setIsLiking] = useState(false);
   const [isAddingComment, setIsAddingComment] = useState(false);
   const [loadingLikes, setLoadingLikes] = useState(new Set());
-  
+
   useEffect(() => {
     loadEmployeeById(userId)
   }, [userId, loadEmployeeById])
@@ -62,14 +62,21 @@ const PostCard = ({ post }) => {
   const permissions = selectedEmployee?.engagement_permission?.permissions || [];
 
   useEffect(() => {
-  const handleClickOutside = (e) => {
-    if (!e.target.closest(".emoji-picker")) {
-      setShowEmojiPicker(false);
-    }
-  };
-  document.addEventListener("click", handleClickOutside);
-  return () => document.removeEventListener("click", handleClickOutside);
+    const handleClickOutside = (e) => {
+      if (!e.target.closest(".emoji-picker")) {
+        setShowEmojiPicker(false);
+      }
+    };
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
+
+  function linkify(text) {
+    const urlPattern = /(https?:\/\/[^\s]+)/g;
+    return text.replace(urlPattern, (url) => {
+      return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:blue; text-decoration:underline;">${url}</a>`;
+    });
+  }
 
 
   const handleLike = async () => {
@@ -97,47 +104,47 @@ const PostCard = ({ post }) => {
   };
 
   const handleReact = async (reactionType) => {
-  if (isLiking) return;
-  setIsLiking(true);
+    if (isLiking) return;
+    setIsLiking(true);
 
-  try {
-    const userReaction = post.reactions?.find(r => {
-      const reactionUserId = typeof r.user === "object" ? r.user._id : r.user;
-      return reactionUserId === userId;
-    });
-
-    let updatedReactions;
-
-    if (userReaction && userReaction.type === reactionType) {
-      updatedReactions = post.reactions.filter(r => {
+    try {
+      const userReaction = post.reactions?.find(r => {
         const reactionUserId = typeof r.user === "object" ? r.user._id : r.user;
-        return reactionUserId !== userId;
+        return reactionUserId === userId;
       });
-      setSelectedReaction(null);
-    } else if (userReaction) {
-      updatedReactions = post.reactions.map(r => {
-        const reactionUserId = typeof r.user === "object" ? r.user._id : r.user;
-        return reactionUserId === userId ? { ...r, type: reactionType } : r;
-      });
-      setSelectedReaction(reactionType);
-    } else {
-      updatedReactions = [...(post.reactions || []), {
-        user: userId,
-        type: reactionType,
-        _id: `temp-${Date.now()}`
-      }];
-      setSelectedReaction(reactionType);
+
+      let updatedReactions;
+
+      if (userReaction && userReaction.type === reactionType) {
+        updatedReactions = post.reactions.filter(r => {
+          const reactionUserId = typeof r.user === "object" ? r.user._id : r.user;
+          return reactionUserId !== userId;
+        });
+        setSelectedReaction(null);
+      } else if (userReaction) {
+        updatedReactions = post.reactions.map(r => {
+          const reactionUserId = typeof r.user === "object" ? r.user._id : r.user;
+          return reactionUserId === userId ? { ...r, type: reactionType } : r;
+        });
+        setSelectedReaction(reactionType);
+      } else {
+        updatedReactions = [...(post.reactions || []), {
+          user: userId,
+          type: reactionType,
+          _id: `temp-${Date.now()}`
+        }];
+        setSelectedReaction(reactionType);
+      }
+      useFeedStore.getState().updatePost({ ...post, reactions: updatedReactions });
+
+      const { data: updatedPost } = await axiosInstance.post(`/posts/${post._id}/react`, { reactionType });
+      useFeedStore.getState().updatePost(updatedPost);
+    } catch (error) {
+      toast.error("Failed to react to post.");
+      console.error(error);
+    } finally {
+      setIsLiking(false);
     }
-    useFeedStore.getState().updatePost({ ...post, reactions: updatedReactions });
-
-    const { data: updatedPost } = await axiosInstance.post(`/posts/${post._id}/react`, { reactionType });
-    useFeedStore.getState().updatePost(updatedPost);
-  } catch (error) {
-    toast.error("Failed to react to post.");
-    console.error(error);
-  } finally {
-    setIsLiking(false);
-  }
   };
 
   const handleDeletePost = async () => {
@@ -189,7 +196,7 @@ const PostCard = ({ post }) => {
     setShowReact(false)
     setShowLike(false);
     setShowComments(!showComments);
-    
+
   };
 
   const handleToggleLikes = () => {
@@ -198,9 +205,9 @@ const PostCard = ({ post }) => {
     setShowLike(!showLike);
   };
   const handleToggleReacts = () => {
-      setShowComments(false);
-      setShowLike(false);
-      setShowReact(!showReact)
+    setShowComments(false);
+    setShowLike(false);
+    setShowReact(!showReact)
   };
 
   const getLikeSummary = (likes = []) => {
@@ -272,27 +279,27 @@ const PostCard = ({ post }) => {
     return "unknown";
   };
 
-//   const getMediaType = (url) => {
-//   if (/\.(jpeg|jpg|png|gif|webp|svg)$/i.test(url)) return "image";
-//   if (/\.(mp4|webm|ogg|mov)$/i.test(url)) return "video";
-//   return "unknown";
-// };
+  //   const getMediaType = (url) => {
+  //   if (/\.(jpeg|jpg|png|gif|webp|svg)$/i.test(url)) return "image";
+  //   if (/\.(mp4|webm|ogg|mov)$/i.test(url)) return "video";
+  //   return "unknown";
+  // };
 
 
-useEffect(() => {
-  const scrollableDiv = document.getElementById("scrollableDiv");
-  const isModalOpen = showComments || showLike || showReact;
+  useEffect(() => {
+    const scrollableDiv = document.getElementById("scrollableDiv");
+    const isModalOpen = showComments || showLike || showReact;
 
-  if (scrollableDiv) {
-    scrollableDiv.style.overflow = isModalOpen ? "hidden" : "auto";
-  }
-
-  return () => {
     if (scrollableDiv) {
-      scrollableDiv.style.overflow = "auto";
+      scrollableDiv.style.overflow = isModalOpen ? "hidden" : "auto";
     }
-  };
-}, [showComments, showLike, showReact]);
+
+    return () => {
+      if (scrollableDiv) {
+        scrollableDiv.style.overflow = "auto";
+      }
+    };
+  }, [showComments, showLike, showReact]);
 
 
 
@@ -337,12 +344,12 @@ useEffect(() => {
               })}
             </p>
           </div>
-           {canEditPost && (
-            <button onClick={handleEditPost}  className="p-1 rounded-full">
+          {canEditPost && (
+            <button onClick={handleEditPost} className="p-1 rounded-full">
               {isDeleting ? (
                 <span className="loader h-4 w-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin"></span>
               ) : (
-                <MdEdit  className="w-4 h-4 text-green-600" />
+                <MdEdit className="w-4 h-4 text-green-600" />
               )}
             </button>
           )}
@@ -364,7 +371,10 @@ useEffect(() => {
         />
         <p
           className="text-sm text-gray-700 dark:text-gray-300"
-          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.description) }}
+          dangerouslySetInnerHTML={{
+            __html: DOMPurify.sanitize(linkify(post.description)),
+          }}
+
         />
 
         {/* Media */}
@@ -454,294 +464,291 @@ useEffect(() => {
     </Slider>
   </div>
 )} */}
-      {Array.isArray(post.media) && post.media.length > 0 && (
-       <MediaCarousel media={post.media} />
-      )}
+        {Array.isArray(post.media) && post.media.length > 0 && (
+          <MediaCarousel media={post.media} />
+        )}
 
 
         {/* Likes & Reactions */}
         <div>
           <div className="flex justify-start items-center mt-3 text-sm text-gray-600 dark:text-gray-300">
             <div className="flex items-center">
-            <button onClick={handleLike} disabled={isLiking} className="flex items-center space-x-1">
-              {liked ? <AiFillHeart className="text-red-500" /> : <AiOutlineHeart />}
-              <span>{likeCount}</span>
+              <button onClick={handleLike} disabled={isLiking} className="flex items-center space-x-1">
+                {liked ? <AiFillHeart className="text-red-500" /> : <AiOutlineHeart />}
+                <span>{likeCount}</span>
               </button>
             </div>
             <div className="relative emoji-picker mx-3">
-                <button
-                  type="button"
-                  onClick={() => setShowEmojiPicker((prev) => !prev)}
-                  className=" hover:opacity-100 transition-opacity"
-                  title="React"
-                >
-                  😊
-                </button>
-                <span onClick={handleToggleReacts} className="text-sm ml-1 text-gray-500 dark:text-gray-300 cursor-pointer">
-                  {post.reactions?.length || 0}
-                </span>
+              <button
+                type="button"
+                onClick={() => setShowEmojiPicker((prev) => !prev)}
+                className=" hover:opacity-100 transition-opacity"
+                title="React"
+              >
+                😊
+              </button>
+              <span onClick={handleToggleReacts} className="text-sm ml-1 text-gray-500 dark:text-gray-300 cursor-pointer">
+                {post.reactions?.length || 0}
+              </span>
 
-                {showEmojiPicker && (
-                  <div className="absolute z-10 mt-2 left-0 bg-white dark:bg-gray-700 shadow-lg rounded-md p-2 flex space-x-2">
-                    {reactionEmojis.map(({ type, emoji }) => (
-                      <button
-                        key={type}
-                        onClick={() => {
-                          handleReact(type);
-                          setShowEmojiPicker(false);
-                        }}
-                        className="text-xl hover:scale-110 transition-transform"
-                        title={type}
-                      >
-                        {emoji}
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
+              {showEmojiPicker && (
+                <div className="absolute z-10 mt-2 left-0 bg-white dark:bg-gray-700 shadow-lg rounded-md p-2 flex space-x-2">
+                  {reactionEmojis.map(({ type, emoji }) => (
+                    <button
+                      key={type}
+                      onClick={() => {
+                        handleReact(type);
+                        setShowEmojiPicker(false);
+                      }}
+                      className="text-xl hover:scale-110 transition-transform"
+                      title={type}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <button onClick={handleToggleComments} className="flex items-center space-x-1 mx-1">
               <FaRegComment />
               <span>{post.comments.length}</span>
             </button>
           </div>
-           <span onClick={handleToggleLikes} className="text-xs pl-1 truncate max-w-[150px] cursor-pointer">Like by {getLikeSummary(post.likes)}...</span>
+          <span onClick={handleToggleLikes} className="text-xs pl-1 truncate max-w-[150px] cursor-pointer">Like by {getLikeSummary(post.likes)}...</span>
         </div>
       </motion.div>
 
 
-{(showComments || showLike || showReact) && (
-   <motion.div
-    initial={{ opacity: 0 }}
-    animate={{ opacity: 1 }}
-    exit={{ opacity: 0 }}
-    transition={{ duration: 0.3 }}
-    className="fixed inset-0 z-50 flex items-start justify-center pt-[3vh]"
-  >
-    <motion.div
-      initial={{ y: "100%", opacity: 0, boxShadow: "0px 0px 0px rgba(0, 0, 0, 0)" }}
-      animate={{ y: 0, opacity: 1, boxShadow: "0px -10px 30px rgba(0, 0, 0, 0.3)" }}
-      exit={{ y: "100%", opacity: 0 }}
-      transition={{ duration: 0.4, ease: "easeOut" }}
-       className="w-full md:w-[400px] h-[58vh] flex flex-col bg-gray-50 dark:bg-gray-900 rounded-t-lg md:rounded-lg border-2 border-slate-200 dark:border-gray-400" >
-
-      <div className="flex justify-between px-3 py-2 border-b-2 border-slate-300 drak:border-gray-400 h-fit overflow-y-auto">
-         <p className="font-semibold  text-gray-700 dark:text-gray-300">
-              {showComments ? 'Comments...' : showLike ? '' : '' }
-            </p>
-        <button
-          onClick={() => {
-            setShowComments(false);
-            setShowLike(false);
-            setShowReact(false);
-          }}
-          className="text-black dark:text-gray-400 font-semibold hover:text-gray-500 dark:hover:text-white"
+      {(showComments || showLike || showReact) && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="fixed inset-0 z-50 flex items-start justify-center pt-[3vh]"
         >
-          ✕
-        </button>
-      </div>
-      {/* Comments Drawer */}
-     {showComments && (
-        <div className="relative h-[50vh] flex flex-col justify-between px-3 py-2">
-           
-        {/* Existing Comments */}
-        <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-1">
-          {(!post.comments || post.comments.length === 0) && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">No comments yet.</p>
-          )}
-          {post.comments?.map((comment) => {
-            const isLiked = comment.reactions.some((r) => r.user === userId);
-            const likeCount = comment.reactions.filter((r) => r.type === "like").length;
-            const isLoading = loadingLikes.has(comment._id);
+          <motion.div
+            initial={{ y: "100%", opacity: 0, boxShadow: "0px 0px 0px rgba(0, 0, 0, 0)" }}
+            animate={{ y: 0, opacity: 1, boxShadow: "0px -10px 30px rgba(0, 0, 0, 0.3)" }}
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{ duration: 0.4, ease: "easeOut" }}
+            className="w-full md:w-[400px] h-[58vh] flex flex-col bg-gray-50 dark:bg-gray-900 rounded-t-lg md:rounded-lg border-2 border-slate-200 dark:border-gray-400" >
 
-            return (
-              <div
-                key={comment._id}
-                className="flex items-start justify-between text-sm text-gray-700 dark:text-gray-200"
+            <div className="flex justify-between px-3 py-2 border-b-2 border-slate-300 drak:border-gray-400 h-fit overflow-y-auto">
+              <p className="font-semibold  text-gray-700 dark:text-gray-300">
+                {showComments ? 'Comments...' : showLike ? '' : ''}
+              </p>
+              <button
+                onClick={() => {
+                  setShowComments(false);
+                  setShowLike(false);
+                  setShowReact(false);
+                }}
+                className="text-black dark:text-gray-400 font-semibold hover:text-gray-500 dark:hover:text-white"
               >
-                <div className="flex items-start gap-2">
+                ✕
+              </button>
+            </div>
+            {/* Comments Drawer */}
+            {showComments && (
+              <div className="relative h-[50vh] flex flex-col justify-between px-3 py-2">
+
+                {/* Existing Comments */}
+                <div className="flex-1 overflow-y-auto space-y-3 custom-scrollbar pr-1">
+                  {(!post.comments || post.comments.length === 0) && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400">No comments yet.</p>
+                  )}
+                  {post.comments?.map((comment) => {
+                    const isLiked = comment.reactions.some((r) => r.user === userId);
+                    const likeCount = comment.reactions.filter((r) => r.type === "like").length;
+                    const isLoading = loadingLikes.has(comment._id);
+
+                    return (
+                      <div
+                        key={comment._id}
+                        className="flex items-start justify-between text-sm text-gray-700 dark:text-gray-200"
+                      >
+                        <div className="flex items-start gap-2">
+                          <img
+                            src={comment.commenter?.user_Avatar}
+                            alt="User"
+                            className="h-8 w-8 rounded-full object-cover border"
+                          />
+                          <div>
+                            <p className="font-bold">
+                              {comment.commenter?.first_Name} {comment.commenter?.last_Name}
+                            </p>
+                            <p>{typeof comment.comment === "string" ? comment.comment : JSON.stringify(comment.comment)}</p>
+                          </div>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => handleLikeComment(comment._id)}
+                          disabled={isLoading}
+                          className={`flex flex-col items-center  text-s ${isLiked ? "text-red-500" : "text-gray-500 dark:text-gray-400"
+                            } ${isLoading && "opacity-50 cursor-not-allowed"}`}
+                        >
+                          {isLiked ? <AiFillHeart /> : <AiOutlineHeart />}
+                          {likeCount > 0 && <span>{likeCount}</span>}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Add Comment Form */}
+                <form onSubmit={handleAddComment} className=" mt-2 flex items-center  bg-gray-50 dark:bg-gray-800 dark:border-gray-600 border border-slate-200 p-1 rounded-xl gap-2">
                   <img
-                    src={comment.commenter?.user_Avatar}
-                    alt="User"
+                    src={user.userAvatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png"}
+                    alt="Avatar"
                     className="h-8 w-8 rounded-full object-cover border"
                   />
-                  <div>
-                    <p className="font-bold">
-                      {comment.commenter?.first_Name} {comment.commenter?.last_Name}
-                    </p>
-                    <p>{typeof comment.comment === "string" ? comment.comment : JSON.stringify(comment.comment)}</p>
-                  </div>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => handleLikeComment(comment._id)}
-                  disabled={isLoading}
-                  className={`flex flex-col items-center  text-s ${
-                    isLiked ? "text-red-500" : "text-gray-500 dark:text-gray-400"
-                  } ${isLoading && "opacity-50 cursor-not-allowed"}`}
-                >
-                  {isLiked ? <AiFillHeart /> : <AiOutlineHeart />}
-                  {likeCount > 0 && <span>{likeCount}</span>}
-                </button>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Add Comment Form */}
-        <form onSubmit={handleAddComment} className=" mt-2 flex items-center  bg-gray-50 dark:bg-gray-800 dark:border-gray-600 border border-slate-200 p-1 rounded-xl gap-2">
-          <img
-            src={user.userAvatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png"}
-            alt="Avatar"
-            className="h-8 w-8 rounded-full object-cover border"
-          />
-          <textarea
-            rows={1}
-            placeholder="Add a comment..."
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            className="flex-1 p-2 rounded dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm resize-none"
-            required
-          />
-          <button
-            type="submit"
-            disabled={isAddingComment}
-            className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
-          >
-            {isAddingComment ? (
-              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <FaArrowUp />
-            )}
-          </button>
-        </form>
-       </div>
-      )}
-      {showLike && (
-        <div className="m-2 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-          {/* Header */}
-          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-t-xl">
-            <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200">
-              Likes ({post.likes.length})
-            </h3>
-          </div>
-          
-          {/* Content */}
-          <div className="max-h-[60vh] overflow-y-auto">
-            {post.likes.length > 0 ? (
-              <div className="p-2">
-                {post.likes.map((like, index) =>(
-                  <div 
-                    key={like._id || like} 
-                    className={`flex items-center p-3 rounded-lg transition-colors duration-200 ${
-                      index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-900'
-                    } hover:bg-blue-50 dark:hover:bg-blue-900/20`}
+                  <textarea
+                    rows={1}
+                    placeholder="Add a comment..."
+                    value={commentText}
+                    onChange={(e) => setCommentText(e.target.value)}
+                    className="flex-1 p-2 rounded dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm resize-none"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    disabled={isAddingComment}
+                    className="p-2 bg-blue-500 hover:bg-blue-600 text-white rounded"
                   >
-                    <div className="flex-shrink-0">
-                      <img
-                        src={like?.user_Avatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png"}
-                        alt="User"
-                        className="h-10 w-10 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
-                      />
-                    </div>
-                    <div className="ml-3 flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                        {like.first_Name} {like.last_Name}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                        {like.designation}
-                      </p>
-                    </div>
-                    <div className="flex-shrink-0 ml-2">
-                      <div className="w-6 h-6 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
-                        <span className="text-xs">❤️</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-8 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                  <span className="text-2xl">👍</span>
-                </div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                  No likes yet
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-500">
-                  Be the first to like this post!
-                </p>
+                    {isAddingComment ? (
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <FaArrowUp />
+                    )}
+                  </button>
+                </form>
               </div>
             )}
-          </div>
-        </div>
-      )}
+            {showLike && (
+              <div className="m-2 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                {/* Header */}
+                <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-t-xl">
+                  <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200">
+                    Likes ({post.likes.length})
+                  </h3>
+                </div>
 
-      {showReact && (
-        <div className="m-2 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
-          {/* Header */}
-          <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-t-xl">
-            <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200">
-              Reactions ({post.reactions.length})
-            </h3>
-          </div>
-          
-          {/* Content */}
-          <div className="max-h-[60vh] overflow-y-auto">
-            {post.reactions.length > 0 ? (
-              <div className="p-2">
-                {post.reactions.map((reaction, index) =>(
-                  <div 
-                    key={reaction._id || `${reaction.user._id}-${reaction.type}`} 
-                    className={`flex items-center p-3 rounded-lg transition-colors duration-200 ${
-                      index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-900'
-                    } hover:bg-blue-50 dark:hover:bg-blue-900/20`}
-                  >
-                    <div className="flex-shrink-0">
-                      <img
-                        src={reaction?.user.user_Avatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png"}
-                        alt="User"
-                        className="h-10 w-10 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
-                      />
+                {/* Content */}
+                <div className="max-h-[60vh] overflow-y-auto">
+                  {post.likes.length > 0 ? (
+                    <div className="p-2">
+                      {post.likes.map((like, index) => (
+                        <div
+                          key={like._id || like}
+                          className={`flex items-center p-3 rounded-lg transition-colors duration-200 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-900'
+                            } hover:bg-blue-50 dark:hover:bg-blue-900/20`}
+                        >
+                          <div className="flex-shrink-0">
+                            <img
+                              src={like?.user_Avatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png"}
+                              alt="User"
+                              className="h-10 w-10 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
+                            />
+                          </div>
+                          <div className="ml-3 flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                              {like.first_Name} {like.last_Name}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              {like.designation}
+                            </p>
+                          </div>
+                          <div className="flex-shrink-0 ml-2">
+                            <div className="w-6 h-6 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
+                              <span className="text-xs">❤️</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                    <div className="ml-3 flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
-                        {reaction.user.first_Name} {reaction.user.last_Name}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
-                        {reaction.user.designation}
-                      </p>
-                    </div>
-                    <div className="flex-shrink-0 ml-2">
-                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-sm">
-                        <span className="text-sm">
-                          {reactionEmojis.find((e) => e.type === reaction.type)?.emoji || "❓"}
-                        </span>
+                  ) : (
+                    <div className="p-8 text-center">
+                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+                        <span className="text-2xl">👍</span>
                       </div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        No likes yet
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-500">
+                        Be the first to like this post!
+                      </p>
                     </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-8 text-center">
-                <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
-                  <span className="text-2xl">😊</span>
+                  )}
                 </div>
-                <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                  No reactions yet
-                </p>
-                <p className="text-xs text-gray-500 dark:text-gray-500">
-                  Be the first to react to this post!
-                </p>
               </div>
             )}
-          </div>
-        </div>
-      )}
-       
-      </motion.div>
-      </motion.div>
+
+            {showReact && (
+              <div className="m-2 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm">
+                {/* Header */}
+                <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 rounded-t-xl">
+                  <h3 className="text-base font-semibold text-gray-800 dark:text-gray-200">
+                    Reactions ({post.reactions.length})
+                  </h3>
+                </div>
+
+                {/* Content */}
+                <div className="max-h-[60vh] overflow-y-auto">
+                  {post.reactions.length > 0 ? (
+                    <div className="p-2">
+                      {post.reactions.map((reaction, index) => (
+                        <div
+                          key={reaction._id || `${reaction.user._id}-${reaction.type}`}
+                          className={`flex items-center p-3 rounded-lg transition-colors duration-200 ${index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-800' : 'bg-white dark:bg-gray-900'
+                            } hover:bg-blue-50 dark:hover:bg-blue-900/20`}
+                        >
+                          <div className="flex-shrink-0">
+                            <img
+                              src={reaction?.user.user_Avatar || "https://ems11.s3.amazonaws.com/logo-HM+(1).png"}
+                              alt="User"
+                              className="h-10 w-10 rounded-full object-cover border-2 border-gray-200 dark:border-gray-600"
+                            />
+                          </div>
+                          <div className="ml-3 flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
+                              {reaction.user.first_Name} {reaction.user.last_Name}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
+                              {reaction.user.designation}
+                            </p>
+                          </div>
+                          <div className="flex-shrink-0 ml-2">
+                            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-sm">
+                              <span className="text-sm">
+                                {reactionEmojis.find((e) => e.type === reaction.type)?.emoji || "❓"}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-8 text-center">
+                      <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center">
+                        <span className="text-2xl">😊</span>
+                      </div>
+                      <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                        No reactions yet
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-500">
+                        Be the first to react to this post!
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+          </motion.div>
+        </motion.div>
       )}
       {openPostModal && (
         <PostCreateBox
@@ -753,11 +760,12 @@ useEffect(() => {
             setOpenPostModal(false);
           }}
           onClose={() => {
-             useFeedStore.getState().clearFeedById();
-             setEditPostId("");
-            setOpenPostModal(false)}}
+            useFeedStore.getState().clearFeedById();
+            setEditPostId("");
+            setOpenPostModal(false)
+          }}
         />
-       )}
+      )}
 
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar {
