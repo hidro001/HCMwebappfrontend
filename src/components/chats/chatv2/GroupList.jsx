@@ -15,10 +15,7 @@ export default function GroupList({ searchTerm }) {
     fetchUserGroups();
   }, [fetchUserGroups]);
 
-  console.log("📋 GroupList - All groups:", groups);
-  console.log("📋 GroupList - Groups with unread:", groups.filter(g => g.unreadCount > 0));
-  console.log("📋 GroupList - Groups loading:", groupsLoading);
-  console.log("📋 GroupList - Groups error:", groupsError);
+  
 
   const filteredGroups = groups.filter((group) => {
     const name = group.groupName.toLowerCase();

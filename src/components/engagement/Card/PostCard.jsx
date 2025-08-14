@@ -76,7 +76,7 @@ const PostCard = ({ post }) => {
     return text.replace(urlPattern, (url) => {
       return `<a href="${url}" target="_blank" rel="noopener noreferrer" style="color:blue; text-decoration:underline;">${url}</a>`;
     });
-  }
+}
 
 
   const handleLike = async () => {

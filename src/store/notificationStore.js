@@ -14,8 +14,6 @@ const useNotificationStore = create(
       unreadCount: 0,
       loading: false,
       error: null,
-
-      // Fetch all notifications
       fetchNotifications: async () => {
         set({ loading: true, error: null });
         try {
@@ -28,7 +26,7 @@ const useNotificationStore = create(
         }
       },
 
-      // Mark a single notification as read
+    
       markAsRead: async (notificationId) => {
         try {
           await markNotificationAsReadAPI(notificationId);
