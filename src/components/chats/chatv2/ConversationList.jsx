@@ -17,11 +17,7 @@ export default function ConversationList({ searchTerm }) {
   const [members, setmembers] = useState([]);
   const [active, setactive] = useState("chats");
 
-
-  console.log("💬 ConversationList loaded:", conversations.length, "conversations");  
-
-
-
+  console.log(`conversations`, conversations);
 
   const myId = localStorage.getItem("employeeId");
   useEffect(() => {

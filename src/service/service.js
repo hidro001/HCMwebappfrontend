@@ -62,9 +62,6 @@ export const removeFcmToken = async (token) => {
   );
 };
 
-
-
-// OTP Verification function
 export const verifyOtp = async (employeeId, otp) => {
   try {
     const response = await publicAxios.post("/auth/verify-otp", {

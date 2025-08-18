@@ -43,7 +43,10 @@ export function ChatProviderv2({ children }) {
   const [groupsError, setGroupsError] = useState(null);
   const [groups, setGroups] = useState([]);
   const [settingsGroup, setSettingsGroup] = useState(null);
+  // messages for currently open conversation (UI) — keep for compatibility
   const [messages, setMessages] = useState([]);
+  // store messages per conversation to support real-time updates when not active
+  const [messagesMap, setMessagesMap] = useState({});
   const [loadingMessages, setLoadingMessages] = useState(false);
 
   const isGroupAdmin = useCallback((group) => group && group.admin === employeeId, [employeeId]);
@@ -56,14 +59,15 @@ export function ChatProviderv2({ children }) {
   const messageIds = useRef(new Set());
   const userRef = useRef(employeeId);
   const chatRef = useRef(activeConversation?.employeeId);
+  // keep a ref to the active conversation to avoid stale closures inside socket handlers
+  const activeConversationRef = useRef(activeConversation);
 
   useEffect(() => { userRef.current = employeeId; }, [employeeId]);
-  useEffect(() => { chatRef.current = activeConversation?.employeeId; }, [activeConversation]);
+  useEffect(() => { chatRef.current = activeConversation?.employeeId; activeConversationRef.current = activeConversation; }, [activeConversation]);
 
   const MAX_FILE_SIZE_MB = 20;
   const MAX_FILES = 10;
 
-  /** Load members from API */
   const loadMembers = useCallback(async () => {
     setLoadingMembers(true);
     setMembersError(null);
@@ -134,7 +138,6 @@ export function ChatProviderv2({ children }) {
         isOnline: userStatus[item.employee_Id] || false,
       }));
 
-      // Auto-join all DM rooms
       list.forEach(conv => {
         socketRef.current.emit("joinRoom", { sender: employeeId, receiver: conv.employeeId });
       });
@@ -144,38 +147,58 @@ export function ChatProviderv2({ children }) {
 
     // Direct message
     socket.on("receiveMessage", (msg) => {
-      const { sender, receiver } = msg;
-      if (!sender || sender === "system") return;
-      const fromSelf = sender === userRef.current;
-      const partner = fromSelf ? receiver : sender;
+      const normalizedMsg = {
+        ...msg,
+        text: msg.text || msg.message || "",
+      };
 
-      // Update conversations list
-      setConversations((prev) => {
-        const idx = prev.findIndex(c => c.employeeId === partner);
-        if (idx >= 0) {
-          const updated = [...prev];
-          updated[idx] = {
-            ...updated[idx],
-            lastMessage: msg,
-            unreadCount: fromSelf ? updated[idx].unreadCount : (updated[idx].unreadCount || 0) + 1,
-          };
-          return [updated[idx], ...updated.filter((_, i) => i !== idx)];
-        } else {
-          return [
-            { employeeId: partner, firstName: msg.senderName || "Unknown", lastMessage: msg, unreadCount: fromSelf ? 0 : 1 },
-            ...prev
-          ];
-        }
-      });
+        const { sender, receiver, groupId } = normalizedMsg;
+        if (!sender || sender === "system") return;
+        const fromSelf = sender === userRef.current;
 
-      // Append to messages if relevant
-      if (!messageIds.current.has(msg._id)) {
-        messageIds.current.add(msg._id);
-        if (partner === chatRef.current || fromSelf) {
-          setMessages((prev) => [...prev, msg]);
+        // determine conversation id (group vs dm)
+        const convId = groupId ? `group_${groupId}` : `dm_${fromSelf ? receiver : sender}`;
+
+        // append to per-conversation messages map (prevent duplicates)
+        setMessagesMap((prev) => {
+          const arr = prev[convId] || [];
+          const exists = normalizedMsg._id && arr.some(m => m._id === normalizedMsg._id);
+          if (exists) return prev;
+          return { ...prev, [convId]: [...arr, normalizedMsg] };
+        });
+
+        // update conversation list (lastMessage, unread)
+        const partner = groupId ? null : (fromSelf ? receiver : sender);
+        setConversations((prev) => {
+          const idx = groupId
+            ? prev.findIndex((c) => c.isGroup && c._id === groupId)
+            : prev.findIndex((c) => c.employeeId === partner);
+          if (idx >= 0) {
+            const updated = [...prev];
+            updated[idx] = {
+              ...updated[idx],
+              lastMessage: normalizedMsg,
+              unreadCount: fromSelf ? updated[idx].unreadCount : (updated[idx].unreadCount || 0) + 1,
+            };
+            return [updated[idx], ...updated.filter((_, i) => i !== idx)];
+          } else {
+            return [
+              groupId
+                ? { isGroup: true, _id: groupId, groupName: normalizedMsg.groupName || "Group", lastMessage: normalizedMsg, unreadCount: fromSelf ? 0 : 1 }
+                : { employeeId: partner, firstName: normalizedMsg.senderName || "Unknown", lastMessage: normalizedMsg, unreadCount: fromSelf ? 0 : 1 },
+              ...prev,
+            ];
+          }
+        });
+
+        // if active conversation matches, also push to UI messages
+        const currentConv = activeConversationRef.current;
+        const activeConvId = currentConv ? (currentConv.isGroup ? `group_${currentConv._id}` : `dm_${currentConv.employeeId}`) : null;
+        if (activeConvId === convId) {
+          setMessages((prev) => [...prev, normalizedMsg]);
         }
-      }
     });
+
 
     // Group events
     socket.on("groupInfoUpdated", ({ groupId, groupName, groupIcon }) => {
@@ -315,13 +338,30 @@ export function ChatProviderv2({ children }) {
 
   /** History loader */
   const loadChatHistory = useCallback(async () => {
-    if (!activeConversation?.employeeId) { setMessages([]); return; }
+    if (!activeConversation) { setMessages([]); return; }
     setLoadingMessages(true);
     try {
-      const res = await fetchChatHistory(employeeId, activeConversation.employeeId);
-      if (res.success) setMessages(res.data || []);
+      const convId = activeConversation.isGroup ? `group_${activeConversation._id}` : `dm_${activeConversation.employeeId}`;
+      // if we already have messages cached for this conv, use them
+      if (messagesMap[convId]) {
+        setMessages(messagesMap[convId]);
+        setLoadingMessages(false);
+        return;
+      }
+      // otherwise fetch
+      let res;
+      if (activeConversation.isGroup) {
+        // group history via socket callback
+        res = { success: true, data: [] };
+      } else {
+        res = await fetchChatHistory(employeeId, activeConversation.employeeId);
+      }
+      if (res.success) {
+        setMessages(res.data || []);
+        setMessagesMap((prev) => ({ ...prev, [convId]: res.data || [] }));
+      }
     } finally { setLoadingMessages(false); }
-  }, [employeeId, activeConversation]);
+  }, [employeeId, activeConversation, messagesMap]);
   useEffect(() => { loadChatHistory(); }, [loadChatHistory]);
 
   /** Send message */
@@ -332,41 +372,51 @@ export function ChatProviderv2({ children }) {
         if (res.success) setMessage("");
       });
     } else {
-      const tempMsg = { _id: Date.now().toString(), sender: employeeId, receiver: activeConversation.employeeId, message, time: new Date().toISOString() };
-      setMessages((prev) => [...prev, tempMsg]);
-      socketRef.current.emit("privateMessage", { sender: employeeId, receiver: activeConversation.employeeId, message });
-      setMessage("");
+  const tempMsg = { _id: Date.now().toString(), sender: employeeId, receiver: activeConversation.employeeId, message, time: new Date().toISOString() };
+  // update UI
+  setMessages((prev) => [...prev, tempMsg]);
+  // update messagesMap for the conversation
+  const convId = `dm_${activeConversation.employeeId}`;
+  setMessagesMap((prev) => ({ ...prev, [convId]: [...(prev[convId] || []), tempMsg] }));
+  socketRef.current.emit("privateMessage", { sender: employeeId, receiver: activeConversation.employeeId, message });
+  setMessage("");
     }
   }, [message, activeConversation, employeeId, username]);
 
   /** Selectors */
   const selectChat = useCallback((chat) => {
-    setSelectedConversation(chat);
-    setSelectedUser(null);
-    setMessages([]);
-    chatRef.current = chat.employeeId;
-    socketRef.current.emit("joinRoom", { sender: employeeId, receiver: chat.employeeId });
-    socketRef.current.emit("markRead", { sender: employeeId, receiver: chat.employeeId });
-    setConversations((prev) => prev.map((c) => c.employeeId === chat.employeeId ? { ...c, unreadCount: 0 } : c));
+  setSelectedConversation(chat);
+  setSelectedUser(null);
+  const convId = `dm_${chat.employeeId}`;
+  setMessages(messagesMap[convId] || []);
+  chatRef.current = chat.employeeId;
+  socketRef.current.emit("joinRoom", { sender: employeeId, receiver: chat.employeeId });
+  socketRef.current.emit("markRead", { sender: employeeId, receiver: chat.employeeId });
+  setConversations((prev) => prev.map((c) => c.employeeId === chat.employeeId ? { ...c, unreadCount: 0 } : c));
   }, [employeeId]);
 
   const selectUser = useCallback((user) => {
-    setSelectedUser(user);
-    setSelectedConversation(null);
-    setMessages([]);
-    chatRef.current = user.employeeId;
-    socketRef.current.emit("joinRoom", { sender: employeeId, receiver: user.employeeId });
-    socketRef.current.emit("markRead", { sender: employeeId, receiver: user.employeeId });
-    setConversations((prev) => prev.map((c) => c.employeeId === user.employeeId ? { ...c, unreadCount: 0 } : c));
+  setSelectedUser(user);
+  setSelectedConversation(null);
+  const convId = `dm_${user.employeeId}`;
+  setMessages(messagesMap[convId] || []);
+  chatRef.current = user.employeeId;
+  socketRef.current.emit("joinRoom", { sender: employeeId, receiver: user.employeeId });
+  socketRef.current.emit("markRead", { sender: employeeId, receiver: user.employeeId });
+  setConversations((prev) => prev.map((c) => c.employeeId === user.employeeId ? { ...c, unreadCount: 0 } : c));
   }, [employeeId]);
 
   const selectGroup = useCallback((group) => {
     setSelectedConversation({ ...group, isGroup: true });
     setSelectedUser(null);
-    setMessages([]);
+    const convId = `group_${group._id}`;
+    setMessages(messagesMap[convId] || []);
     socketRef.current?.emit("joinGroupRoom", group._id);
     socketRef.current?.emit("getGroupMessages", group._id, (res) => {
-      if (res.success) setMessages(res.data || []);
+      if (res.success) {
+        setMessages(res.data || []);
+        setMessagesMap((prev) => ({ ...prev, [convId]: res.data || [] }));
+      }
     });
   }, []);
 
@@ -378,14 +428,15 @@ export function ChatProviderv2({ children }) {
     groupsError, setMessage, messages, loadingMessages, activeConversation,
     sendFileHandler, fetchUserGroups, requestFileURL, createGroupUIFlow, isGroupAdmin,
     openGroupSettingsModal, closeGroupSettingsModal, addMemberToGroup, removeMemberFromGroup,
-    updateGroupInfo, deleteGroup, selectedGroup: activeConversation?.isGroup ? activeConversation : null,
+  updateGroupInfo, deleteGroup, selectedGroup: activeConversation?.isGroup ? activeConversation : null,
+  messagesMap,
   }), [
     employeeId, username, userStatus, members, memberCount, loadingMembers, membersError,
     conversations, loadingConversations, conversationsError, message, groups, groupsLoading,
     groupsError, messages, loadingMessages, activeConversation, sendMessageHandler, sendFileHandler,
     fetchUserGroups, loadMembers, selectChat, selectUser, selectGroup, requestFileURL, isGroupAdmin,
     openGroupSettingsModal, closeGroupSettingsModal, addMemberToGroup, removeMemberFromGroup,
-    updateGroupInfo, deleteGroup
+  updateGroupInfo, deleteGroup, messagesMap
   ]);
 
   return (
