@@ -166,7 +166,6 @@ export const resetPassword = async (
   }
 };
 
-// Existing function: Mark a notification as read
 export const markNotificationAsRead = async (notificationId) => {
   try {
     const response = await axiosInstance.put(
@@ -174,9 +173,9 @@ export const markNotificationAsRead = async (notificationId) => {
       { notificationId },
       {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`, // Adjust token retrieval as needed
-        },
-      }
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+      } 
     );
     return response.data;
   } catch (error) {
@@ -184,7 +183,6 @@ export const markNotificationAsRead = async (notificationId) => {
   }
 };
 
-// New function: Fetch all notifications
 export const fetchNotifications = async () => {
   try {
     const response = await axiosInstance.get("/notifications");
@@ -198,17 +196,11 @@ export const fetchNotifications = async () => {
   }
 };
 
-// Optional: Create a function to mark all notifications as read
-export const markAllNotificationsAsRead = async () => {
+export const markAllNotificationsAsRead = async (notificationId) => {
   try {
-    const response = await axiosInstance.put(
-      `/notification/mark-all-as-read`,
-      {},
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      }
+    const response = await axiosInstance.patch(
+      `/notifications/mark-all-as-read`,
+      {notificationId},
     );
     return response.data;
   } catch (error) {

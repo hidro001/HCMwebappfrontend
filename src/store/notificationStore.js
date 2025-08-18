@@ -2,13 +2,14 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import {
   fetchNotifications as fetchNotificationsAPI,
-  markNotificationAsRead as markNotificationAsReadAPI,
+  markNotificationAsRead as markNotificationAsReadAPI, markAllNotificationsAsRead
 } from '../service/service';
 
 
 const normalizeNotification = (n) => ({
   ...n,
-  id: n.id || n._id || Date.now().toString(), // always have an id
+  id: n.id || n._id || Date.now().toString(),
+  _id: n._id || n.id,
   timestamp: n.timestamp || new Date().toISOString(),
   isRead: Boolean(n.isRead),
 });
@@ -22,15 +23,13 @@ const useNotificationStore = create(
       error: null,
       socket: null,
       filters: {
-        type: 'all', // 'all', 'message', 'system', 'alert'
-        status: 'all', // 'all', 'read', 'unread'
+        type: 'all',
+        status: 'all',
       },
 
-      // Initialize socket connection for real-time updates
       initializeSocket: (socket) => {
         set({ socket });
 
-        // Listen for new notifications
         socket.on('newNotification', (notification) => {
           const newNotif = normalizeNotification(notification);
           set((state) => {
@@ -41,8 +40,6 @@ const useNotificationStore = create(
             };
           });
         });
-
-        // Listen for notification updates
         socket.on('notificationUpdated', (updatedNotification) => {
           const updatedNotif = normalizeNotification(updatedNotification);
           set((state) => {
@@ -56,13 +53,11 @@ const useNotificationStore = create(
           });
         });
 
-        // Clean up on disconnect
         socket.on('disconnect', () => {
           console.log('Socket disconnected');
         });
       },
 
-      // Fetch notifications from API
       fetchNotifications: async () => {
         set({ loading: true, error: null });
         try {
@@ -80,15 +75,20 @@ const useNotificationStore = create(
       },
 
       markAsRead: async (notificationId) => {
-        if (!notificationId || notificationId.startsWith('temp-')) {
-          console.warn('Invalid or temporary notification ID, skipping API call:', notificationId);
+        const notif = get().notifications.find(n => n.id === notificationId || n._id === notificationId);
+        const realId = notif?._id || notificationId;
+
+        if (!realId || String(realId).startsWith('temp-')) {
+          console.warn('Invalid or temporary notification ID, skipping API call:', realId);
           return;
         }
 
         const previousState = get();
         set(state => {
           const updatedNotifications = state.notifications.map(notification =>
-            notification.id === notificationId ? { ...notification, isRead: true } : notification
+            notification.id === notificationId || notification._id === notificationId
+              ? { ...notification, isRead: true }
+              : notification
           );
           return {
             notifications: updatedNotifications,
@@ -97,8 +97,7 @@ const useNotificationStore = create(
         });
 
         try {
-          // If backend expects _id, make sure we pass that
-          await markNotificationAsReadAPI(notificationId);
+          await markNotificationAsReadAPI(realId);
         } catch (error) {
           set({
             notifications: previousState.notifications,
@@ -106,35 +105,30 @@ const useNotificationStore = create(
             error: error.message || 'Failed to mark notification as read'
           });
         }
-      } , 
+      },
 
-      // Mark all notifications as read
-      markAllAsRead: async () => {
+
+      markAllAsRead: async (notify_id) => {
         const previousState = get();
 
-        // Optimistic update
         set({
-          notifications: get().notifications.map((n) => ({
-            ...n,
-            isRead: true,
-          })),
+          notifications: get().notifications.map(n => ({ ...n, isRead: true })),
           unreadCount: 0,
         });
 
         try {
-          await markNotificationAsReadAPI(null);
+          await markAllNotificationsAsRead(notify_id);
         } catch (error) {
-          // Revert on error
           set({
             notifications: previousState.notifications,
             unreadCount: previousState.unreadCount,
-            error:
-              error.message || 'Failed to mark all notifications as read',
+            error: error.message || 'Failed to mark all notifications as read',
           });
         }
       },
 
-      // Add new notification
+
+
       addNotification: (notification) => {
         const newNotification = normalizeNotification(notification);
         set((state) => {
@@ -149,7 +143,6 @@ const useNotificationStore = create(
         });
       },
 
-      // Get filtered notifications
       getFilteredNotifications: () => {
         const { notifications, filters } = get();
         return notifications.filter((notification) => {
@@ -164,15 +157,13 @@ const useNotificationStore = create(
         });
       },
 
-      // Set filter
       setFilter: (filterType, value) => {
         set((state) => ({
           filters: { ...state.filters, [filterType]: value },
         }));
       },
 
-      // Remove notification
-      removeNotification: (notificationId) => {
+      deleteNotification: (notificationId) => {
         set((state) => {
           const updatedNotifications = state.notifications.filter(
             (n) => n.id !== notificationId
@@ -184,12 +175,10 @@ const useNotificationStore = create(
         });
       },
 
-      // Clear all notifications
       clearNotifications: () => {
         set({ notifications: [], unreadCount: 0, error: null });
       },
 
-      // Cleanup socket connection
       cleanupSocket: () => {
         const { socket } = get();
         if (socket) {

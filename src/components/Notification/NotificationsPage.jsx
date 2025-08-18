@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { 
-  IoMdNotifications, 
-  IoMdSearch, 
-  IoMdClose, 
+import {
+  IoMdNotifications,
+  IoMdSearch,
+  IoMdClose,
   IoMdTrash,
   IoMdCheckmarkCircleOutline,
   IoMdRefresh,
@@ -48,13 +48,13 @@ export default function NotificationsPage() {
   const [openDetailDialog, setOpenDetailDialog] = useState(false);
   const [selectedNotification, setSelectedNotification] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
-  
+
   const [filterType, setFilterType] = useState("All");
   const [filterReadStatus, setFilterReadStatus] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const unreadCount = useMemo(() => 
-    notifications.filter(n => !n.isRead).length, 
+  const unreadCount = useMemo(() =>
+    notifications.filter(n => !n.isRead).length,
     [notifications]
   );
 
@@ -85,12 +85,10 @@ export default function NotificationsPage() {
     setSelectedNotification(notification);
     setOpenDetailDialog(true);
     if (!notification.isRead) {
-      markAsRead(notification.id);
+      markAsRead(notification._id || notification.id);
       toast.success("Notification marked as read!");
     }
   };
-
-  console.log("📋 NotificationsPage - Notifications:", notifications);
 
   const handleDelete = (id) => {
     setConfirmDialog({
@@ -104,6 +102,7 @@ export default function NotificationsPage() {
       },
     });
   };
+ 
 
   const handleMarkAllAsRead = () => {
     setConfirmDialog({
@@ -111,7 +110,8 @@ export default function NotificationsPage() {
       title: "Mark All as Read",
       content: "Are you sure you want to mark all notifications as read?",
       onConfirm: () => {
-        markAllAsRead();
+        const notify_id = notifications.map(n => n._id || n.id);
+        markAllAsRead(notify_id);
         toast.success("All notifications marked as read!");
         setConfirmDialog((prev) => ({ ...prev, open: false }));
       },
@@ -141,7 +141,7 @@ export default function NotificationsPage() {
   }, [notifications, filterType, filterReadStatus, searchQuery]);
 
   const getNotificationIcon = (type) => {
-    switch(type.toLowerCase()) {
+    switch (type.toLowerCase()) {
       case "announcement":
         return <IoMdInformationCircleOutline className="text-blue-500" size={24} />;
       case "birthday":
@@ -157,8 +157,8 @@ export default function NotificationsPage() {
     if (!isRead) {
       return "bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-700";
     }
-    
-    switch(type.toLowerCase()) {
+
+    switch (type.toLowerCase()) {
       case "announcement":
         return "bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-800 opacity-60";
       case "birthday":
@@ -174,7 +174,7 @@ export default function NotificationsPage() {
     <div className="min-h-screen bg-white dark:bg-black text-gray-900 dark:text-gray-100 overflow-hidden">
       <div className="max-w-6xl mx-auto p-4 md:p-8">
         {/* Header with Glassmorphism */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -194,7 +194,7 @@ export default function NotificationsPage() {
                 Notifications
               </h1>
             </div>
-            
+
             <div className="flex items-center space-x-2 mt-4 md:mt-0">
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -202,7 +202,7 @@ export default function NotificationsPage() {
                 onClick={() => setShowFilters(!showFilters)}
                 className="flex items-center space-x-2 px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300 hover:bg-indigo-200 dark:hover:bg-indigo-800/50"
               >
-                <BsFilterCircle  size={18} />
+                <BsFilterCircle size={18} />
                 <span>Filters</span>
               </motion.button>
 
@@ -233,7 +233,7 @@ export default function NotificationsPage() {
           {/* Search & Filters */}
           <AnimatePresence>
             {showFilters && (
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
@@ -251,8 +251,8 @@ export default function NotificationsPage() {
                       onChange={handleSearchQueryChange}
                     />
                     {searchQuery && (
-                      <button 
-                        onClick={() => setSearchQuery("")} 
+                      <button
+                        onClick={() => setSearchQuery("")}
                         className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
                       >
                         <IoMdClose size={18} />
@@ -272,7 +272,7 @@ export default function NotificationsPage() {
                       <option value="Resignation">Resignations</option>
                     </select>
                     <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-                      <BsFilterCircle  className="text-gray-400" size={18} />
+                      <BsFilterCircle className="text-gray-400" size={18} />
                     </div>
                   </div>
 
@@ -335,7 +335,7 @@ export default function NotificationsPage() {
                   <IoMdAlert size={48} />
                 </div>
                 <p className="text-lg font-medium text-red-500">{notificationsError}</p>
-                <button 
+                <button
                   onClick={() => fetchNotifications()}
                   className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
                 >
@@ -419,13 +419,13 @@ export default function NotificationsPage() {
                     </div>
                   </div>
                 </div>
-                
+
                 {/* Chips/Tags */}
                 {(notification.targetDepartments && notification.targetDepartments.length > 0) && (
                   <div className="mt-3 flex flex-wrap gap-1">
                     {notification.targetDepartments.map((dept, idx) => (
-                      <span 
-                        key={idx} 
+                      <span
+                        key={idx}
                         className="px-2 py-1 text-xs rounded-full 
                           bg-white/70 dark:bg-gray-800/70 text-indigo-600 dark:text-indigo-400 
                           border border-indigo-200 dark:border-indigo-800/50"
@@ -435,7 +435,7 @@ export default function NotificationsPage() {
                     ))}
                   </div>
                 )}
-                
+
                 {(!notification.targetDepartments || notification.targetDepartments.length === 0) && (
                   <div className="mt-3">
                     <span className="px-2 py-1 text-xs rounded-full 
@@ -530,7 +530,7 @@ export default function NotificationsPage() {
               <h2 className="text-xl font-bold mb-2 text-center text-gray-900 dark:text-gray-100">
                 {selectedNotification.title}
               </h2>
-              
+
               <div className="text-xs text-gray-500 dark:text-gray-400 text-center mb-4">
                 {new Date(selectedNotification.createdAt).toLocaleString()}
               </div>
