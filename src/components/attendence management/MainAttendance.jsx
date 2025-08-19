@@ -1,4 +1,4 @@
-import {useState, useEffect, useRef} from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Legend, Tooltip } from 'chart.js';
 import AttendanceChart from './DepartmentAttendance.jsx';
 import useDepartmentStore from "../../store/departmentStore.js";
@@ -11,19 +11,21 @@ import LineCard from "./Card/LineCard.jsx";
 import { toast } from "react-hot-toast";
 import axiosInstance from "../../service/axiosInstance.js";
 import { getMonthHolidays } from '../../service/holidayService.js';
+import { use } from 'react';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Legend, Tooltip);
 
 const Dashboard = () => {
 
   const [departmentId, setDepartmentId] = useState("");
+  const [BiometricData, setBiometricData] = useState([]);
   const [activeTab, setActiveTab] = useState("All Departments");
   const [attendanceData, setAttendanceData] = useState('');
   const [date, setDate] = useState(
-    () => new Date().toISOString().substring(0, 10) 
+    () => new Date().toISOString().substring(0, 10)
   );
 
-  const {todayLateIn, todayAttendance, fetchTodaysPunchTimes, fetchTodaysLateIn, fetchTodaysAttendanceStatus } = useAttendanceStore();
+  const { todayLateIn, todayAttendance, fetchTodaysPunchTimes, fetchTodaysLateIn, fetchTodaysAttendanceStatus } = useAttendanceStore();
 
   const { departments,
     loading: departmentsLoading,
@@ -31,194 +33,212 @@ const Dashboard = () => {
     fetchDepartments } = useDepartmentStore();
 
   useEffect(() => {
-     fetchTodaysPunchTimes();
-      fetchTodaysLateIn();
-      fetchTodaysAttendanceStatus()
-      fetchHolidayData();
-      fetchDepartments()
+    fetchTodaysPunchTimes();
+    fetchTodaysLateIn();
+    fetchTodaysAttendanceStatus()
+    fetchHolidayData();
+    fetchDepartments()
   }, [fetchTodaysPunchTimes, fetchTodaysLateIn, fetchTodaysAttendanceStatus, fetchDepartments]);
-  
+
   const departmentTabs = [
-    { department : "All Departments", _id : 'all'},
+    { department: "All Departments", _id: 'all' },
     ...departments
   ];
 
-   useEffect(() => {
-      fetchHolidayData();
-    }, []);
-  
-    const fetchHolidayData = async () => {
-      try {
-        const resData = await getMonthHolidays(); 
-        if (resData.success) {
-          getMonthHolidays(resData.data || []);
-        } else {
-          setErrorMsg(resData.message || "Failed to fetch holidays");
-        }
-      } catch (error) {
-        setErrorMsg(error.message || "Network error");
-      } finally {
-        setLoading(false);
+  useEffect(() => {
+    fetchHolidayData();
+  }, []);
+
+  const fetchHolidayData = async () => {
+    try {
+      const resData = await getMonthHolidays();
+      if (resData.success) {
+        getMonthHolidays(resData.data || []);
+      } else {
+        setErrorMsg(resData.message || "Failed to fetch holidays");
       }
-    };
+    } catch (error) {
+      setErrorMsg(error.message || "Network error");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const TodaylateIn = todayLateIn
-   ? todayLateIn.map((late, i) => ({
-        id: late._id ?? i,
-        empID: late.employee_Id,
-        name: `${late.first_Name} ${late.last_Name}`,
-        department: late.department,
-        attendanceDate: late.attendanceDate || "",
-        late: late.minutesLate,
-        category: late.lateCategory,
-        login : late.login,
-        managerName: late.managerName
-   }))
+    ? todayLateIn.map((late, i) => ({
+      id: late._id ?? i,
+      empID: late.employee_Id,
+      name: `${late.first_Name} ${late.last_Name}`,
+      department: late.department,
+      attendanceDate: late.attendanceDate || "",
+      late: late.minutesLate,
+      category: late.lateCategory,
+      login: late.login,
+      managerName: late.managerName
+    }))
     : [];
 
-    const {totalEmployees, presentCount, absentCount} = attendanceData
+  const { totalEmployees, presentCount, absentCount } = attendanceData
 
-    const percentageCount = (total, data) => {
-      return ((data / total) * 100).toFixed(2);
+  const percentageCount = (total, data) => {
+    return ((data / total) * 100).toFixed(2);
 
+  }
+
+  useEffect(() => {
+    handleDapertmentAttendance();
+  }, [date, departmentId])
+
+
+  useEffect(() => {
+    handlePunchInData();
+  }, []);
+
+  const handleDapertmentAttendance = async (e) => {
+    try {
+      const res = await axiosInstance.get(`/attendance/department-attendance?department=${encodeURIComponent(departmentId)}&date=${date}`);
+      setAttendanceData(res.data.data);
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to Get Department Attendance.");
+    } finally {
     }
+  };
 
-    useEffect(() => {
-      handleDapertmentAttendance()
-    }, [date, departmentId])
+  const handlePunchInData = async () => {
+    try {
+      const response = await axiosInstance.get(`/attendance/punch-in-data`)
+      setBiometricData(response.data.data);
+    } catch (error) {
+      console.error("Error fetching punch in data:", error);
+      toast.error(error.response?.data?.message || "Failed to fetch punch in data.");
+    }
+  }
 
-    const handleDapertmentAttendance = async (e) => { 
-      console.log(`Fetching attendance for department: ${departmentId} on date: ${date}`);
-        try {
-          const res  = await axiosInstance.get(`/attendance/department-attendance?department=${encodeURIComponent(departmentId)}&date=${date}`);
-          setAttendanceData(res.data.data);
-          console.log("Attendance data fetched successfully:", res.data.data);
-        } catch (error) {
-          toast.error(error.response?.data?.message || "Failed to Get Department Attendance.");
-        } finally {    
-        }
-    };
+  const festivals = [
+    {
+      name: "Jagannath Rathyatra",
+      date: "27, June, Fri",
+      barColor: "bg-green-400",
+    },
+    {
+      name: "Jagannath Rathyatra",
+      date: "27, June, Fri",
+      barColor: "bg-rose-400",
+    },
+    {
+      name: "Jagannath Rathyatra",
+      date: "27, June, Fri",
+      barColor: "bg-orange-400",
+    },
+    {
+      name: "Jagannath Rathyatra",
+      date: "27, June, Fri",
+      barColor: "bg-green-400",
+    },
+  ];
 
-    const festivals = [
-      {
-        name: "Jagannath Rathyatra",
-        date: "27, June, Fri",
-        barColor: "bg-green-400",
-      },
-      {
-        name: "Jagannath Rathyatra",
-        date: "27, June, Fri",
-        barColor: "bg-rose-400",
-      },
-      {
-        name: "Jagannath Rathyatra",
-        date: "27, June, Fri",
-        barColor: "bg-orange-400",
-      },
-      {
-        name: "Jagannath Rathyatra",
-        date: "27, June, Fri",
-        barColor: "bg-green-400",
-      },
-    ];
+  const biometricCount = BiometricData.filter(a => a.mode === "BiometricDevice").length;
+  const appCount = BiometricData.filter(a => a.mode === "App").length;
+  const webCount = BiometricData.filter(a => a.mode === "Web").length;
 
-    const data = [
-      { label: "Total Checked In",    value: 200, gradient: "from-lime-500 to-green-500" },
-      { label: "Biometric Checked-in",value: 200, gradient: "from-indigo-400 to-pink-300" },
-      { label: "App Check-in",        value: 200, gradient: "from-sky-400   to-cyan-500" },
-      { label: "Manual Check-in",     value: 200, gradient: "from-rose-300  to-rose-500" },
-    ];
- 
+  const totalCount = BiometricData.length;
+
+
+
+  const data = [
+    { label: "Total Checked In", value: totalCount, gradient: "from-lime-500 to-green-500" },
+    { label: "Biometric Checked-in", value: biometricCount, gradient: "from-indigo-400 to-pink-300" },
+    { label: "App Check-in", value: appCount, gradient: "from-sky-400 to-cyan-500" },
+    { label: "Web Check-in", value: webCount, gradient: "from-rose-300 to-rose-500" },
+  ];
+
+
   return (
     <div className="p-3 sm:p-4 lg:p-6 bg-gray-100 dark:bg-gray-900 min-h-screen">
       <AttendanceCards attendanceData={todayAttendance} />
-
-      {/* 2nd Section - Responsive Grid */}
       <div className='w-full grid grid-cols-1 xl:grid-cols-12 gap-4 mt-4 mb-6'>
-        
-        {/* Attendance Graph */}
         <div className="xl:col-span-5 bg-white dark:bg-gray-800 px-3 sm:px-4 pt-4 rounded-xl shadow-[0px_5px_24px_0px_#BABABA] dark:shadow-sm">
           <div className='flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-4'>
             <h2 className="font-semibold text-md"> Department Attendance</h2>
             <div className="flex flex-col sm:flex-row gap-2 sm:gap-1">
-                  <select
-                    className="border border-gray-300 dark:bg-gray-800 rounded-md py-1 px-2 text-sm
+              <select
+                className="border border-gray-300 dark:bg-gray-800 rounded-md py-1 px-2 text-sm
                               focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-auto"
-                    value={departmentId}
-                    onChange={e => setDepartmentId(e.target.value)}
-                  >
-                    <option value="">Department</option>
-                    {departments.map(d => (
-                      <option key={d._id} value={d.department}>
-                        {d.department}
-                      </option>
-                    ))}
-                  </select>
+                value={departmentId}
+                onChange={e => setDepartmentId(e.target.value)}
+              >
+                <option value="">Department</option>
+                {departments.map(d => (
+                  <option key={d._id} value={d.department}>
+                    {d.department}
+                  </option>
+                ))}
+              </select>
 
-                  <input
-                    type="date"
-                    className="border border-gray-300 dark:bg-gray-800 rounded-md px-2 py-1 text-sm
+              <input
+                type="date"
+                className="border border-gray-300 dark:bg-gray-800 rounded-md px-2 py-1 text-sm
                               focus:outline-none focus:ring-2 focus:ring-indigo-500 w-full sm:w-auto"
-                    value={date}
-                    onChange={e => setDate(e.target.value)}
-                  />
+                value={date}
+                onChange={e => setDate(e.target.value)}
+              />
             </div>
           </div>
           <div className="overflow-x-auto">
             <AttendanceChart attendanceData={attendanceData} />
           </div>
         </div>
-       
-        <div className="xl:col-span-4 p-3 sm:p-4 bg-white dark:bg-gray-800 rounded-xl shadow-[0px_5px_24px_0px_#BABABA] dark:shadow-sm">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4 sm:mb-6">
-              <h2 className="text-md font-semibold">Attendance Sources</h2>
-              <select className="border border-gray-300 dark:bg-gray-800 rounded-md px-2 py-1 text-sm focus:outline-none w-full sm:w-auto">
-                <option>Date</option>
-                <option>Today</option>
-                <option>Yesterday</option>
-                <option>This week</option>
-              </select>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
-              {data.map(({ label, value, gradient }) => (
-                <Card key={label} label={label} value={value} gradient={gradient} />
-              ))}
-            </div>
+        <div className="xl:col-span-4 p-3 sm:p-4 bg-white dark:bg-gray-800 rounded-xl shadow-[0px_5px_24px_0px_#BABABA] dark:shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4 sm:mb-6">
+            <h2 className="text-md font-semibold">Attendance Sources</h2>
+            <select className="border border-gray-300 dark:bg-gray-800 rounded-md px-2 py-1 text-sm focus:outline-none w-full sm:w-auto">
+              <option>Date</option>
+              <option>Today</option>
+              <option>Yesterday</option>
+              <option>This week</option>
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            {data.map(({ label, value, gradient }) => (
+              <Card key={label} label={label} value={value} gradient={gradient} />
+            ))}
+          </div>
         </div>
-        
+
         {/* Festival Card */}
         <div className="xl:col-span-3 p-3 sm:p-4 bg-white dark:bg-gray-800 rounded-xl shadow-[0px_5px_24px_0px_#BABABA] dark:shadow-sm">
-            <h2 className="text-md font-semibold mb-4">Festival In June 2025</h2>
+          <h2 className="text-md font-semibold mb-4">Festival In June 2025</h2>
 
-            <ul className="space-y-3 sm:space-y-4">
-              {festivals.map((f, idx) => (
-                <li key={idx}>
-                  <FestivalRow {...f} />
-                </li>
-              ))}
-            </ul>
+          <ul className="space-y-3 sm:space-y-4">
+            {festivals.map((f, idx) => (
+              <li key={idx}>
+                <FestivalRow {...f} />
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
 
-      {/* 3rd Section - Responsive Grid */} 
+      {/* 3rd Section - Responsive Grid */}
       <div className='w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4 mb-6'>
         <div className='w-full'>
-          <GaugeCard title="Attendance Percentage" value={percentageCount(totalEmployees, presentCount)} scheme="blue" label1='present'/>
-        </div> 
+          <GaugeCard title="Attendance Percentage" value={percentageCount(totalEmployees, presentCount)} scheme="blue" label1='present' />
+        </div>
         <div className='w-full'>
           <GaugeCard title="Absent Percentage" value={percentageCount(totalEmployees, absentCount)} scheme="greyOnBlue" label1='absent' />
-        </div> 
+        </div>
         <div className='w-full md:col-span-2 xl:col-span-1'>
-          <LineCard /> 
+          <LineCard />
         </div>
       </div>
 
       {/* 4th section Table */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-3 sm:p-4 lg:p-6">
-          <h2 className="text-lg font-semibold mb-4">Late In Today</h2>
+        <h2 className="text-lg font-semibold mb-4">Late In Today</h2>
         <div className="flex gap-2 mb-6 overflow-x-auto scrollbar-hide pb-2">
-          { departmentTabs?.length > 0 && departmentTabs.map((tab) => (
+          {departmentTabs?.length > 0 && departmentTabs.map((tab) => (
             <button
               key={tab._id}
               onClick={() => setActiveTab(tab.department)}
@@ -228,7 +248,7 @@ const Dashboard = () => {
                   : "text-gray-700 dark:text-white bg-gray-100 dark:bg-gray-500 hover:bg-gray-200 dark:hover:bg-gray-700"}`}
             >
               {tab.department}
-              
+
               {activeTab === tab.department && (
                 <motion.span
                   layoutId="pill"
