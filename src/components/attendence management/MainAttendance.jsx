@@ -12,6 +12,7 @@ import { toast } from "react-hot-toast";
 import axiosInstance from "../../service/axiosInstance.js";
 import { getMonthHolidays } from '../../service/holidayService.js';
 import { use } from 'react';
+import { set } from 'date-fns';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Legend, Tooltip);
 
@@ -19,6 +20,7 @@ const Dashboard = () => {
 
   const [departmentId, setDepartmentId] = useState("");
   const [BiometricData, setBiometricData] = useState([]);
+  const [holidayData, setHolidayData] = useState([]);
   const [activeTab, setActiveTab] = useState("All Departments");
   const [attendanceData, setAttendanceData] = useState('');
   const [date, setDate] = useState(
@@ -92,6 +94,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     handlePunchInData();
+    handleHolidayData();
   }, []);
 
   const handleDapertmentAttendance = async (e) => {
@@ -111,6 +114,18 @@ const Dashboard = () => {
     } catch (error) {
       console.error("Error fetching punch in data:", error);
       toast.error(error.response?.data?.message || "Failed to fetch punch in data.");
+    }
+  }
+
+
+  const handleHolidayData = async () => {
+    try {
+      const response = await axiosInstance.get(`/attendance/holidays`);
+      setHolidayData(response.data.holidays);
+
+    } catch (error) {
+      console.error("Error fetching holiday data:", error);
+      toast.error(error.response?.data?.message || "Failed to fetch holiday data.");
     }
   }
 
@@ -207,18 +222,37 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Festival Card */}
-        <div className="xl:col-span-3 p-3 sm:p-4 bg-white dark:bg-gray-800 rounded-xl shadow-[0px_5px_24px_0px_#BABABA] dark:shadow-sm">
-          <h2 className="text-md font-semibold mb-4">Festival In June 2025</h2>
+        <div className="xl:col-span-3 p-6 bg-gradient-to-br from-white to-gray-50 dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-lg">
+          <div className="flex items-center justify-between mb-6 border-b pb-3 border-gray-200 dark:border-gray-700">
+            <h2 className="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
+              🎉 Festivals
+            </h2>
+            <span className="text-xs px-3 py-1 rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-200">
+              {holidayData.length} Events
+            </span>
+          </div>
 
-          <ul className="space-y-3 sm:space-y-4">
-            {festivals.map((f, idx) => (
+          <ul className="space-y-4">
+            {holidayData.map((f, idx) => (
               <li key={idx}>
-                <FestivalRow {...f} />
+                <div className="group flex items-center gap-4 p-4 rounded-xl bg-white dark:bg-gray-800 shadow-md hover:shadow-xl transition duration-300 hover:scale-[1.02]">
+                  <div className="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-full bg-gradient-to-r from-pink-400 to-purple-500 text-white font-semibold shadow-md">
+                    {new Date(f.date).getDate()}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 dark:text-gray-100 group-hover:text-purple-600 transition">
+                      {f.name}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      {new Date(f.date).toLocaleDateString("en-US", { weekday: "long" })}
+                    </p>
+                  </div>
+                </div>
               </li>
             ))}
           </ul>
         </div>
+
       </div>
 
       {/* 3rd Section - Responsive Grid */}
