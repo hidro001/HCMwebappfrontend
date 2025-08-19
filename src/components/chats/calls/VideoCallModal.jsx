@@ -105,22 +105,22 @@ const VideoCallModal = () => {
 
         {/* controls */}
         <div className="absolute bottom-5 left-0 w-full flex justify-center gap-6">
-          <button onClick={leaveCall} className="w-12 h-12 bg-red-800 …">
+          <button onClick={leaveCall} className="w-12 h-12 bg-red-800 rounded-full flex items-center justify-center text-white hover:bg-red-700 transition">
             <FaPhoneSlash size={18} />
           </button>
-          <button onClick={toggleAudio} className="w-12 h-12 bg-gray-800 …">
+          <button onClick={toggleAudio} className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center text-white hover:bg-red-700 transition">
             {audioEnabled ? (
               <FaMicrophone size={18} />
             ) : (
               <FaMicrophoneSlash size={18} />
             )}
           </button>
-          <button onClick={toggleVideo} className="w-12 h-12 bg-gray-800 …">
+          <button onClick={toggleVideo} className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center text-white hover:bg-red-700 transition">
             {videoEnabled ? <FaVideo size={18} /> : <FaVideoSlash size={18} />}
           </button>
           <button
             onClick={handleAddParticipant}
-            className="w-12 h-12 bg-gray-800 …"
+            className="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center text-white hover:bg-red-700 transition"
           >
             <FaPlus size={18} />
           </button>
@@ -128,7 +128,7 @@ const VideoCallModal = () => {
             onClick={handleScreenShare}
             className={`w-12 h-12 ${
               isScreenSharing ? "bg-blue-700" : "bg-gray-800"
-            }`}
+            } rounded-full flex items-center justify-center text-white hover:bg-red-700 transition`}
           >
             <FaDesktop size={18} />
           </button>

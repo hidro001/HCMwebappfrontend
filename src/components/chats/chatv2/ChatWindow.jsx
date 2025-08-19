@@ -8,6 +8,7 @@ import { ChatContextv2 } from "../../../contexts/ChatContextv2";
 import { useCall } from "../../../contexts/CallContext";
 import fallbackAvatar from "../../../assets/logo/logo-eye.webp";
 import EmojiPicker from "emoji-picker-react";
+import GroupSettingsModal from "./GroupSettingsModal";
 
 function ChatWindow() {
   const {
@@ -23,13 +24,12 @@ function ChatWindow() {
     userStatus,
   } = useContext(ChatContextv2);
 
-  console.log(`messages`, message);
-
   const { initiateCall } = useCall();
   const fileInputRef = useRef(null);
   const scrollRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
   const [filesRemaining, setFilesRemaining] = useState(0);
+  const [showGroupSettings, setShowGroupSettings] = useState(false);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [resolvedFileURLs, setResolvedFileURLs] = useState({});
   const isOnline = activeConversation?.employeeId ? userStatus[activeConversation.employeeId] : false;
@@ -263,7 +263,17 @@ function ChatWindow() {
             </p>
           </div>
         </div>
+
         <div className="flex gap-2">
+          {activeConversation?.isGroup && (
+            <button
+              onClick={() => setShowGroupSettings(true)}
+              className="p-2 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+              title="Edit Group Settings"
+            >
+              ✏️
+            </button>
+          )}
           <button
             onClick={handleVideoCall}
             className="p-2 rounded-full border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-200"
@@ -293,6 +303,14 @@ function ChatWindow() {
           </div>
         )}
       </div>
+
+      {showGroupSettings && (
+        <GroupSettingsModal
+          group={activeConversation}
+          onClose={() => setShowGroupSettings(false)}
+        />
+      )}
+
       <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
         <input ref={fileInputRef} type="file" multiple hidden onChange={handleFileChange} />
         <div className="flex items-center gap-3">
