@@ -22,14 +22,13 @@ export async function getRaciScores(startDate, endDate) {
   if (endDate) params.endDate = endDate;
 
   const response = await axiosInstance.get(url, { params });
-  return response.data; // { success: boolean, data: [...] }
+  return response.data;
 }
 
 
 
 
 export async function getDashboardStats() {
-
   const response = await axiosInstance.get("/dashboard-stats-user");
   return response.data; 
 }

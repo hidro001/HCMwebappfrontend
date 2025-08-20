@@ -15,8 +15,6 @@ export default function GroupList({ searchTerm }) {
     fetchUserGroups();
   }, [fetchUserGroups]);
 
-  
-
   const filteredGroups = groups.filter((group) => {
     const name = group.groupName.toLowerCase();
     const search = searchTerm.toLowerCase();

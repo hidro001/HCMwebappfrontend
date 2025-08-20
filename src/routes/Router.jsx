@@ -121,6 +121,7 @@ import ReviewEmployeePage from "../pages/emp-registration/emp-review/ReviewEmplo
 import ManagerTabOverview from "../pages/emp-registration/emp-review/manager-tabs/ManagerTabOverview";
 import SuperAdminRegistration from "../components/SuperAdminRegistration/SuperAdminRegistration";
 import RegistrationLogin from "../pages/emp-registration/RegistrationLogin";
+import TeamManagerDashbboard from "../components/dashboar Cards/subordinates/TeamManagerDashboard";
 
 const router = createBrowserRouter([
   {
@@ -172,6 +173,12 @@ const router = createBrowserRouter([
         element: <EmployeeDashboardPage />,
         handle: { helpKey: "dashboardEmployee" },
       },
+      {
+        path: "manager",
+        element: <TeamManagerDashbboard />,
+        handle: { helpKey: "dashboardManager" },
+      },
+
 
       //notifications
       {
@@ -680,11 +687,11 @@ const router = createBrowserRouter([
         element: <EmployeeTreemapPage />,
         handle: { helpKey: "organizationChart" },
       },
-
-      // Chats
-      { path: "chats", element: <ChatPage />, handle: { helpKey: "chats" } },
-
-      // Geo Location
+      {
+        path: "chats",
+        element: <ChatPage />,
+        handle: { helpKey: "chats" }
+      },
       {
         path: "field-worker",
         element: <FiledworkerPage />,

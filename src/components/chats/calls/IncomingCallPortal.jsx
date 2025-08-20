@@ -1,4 +1,3 @@
-// components/chats/calls/IncomingCallPortal.jsx
 import React from "react";
 import { createPortal } from "react-dom";
 import { useCall } from "../../../contexts/CallContext";
@@ -17,7 +16,6 @@ const IncomingCallPortal = () => {
   const { caller, callType } = incomingCall;
   const isVideo = callType === "video";
 
-  /* --------  modal markup  -------- */
   const modal = (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/60">
       <div className="bg-white dark:bg-gray-800 rounded-lg w-11/12 max-w-sm p-6 shadow-xl">

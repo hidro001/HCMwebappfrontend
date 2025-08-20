@@ -53,6 +53,11 @@ export const menuItems = [
         link: "/dashboard/employee",
         permission: "dashboard-employee",
       },
+      {
+        name: "Dashboard",
+        link: "/dashboard/Manager",
+        permission: "dashboard-employee",
+      },
     ],
   },
 

@@ -53,8 +53,6 @@ function GroupSettingsModal({ group, onClose }) {
   return (
     <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center px-3">
       <div className="bg-white dark:bg-gray-800 w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
-        
-        {/* Header */}
         <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
           <h2 className="text-lg font-bold text-gray-800 dark:text-gray-100">
             ⚙️ Group Settings
@@ -66,11 +64,7 @@ function GroupSettingsModal({ group, onClose }) {
             ✕
           </button>
         </div>
-
-        {/* Body */}
         <div className="p-5 space-y-6 max-h-[70vh] overflow-y-auto">
-          
-          {/* Group Info */}
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
               Group Name
@@ -101,8 +95,6 @@ function GroupSettingsModal({ group, onClose }) {
           </button>
 
           <hr className="dark:border-gray-600" />
-
-          {/* Add Member */}
           <div>
             <label className="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-1">
               Add New Member
@@ -130,8 +122,6 @@ function GroupSettingsModal({ group, onClose }) {
           </div>
 
           <hr className="dark:border-gray-600" />
-
-          {/* Members List */}
           <div>
             <p className="text-sm font-semibold mb-2 text-gray-800 dark:text-gray-200">
               👥 Current Members ({group.members?.length || 0})
@@ -162,8 +152,6 @@ function GroupSettingsModal({ group, onClose }) {
           </div>
 
           <hr className="dark:border-gray-600" />
-
-          {/* Delete Group */}
           <div className="bg-red-50 dark:bg-red-900/30 p-3 rounded-lg">
             <p className="text-sm text-gray-700 dark:text-gray-200 mb-2">
               Type <strong>DELETE</strong> to confirm:

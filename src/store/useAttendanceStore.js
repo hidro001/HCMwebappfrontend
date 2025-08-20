@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { toast } from "react-hot-toast";
-import axiosInstance from "../service/axiosInstance"; 
+import axiosInstance from "../service/axiosInstance";
 
 const useAttendanceStore = create((set, get) => ({
   subordinates: [],
@@ -8,12 +8,11 @@ const useAttendanceStore = create((set, get) => ({
   stats: null,
   loading: false,
   error: null,
-  subordinateStats: [], 
+  subordinateStats: [],
   todayPunches: [],
   todayLateIn: [],
   todayAttendance: [],
 
-  // Fetch subordinates for a given userId
   fetchSubordinates: async (userId) => {
     set({ loading: true, error: null });
     try {
@@ -38,11 +37,9 @@ const useAttendanceStore = create((set, get) => ({
     }
   },
 
-  // Fetch all users (or subordinates, based on your existing logic)
   fetchAllUser: async () => {
     set({ loading: true, error: null });
     try {
-      // If a userId is needed, you can add it as a parameter and pass it here.
       const response = await axiosInstance.get("/superadmin/employees");
       const data = response.data;
 
@@ -60,7 +57,6 @@ const useAttendanceStore = create((set, get) => ({
     }
   },
 
-  // Fetch all departments
   fetchDepartments: async () => {
     set({ loading: true, error: null });
     try {
@@ -81,7 +77,6 @@ const useAttendanceStore = create((set, get) => ({
     }
   },
 
-  // Fetch stats
   fetchStats: async () => {
     set({ loading: true, error: null });
     try {
@@ -89,7 +84,6 @@ const useAttendanceStore = create((set, get) => ({
       const data = response.data;
 
       if (data.success) {
-        // The stats object may include various fields like numberOfEmployeesOnLeaveToday, etc.
         set({ stats: data });
       } else {
         throw new Error(data.message || "Failed to fetch stats.");
@@ -106,7 +100,6 @@ const useAttendanceStore = create((set, get) => ({
   fetchSubordinateStats: async () => {
     set({ loading: true, error: null });
     try {
-      // Call your new endpoint
       const response = await axiosInstance.get("/attendance/getSubordinateStats");
       if (response.data.success) {
         console.log(response.data.data, 'subordinateStats')
@@ -123,17 +116,14 @@ const useAttendanceStore = create((set, get) => ({
     }
   },
 
-  // ---- ADD: new action to fetch today's punch in/out times ----
   fetchTodaysPunchTimes: async () => {
     set({ loading: true, error: null });
     try {
-      // Assuming your new endpoint is "/api/attendance/today"
       const response = await axiosInstance.get("/attendance-user/today");
       const data = response.data;
 
       console.log(data, 'dfdf')
       if (data.success) {
-        // Save the returned array under `todayPunches`
         set({ todayPunches: data.data });
       } else {
         throw new Error(data.message || "Failed to fetch today's punch times.");

@@ -1,9 +1,8 @@
-// useDashboardStore.js
 import { create } from "zustand";
-import axiosInstance from "../service/axiosInstance"; // Your custom axios setup
+import axiosInstance from "../service/axiosInstance";
 
 export const useDashboardStore = create((set) => ({
-  // State fields
+  // Shared state (works for both super admin & manager)
   totalUsers: 0,
   usersLoggedInToday: 0,
   employeesOnLeaveToday: 0,
@@ -16,29 +15,27 @@ export const useDashboardStore = create((set) => ({
   ageDistribution: [],
   totalSalaries: 0,
   topDesignations: [],
-  attendanceDetails: [],          
-  attendanceDetailsLoading: false, 
-  hiringDetails: [],              
-  hiringDetailsLoading: false,    
+  attendanceDetails: [],
+  attendanceDetailsLoading: false,
+  hiringDetails: [],
+  hiringDetailsLoading: false,
+  error: null,
+  loading: false,
 
-  
+  // 🔹 Super Admin: Fetch Global Dashboard Stats
   fetchDashboardStats: async () => {
+    set({ loading: true, error: null });
     try {
       const response = await axiosInstance.get("/dashboard-stats/super-admin");
       if (response.data.success) {
         set({
           totalUsers: response.data.totalUsers ?? 0,
           usersLoggedInToday: response.data.numberOfUsersLoggedInToday ?? 0,
-          employeesOnLeaveToday:
-            response.data.numberOfEmployeesOnLeaveToday ?? 0,
-          employeesPerDepartment: Array.isArray(
-            response.data.employeesPerDepartment
-          )
+          employeesOnLeaveToday: response.data.numberOfEmployeesOnLeaveToday ?? 0,
+          employeesPerDepartment: Array.isArray(response.data.employeesPerDepartment)
             ? response.data.employeesPerDepartment
             : [],
-          employeesPerEmployeeType: Array.isArray(
-            response.data.employeesPerEmployeeType
-          )
+          employeesPerEmployeeType: Array.isArray(response.data.employeesPerEmployeeType)
             ? response.data.employeesPerEmployeeType
             : [],
           maleCount: response.data.maleCount ?? 0,
@@ -55,65 +52,87 @@ export const useDashboardStore = create((set) => ({
           totalSalaries: response.data.totalSalaries ?? 0,
         });
       } else {
-        console.error(
-          "Failed to fetch dashboard stats:",
-          response.data.message
-        );
+        set({ error: response.data.message || "Failed to fetch dashboard stats" });
       }
     } catch (error) {
       console.error("Error fetching dashboard stats:", error);
+      set({ error: error.message });
+    } finally {
+      set({ loading: false });
     }
   },
 
-  // --------------------------------
-  // For attendance details (example)
-  // --------------------------------
-// For attendance details
-fetchAttendanceDetails: async () => {
-  try {
-    // Optional: set a loading state if you want
-    set({ attendanceDetailsLoading: true });
+  fetchSubordinateDashboardStats: async () => {
+    set({ loading: true, error: null });
+    try {
+      const response = await axiosInstance.get("/attendance/getSubordinateStats");
+      if (response.data.success) {
+        const apiData = response.data.data;
 
-    const response = await axiosInstance.get('/dashboard-stats/super-admin/attendance-details');
-    if (response.data.success) {
-      // Save the fetched array into the Zustand store
-      set({
-        attendanceDetails: response.data.attendanceDetails ?? [],
-      });
+        set({
+          totalUsers: apiData.totalUsers ?? apiData.count ?? 0,
+          usersLoggedInToday: apiData.usersLoggedInToday ?? 0,
+          employeesOnLeaveToday: apiData.employeesOnLeaveToday ?? 0,
+          employeesPerDepartment: Array.isArray(apiData.employeesPerDepartment)
+            ? apiData.employeesPerDepartment
+            : [],
+          employeesPerEmployeeType: Array.isArray(apiData.employeesPerEmployeeType)
+            ? apiData.employeesPerEmployeeType
+            : [],
+          maleCount: apiData.maleCount ?? 0,
+          femaleCount: apiData.femaleCount ?? 0,
+          monthlyHiringTrend: Array.isArray(apiData.monthlyHiringTrend)
+            ? apiData.monthlyHiringTrend
+            : [],
+          salaryRange: Array.isArray(apiData.salaryRange)
+            ? apiData.salaryRange
+            : [],
+          ageDistribution: Array.isArray(apiData.ageDistribution)
+            ? apiData.ageDistribution
+            : [],
+          totalSalaries: apiData.totalSalaries ?? 0,
+        });
+      } else {
+        set({ error: response.data.message || "Failed to fetch subordinate stats" });
+      }
+    } catch (error) {
+      console.error("Error fetching subordinate stats:", error);
+      set({ error: error.message });
+    } finally {
+      set({ loading: false });
     }
-  } catch (error) {
-    console.error('Error fetching attendance details:', error);
-  } finally {
-    // Optional: turn off the loading state
-    set({ attendanceDetailsLoading: false });
-  }
-},
+  },
 
+  // 🔹 Attendance Details (Super Admin only)
+  fetchAttendanceDetails: async () => {
+    try {
+      set({ attendanceDetailsLoading: true });
+      const response = await axiosInstance.get("/dashboard-stats/super-admin/attendance-details");
+      if (response.data.success) {
+        set({ attendanceDetails: response.data.attendanceDetails ?? [] });
+      }
+    } catch (error) {
+      console.error("Error fetching attendance details:", error);
+    } finally {
+      set({ attendanceDetailsLoading: false });
+    }
+  },
 
-  // --------------------------------
-  // For leave details (example)
-  // --------------------------------
+  // 🔹 Leave Details (future use)
   fetchLeaveDetails: async () => {
     try {
-      const response = await axiosInstance.get("/admin/leave-details");
-      // Replace with logic to update any store state if desired
-      // e.g., set({ leaveDetails: response.data.leaveDetails || [] });
+      await axiosInstance.get("/admin/leave-details");
     } catch (error) {
       console.error("Error fetching leave details:", error);
     }
   },
 
-  // ---------------------------------------------
-  // Fetches top-rated designations for a given month/year
-  // ---------------------------------------------
+  // 🔹 Top Designations
   fetchTopDesignations: async (month, year) => {
     try {
-      const response = await axiosInstance.get(
-        "/kpi/ratings/top-designations",
-        {
-          params: { month, year },
-        }
-      );
+      const response = await axiosInstance.get("/kpi/ratings/top-designations", {
+        params: { month, year },
+      });
       if (response.data.success) {
         set({
           topDesignations: Array.isArray(response.data.data)
@@ -121,30 +140,27 @@ fetchAttendanceDetails: async () => {
             : [],
         });
       } else {
-        console.error(
-          "Failed to fetch top designations:",
-          response.data.message
-        );
+        console.error("Failed to fetch top designations:", response.data.message);
       }
     } catch (error) {
       console.error("Error fetching top designations:", error);
     }
   },
 
+  // 🔹 Hiring Details
   fetchHiringDetails: async (month, year) => {
-        try {
-          set({ hiringDetailsLoading: true });
-          const res = await axiosInstance.get(
-            "/dashboard-stats/super-admin/hiring-details",
-            { params: { month, year } }
-          );
-          if (res.data.success) {
-            set({ hiringDetails: res.data.hires ?? [] });
-          }
-        } catch (err) {
-          console.error("Error fetching hiring details:", err);
-        } finally {
-          set({ hiringDetailsLoading: false });
-        }
-      },
+    try {
+      set({ hiringDetailsLoading: true });
+      const res = await axiosInstance.get("/dashboard-stats/super-admin/hiring-details", {
+        params: { month, year },
+      });
+      if (res.data.success) {
+        set({ hiringDetails: res.data.hires ?? [] });
+      }
+    } catch (err) {
+      console.error("Error fetching hiring details:", err);
+    } finally {
+      set({ hiringDetailsLoading: false });
+    }
+  },
 }));

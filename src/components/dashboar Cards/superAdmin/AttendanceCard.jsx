@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-import { useDashboardStore } from "../../../store/useDashboardStore";
 import { Doughnut } from "react-chartjs-2";
 import { motion } from "framer-motion";
 import {
@@ -13,16 +11,12 @@ import {
 import { HiOutlineChartPie, HiOutlineSparkles } from "react-icons/hi2";
 
 function AttendanceCard({totalUsers, usersLoggedInToday, employeesOnLeaveToday}) {
-  
-
-  // 2) Compute derived values
   const reportedEmployers = usersLoggedInToday;
   const onLeave = employeesOnLeaveToday;
   const notYetReported = totalUsers - reportedEmployers;
   const attendancePct =
     totalUsers > 0 ? (reportedEmployers / totalUsers) * 100 : 0;
 
-  // 3) Enhanced Chart.js data with modern gradient colors
   const data = {
     labels: ["Present", "On Leave", "Pending"],
     datasets: [
@@ -30,9 +24,9 @@ function AttendanceCard({totalUsers, usersLoggedInToday, employeesOnLeaveToday})
         label: "Attendance Status",
         data: [reportedEmployers, onLeave, notYetReported],
         backgroundColor: [
-          "rgba(34, 197, 94, 0.8)", // emerald-500
-          "rgba(239, 68, 68, 0.8)", // red-500
-          "rgba(168, 85, 247, 0.8)", // violet-500
+          "rgba(34, 197, 94, 0.8)",
+          "rgba(239, 68, 68, 0.8)",
+          "rgba(168, 85, 247, 0.8)"
         ],
         borderColor: [
           "rgba(34, 197, 94, 1)",
@@ -46,14 +40,13 @@ function AttendanceCard({totalUsers, usersLoggedInToday, employeesOnLeaveToday})
     ],
   };
 
-  // 4) Modern Chart.js options
   const options = {
     responsive: true,
     maintainAspectRatio: false,
     cutout: "70%",
     plugins: {
       legend: {
-        display: false, // We'll create custom legend
+        display: false,
       },
       tooltip: {
         backgroundColor: "rgba(17, 24, 39, 0.95)",
@@ -86,7 +79,6 @@ function AttendanceCard({totalUsers, usersLoggedInToday, employeesOnLeaveToday})
     },
   };
 
-  // 5) Enhanced center text plugin with responsive sizing
   const centerTextPlugin = {
     id: "modernCenterTextPlugin",
     afterDraw: (chart) => {
@@ -95,16 +87,14 @@ function AttendanceCard({totalUsers, usersLoggedInToday, employeesOnLeaveToday})
         chartArea: { width, height },
       } = chart;
       ctx.save();
-
-      // Get responsive font sizes based on chart size
       const isSmall = width < 150;
       const isMedium = width < 200;
       
       const mainFontSize = isSmall ? 20 : isMedium ? 24 : 28;
       const subFontSize = isSmall ? 10 : isMedium ? 11 : 12;
 
-      // Main percentage
-      ctx.fillStyle = "#111827"; // dark mode: #F9FAFB
+    
+      ctx.fillStyle = "#111827"; 
       ctx.textAlign = "center";
       ctx.font = `bold ${mainFontSize}px system-ui, -apple-system, sans-serif`;
       ctx.fillText(`${Math.round(attendancePct)}%`, width / 2, height / 2 - 4);

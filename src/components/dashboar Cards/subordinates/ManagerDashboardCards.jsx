@@ -6,9 +6,9 @@ import {
   FaUserTimes,
 } from "react-icons/fa";
 import { useDashboardStore } from "../../../store/useDashboardStore";
-import AttendanceModal from "./AttendanceModel";
+import AttendanceModal from "../superAdmin/AttendanceModel";
 
-function DashboardStatCards({totalUsers, usersLoggedInToday, employeesOnLeaveToday}) {
+function ManagerDashboardCards({totalUsers, usersLoggedInToday, employeesOnLeaveToday}) {
   const {
     fetchAttendanceDetails,
     attendanceDetails = [],
@@ -384,4 +384,4 @@ function StatCard({
   );
 }
 
-export default DashboardStatCards;
+export default ManagerDashboardCards;

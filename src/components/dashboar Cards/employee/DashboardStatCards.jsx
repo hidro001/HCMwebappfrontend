@@ -55,13 +55,11 @@ function DashboardStatCards() {
     }
   };
 
-  // Calculate percentages and trends
   const totalEmployees = totalLoggedIn + totalLeavesTaken + totalTaskPending;
   const attendanceRate = totalEmployees > 0 ? ((totalLoggedIn / totalEmployees) * 100).toFixed(1) : 0;
   const leaveRate = totalEmployees > 0 ? ((totalLeavesTaken / totalEmployees) * 100).toFixed(1) : 0;
   const taskRate = totalEmployees > 0 ? ((totalTaskPending / totalEmployees) * 100).toFixed(1) : 0;
 
-  // Prepare stat card data
   const statCardsData = [
     {
       id: 'logged-in',
@@ -103,11 +101,9 @@ function DashboardStatCards() {
       interactive: true,
     },
   ];
-
-  // Fixed handleCardClick function
   const handleCardClick = (link) => {
     if (link) {
-      navigate(link); // Use React Router's navigate function
+      navigate(link); 
     }
   };
 
